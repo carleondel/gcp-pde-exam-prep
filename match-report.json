@@ -1,0 +1,2566 @@
+{
+  "timestamp": "2026-03-31T11:16:36.036Z",
+  "summary": {
+    "totalAppQuestions": 319,
+    "totalScrapedQuestions": 319,
+    "matchedWithDiscussions": 319,
+    "matchedWithoutDiscussions": 0,
+    "notMatched": 0,
+    "replacedInFile": 319
+  },
+  "details": [
+    {
+      "appId": 1,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 1,
+      "discussions": 6
+    },
+    {
+      "appId": 2,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 2,
+      "discussions": 6
+    },
+    {
+      "appId": 3,
+      "topic": "Data Ingestion",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 3,
+      "discussions": 6
+    },
+    {
+      "appId": 4,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 4,
+      "discussions": 6
+    },
+    {
+      "appId": 5,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 5,
+      "discussions": 6
+    },
+    {
+      "appId": 6,
+      "topic": "BigQuery DR",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 6,
+      "discussions": 6
+    },
+    {
+      "appId": 7,
+      "topic": "Orchestration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 7,
+      "discussions": 6
+    },
+    {
+      "appId": 8,
+      "topic": "Orchestration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 8,
+      "discussions": 6
+    },
+    {
+      "appId": 9,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 9,
+      "discussions": 6
+    },
+    {
+      "appId": 10,
+      "topic": "Security/DLP",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 10,
+      "discussions": 4
+    },
+    {
+      "appId": 11,
+      "topic": "Orchestration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 11,
+      "discussions": 6
+    },
+    {
+      "appId": 12,
+      "topic": "Pub/Sub",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 12,
+      "discussions": 6
+    },
+    {
+      "appId": 13,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 13,
+      "discussions": 6
+    },
+    {
+      "appId": 14,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 14,
+      "discussions": 6
+    },
+    {
+      "appId": 15,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 15,
+      "discussions": 6
+    },
+    {
+      "appId": 16,
+      "topic": "Data Ingestion",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 16,
+      "discussions": 6
+    },
+    {
+      "appId": 17,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 17,
+      "discussions": 6
+    },
+    {
+      "appId": 18,
+      "topic": "Orchestration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 18,
+      "discussions": 6
+    },
+    {
+      "appId": 19,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 19,
+      "discussions": 6
+    },
+    {
+      "appId": 20,
+      "topic": "BigQuery/CDC",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 20,
+      "discussions": 6
+    },
+    {
+      "appId": 21,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 21,
+      "discussions": 6
+    },
+    {
+      "appId": 22,
+      "topic": "Security/IAM",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 22,
+      "discussions": 6
+    },
+    {
+      "appId": 23,
+      "topic": "Bigtable",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 23,
+      "discussions": 6
+    },
+    {
+      "appId": 24,
+      "topic": "Security/IAM",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 24,
+      "discussions": 6
+    },
+    {
+      "appId": 25,
+      "topic": "Monitoring",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 25,
+      "discussions": 6
+    },
+    {
+      "appId": 26,
+      "topic": "IoT/Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 26,
+      "discussions": 6
+    },
+    {
+      "appId": 27,
+      "topic": "Storage/Backup",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 27,
+      "discussions": 6
+    },
+    {
+      "appId": 28,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 28,
+      "discussions": 6
+    },
+    {
+      "appId": 29,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 29,
+      "discussions": 4
+    },
+    {
+      "appId": 30,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 30,
+      "discussions": 6
+    },
+    {
+      "appId": 31,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 31,
+      "discussions": 6
+    },
+    {
+      "appId": 32,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 32,
+      "discussions": 6
+    },
+    {
+      "appId": 33,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 33,
+      "discussions": 6
+    },
+    {
+      "appId": 34,
+      "topic": "BigQuery/DR",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 34,
+      "discussions": 6
+    },
+    {
+      "appId": 35,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 35,
+      "discussions": 6
+    },
+    {
+      "appId": 36,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 36,
+      "discussions": 6
+    },
+    {
+      "appId": 37,
+      "topic": "Security/IAM",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 37,
+      "discussions": 6
+    },
+    {
+      "appId": 38,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 38,
+      "discussions": 6
+    },
+    {
+      "appId": 39,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 39,
+      "discussions": 6
+    },
+    {
+      "appId": 40,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 40,
+      "discussions": 6
+    },
+    {
+      "appId": 41,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 41,
+      "discussions": 6
+    },
+    {
+      "appId": 42,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 42,
+      "discussions": 6
+    },
+    {
+      "appId": 43,
+      "topic": "Dataflow/Bigtable",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 43,
+      "discussions": 6
+    },
+    {
+      "appId": 44,
+      "topic": "Orchestration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 44,
+      "discussions": 6
+    },
+    {
+      "appId": 45,
+      "topic": "Pub/Sub",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 45,
+      "discussions": 6
+    },
+    {
+      "appId": 46,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 46,
+      "discussions": 6
+    },
+    {
+      "appId": 47,
+      "topic": "Spanner",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 47,
+      "discussions": 6
+    },
+    {
+      "appId": 48,
+      "topic": "Security/Logging",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 48,
+      "discussions": 6
+    },
+    {
+      "appId": 49,
+      "topic": "Monitoring",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 49,
+      "discussions": 6
+    },
+    {
+      "appId": 50,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 50,
+      "discussions": 6
+    },
+    {
+      "appId": 51,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 51,
+      "discussions": 6
+    },
+    {
+      "appId": 52,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 52,
+      "discussions": 6
+    },
+    {
+      "appId": 53,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 53,
+      "discussions": 6
+    },
+    {
+      "appId": 54,
+      "topic": "Orchestration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 54,
+      "discussions": 6
+    },
+    {
+      "appId": 55,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 55,
+      "discussions": 6
+    },
+    {
+      "appId": 56,
+      "topic": "Security/IAM",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 56,
+      "discussions": 6
+    },
+    {
+      "appId": 57,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 57,
+      "discussions": 6
+    },
+    {
+      "appId": 58,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 58,
+      "discussions": 6
+    },
+    {
+      "appId": 59,
+      "topic": "Dataproc/ML",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 59,
+      "discussions": 6
+    },
+    {
+      "appId": 60,
+      "topic": "BigQuery/ML",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 60,
+      "discussions": 6
+    },
+    {
+      "appId": 61,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 61,
+      "discussions": 6
+    },
+    {
+      "appId": 62,
+      "topic": "Cloud SQL",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 62,
+      "discussions": 6
+    },
+    {
+      "appId": 63,
+      "topic": "Data Ingestion",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 63,
+      "discussions": 6
+    },
+    {
+      "appId": 64,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 64,
+      "discussions": 6
+    },
+    {
+      "appId": 65,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 65,
+      "discussions": 6
+    },
+    {
+      "appId": 66,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 66,
+      "discussions": 6
+    },
+    {
+      "appId": 67,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 67,
+      "discussions": 6
+    },
+    {
+      "appId": 68,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 68,
+      "discussions": 6
+    },
+    {
+      "appId": 69,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 69,
+      "discussions": 6
+    },
+    {
+      "appId": 70,
+      "topic": "Bigtable",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 70,
+      "discussions": 6
+    },
+    {
+      "appId": 71,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 71,
+      "discussions": 6
+    },
+    {
+      "appId": 72,
+      "topic": "Monitoring",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 72,
+      "discussions": 4
+    },
+    {
+      "appId": 73,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 73,
+      "discussions": 6
+    },
+    {
+      "appId": 74,
+      "topic": "Spanner",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 74,
+      "discussions": 6
+    },
+    {
+      "appId": 75,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 75,
+      "discussions": 6
+    },
+    {
+      "appId": 76,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 76,
+      "discussions": 6
+    },
+    {
+      "appId": 77,
+      "topic": "Security/DLP",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 77,
+      "discussions": 6
+    },
+    {
+      "appId": 78,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 78,
+      "discussions": 6
+    },
+    {
+      "appId": 79,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 79,
+      "discussions": 6
+    },
+    {
+      "appId": 80,
+      "topic": "Pub/Sub",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 80,
+      "discussions": 6
+    },
+    {
+      "appId": 81,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 81,
+      "discussions": 6
+    },
+    {
+      "appId": 82,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 82,
+      "discussions": 6
+    },
+    {
+      "appId": 83,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 83,
+      "discussions": 6
+    },
+    {
+      "appId": 84,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 84,
+      "discussions": 6
+    },
+    {
+      "appId": 85,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 85,
+      "discussions": 6
+    },
+    {
+      "appId": 86,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 86,
+      "discussions": 6
+    },
+    {
+      "appId": 87,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 87,
+      "discussions": 6
+    },
+    {
+      "appId": 88,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 88,
+      "discussions": 6
+    },
+    {
+      "appId": 89,
+      "topic": "Security/DLP",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 89,
+      "discussions": 6
+    },
+    {
+      "appId": 90,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 90,
+      "discussions": 6
+    },
+    {
+      "appId": 91,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 91,
+      "discussions": 6
+    },
+    {
+      "appId": 92,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 92,
+      "discussions": 6
+    },
+    {
+      "appId": 93,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 93,
+      "discussions": 6
+    },
+    {
+      "appId": 94,
+      "topic": "Bigtable",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 94,
+      "discussions": 6
+    },
+    {
+      "appId": 95,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 95,
+      "discussions": 6
+    },
+    {
+      "appId": 96,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 96,
+      "discussions": 5
+    },
+    {
+      "appId": 97,
+      "topic": "Monitoring",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 97,
+      "discussions": 6
+    },
+    {
+      "appId": 98,
+      "topic": "Security/IAM",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 98,
+      "discussions": 6
+    },
+    {
+      "appId": 99,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 99,
+      "discussions": 6
+    },
+    {
+      "appId": 100,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 100,
+      "discussions": 6
+    },
+    {
+      "appId": 101,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 101,
+      "discussions": 6
+    },
+    {
+      "appId": 102,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 102,
+      "discussions": 6
+    },
+    {
+      "appId": 103,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 103,
+      "discussions": 6
+    },
+    {
+      "appId": 104,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 104,
+      "discussions": 6
+    },
+    {
+      "appId": 105,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 105,
+      "discussions": 6
+    },
+    {
+      "appId": 106,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 106,
+      "discussions": 6
+    },
+    {
+      "appId": 107,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 107,
+      "discussions": 5
+    },
+    {
+      "appId": 108,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 108,
+      "discussions": 6
+    },
+    {
+      "appId": 109,
+      "topic": "Cloud SQL",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 109,
+      "discussions": 6
+    },
+    {
+      "appId": 110,
+      "topic": "Orchestration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 110,
+      "discussions": 6
+    },
+    {
+      "appId": 111,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 111,
+      "discussions": 6
+    },
+    {
+      "appId": 112,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 112,
+      "discussions": 6
+    },
+    {
+      "appId": 113,
+      "topic": "Pub/Sub",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 113,
+      "discussions": 6
+    },
+    {
+      "appId": 114,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 114,
+      "discussions": 6
+    },
+    {
+      "appId": 115,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 115,
+      "discussions": 6
+    },
+    {
+      "appId": 116,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 116,
+      "discussions": 6
+    },
+    {
+      "appId": 117,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 117,
+      "discussions": 6
+    },
+    {
+      "appId": 118,
+      "topic": "ML/Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 118,
+      "discussions": 6
+    },
+    {
+      "appId": 119,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 119,
+      "discussions": 6
+    },
+    {
+      "appId": 120,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 120,
+      "discussions": 6
+    },
+    {
+      "appId": 121,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 121,
+      "discussions": 6
+    },
+    {
+      "appId": 122,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 122,
+      "discussions": 6
+    },
+    {
+      "appId": 123,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 123,
+      "discussions": 6
+    },
+    {
+      "appId": 124,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 124,
+      "discussions": 6
+    },
+    {
+      "appId": 125,
+      "topic": "Dataplex",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 125,
+      "discussions": 6
+    },
+    {
+      "appId": 126,
+      "topic": "BigQuery/DR",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 126,
+      "discussions": 6
+    },
+    {
+      "appId": 127,
+      "topic": "Dataflow/Networking",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 127,
+      "discussions": 6
+    },
+    {
+      "appId": 128,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 128,
+      "discussions": 6
+    },
+    {
+      "appId": 129,
+      "topic": "Memorystore",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 129,
+      "discussions": 6
+    },
+    {
+      "appId": 130,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 130,
+      "discussions": 2
+    },
+    {
+      "appId": 131,
+      "topic": "Dataflow/Networking",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 131,
+      "discussions": 6
+    },
+    {
+      "appId": 132,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 132,
+      "discussions": 6
+    },
+    {
+      "appId": 133,
+      "topic": "Cloud SQL/DR",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 133,
+      "discussions": 6
+    },
+    {
+      "appId": 134,
+      "topic": "Orchestration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 134,
+      "discussions": 6
+    },
+    {
+      "appId": 135,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 135,
+      "discussions": 6
+    },
+    {
+      "appId": 136,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 136,
+      "discussions": 5
+    },
+    {
+      "appId": 137,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 137,
+      "discussions": 4
+    },
+    {
+      "appId": 138,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 138,
+      "discussions": 6
+    },
+    {
+      "appId": 139,
+      "topic": "Dataform",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 139,
+      "discussions": 4
+    },
+    {
+      "appId": 140,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 140,
+      "discussions": 6
+    },
+    {
+      "appId": 141,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 141,
+      "discussions": 6
+    },
+    {
+      "appId": 142,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 142,
+      "discussions": 6
+    },
+    {
+      "appId": 143,
+      "topic": "Memorystore",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 143,
+      "discussions": 4
+    },
+    {
+      "appId": 144,
+      "topic": "Pub/Sub",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 144,
+      "discussions": 6
+    },
+    {
+      "appId": 145,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 145,
+      "discussions": 6
+    },
+    {
+      "appId": 146,
+      "topic": "IoT/Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 146,
+      "discussions": 6
+    },
+    {
+      "appId": 147,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 147,
+      "discussions": 4
+    },
+    {
+      "appId": 148,
+      "topic": "Cloud Composer",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 148,
+      "discussions": 6
+    },
+    {
+      "appId": 149,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 149,
+      "discussions": 6
+    },
+    {
+      "appId": 150,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 150,
+      "discussions": 5
+    },
+    {
+      "appId": 151,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 151,
+      "discussions": 6
+    },
+    {
+      "appId": 152,
+      "topic": "Orchestration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 152,
+      "discussions": 6
+    },
+    {
+      "appId": 153,
+      "topic": "Cloud SQL/DR",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 153,
+      "discussions": 6
+    },
+    {
+      "appId": 154,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 154,
+      "discussions": 6
+    },
+    {
+      "appId": 155,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 155,
+      "discussions": 3
+    },
+    {
+      "appId": 156,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 156,
+      "discussions": 6
+    },
+    {
+      "appId": 157,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 157,
+      "discussions": 6
+    },
+    {
+      "appId": 158,
+      "topic": "Dataplex",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 158,
+      "discussions": 6
+    },
+    {
+      "appId": 159,
+      "topic": "Storage/DR",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 159,
+      "discussions": 6
+    },
+    {
+      "appId": 160,
+      "topic": "Dataflow/DR",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 160,
+      "discussions": 6
+    },
+    {
+      "appId": 161,
+      "topic": "BigQuery/ML",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 161,
+      "discussions": 6
+    },
+    {
+      "appId": 162,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 162,
+      "discussions": 5
+    },
+    {
+      "appId": 163,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 163,
+      "discussions": 6
+    },
+    {
+      "appId": 164,
+      "topic": "Security/DLP",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 164,
+      "discussions": 6
+    },
+    {
+      "appId": 165,
+      "topic": "Dataplex",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 165,
+      "discussions": 5
+    },
+    {
+      "appId": 166,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 166,
+      "discussions": 6
+    },
+    {
+      "appId": 167,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 167,
+      "discussions": 6
+    },
+    {
+      "appId": 168,
+      "topic": "Monitoring",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 168,
+      "discussions": 6
+    },
+    {
+      "appId": 169,
+      "topic": "Security/DLP",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 169,
+      "discussions": 6
+    },
+    {
+      "appId": 170,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 170,
+      "discussions": 4
+    },
+    {
+      "appId": 171,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 171,
+      "discussions": 5
+    },
+    {
+      "appId": 172,
+      "topic": "Dataflow/Networking",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 172,
+      "discussions": 6
+    },
+    {
+      "appId": 173,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 173,
+      "discussions": 6
+    },
+    {
+      "appId": 174,
+      "topic": "Datastream",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 174,
+      "discussions": 2
+    },
+    {
+      "appId": 175,
+      "topic": "Cloud Composer",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 175,
+      "discussions": 6
+    },
+    {
+      "appId": 176,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 176,
+      "discussions": 4
+    },
+    {
+      "appId": 177,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 177,
+      "discussions": 6
+    },
+    {
+      "appId": 178,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 178,
+      "discussions": 5
+    },
+    {
+      "appId": 179,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 179,
+      "discussions": 6
+    },
+    {
+      "appId": 180,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 180,
+      "discussions": 6
+    },
+    {
+      "appId": 181,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 181,
+      "discussions": 6
+    },
+    {
+      "appId": 182,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 182,
+      "discussions": 6
+    },
+    {
+      "appId": 183,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 183,
+      "discussions": 6
+    },
+    {
+      "appId": 184,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 184,
+      "discussions": 6
+    },
+    {
+      "appId": 185,
+      "topic": "BigQuery/DR",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 185,
+      "discussions": 5
+    },
+    {
+      "appId": 186,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 186,
+      "discussions": 6
+    },
+    {
+      "appId": 187,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 187,
+      "discussions": 3
+    },
+    {
+      "appId": 188,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 188,
+      "discussions": 6
+    },
+    {
+      "appId": 189,
+      "topic": "Data Catalog",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 189,
+      "discussions": 6
+    },
+    {
+      "appId": 190,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 190,
+      "discussions": 6
+    },
+    {
+      "appId": 191,
+      "topic": "Orchestration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 191,
+      "discussions": 6
+    },
+    {
+      "appId": 192,
+      "topic": "Monitoring",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 192,
+      "discussions": 6
+    },
+    {
+      "appId": 193,
+      "topic": "Data Catalog",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 193,
+      "discussions": 6
+    },
+    {
+      "appId": 194,
+      "topic": "Cloud Composer",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 194,
+      "discussions": 6
+    },
+    {
+      "appId": 195,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 195,
+      "discussions": 6
+    },
+    {
+      "appId": 196,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 196,
+      "discussions": 6
+    },
+    {
+      "appId": 197,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 197,
+      "discussions": 5
+    },
+    {
+      "appId": 198,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 198,
+      "discussions": 6
+    },
+    {
+      "appId": 199,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 199,
+      "discussions": 6
+    },
+    {
+      "appId": 200,
+      "topic": "Security/IAM",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 200,
+      "discussions": 3
+    },
+    {
+      "appId": 201,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 201,
+      "discussions": 6
+    },
+    {
+      "appId": 202,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 202,
+      "discussions": 6
+    },
+    {
+      "appId": 203,
+      "topic": "Bigtable",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 203,
+      "discussions": 6
+    },
+    {
+      "appId": 204,
+      "topic": "Dataflow/BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 204,
+      "discussions": 6
+    },
+    {
+      "appId": 205,
+      "topic": "BigLake",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 205,
+      "discussions": 4
+    },
+    {
+      "appId": 206,
+      "topic": "Bigtable/BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 206,
+      "discussions": 6
+    },
+    {
+      "appId": 207,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 207,
+      "discussions": 4
+    },
+    {
+      "appId": 208,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 208,
+      "discussions": 6
+    },
+    {
+      "appId": 209,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 209,
+      "discussions": 6
+    },
+    {
+      "appId": 210,
+      "topic": "Dataplex",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 210,
+      "discussions": 5
+    },
+    {
+      "appId": 211,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 211,
+      "discussions": 6
+    },
+    {
+      "appId": 212,
+      "topic": "Bigtable",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 212,
+      "discussions": 6
+    },
+    {
+      "appId": 213,
+      "topic": "Pub/Sub",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 213,
+      "discussions": 6
+    },
+    {
+      "appId": 214,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 214,
+      "discussions": 5
+    },
+    {
+      "appId": 215,
+      "topic": "Datastream",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 215,
+      "discussions": 6
+    },
+    {
+      "appId": 216,
+      "topic": "Dataplex",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 216,
+      "discussions": 6
+    },
+    {
+      "appId": 217,
+      "topic": "Pub/Sub",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 217,
+      "discussions": 6
+    },
+    {
+      "appId": 218,
+      "topic": "Dataflow/Networking",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 218,
+      "discussions": 6
+    },
+    {
+      "appId": 219,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 219,
+      "discussions": 6
+    },
+    {
+      "appId": 220,
+      "topic": "BigLake",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 220,
+      "discussions": 5
+    },
+    {
+      "appId": 221,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 221,
+      "discussions": 6
+    },
+    {
+      "appId": 222,
+      "topic": "Storage/DR",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 222,
+      "discussions": 3
+    },
+    {
+      "appId": 223,
+      "topic": "Database Design",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 223,
+      "discussions": 6
+    },
+    {
+      "appId": 224,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 224,
+      "discussions": 6
+    },
+    {
+      "appId": 225,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 225,
+      "discussions": 6
+    },
+    {
+      "appId": 226,
+      "topic": "Dataform",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 226,
+      "discussions": 4
+    },
+    {
+      "appId": 227,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 227,
+      "discussions": 6
+    },
+    {
+      "appId": 228,
+      "topic": "Dataplex",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 228,
+      "discussions": 6
+    },
+    {
+      "appId": 229,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 229,
+      "discussions": 6
+    },
+    {
+      "appId": 230,
+      "topic": "BigQuery/BigLake",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 230,
+      "discussions": 6
+    },
+    {
+      "appId": 231,
+      "topic": "Security/DLP",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 231,
+      "discussions": 6
+    },
+    {
+      "appId": 232,
+      "topic": "Cloud SQL",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 232,
+      "discussions": 6
+    },
+    {
+      "appId": 233,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 233,
+      "discussions": 6
+    },
+    {
+      "appId": 234,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 234,
+      "discussions": 6
+    },
+    {
+      "appId": 235,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 235,
+      "discussions": 6
+    },
+    {
+      "appId": 236,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 236,
+      "discussions": 3
+    },
+    {
+      "appId": 237,
+      "topic": "Pub/Sub",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 237,
+      "discussions": 6
+    },
+    {
+      "appId": 238,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 238,
+      "discussions": 3
+    },
+    {
+      "appId": 239,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 239,
+      "discussions": 6
+    },
+    {
+      "appId": 240,
+      "topic": "Dataflow/Networking",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 240,
+      "discussions": 2
+    },
+    {
+      "appId": 241,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 241,
+      "discussions": 3
+    },
+    {
+      "appId": 242,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 242,
+      "discussions": 2
+    },
+    {
+      "appId": 243,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 243,
+      "discussions": 6
+    },
+    {
+      "appId": 244,
+      "topic": "BigQuery/DR",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 244,
+      "discussions": 6
+    },
+    {
+      "appId": 245,
+      "topic": "Security/DLP",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 245,
+      "discussions": 5
+    },
+    {
+      "appId": 246,
+      "topic": "Bigtable",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 246,
+      "discussions": 6
+    },
+    {
+      "appId": 247,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 247,
+      "discussions": 6
+    },
+    {
+      "appId": 248,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 248,
+      "discussions": 6
+    },
+    {
+      "appId": 249,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 249,
+      "discussions": 6
+    },
+    {
+      "appId": 250,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 250,
+      "discussions": 6
+    },
+    {
+      "appId": 251,
+      "topic": "Pub/Sub",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 251,
+      "discussions": 6
+    },
+    {
+      "appId": 252,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 252,
+      "discussions": 6
+    },
+    {
+      "appId": 253,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 253,
+      "discussions": 6
+    },
+    {
+      "appId": 254,
+      "topic": "Monitoring",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 254,
+      "discussions": 6
+    },
+    {
+      "appId": 255,
+      "topic": "Security/IAM",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 255,
+      "discussions": 6
+    },
+    {
+      "appId": 256,
+      "topic": "Bigtable",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 256,
+      "discussions": 6
+    },
+    {
+      "appId": 257,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 257,
+      "discussions": 6
+    },
+    {
+      "appId": 258,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 258,
+      "discussions": 6
+    },
+    {
+      "appId": 259,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 259,
+      "discussions": 6
+    },
+    {
+      "appId": 260,
+      "topic": "Orchestration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 260,
+      "discussions": 6
+    },
+    {
+      "appId": 261,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 261,
+      "discussions": 6
+    },
+    {
+      "appId": 262,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 262,
+      "discussions": 6
+    },
+    {
+      "appId": 263,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 263,
+      "discussions": 6
+    },
+    {
+      "appId": 264,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 264,
+      "discussions": 6
+    },
+    {
+      "appId": 265,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 265,
+      "discussions": 6
+    },
+    {
+      "appId": 266,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 266,
+      "discussions": 6
+    },
+    {
+      "appId": 267,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 267,
+      "discussions": 6
+    },
+    {
+      "appId": 268,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 268,
+      "discussions": 6
+    },
+    {
+      "appId": 269,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 269,
+      "discussions": 6
+    },
+    {
+      "appId": 270,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 270,
+      "discussions": 6
+    },
+    {
+      "appId": 271,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 271,
+      "discussions": 6
+    },
+    {
+      "appId": 272,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 272,
+      "discussions": 6
+    },
+    {
+      "appId": 273,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 273,
+      "discussions": 6
+    },
+    {
+      "appId": 274,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 274,
+      "discussions": 6
+    },
+    {
+      "appId": 275,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 275,
+      "discussions": 6
+    },
+    {
+      "appId": 276,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 276,
+      "discussions": 6
+    },
+    {
+      "appId": 277,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 277,
+      "discussions": 6
+    },
+    {
+      "appId": 278,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 278,
+      "discussions": 6
+    },
+    {
+      "appId": 279,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 279,
+      "discussions": 6
+    },
+    {
+      "appId": 280,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 280,
+      "discussions": 6
+    },
+    {
+      "appId": 281,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 281,
+      "discussions": 6
+    },
+    {
+      "appId": 282,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 282,
+      "discussions": 6
+    },
+    {
+      "appId": 283,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 283,
+      "discussions": 6
+    },
+    {
+      "appId": 284,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 284,
+      "discussions": 6
+    },
+    {
+      "appId": 285,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 285,
+      "discussions": 6
+    },
+    {
+      "appId": 286,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 286,
+      "discussions": 6
+    },
+    {
+      "appId": 287,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 287,
+      "discussions": 6
+    },
+    {
+      "appId": 288,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 288,
+      "discussions": 6
+    },
+    {
+      "appId": 289,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 289,
+      "discussions": 6
+    },
+    {
+      "appId": 290,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 290,
+      "discussions": 6
+    },
+    {
+      "appId": 291,
+      "topic": "Spanner",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 291,
+      "discussions": 6
+    },
+    {
+      "appId": 292,
+      "topic": "Bigtable",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 292,
+      "discussions": 6
+    },
+    {
+      "appId": 293,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 293,
+      "discussions": 6
+    },
+    {
+      "appId": 294,
+      "topic": "Security",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 294,
+      "discussions": 6
+    },
+    {
+      "appId": 295,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 295,
+      "discussions": 6
+    },
+    {
+      "appId": 296,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 296,
+      "discussions": 6
+    },
+    {
+      "appId": 297,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 297,
+      "discussions": 6
+    },
+    {
+      "appId": 298,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 298,
+      "discussions": 6
+    },
+    {
+      "appId": 299,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 299,
+      "discussions": 6
+    },
+    {
+      "appId": 300,
+      "topic": "Monitoring",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 300,
+      "discussions": 6
+    },
+    {
+      "appId": 301,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 301,
+      "discussions": 6
+    },
+    {
+      "appId": 302,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 302,
+      "discussions": 6
+    },
+    {
+      "appId": 303,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 303,
+      "discussions": 6
+    },
+    {
+      "appId": 304,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 304,
+      "discussions": 6
+    },
+    {
+      "appId": 305,
+      "topic": "Data Ingestion",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 305,
+      "discussions": 6
+    },
+    {
+      "appId": 306,
+      "topic": "Dataproc",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 306,
+      "discussions": 6
+    },
+    {
+      "appId": 307,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 307,
+      "discussions": 6
+    },
+    {
+      "appId": 308,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 308,
+      "discussions": 6
+    },
+    {
+      "appId": 309,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 309,
+      "discussions": 6
+    },
+    {
+      "appId": 310,
+      "topic": "Monitoring",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 310,
+      "discussions": 6
+    },
+    {
+      "appId": 311,
+      "topic": "ML/AI",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 311,
+      "discussions": 6
+    },
+    {
+      "appId": 312,
+      "topic": "Storage",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 312,
+      "discussions": 6
+    },
+    {
+      "appId": 313,
+      "topic": "Bigtable",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 313,
+      "discussions": 6
+    },
+    {
+      "appId": 314,
+      "topic": "Dataflow",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 314,
+      "discussions": 6
+    },
+    {
+      "appId": 315,
+      "topic": "Bigtable",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 315,
+      "discussions": 6
+    },
+    {
+      "appId": 316,
+      "topic": "Architecture",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 316,
+      "discussions": 6
+    },
+    {
+      "appId": 317,
+      "topic": "Data Processing",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 317,
+      "discussions": 6
+    },
+    {
+      "appId": 318,
+      "topic": "Data Migration",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 318,
+      "discussions": 6
+    },
+    {
+      "appId": 319,
+      "topic": "BigQuery",
+      "status": "matched",
+      "similarity": "100%",
+      "examTopicsQ": 319,
+      "discussions": 6
+    }
+  ],
+  "unmatched": []
+}

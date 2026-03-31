@@ -1,0 +1,6 @@
+services:
+  gcp-pde-exam-prep:
+    build:
+      context: .
+    ports:
+      - "5173:5173"
