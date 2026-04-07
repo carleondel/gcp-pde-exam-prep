@@ -22,7 +22,7 @@ export function MysteryChest({ onComplete, onClose }) {
           <div style={{fontSize:100,marginBottom:16,animation:"bounce 1s infinite",cursor:"pointer"}} onClick={()=>setOpened(true)}>{"\uD83D\uDCE6"}</div>
           <h2 style={{color:"var(--accent-300)",fontSize:22,fontWeight:800,margin:"0 0 8px",fontFamily:"var(--font-heading)"}}>COFRE MISTERIOSO</h2>
           <p style={{color:"var(--text-secondary)",fontSize:14,margin:"0 0 20px"}}>Toca el cofre para abrirlo</p>
-          <button onClick={()=>setOpened(true)} style={{padding:"14px 48px",background:"var(--gradient-mock)",border:"none",borderRadius:14,color:"white",fontSize:16,fontWeight:700,cursor:"pointer",fontFamily:"var(--font-mono)"}}>ABRIR COFRE</button>
+          <button onClick={()=>setOpened(true)} style={{padding:"14px 48px",background:"var(--gradient-mock)",border:"none",borderRadius:"var(--radius-md)",color:"white",fontSize:16,fontWeight:700,cursor:"pointer",fontFamily:"var(--font-mono)"}}>ABRIR COFRE</button>
         </div>
       ) : (
         <div style={{animation:"chestOpen 0.8s ease"}}>
@@ -33,7 +33,7 @@ export function MysteryChest({ onComplete, onClose }) {
           <div style={{fontSize:11,color:rarityBg[item.rarity],textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:4,fontFamily:"var(--font-mono)"}}>{item.rarity}</div>
           <div style={{fontSize:22,fontWeight:800,color:"var(--text-primary)",marginBottom:4,fontFamily:"var(--font-heading)"}}>{item.name}</div>
           <div style={{fontSize:14,color:"var(--text-secondary)",marginBottom:20}}>{item.desc}</div>
-          <button onClick={()=>{onComplete(item);onClose();}} style={{padding:"12px 40px",background:`linear-gradient(135deg,${rarityBg[item.rarity]},${rarityBg[item.rarity]}cc)`,border:"none",borderRadius:12,color:"white",fontSize:15,fontWeight:600,cursor:"pointer"}}>Recoger</button>
+          <button onClick={()=>{onComplete(item);onClose();}} style={{padding:"12px 40px",background:`linear-gradient(135deg,${rarityBg[item.rarity]},${rarityBg[item.rarity]}cc)`,border:"none",borderRadius:"var(--radius-md)",color:"white",fontSize:15,fontWeight:600,cursor:"pointer"}}>Recoger</button>
         </div>
       )}
     </div>

@@ -43,7 +43,7 @@ export function BossBattle({ question, onComplete, onClose }) {
         <h2 style={{color:"var(--signal-wrong)",fontSize:28,fontWeight:900,margin:"0 0 4px",textShadow:"0 0 20px rgba(240,96,90,0.3)",fontFamily:"var(--font-heading)"}}>BOSS BATTLE</h2>
         <p style={{color:"var(--accent-300)",fontSize:16,margin:"0 0 8px"}}>Data Dragon te desafia</p>
         <p style={{color:"var(--text-secondary)",fontSize:13,margin:"0 0 24px"}}>Responde bien para atacar. Fallar castiga fuerte.</p>
-        <button onClick={()=>setPhase("fight")} style={{padding:"14px 48px",background:"var(--gradient-danger)",border:"none",borderRadius:14,color:"white",fontSize:16,fontWeight:700,cursor:"pointer",animation:"pulse 1s infinite",fontFamily:"var(--font-mono)"}}>LUCHAR</button>
+        <button onClick={()=>setPhase("fight")} style={{padding:"14px 48px",background:"var(--gradient-danger)",border:"none",borderRadius:"var(--radius-md)",color:"white",fontSize:16,fontWeight:700,cursor:"pointer",animation:"pulse 1s infinite",fontFamily:"var(--font-mono)"}}>LUCHAR</button>
       </div>
     </div>
   );
@@ -55,7 +55,7 @@ export function BossBattle({ question, onComplete, onClose }) {
         <div style={{fontSize:80,marginBottom:16}}>{bossHp<=0?"\uD83C\uDFC6":"\uD83D\uDC80"}</div>
         <h2 style={{color:bossHp<=0?"var(--accent-300)":"var(--signal-wrong)",fontSize:28,fontWeight:900,margin:"0 0 8px",fontFamily:"var(--font-heading)"}}>{bossHp<=0?"VICTORIA":"DERROTA"}</h2>
         <p style={{color:"var(--text-secondary)",fontSize:14,margin:"0 0 20px"}}>{bossHp<=0?"+500 XP de recompensa":"El dragon te ha vencido. Intenta de nuevo."}</p>
-        <button onClick={onClose} style={{padding:"12px 40px",background:"var(--gradient-practice)",border:"none",borderRadius:12,color:"white",fontSize:15,fontWeight:600,cursor:"pointer"}}>Continuar</button>
+        <button onClick={onClose} style={{padding:"12px 40px",background:"var(--gradient-practice)",border:"none",borderRadius:"var(--radius-md)",color:"white",fontSize:15,fontWeight:600,cursor:"pointer"}}>Continuar</button>
       </div>
     </div>
   );
@@ -74,13 +74,13 @@ export function BossBattle({ question, onComplete, onClose }) {
         </div>
       </div>
       <div style={{maxWidth:600,margin:"0 auto",width:"100%",flex:1}}>
-        <div style={{background:"var(--gradient-panel)",borderRadius:14,padding:18,border:"1px solid rgba(240,96,90,0.2)",marginBottom:12}}>
+        <div style={{background:"var(--gradient-panel)",borderRadius:"var(--radius-md)",padding:18,border:"1px solid rgba(240,96,90,0.2)",marginBottom:12}}>
           <p style={{margin:0,fontSize:14,lineHeight:1.6,color:"var(--text-primary)"}}>{question.question}</p>
         </div>
-        <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:12}}>
+        <div style={{display:"flex",flexDirection:"column",gap:"var(--space-sm)",marginBottom:12}}>
           {question.options.map((o,i)=>(
             <button key={i} onClick={()=>setSelected(i)} style={{
-              padding:"12px 16px",borderRadius:10,fontSize:13,textAlign:"left",cursor:"pointer",fontFamily:"inherit",lineHeight:1.4,
+              padding:"12px 16px",borderRadius:"var(--radius-sm)",fontSize:13,textAlign:"left",cursor:"pointer",fontFamily:"inherit",lineHeight:1.4,
               background:selected===i?"var(--info-soft)":"var(--surface-panel-muted)",
               border:selected===i?"2px solid var(--signal-info)":"1px solid var(--surface-line)",
               color:selected===i?"var(--signal-info)":"var(--text-primary)"
@@ -89,7 +89,7 @@ export function BossBattle({ question, onComplete, onClose }) {
         </div>
         <button onClick={attack} disabled={selected===null} style={{
           width:"100%",padding:"13px",background:selected!==null?"var(--gradient-danger)":"var(--text-muted)",
-          border:"none",borderRadius:12,color:"white",fontSize:15,fontWeight:700,
+          border:"none",borderRadius:"var(--radius-md)",color:"white",fontSize:15,fontWeight:700,
           cursor:selected!==null?"pointer":"not-allowed",opacity:selected!==null?1:0.5,fontFamily:"var(--font-mono)"
         }}>{"\u2694\uFE0F"} ATACAR</button>
       </div>

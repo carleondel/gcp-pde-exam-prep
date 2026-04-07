@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 
 export function AchievementPopup({ achievement, onClose }) {
-  useEffect(()=>{const t=setTimeout(onClose,3500);return()=>clearTimeout(t);},[]);
+  useEffect(()=>{const t=setTimeout(onClose,3500);return()=>clearTimeout(t);},[onClose]);
   return <div style={{
     position:"fixed",top:20,left:"50%",transform:"translateX(-50%)",zIndex:1500,
     background:"var(--gradient-panel-strong)",border:"2px solid var(--accent-400)",
-    borderRadius:16,padding:"14px 24px",display:"flex",alignItems:"center",gap:12,
+    borderRadius:"var(--radius-lg)",padding:"14px 24px",display:"flex",alignItems:"center",gap:"var(--space-md)",
     boxShadow:"0 8px 40px rgba(212,147,10,0.24)",animation:"slideDown 0.5s ease"
   }}>
     <span style={{fontSize:32}}>{achievement.icon}</span>

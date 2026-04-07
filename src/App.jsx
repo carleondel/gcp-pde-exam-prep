@@ -1005,11 +1005,11 @@ function App() {
   }
 
   const renderSummaryCards = () => (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginBottom: 16 }}>
-      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 20, padding: 16, boxShadow: "var(--shadow-card)" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "var(--space-md)", marginBottom: 16 }}>
+      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 16, boxShadow: "var(--shadow-card)" }}>
         <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Rango</div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--primary-soft)", fontSize: 24, boxShadow: "var(--shadow-glow)" }}>
+          <div style={{ width: 44, height: 44, borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--primary-soft)", fontSize: 24, boxShadow: "var(--shadow-glow)" }}>
             {rankState.current.icon}
           </div>
           <div style={{ minWidth: 0 }}>
@@ -1018,13 +1018,13 @@ function App() {
           </div>
         </div>
       </div>
-      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 20, padding: 16, boxShadow: "var(--shadow-card)" }}>
+      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 16, boxShadow: "var(--shadow-card)" }}>
         <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Siguiente rango</div>
         {rankState.next ? (
           <>
             <div style={{ marginTop: 8, fontSize: 17, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>{rankState.next.icon} {rankState.next.name}</div>
-            <div style={{ marginTop: 8, height: 6, background: "var(--surface-line)", borderRadius: 999, overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${rankState.progress}%`, background: `linear-gradient(90deg, ${rankState.current.color}, ${rankState.next.color})`, borderRadius: 999 }} />
+            <div style={{ marginTop: 8, height: 6, background: "var(--surface-line)", borderRadius: "var(--radius-pill)", overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${rankState.progress}%`, background: `linear-gradient(90deg, ${rankState.current.color}, ${rankState.next.color})`, borderRadius: "var(--radius-pill)" }} />
             </div>
             <div style={{ marginTop: 8, fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{rankState.next.minXP - progress.xp} XP restantes</div>
           </>
@@ -1032,14 +1032,14 @@ function App() {
           <div style={{ marginTop: 8, fontSize: 14, color: "var(--highlight)", fontWeight: 700 }}>Rango máximo alcanzado.</div>
         )}
       </div>
-      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 20, padding: 16, boxShadow: "var(--shadow-card)" }}>
+      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 16, boxShadow: "var(--shadow-card)" }}>
         <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Inventario</div>
         <div style={{ marginTop: 8, fontSize: 22, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>
           {progress.inventory.shields + progress.inventory.fiftyFifty + progress.inventory.hints + progress.inventory.skips + progress.inventory.doubleXP + progress.inventory.scratchCards + progress.inventory.chestKeys + progress.inventory.bossKeys + progress.inventory.wheelSpins}
         </div>
         <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)" }}>{achievementSet.size} logros desbloqueados</div>
       </div>
-      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 20, padding: 16, boxShadow: "var(--shadow-card)" }}>
+      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 16, boxShadow: "var(--shadow-card)" }}>
         <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Peor rendimiento</div>
         {weakTopics.length ? (
           <>
@@ -1054,7 +1054,7 @@ function App() {
                 marginTop: 10,
                 padding: "10px 12px",
                 border: "1px solid var(--wrong-soft)",
-                borderRadius: 12,
+                borderRadius: "var(--radius-md)",
                 background: "var(--wrong-soft)",
                 color: "var(--signal-wrong)",
                 fontSize: 12,
@@ -1111,7 +1111,7 @@ function App() {
       {showAch && <AchievementPopup achievement={showAch} onClose={() => setShowAch(null)} />}
       <div style={{ maxWidth: 1080, margin: "0 auto", padding: "36px 20px 56px" }}>
         <div style={{ textAlign: "center", marginBottom: 26 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 14, padding: "12px 18px", borderRadius: 999, marginBottom: 18, background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)", boxShadow: "var(--shadow-card)" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 14, padding: "12px 18px", borderRadius: "var(--radius-pill)", marginBottom: 18, background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)", boxShadow: "var(--shadow-card)" }}>
             <img src={googleCloudLogo} alt="Google Cloud" style={{ height: 24, width: "auto", opacity: 0.92 }} />
             <span style={{ width: 1, height: 18, background: "var(--surface-line-strong)" }} />
             <span style={{ fontSize: 12, color: "var(--text-primary)", letterSpacing: 1, textTransform: "uppercase", fontWeight: 700, fontFamily: "var(--font-mono)" }}>Professional Data Engineer</span>
@@ -1122,8 +1122,8 @@ function App() {
 
         {renderSummaryCards()}
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12, marginBottom: 18 }}>
-          <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 20, padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "var(--space-md)", marginBottom: 18 }}>
+          <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)" }}>
             <div>
               <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Racha diaria</div>
               <div style={{ marginTop: 6, fontSize: 17, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>
@@ -1136,26 +1136,26 @@ function App() {
             </div>
           </div>
 
-          <div style={{ background: dailyDone ? "var(--correct-soft)" : "var(--accent-soft)", border: `1px solid ${dailyDone ? "var(--correct-soft)" : "var(--accent-medium)"}`, borderRadius: 20, padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ background: dailyDone ? "var(--correct-soft)" : "var(--accent-soft)", border: `1px solid ${dailyDone ? "var(--correct-soft)" : "var(--accent-medium)"}`, borderRadius: "var(--radius-xl)", padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)" }}>
             <div>
               <div style={{ fontSize: 11, color: dailyDone ? "var(--signal-correct)" : "var(--accent-300)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Reto diario</div>
               <div style={{ marginTop: 6, fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>
                 {dailyDone ? "Completado" : `${DAILY_CHALLENGE_COUNT} preguntas · +${DAILY_CHALLENGE_BONUS_XP} XP`}
               </div>
             </div>
-            {!dailyDone && <button onClick={startDailyChallenge} style={{ padding: "10px 14px", border: "none", borderRadius: 12, background: "var(--gradient-mock)", color: "white", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Iniciar reto</button>}
+            {!dailyDone && <button onClick={startDailyChallenge} style={{ padding: "10px 14px", border: "none", borderRadius: "var(--radius-md)", background: "var(--gradient-mock)", color: "white", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Iniciar reto</button>}
           </div>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 14, marginBottom: 18, alignItems: "start" }}>
-          <div style={{ background: "var(--gradient-panel-strong)", border: "1px solid var(--primary-medium)", borderRadius: 28, padding: 24, boxShadow: "var(--shadow-elevated), var(--shadow-glow)" }}>
+          <div style={{ background: "var(--gradient-panel-strong)", border: "1px solid var(--primary-medium)", borderRadius: "var(--radius-2xl)", padding: 24, boxShadow: "var(--shadow-elevated), var(--shadow-glow)" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: 12, color: "var(--primary-400)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Practicar</div>
                 <div style={{ fontSize: 28, fontWeight: 800, marginTop: 4, fontFamily: "var(--font-heading)" }}>Sesión a medida</div>
                 <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 6 }}>Control directo de fuente, orden y cantidad.</div>
               </div>
-              <div style={{ padding: "8px 14px", borderRadius: 999, background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Feedback inmediato</div>
+              <div style={{ padding: "8px 14px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Feedback inmediato</div>
             </div>
             <div style={{ marginBottom: 16 }}>
               <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Fuente</div>
@@ -1176,7 +1176,7 @@ function App() {
                       }}
                       style={{
                         padding: "14px 14px",
-                        borderRadius: 18,
+                        borderRadius: "var(--radius-lg)",
                         border: active ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
                         background: active ? "linear-gradient(180deg, var(--primary-soft), var(--surface-panel-muted))" : "var(--surface-panel-muted)",
                         color: option.disabled ? "var(--text-muted)" : "var(--text-primary)",
@@ -1186,9 +1186,9 @@ function App() {
                         transition: "all var(--duration-normal) var(--ease-out)",
                       }}
                     >
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 6 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "var(--space-md)", marginBottom: 6 }}>
                         <span style={{ fontSize: 14, fontWeight: 800, fontFamily: "var(--font-heading)" }}>{PRACTICE_SOURCE_META[option.key].label}</span>
-                        <span style={{ padding: "4px 8px", borderRadius: 999, background: "var(--bg-primary)", color: option.disabled ? "var(--text-tertiary)" : "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>
+                        <span style={{ padding: "4px 8px", borderRadius: "var(--radius-pill)", background: "var(--bg-primary)", color: option.disabled ? "var(--text-tertiary)" : "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>
                           {option.badge}
                         </span>
                       </div>
@@ -1206,11 +1206,11 @@ function App() {
                 <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Orden</div>
                 <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{practiceSource === "topics" ? "Configurable" : "Aplicado al bloque cargado"}</div>
               </div>
-              <div style={{ display: "flex", gap: 8 }}>
+              <div style={{ display: "flex", gap: "var(--space-sm)" }}>
                 {["random", "sequential", "recent-desc"].map((order) => (
                   <button key={order} onClick={() => setPracticeOrder(order)} style={{
                     padding: "10px 14px",
-                    borderRadius: 12,
+                    borderRadius: "var(--radius-md)",
                     border: practiceOrder === order ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
                     background: practiceOrder === order ? "var(--primary-soft)" : "var(--surface-panel-muted)",
                     color: practiceOrder === order ? "var(--primary-400)" : "var(--text-secondary)",
@@ -1233,7 +1233,7 @@ function App() {
                     {selectedTopics.size === TOPICS.length ? "Deseleccionar todo" : "Seleccionar todo"}
                   </button>
                 </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-sm)", marginBottom: 8 }}>
                   {TOPICS.map((topic) => (
                     <button key={topic} onClick={() => {
                       const next = new Set(selectedTopics);
@@ -1246,7 +1246,7 @@ function App() {
                       setPracticeMessage(`Solo ${topic}.`);
                     }} style={{
                       padding: "8px 12px",
-                      borderRadius: 999,
+                      borderRadius: "var(--radius-pill)",
                       border: selectedTopics.has(topic) ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
                       background: selectedTopics.has(topic) ? "var(--primary-soft)" : "var(--surface-panel-muted)",
                       color: selectedTopics.has(topic) ? "var(--primary-400)" : "var(--text-secondary)",
@@ -1263,13 +1263,13 @@ function App() {
             )}
 
             {practiceSource !== "topics" && (
-              <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: 18, background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+              <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: "var(--radius-lg)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: "var(--space-md)", alignItems: "center" }}>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>{practiceSummary.title}</div>
                     <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.45 }}>{practiceSummary.subtitle}</div>
                   </div>
-                  <button onClick={() => setPracticeSource("topics")} style={{ border: "1px solid var(--surface-line)", borderRadius: 12, padding: "9px 12px", background: "var(--bg-primary)", color: "var(--text-primary)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                  <button onClick={() => setPracticeSource("topics")} style={{ border: "1px solid var(--surface-line)", borderRadius: "var(--radius-md)", padding: "9px 12px", background: "var(--bg-primary)", color: "var(--text-primary)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                     Volver a dominio
                   </button>
                 </div>
@@ -1283,7 +1283,7 @@ function App() {
                   {showCustomLimit ? "Ocultar personalización" : "Personalizar"}
                 </button>
               </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: showCustomLimit ? 10 : 0 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-sm)", marginBottom: showCustomLimit ? 10 : 0 }}>
                 {PRACTICE_PRESETS.map((preset) => {
                   const disabled = !hasPracticeQuestions || preset > maxPracticeCount;
                   const active = effectivePracticeLimit === preset && !showCustomLimit;
@@ -1298,7 +1298,7 @@ function App() {
                       }}
                       style={{
                         padding: "10px 14px",
-                        borderRadius: 12,
+                        borderRadius: "var(--radius-md)",
                         border: active ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
                         background: active ? "var(--primary-soft)" : "var(--surface-panel-muted)",
                         color: disabled ? "var(--text-muted)" : active ? "var(--primary-400)" : "var(--text-secondary)",
@@ -1322,7 +1322,7 @@ function App() {
                   }}
                   style={{
                     padding: "10px 14px",
-                    borderRadius: 12,
+                    borderRadius: "var(--radius-md)",
                     border: effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
                     background: effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "var(--primary-soft)" : "var(--surface-panel-muted)",
                     color: hasPracticeQuestions ? (effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "var(--primary-400)" : "var(--text-primary)") : "var(--text-muted)",
@@ -1352,7 +1352,7 @@ function App() {
                     style={{
                       width: 110,
                       padding: "10px 12px",
-                      borderRadius: 12,
+                      borderRadius: "var(--radius-md)",
                       border: "1px solid var(--surface-line)",
                       background: "var(--bg-primary)",
                       color: "var(--text-primary)",
@@ -1366,7 +1366,7 @@ function App() {
               )}
             </div>
 
-            <div style={{ marginBottom: 18, padding: "16px 18px", borderRadius: 18, background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
+            <div style={{ marginBottom: 18, padding: "16px 18px", borderRadius: "var(--radius-lg)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
               <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 12, fontFamily: "var(--font-mono)" }}>Resumen</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 10 }}>
                 <div>
@@ -1388,29 +1388,29 @@ function App() {
             </div>
 
             {practiceMessage && (
-              <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: 14, background: "var(--info-soft)", border: "1px solid var(--signal-info)", color: "var(--signal-info)", fontSize: 12, lineHeight: 1.45 }}>
+              <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: "var(--radius-md)", background: "var(--info-soft)", border: "1px solid var(--signal-info)", color: "var(--signal-info)", fontSize: 12, lineHeight: 1.45 }}>
                 {practiceMessage}
               </div>
             )}
 
             {!hasPracticeQuestions && (
-              <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: 14, background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)", color: "var(--text-secondary)", fontSize: 12, lineHeight: 1.45 }}>
+              <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: "var(--radius-md)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)", color: "var(--text-secondary)", fontSize: 12, lineHeight: 1.45 }}>
                 {PRACTICE_SOURCE_META[practiceSource].empty}
               </div>
             )}
 
-            <button onClick={startPractice} disabled={!hasPracticeQuestions} style={{ width: "100%", padding: "16px 18px", border: "none", borderRadius: 18, background: hasPracticeQuestions ? "var(--gradient-practice)" : "var(--text-muted)", color: "white", fontSize: 15, fontWeight: 800, cursor: hasPracticeQuestions ? "pointer" : "not-allowed", fontFamily: "var(--font-mono)", boxShadow: hasPracticeQuestions ? "var(--shadow-glow)" : "none" }}>
+            <button onClick={startPractice} disabled={!hasPracticeQuestions} style={{ width: "100%", padding: "16px 18px", border: "none", borderRadius: "var(--radius-lg)", background: hasPracticeQuestions ? "var(--gradient-practice)" : "var(--text-muted)", color: "white", fontSize: 15, fontWeight: 800, cursor: hasPracticeQuestions ? "pointer" : "not-allowed", fontFamily: "var(--font-mono)", boxShadow: hasPracticeQuestions ? "var(--shadow-glow)" : "none" }}>
               {practiceCtaLabel}
             </button>
             <div style={{ marginTop: 10, fontSize: 12, color: "var(--text-tertiary)", textAlign: "center" }}>Ayudas y progreso activo solo en práctica.</div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--accent-medium)", borderRadius: 24, padding: 24, boxShadow: "var(--shadow-card)" }}>
+            <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--accent-medium)", borderRadius: "var(--radius-2xl)", padding: 24, boxShadow: "var(--shadow-card)" }}>
               <div style={{ fontSize: 12, color: "var(--accent-300)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Simulacro</div>
               <div style={{ fontSize: 24, fontWeight: 800, margin: "6px 0 8px", fontFamily: "var(--font-heading)" }}>50 preguntas · 90 min</div>
               <p style={{ margin: "0 0 16px", color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.6 }}>Sin ayudas. Sin recompensas. {PASS_PERCENT}% para aprobar.</p>
-              <button onClick={startMock} style={{ width: "100%", padding: "16px 18px", border: "none", borderRadius: 16, background: "var(--gradient-mock)", color: "white", fontSize: 15, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+              <button onClick={startMock} style={{ width: "100%", padding: "16px 18px", border: "none", borderRadius: "var(--radius-lg)", background: "var(--gradient-mock)", color: "white", fontSize: 15, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
                 Iniciar simulacro
               </button>
             </div>
@@ -1419,12 +1419,12 @@ function App() {
               setSession(savedMockSession);
               setScreen("quiz");
               resetQuestionUi();
-            }} style={{ padding: "16px 18px", borderRadius: 20, border: "1px solid var(--correct-soft)", background: "var(--correct-soft)", color: "var(--signal-correct)", fontSize: 15, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+            }} style={{ padding: "16px 18px", borderRadius: "var(--radius-xl)", border: "1px solid var(--correct-soft)", background: "var(--correct-soft)", color: "var(--signal-correct)", fontSize: 15, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
               Continuar simulacro activo
             </button>}
 
             {progress.mockHistory.length > 0 && (
-              <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 24, padding: 20 }}>
+              <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-2xl)", padding: 20 }}>
                 <div style={{ fontSize: 11, color: "var(--accent-300)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Historial</div>
                 {progress.mockHistory.slice(0, 5).map((entry, i) => (
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < Math.min(progress.mockHistory.length, 5) - 1 ? "1px solid var(--surface-line)" : "none" }}>
@@ -1435,22 +1435,22 @@ function App() {
               </div>
             )}
 
-            <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 24, padding: 20 }}>
+            <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-2xl)", padding: 20 }}>
               <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Inventario y logros</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-                {progress.inventory.shields > 0 && <span style={{ background: "var(--correct-soft)", color: "var(--signal-correct)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>🛡️ {progress.inventory.shields}</span>}
-                {progress.inventory.fiftyFifty > 0 && <span style={{ background: "var(--info-soft)", color: "var(--signal-info)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>✂️ {progress.inventory.fiftyFifty}</span>}
-                {progress.inventory.hints > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>💡 {progress.inventory.hints}</span>}
-                {progress.inventory.skips > 0 && <span style={{ background: "var(--primary-soft)", color: "var(--primary-400)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>⏭️ {progress.inventory.skips}</span>}
-                {progress.inventory.wheelSpins > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>🎰 {progress.inventory.wheelSpins}</span>}
-                {progress.inventory.scratchCards > 0 && <span style={{ background: "var(--primary-soft)", color: "var(--primary-400)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>🎫 {progress.inventory.scratchCards}</span>}
-                {progress.inventory.chestKeys > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>📦 {progress.inventory.chestKeys}</span>}
-                {progress.inventory.bossKeys > 0 && <span style={{ background: "var(--wrong-soft)", color: "var(--signal-wrong)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>🗝️ {progress.inventory.bossKeys}</span>}
+                {progress.inventory.shields > 0 && <span style={{ background: "var(--correct-soft)", color: "var(--signal-correct)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>🛡️ {progress.inventory.shields}</span>}
+                {progress.inventory.fiftyFifty > 0 && <span style={{ background: "var(--info-soft)", color: "var(--signal-info)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>✂️ {progress.inventory.fiftyFifty}</span>}
+                {progress.inventory.hints > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>💡 {progress.inventory.hints}</span>}
+                {progress.inventory.skips > 0 && <span style={{ background: "var(--primary-soft)", color: "var(--primary-400)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>⏭️ {progress.inventory.skips}</span>}
+                {progress.inventory.wheelSpins > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>🎰 {progress.inventory.wheelSpins}</span>}
+                {progress.inventory.scratchCards > 0 && <span style={{ background: "var(--primary-soft)", color: "var(--primary-400)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>🎫 {progress.inventory.scratchCards}</span>}
+                {progress.inventory.chestKeys > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>📦 {progress.inventory.chestKeys}</span>}
+                {progress.inventory.bossKeys > 0 && <span style={{ background: "var(--wrong-soft)", color: "var(--signal-wrong)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>🗝️ {progress.inventory.bossKeys}</span>}
                 {!totalPowerups && <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>Sin items acumulados.</span>}
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                 {ACHIEVEMENTS.map((achievement) => (
-                  <div key={achievement.id} title={`${achievement.name}: ${achievement.desc}`} style={{ width: 34, height: 34, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, background: achievementSet.has(achievement.id) ? "var(--accent-soft)" : "rgba(139,149,168,0.06)", border: achievementSet.has(achievement.id) ? "1px solid var(--accent-medium)" : "1px solid var(--surface-line)", opacity: achievementSet.has(achievement.id) ? 1 : 0.22 }}>
+                  <div key={achievement.id} title={`${achievement.name}: ${achievement.desc}`} style={{ width: 34, height: 34, borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, background: achievementSet.has(achievement.id) ? "var(--accent-soft)" : "rgba(139,149,168,0.06)", border: achievementSet.has(achievement.id) ? "1px solid var(--accent-medium)" : "1px solid var(--surface-line)", opacity: achievementSet.has(achievement.id) ? 1 : 0.22 }}>
                     {achievementSet.has(achievement.id) ? achievement.icon : "🔒"}
                   </div>
                 ))}
@@ -1499,7 +1499,7 @@ function App() {
       <Confetti active={resultPayload.mode === "mock" ? summary.passed : summary.percent >= 80} />
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 20px 56px" }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div style={{ display: "inline-flex", gap: 8, alignItems: "center", marginBottom: 12, padding: "8px 14px", borderRadius: 999, background: resultPayload.mode === "mock" ? "var(--accent-soft)" : resultPayload.mode === "daily" ? "var(--correct-soft)" : "var(--primary-soft)", color: resultPayload.mode === "mock" ? "var(--accent-300)" : resultPayload.mode === "daily" ? "var(--signal-correct)" : "var(--primary-400)", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
+          <div style={{ display: "inline-flex", gap: "var(--space-sm)", alignItems: "center", marginBottom: 12, padding: "8px 14px", borderRadius: "var(--radius-pill)", background: resultPayload.mode === "mock" ? "var(--accent-soft)" : resultPayload.mode === "daily" ? "var(--correct-soft)" : "var(--primary-soft)", color: resultPayload.mode === "mock" ? "var(--accent-300)" : resultPayload.mode === "daily" ? "var(--signal-correct)" : "var(--primary-400)", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
             {resultPayload.mode === "mock" ? "Simulacro" : resultPayload.mode === "daily" ? "Reto diario" : "Practicar"}
           </div>
           <h2 style={{ margin: "0 0 8px", fontSize: 34, fontWeight: 900, fontFamily: "var(--font-heading)" }}>{headline}</h2>
@@ -1511,26 +1511,26 @@ function App() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 18 }}>
-          <div style={{ background: "var(--gradient-panel)", borderRadius: 18, padding: 16, border: "1px solid var(--surface-line)" }}>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-lg)", padding: 16, border: "1px solid var(--surface-line)" }}>
             <div style={{ fontSize: 24, fontWeight: 900, color: resultPayload.mode === "mock" ? (summary.passed ? "var(--signal-correct)" : "var(--signal-wrong)") : "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{summary.percent}%</div>
             <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>Puntuación</div>
           </div>
-          <div style={{ background: "var(--gradient-panel)", borderRadius: 18, padding: 16, border: "1px solid var(--surface-line)" }}>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-lg)", padding: 16, border: "1px solid var(--surface-line)" }}>
             <div style={{ fontSize: 24, fontWeight: 900, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? formatDuration(summary.elapsedSec) : `+${summary.xpGained}`}</div>
             <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Tiempo usado" : "XP ganada"}</div>
           </div>
-          <div style={{ background: "var(--gradient-panel)", borderRadius: 18, padding: 16, border: "1px solid var(--surface-line)" }}>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-lg)", padding: 16, border: "1px solid var(--surface-line)" }}>
             <div style={{ fontSize: 24, fontWeight: 900, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? summary.questionCount : `x${summary.maxStreak}`}</div>
             <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Preguntas" : "Racha máxima"}</div>
           </div>
-          <div style={{ background: "var(--gradient-panel)", borderRadius: 18, padding: 16, border: "1px solid var(--surface-line)" }}>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-lg)", padding: 16, border: "1px solid var(--surface-line)" }}>
             <div style={{ fontSize: 24, fontWeight: 900, color: resultPayload.mode === "mock" ? (summary.passed ? "var(--signal-correct)" : "var(--signal-wrong)") : "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? (summary.passed ? "Apto" : "No apto") : history.length}</div>
             <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Estado" : "Preguntas vistas"}</div>
           </div>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14, marginBottom: 18 }}>
-          <div style={{ background: "var(--gradient-panel)", borderRadius: 20, padding: 20, border: "1px solid var(--surface-line)" }}>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-xl)", padding: 20, border: "1px solid var(--surface-line)" }}>
             <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, fontFamily: "var(--font-heading)" }}>Rendimiento por tema</div>
             {Object.entries(topicStats).sort((a, b) => (a[1].correct / a[1].total) - (b[1].correct / b[1].total)).map(([topic, stats]) => {
               const percent = Math.round((stats.correct / stats.total) * 100);
@@ -1539,14 +1539,14 @@ function App() {
                   <span style={{ color: "var(--text-primary)" }}>{topic}</span>
                   <span style={{ color: percent >= 70 ? "var(--signal-correct)" : "var(--signal-wrong)", fontWeight: 700, fontFamily: "var(--font-mono)" }}>{stats.correct}/{stats.total}</span>
                 </div>
-                <div style={{ height: 6, background: "var(--surface-line)", borderRadius: 999, overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${percent}%`, background: percent >= 70 ? "var(--signal-correct)" : "var(--accent-300)", borderRadius: 999 }} />
+                <div style={{ height: 6, background: "var(--surface-line)", borderRadius: "var(--radius-pill)", overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${percent}%`, background: percent >= 70 ? "var(--signal-correct)" : "var(--accent-300)", borderRadius: "var(--radius-pill)" }} />
                 </div>
               </div>;
             })}
           </div>
 
-          <div style={{ background: "var(--gradient-panel)", borderRadius: 20, padding: 20, border: "1px solid var(--surface-line)", maxHeight: 420, overflowY: "auto" }}>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-xl)", padding: 20, border: "1px solid var(--surface-line)", maxHeight: 420, overflowY: "auto" }}>
             <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, fontFamily: "var(--font-heading)" }}>Revisión</div>
             {history.map((entry, index) => {
               const correctLabels = getCorrectOptionIndexes(entry.question).map((optionIndex) => entry.question.options[optionIndex].slice(0, 2)).join(", ");
@@ -1567,8 +1567,8 @@ function App() {
         </div>
 
         <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={goToMenu} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: 16, background: "var(--gradient-practice)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Volver al menú</button>
-          <button onClick={() => resultPayload.mode === "mock" ? startMock() : startPractice()} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: 16, background: resultPayload.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-success)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+          <button onClick={goToMenu} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: "var(--radius-lg)", background: "var(--gradient-practice)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Volver al menú</button>
+          <button onClick={() => resultPayload.mode === "mock" ? startMock() : startPractice()} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: "var(--radius-lg)", background: resultPayload.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-success)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
             {resultPayload.mode === "mock" ? "Nuevo simulacro" : "Seguir practicando"}
           </button>
         </div>
@@ -1590,27 +1590,27 @@ function App() {
 
     <div style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(10, 14, 23, 0.88)", borderBottom: "1px solid var(--surface-line)", backdropFilter: "blur(14px)" }}>
       <div style={{ maxWidth: 920, margin: "0 auto", padding: "12px 20px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 8 }}>
-          <button onClick={goToMenu} style={{ padding: "8px 12px", borderRadius: 12, border: "1px solid var(--surface-line)", background: "var(--surface-panel-muted)", color: "var(--text-primary)", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-mono)" }}>← Menú</button>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            <span style={{ padding: "6px 10px", borderRadius: 999, background: session?.mode === "mock" ? "var(--accent-soft)" : "var(--primary-soft)", color: session?.mode === "mock" ? "var(--accent-300)" : "var(--primary-400)", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)", marginBottom: 8 }}>
+          <button onClick={goToMenu} style={{ padding: "8px 12px", borderRadius: "var(--radius-md)", border: "1px solid var(--surface-line)", background: "var(--surface-panel-muted)", color: "var(--text-primary)", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-mono)" }}>← Menú</button>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <span style={{ padding: "6px 10px", borderRadius: "var(--radius-pill)", background: session?.mode === "mock" ? "var(--accent-soft)" : "var(--primary-soft)", color: session?.mode === "mock" ? "var(--accent-300)" : "var(--primary-400)", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
               {session?.mode === "mock" ? "Simulacro" : "Practicar"}
             </span>
             {practiceMode && session.streak >= 2 && <span style={{ fontSize: 12, color: session.streak >= 5 ? "var(--accent-300)" : "var(--primary-400)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>x{session.streak}</span>}
             {practiceMode && progress.inventory.mult > 1 && <span style={{ fontSize: 12, color: "var(--signal-correct)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>mult x{progress.inventory.mult} ({progress.inventory.multDur})</span>}
-            {session?.mode === "mock" && <span style={{ padding: "6px 10px", borderRadius: 12, background: mockRemainingSec < 300 ? "var(--wrong-soft)" : "var(--surface-line)", color: mockRemainingSec < 300 ? "var(--signal-wrong)" : "var(--text-primary)", fontSize: 13, fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(mockRemainingSec)}</span>}
+            {session?.mode === "mock" && <span style={{ padding: "6px 10px", borderRadius: "var(--radius-md)", background: mockRemainingSec < 300 ? "var(--wrong-soft)" : "var(--surface-line)", color: mockRemainingSec < 300 ? "var(--signal-wrong)" : "var(--text-primary)", fontSize: 13, fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(mockRemainingSec)}</span>}
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 132 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", minWidth: 132 }}>
             <span style={{ fontSize: 20 }}>{rankState.current.icon}</span>
             <div>
               <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{rankState.current.name}</div>
               <div style={{ fontSize: 12, color: "var(--accent-300)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>{progress.xp} XP</div>
             </div>
           </div>
-          <div style={{ flex: 1, height: 8, background: "var(--surface-line)", borderRadius: 999, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${((session.currentIndex + 1) / currentQuestions.length) * 100}%`, background: session?.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-practice)", borderRadius: 999, transition: "width 0.25s" }} />
+          <div style={{ flex: 1, height: 8, background: "var(--surface-line)", borderRadius: "var(--radius-pill)", overflow: "hidden" }}>
+            <div style={{ height: "100%", width: `${((session.currentIndex + 1) / currentQuestions.length) * 100}%`, background: session?.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-practice)", borderRadius: "var(--radius-pill)", transition: "width 0.25s" }} />
           </div>
           <div style={{ minWidth: 100, textAlign: "right", fontSize: 12, color: "var(--text-primary)", fontWeight: 700, fontFamily: "var(--font-mono)" }}>
             {session.currentIndex + 1}/{currentQuestions.length}
@@ -1621,58 +1621,58 @@ function App() {
 
     <div ref={qRef} style={{ maxWidth: 920, margin: "0 auto", padding: "24px 20px 40px" }}>
       {practiceMode && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, marginBottom: 14 }}>
-          <div style={{ background: "var(--surface-panel)", borderRadius: 18, border: "1px solid var(--surface-line)", padding: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "var(--space-md)", marginBottom: 14 }}>
+          <div style={{ background: "var(--surface-panel)", borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", padding: 14 }}>
             <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 }}>Feedback inmediato • recompensas activas • ayudas disponibles</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-              <span style={{ padding: "4px 10px", borderRadius: 999, background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Correctas {session.score}/{session.answered}</span>
-              {pendingRewardCount > 0 && <span style={{ padding: "4px 10px", borderRadius: 999, background: "var(--accent-soft)", color: "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Pendientes {pendingRewardCount}</span>}
-              {progress.inventory.shields > 0 && <span style={{ padding: "4px 10px", borderRadius: 999, background: "var(--correct-soft)", color: "var(--signal-correct)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>🛡️ {progress.inventory.shields}</span>}
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", flexWrap: "wrap" }}>
+              <span style={{ padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Correctas {session.score}/{session.answered}</span>
+              {pendingRewardCount > 0 && <span style={{ padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "var(--accent-soft)", color: "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Pendientes {pendingRewardCount}</span>}
+              {progress.inventory.shields > 0 && <span style={{ padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "var(--correct-soft)", color: "var(--signal-correct)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>🛡️ {progress.inventory.shields}</span>}
             </div>
           </div>
-          {practiceInventoryButtons && <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            {progress.inventory.fiftyFifty > 0 && <button onClick={use5050} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--signal-info)", background: "var(--info-soft)", color: "var(--signal-info)", cursor: "pointer" }}>✂️</button>}
-            {progress.inventory.hints > 0 && <button onClick={useHint} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>💡</button>}
-            {progress.inventory.skips > 0 && <button onClick={useSkip} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--primary-400)", background: "var(--primary-soft)", color: "var(--primary-400)", cursor: "pointer" }}>⏭️</button>}
-            {progress.inventory.wheelSpins > 0 && <button onClick={() => useInventoryReward("wheel")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>🎰</button>}
-            {progress.inventory.scratchCards > 0 && <button onClick={() => useInventoryReward("scratch")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--primary-400)", background: "var(--primary-soft)", color: "var(--primary-400)", cursor: "pointer" }}>🎫</button>}
-            {progress.inventory.chestKeys > 0 && <button onClick={() => useInventoryReward("chest")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>📦</button>}
-            {progress.inventory.bossKeys > 0 && <button onClick={() => useInventoryReward("boss")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--signal-wrong)", background: "var(--wrong-soft)", color: "var(--signal-wrong)", cursor: "pointer" }}>🗝️</button>}
+          {practiceInventoryButtons && <div style={{ display: "flex", gap: "var(--space-sm)", flexWrap: "wrap", justifyContent: "flex-end" }}>
+            {progress.inventory.fiftyFifty > 0 && <button onClick={use5050} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--signal-info)", background: "var(--info-soft)", color: "var(--signal-info)", cursor: "pointer" }}>✂️</button>}
+            {progress.inventory.hints > 0 && <button onClick={useHint} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>💡</button>}
+            {progress.inventory.skips > 0 && <button onClick={useSkip} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--primary-400)", background: "var(--primary-soft)", color: "var(--primary-400)", cursor: "pointer" }}>⏭️</button>}
+            {progress.inventory.wheelSpins > 0 && <button onClick={() => useInventoryReward("wheel")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>🎰</button>}
+            {progress.inventory.scratchCards > 0 && <button onClick={() => useInventoryReward("scratch")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--primary-400)", background: "var(--primary-soft)", color: "var(--primary-400)", cursor: "pointer" }}>🎫</button>}
+            {progress.inventory.chestKeys > 0 && <button onClick={() => useInventoryReward("chest")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>📦</button>}
+            {progress.inventory.bossKeys > 0 && <button onClick={() => useInventoryReward("boss")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--signal-wrong)", background: "var(--wrong-soft)", color: "var(--signal-wrong)", cursor: "pointer" }}>🗝️</button>}
           </div>}
         </div>
       )}
 
       {session?.mode === "mock" && (
-        <div style={{ background: "var(--surface-panel)", borderRadius: 18, border: "1px solid var(--surface-line)", padding: 14, marginBottom: 14 }}>
+        <div style={{ background: "var(--surface-panel)", borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", padding: 14, marginBottom: 14 }}>
           <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 }}>Sin ayudas ni feedback inmediato. Las no respondidas al acabar el tiempo cuentan como incorrectas.</div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-sm)", flexWrap: "wrap" }}>
             <span style={{ fontSize: 13, color: "var(--text-primary)", fontWeight: 700 }}>Objetivo mínimo: {PASS_PERCENT}% • Apto/No apto</span>
             <span style={{ fontSize: 13, color: mockRemainingSec < 300 ? "var(--signal-wrong)" : "var(--accent-300)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(mockRemainingSec)} restantes</span>
           </div>
         </div>
       )}
 
-      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
-        <span style={{ padding: "5px 10px", borderRadius: 999, background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{currentQuestion.topic}</span>
-        <span style={{ padding: "5px 10px", borderRadius: 999, background: currentQuestion.difficulty === 3 ? "var(--wrong-soft)" : "var(--accent-soft)", color: currentQuestion.difficulty === 3 ? "var(--signal-wrong)" : "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{"★".repeat(currentQuestion.difficulty)}</span>
-        {currentQuestion.isRecent && <span style={{ padding: "5px 10px", borderRadius: 999, background: "var(--accent-soft)", color: "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Reciente #{currentQuestion.sourceQuestionNumber || currentQuestion.id}</span>}
-        {isMulti && <span style={{ padding: "5px 10px", borderRadius: 999, background: "var(--surface-panel-muted)", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Multi respuesta</span>}
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", flexWrap: "wrap", marginBottom: 14 }}>
+        <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{currentQuestion.topic}</span>
+        <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: currentQuestion.difficulty === 3 ? "var(--wrong-soft)" : "var(--accent-soft)", color: currentQuestion.difficulty === 3 ? "var(--signal-wrong)" : "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{"★".repeat(currentQuestion.difficulty)}</span>
+        {currentQuestion.isRecent && <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--accent-soft)", color: "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Reciente #{currentQuestion.sourceQuestionNumber || currentQuestion.id}</span>}
+        {isMulti && <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--surface-panel-muted)", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Multi respuesta</span>}
         {practiceMode && <button onClick={() => toggleBookmark(currentQuestion.id)} style={{ marginLeft: "auto", border: "none", background: "transparent", color: bookmarkSet.has(currentQuestion.id) ? "var(--accent-300)" : "var(--text-tertiary)", fontSize: 20, cursor: "pointer" }}>{bookmarkSet.has(currentQuestion.id) ? "★" : "☆"}</button>}
       </div>
 
       {showHint && practiceMode && (
-        <div style={{ background: "var(--accent-soft)", border: "1px solid var(--accent-medium)", borderRadius: 16, padding: "12px 16px", marginBottom: 14, color: "var(--accent-300)", fontSize: 13 }}>
+        <div style={{ background: "var(--accent-soft)", border: "1px solid var(--accent-medium)", borderRadius: "var(--radius-lg)", padding: "12px 16px", marginBottom: 14, color: "var(--accent-300)", fontSize: 13 }}>
           💡 Pista: {currentQuestion.explanation.split(".")[0]}.
         </div>
       )}
 
-      <div style={{ background: "var(--gradient-panel)", borderRadius: 24, border: "1px solid var(--surface-line)", padding: 24, boxShadow: "var(--shadow-elevated)" }}>
+      <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-2xl)", border: "1px solid var(--surface-line)", padding: 24, boxShadow: "var(--shadow-elevated)" }}>
         <div style={{ marginBottom: 18, fontSize: 19, fontWeight: 700, lineHeight: 1.6, color: "var(--text-primary)" }}>{currentQuestion.question}</div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
           {currentQuestion.options.map((option, index) => {
             if (hiddenOptions.has(index)) {
-              return <div key={index} style={{ padding: "14px 16px", borderRadius: 16, border: "1px dashed var(--surface-line)", background: "var(--surface-panel-muted)", color: "var(--text-muted)", fontStyle: "italic" }}>Opción eliminada</div>;
+              return <div key={index} style={{ padding: "14px 16px", borderRadius: "var(--radius-lg)", border: "1px dashed var(--surface-line)", background: "var(--surface-panel-muted)", color: "var(--text-muted)", fontStyle: "italic" }}>Opción eliminada</div>;
             }
 
             const isSelected = selectedAnswer instanceof Set ? selectedAnswer.has(index) : selectedAnswer === index;
@@ -1713,7 +1713,7 @@ function App() {
               } else {
                 setSelectedAnswer(index);
               }
-            }} style={{ padding: "15px 16px", borderRadius: 18, border, background, color, fontSize: 14, textAlign: "left", cursor: "pointer", lineHeight: 1.45, animation, transition: "all 0.18s ease" }}>
+            }} style={{ padding: "15px 16px", borderRadius: "var(--radius-lg)", border, background, color, fontSize: 14, textAlign: "left", cursor: "pointer", lineHeight: 1.45, animation, transition: "all 0.18s ease" }}>
               <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 {isMulti && <span style={{ width: 20, height: 20, borderRadius: 6, border: isSelected ? "2px solid currentColor" : "2px solid var(--surface-line-strong)", background: isSelected ? "currentColor" : "transparent", color: "var(--bg-primary)", fontSize: 10, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{isSelected ? "✓" : ""}</span>}
                 <span style={{ flex: 1 }}>{option}</span>
@@ -1725,20 +1725,20 @@ function App() {
 
         {practiceMode && showResult ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ background: currentEvaluation?.isCorrect ? "var(--correct-soft)" : "var(--wrong-soft)", border: `1px solid ${currentEvaluation?.isCorrect ? "var(--signal-correct)" : "var(--signal-wrong)"}`, borderRadius: 18, padding: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 8 }}>
+            <div style={{ background: currentEvaluation?.isCorrect ? "var(--correct-soft)" : "var(--wrong-soft)", border: `1px solid ${currentEvaluation?.isCorrect ? "var(--signal-correct)" : "var(--signal-wrong)"}`, borderRadius: "var(--radius-lg)", padding: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)", marginBottom: 8 }}>
                 <div style={{ fontSize: 14, fontWeight: 800, color: currentEvaluation?.isCorrect ? "var(--signal-correct)" : "var(--signal-wrong)" }}>{currentEvaluation?.isCorrect ? "Correcto" : "Incorrecto"}</div>
                 <div style={{ fontSize: 12, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>+{session.history[session.history.length - 1]?.xp || 0} XP</div>
               </div>
               <div style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.6 }}>{currentQuestion.explanation}</div>
             </div>
-            <button onClick={() => setShowDiscussion((value) => !value)} style={{ border: "1px solid var(--primary-medium)", background: "var(--primary-soft)", color: "var(--primary-400)", borderRadius: 14, padding: "10px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+            <button onClick={() => setShowDiscussion((value) => !value)} style={{ border: "1px solid var(--primary-medium)", background: "var(--primary-soft)", color: "var(--primary-400)", borderRadius: "var(--radius-md)", padding: "10px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
               {showDiscussion ? "Ocultar" : "Ver"} discusión ({currentQuestion.discussion.length})
             </button>
-            {showDiscussion && <div style={{ background: "var(--surface-panel)", borderRadius: 18, border: "1px solid var(--surface-line)", padding: 14 }}>
+            {showDiscussion && <div style={{ background: "var(--surface-panel)", borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", padding: 14 }}>
               {currentQuestion.discussion.map((entry, index) => (
                 <div key={`${entry.user}-${index}`} style={{ paddingBottom: index < currentQuestion.discussion.length - 1 ? 12 : 0, marginBottom: index < currentQuestion.discussion.length - 1 ? 12 : 0, borderBottom: index < currentQuestion.discussion.length - 1 ? "1px solid var(--surface-line)" : "none" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", marginBottom: 4 }}>
                     <div style={{ width: 26, height: 26, borderRadius: "50%", background: `hsl(${index * 110 + 210},65%,38%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800 }}>{entry.user[0]}</div>
                     <span style={{ fontSize: 12, color: "var(--text-primary)", fontWeight: 700 }}>{entry.user}</span>
                   </div>
@@ -1746,12 +1746,12 @@ function App() {
                 </div>
               ))}
             </div>}
-            <button onClick={openQueuedPracticeReward} style={{ padding: "14px 16px", border: "none", borderRadius: 16, background: pendingRewardCount ? "var(--gradient-mock)" : "var(--gradient-success)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+            <button onClick={openQueuedPracticeReward} style={{ padding: "14px 16px", border: "none", borderRadius: "var(--radius-lg)", background: pendingRewardCount ? "var(--gradient-mock)" : "var(--gradient-success)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
               {pendingRewardCount ? `Reclamar recompensa (${pendingRewardCount})` : session.currentIndex === currentQuestions.length - 1 ? "Ver resultados" : "Siguiente"} <span style={{ opacity: 0.5, fontSize: 11 }}>(Enter)</span>
             </button>
           </div>
         ) : (
-          <button onClick={submitCurrentAnswer} disabled={!canSubmitCurrent} style={{ width: "100%", padding: "15px 16px", border: "none", borderRadius: 16, background: canSubmitCurrent ? (session?.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-practice)") : "var(--text-muted)", color: "white", fontSize: 14, fontWeight: 800, cursor: canSubmitCurrent ? "pointer" : "not-allowed", opacity: canSubmitCurrent ? 1 : 0.55, fontFamily: "var(--font-mono)" }}>
+          <button onClick={submitCurrentAnswer} disabled={!canSubmitCurrent} style={{ width: "100%", padding: "15px 16px", border: "none", borderRadius: "var(--radius-lg)", background: canSubmitCurrent ? (session?.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-practice)") : "var(--text-muted)", color: "white", fontSize: 14, fontWeight: 800, cursor: canSubmitCurrent ? "pointer" : "not-allowed", opacity: canSubmitCurrent ? 1 : 0.55, fontFamily: "var(--font-mono)" }}>
             {session?.mode === "mock" ? "Guardar y continuar" : isMulti ? `Comprobar (${currentEvaluation?.selectedIndexes.length || 0}/${getCorrectOptionIndexes(currentQuestion).length})` : "Comprobar"} {canSubmitCurrent && <span style={{ opacity: 0.5, fontSize: 11 }}>(Enter)</span>}
           </button>
         )}

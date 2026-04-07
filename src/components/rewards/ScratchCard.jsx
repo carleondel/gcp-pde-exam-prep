@@ -46,10 +46,10 @@ export function ScratchCard({ onComplete, onClose }) {
   const rarityColors = { common:"var(--signal-info)", rare:"var(--primary-400)", epic:"var(--highlight)", legendary:"var(--accent-300)" };
 
   return <div style={{position:"fixed",inset:0,background:"var(--bg-overlay)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,backdropFilter:"blur(10px)"}}>
-    <div style={{background:"var(--gradient-panel-strong)",borderRadius:24,padding:32,textAlign:"center",border:"2px solid var(--primary-medium)",maxWidth:380,position:"relative",boxShadow:"var(--shadow-elevated)"}}>
+    <div style={{background:"var(--gradient-panel-strong)",borderRadius:"var(--radius-2xl)",padding:32,textAlign:"center",border:"2px solid var(--primary-medium)",maxWidth:380,position:"relative",boxShadow:"var(--shadow-elevated)"}}>
       <h2 style={{margin:"0 0 4px",fontSize:22,color:"var(--primary-400)",fontWeight:800,fontFamily:"var(--font-heading)"}}>{"\uD83C\uDF9F\uFE0F"} RASCA Y GANA</h2>
       <p style={{margin:"0 0 16px",color:"var(--text-secondary)",fontSize:13}}>Rasca la superficie para revelar tu premio</p>
-      <div style={{position:"relative",width:260,height:120,margin:"0 auto 16px",borderRadius:16,overflow:"hidden",border:"2px solid var(--surface-line-strong)"}}>
+      <div style={{position:"relative",width:260,height:120,margin:"0 auto 16px",borderRadius:"var(--radius-lg)",overflow:"hidden",border:"2px solid var(--surface-line-strong)"}}>
         <div style={{position:"absolute",inset:0,background:"var(--gradient-panel)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
           <div style={{fontSize:36,marginBottom:4}}>{prize.freeze?"\uD83D\uDEE1\uFE0F":prize.skip?"\u23ED\uFE0F":prize.mult?"\u26A1":"\uD83D\uDCB0"}</div>
           <div style={{fontSize:20,fontWeight:800,color:rarityColors[prize.rarity]}}>{prize.label}</div>
@@ -67,7 +67,7 @@ export function ScratchCard({ onComplete, onClose }) {
           <div style={{fontSize:15,fontWeight:700,color:rarityColors[prize.rarity],marginBottom:12}}>
             {prize.xp?`+${prize.xp} XP ganados!`:prize.mult?`Multiplicador x${prize.mult} activado!`:prize.freeze?"Escudo de racha obtenido!":"Skip de pregunta obtenido!"}
           </div>
-          <button onClick={onClose} style={{padding:"10px 36px",background:"var(--gradient-practice)",border:"none",borderRadius:10,color:"white",fontSize:14,fontWeight:600,cursor:"pointer"}}>Continuar</button>
+          <button onClick={onClose} style={{padding:"10px 36px",background:"var(--gradient-practice)",border:"none",borderRadius:"var(--radius-sm)",color:"white",fontSize:14,fontWeight:600,cursor:"pointer"}}>Continuar</button>
         </div>
       )}
     </div>

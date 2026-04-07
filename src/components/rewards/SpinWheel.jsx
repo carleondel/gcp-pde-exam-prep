@@ -53,7 +53,7 @@ export function SpinWheel({ onComplete, onClose }) {
   };
 
   return <div style={{position:"fixed",inset:0,background:"var(--bg-overlay)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,backdropFilter:"blur(10px)"}}>
-    <div style={{background:"var(--gradient-panel-strong)",borderRadius:24,padding:32,textAlign:"center",border:"2px solid var(--accent-medium)",maxWidth:420,position:"relative",overflow:"hidden",boxShadow:"var(--shadow-elevated)"}}>
+    <div style={{background:"var(--gradient-panel-strong)",borderRadius:"var(--radius-2xl)",padding:32,textAlign:"center",border:"2px solid var(--accent-medium)",maxWidth:420,position:"relative",overflow:"hidden",boxShadow:"var(--shadow-elevated)"}}>
       <Particles count={15} color="var(--accent-300)" />
       <h2 style={{margin:"0 0 4px",fontSize:22,color:"var(--accent-300)",fontWeight:800,position:"relative",fontFamily:"var(--font-heading)"}}>RULETA DE RECOMPENSAS</h2>
       <p style={{margin:"0 0 16px",color:"var(--text-secondary)",fontSize:13,position:"relative"}}>Gira y descubre tu premio</p>
@@ -65,12 +65,12 @@ export function SpinWheel({ onComplete, onClose }) {
           <div style={{color:"var(--text-secondary)",fontSize:13,marginTop:4}}>
             {result.xp?`+${result.xp} XP`:result.mult?`Multiplicador x${result.mult} activado`:result.scratch?"Rasca y gana desbloqueado":result.chest?"Cofre misterioso obtenido":result.power?"Power-up obtenido":""}
           </div>
-          <button onClick={onClose} style={{marginTop:16,padding:"10px 36px",background:"var(--gradient-practice)",border:"none",borderRadius:10,color:"white",fontSize:14,fontWeight:600,cursor:"pointer"}}>Continuar</button>
+          <button onClick={onClose} style={{marginTop:16,padding:"10px 36px",background:"var(--gradient-practice)",border:"none",borderRadius:"var(--radius-sm)",color:"white",fontSize:14,fontWeight:600,cursor:"pointer"}}>Continuar</button>
         </div>
       ) : (
         <button onClick={spin} disabled={spinning} style={{
           padding:"14px 52px",background:spinning?"var(--text-muted)":"var(--gradient-mock)",
-          border:"none",borderRadius:14,color:"white",fontSize:18,fontWeight:800,
+          border:"none",borderRadius:"var(--radius-md)",color:"white",fontSize:18,fontWeight:800,
           cursor:spinning?"wait":"pointer",boxShadow:spinning?"none":"0 4px 25px rgba(212,147,10,0.3)",
           animation:spinning?"":"pulse 1.5s infinite",position:"relative",fontFamily:"var(--font-mono)"
         }}>{spinning?"Girando...":"\u2605 GIRAR \u2605"}</button>
