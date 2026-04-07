@@ -1,11 +1,11 @@
 export const RANKS = [
-  { name:"Cloud Novice", minXP:0, icon:"\u2601\uFE0F", color:"#94a3b8" },
-  { name:"Data Apprentice", minXP:200, icon:"\uD83D\uDCCA", color:"#60a5fa" },
-  { name:"Pipeline Builder", minXP:500, icon:"\uD83D\uDD27", color:"#34d399" },
-  { name:"Query Master", minXP:1000, icon:"\u26A1", color:"#a78bfa" },
-  { name:"Cloud Architect", minXP:1800, icon:"\uD83C\uDFD7\uFE0F", color:"#f472b6" },
-  { name:"Data Engineer Pro", minXP:3000, icon:"\uD83C\uDFAF", color:"#fbbf24" },
-  { name:"GCP Legend", minXP:5000, icon:"\uD83D\uDC51", color:"#f97316" },
+  { name:"Cloud Novice", minXP:0, icon:"\u2601\uFE0F", color:"#8b95a8" },
+  { name:"Data Apprentice", minXP:200, icon:"\uD83D\uDCCA", color:"#4a9eff" },
+  { name:"Pipeline Builder", minXP:500, icon:"\uD83D\uDD27", color:"#2dd4a0" },
+  { name:"Query Master", minXP:1000, icon:"\u26A1", color:"#8fff6a" },
+  { name:"Cloud Architect", minXP:1800, icon:"\uD83C\uDFD7\uFE0F", color:"#0fbfa3" },
+  { name:"Data Engineer Pro", minXP:3000, icon:"\uD83C\uDFAF", color:"#ffb733" },
+  { name:"GCP Legend", minXP:5000, icon:"\uD83D\uDC51", color:"#d4930a" },
 ];
 
 export const ACHIEVEMENTS = [
@@ -27,15 +27,15 @@ export const ACHIEVEMENTS = [
 ];
 
 export const WHEEL_SEGMENTS = [
-  { label:"+50 XP", xp:50, color:"#3b82f6", w:22 },
-  { label:"+100 XP", xp:100, color:"#8b5cf6", w:18 },
-  { label:"+200 XP", xp:200, color:"#ec4899", w:10 },
-  { label:"\uD83D\uDC8E +500", xp:500, color:"#f59e0b", w:4, jackpot:true },
-  { label:"x2 Next", mult:2, color:"#10b981", w:14 },
-  { label:"x3 Next", mult:3, color:"#06b6d4", w:7 },
-  { label:"\uD83C\uDF9F\uFE0F Rasca", scratch:true, color:"#f472b6", w:10 },
-  { label:"\uD83D\uDCE6 Cofre", chest:true, color:"#a855f7", w:8 },
-  { label:"\uD83E\uDDEA Power", power:true, color:"#ef4444", w:7 },
+  { label:"+50 XP", xp:50, color:"#4a9eff", w:22 },
+  { label:"+100 XP", xp:100, color:"#0fbfa3", w:18 },
+  { label:"+200 XP", xp:200, color:"#8fff6a", w:10 },
+  { label:"\uD83D\uDC8E +500", xp:500, color:"#ffb733", w:4, jackpot:true },
+  { label:"x2 Next", mult:2, color:"#2dd4a0", w:14 },
+  { label:"x3 Next", mult:3, color:"#0d9e87", w:7 },
+  { label:"\uD83C\uDF9F\uFE0F Rasca", scratch:true, color:"#d4930a", w:10 },
+  { label:"\uD83D\uDCE6 Cofre", chest:true, color:"#b37a08", w:8 },
+  { label:"\uD83E\uDDEA Power", power:true, color:"#f0605a", w:7 },
 ];
 
 export const SCRATCH_PRIZES = [

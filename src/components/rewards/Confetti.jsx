@@ -1,4 +1,4 @@
-export function Particles({ count = 20, color = "#fbbf24" }) {
+export function Particles({ count = 20, color = "var(--accent-300)" }) {
   return <div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none"}}>
     {Array.from({length:count}).map((_,i)=>(
       <div key={i} style={{
@@ -12,9 +12,9 @@ export function Particles({ count = 20, color = "#fbbf24" }) {
 
 export function Confetti({ active }) {
   if (!active) return null;
-  const colors = ["#f59e0b","#3b82f6","#ec4899","#10b981","#8b5cf6","#ef4444"];
+  const colors = ["var(--accent-300)","var(--primary-400)","var(--highlight)","var(--signal-correct)","var(--signal-info)","var(--signal-wrong)"];
   return <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:2000}}>
-    {Array.from({length:40}).map((_,i)=>(
+    {Array.from({length:20}).map((_,i)=>(
       <div key={i} style={{
         position:"absolute", left:`${Math.random()*100}%`, top:-20,
         width:8+Math.random()*8, height:8+Math.random()*12,

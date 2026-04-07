@@ -61,24 +61,24 @@ const PRACTICE_PRESETS = [10, 20, 30, 50];
 const DEFAULT_PRACTICE_LIMIT = 20;
 const PRACTICE_SOURCE_META = {
   topics: {
-    label: "Temas",
-    helper: "Crea sesiones a medida por dominio.",
-    empty: "Selecciona al menos un tema para empezar.",
+    label: "Por dominio",
+    helper: "Selecciona los dominios que quieres cubrir.",
+    empty: "Selecciona temas.",
   },
   wrong: {
-    label: "Errores",
+    label: "Solo fallos",
     helper: "Repasa solo lo que más te cuesta.",
-    empty: "Todavía no has acumulado errores para repasar.",
+    empty: "Aún no hay fallos guardados.",
   },
   bookmarks: {
-    label: "Favoritas",
-    helper: "Vuelve a tus preguntas marcadas.",
-    empty: "Aún no has marcado preguntas como favoritas.",
+    label: "Marcadas",
+    helper: "Retoma preguntas reservadas para revisión.",
+    empty: "Aún no hay preguntas marcadas.",
   },
   weak: {
-    label: "Temas débiles",
+    label: "Peor rendimiento",
     helper: "Enfócate en los temas con peor acierto.",
-    empty: "Necesitas al menos 5 respuestas por tema para detectar áreas débiles.",
+    empty: "Se activa tras 5 respuestas por tema.",
   },
 };
 
@@ -245,32 +245,32 @@ function App() {
   const practiceSummary = useMemo(() => {
     if (practiceSource === "wrong") {
       return {
-        title: "Repaso de errores",
-        subtitle: "Corrige huecos de conocimiento con preguntas falladas recientemente.",
+        title: "Solo fallos",
+        subtitle: "Repaso directo sobre preguntas falladas.",
         badge: formatPracticeBadge(progress.wrongQuestionIds.length, "error", "errores"),
       };
     }
     if (practiceSource === "bookmarks") {
       return {
-        title: "Favoritas guardadas",
-        subtitle: "Retoma las preguntas que marcaste para repasar después.",
-        badge: formatPracticeBadge(progress.bookmarks.length, "favorita", "favoritas"),
+        title: "Marcadas",
+        subtitle: "Vuelve a las preguntas reservadas para repaso.",
+        badge: formatPracticeBadge(progress.bookmarks.length, "marcada", "marcadas"),
       };
     }
     if (practiceSource === "weak") {
       return {
-        title: "Temas débiles detectados",
+        title: "Peor rendimiento",
         subtitle: weakTopics.length
-          ? "Practica las áreas con menor porcentaje de acierto."
+          ? "Carga automática de las áreas con menor acierto."
           : PRACTICE_SOURCE_META.weak.empty,
         badge: formatPracticeBadge(weakTopics.length, "tema", "temas"),
       };
     }
     return {
-      title: "Temas seleccionados",
+      title: "Por dominio",
       subtitle: selectedTopics.size === TOPICS.length
-        ? "Banco completo disponible para sesiones personalizadas."
-        : "Filtra por dominio para enfocar la práctica.",
+        ? "Banco completo listo para práctica."
+        : "Sesión filtrada por dominio.",
       badge: formatPracticeBadge(selectedTopics.size, "tema", "temas"),
     };
   }, [practiceSource, progress.bookmarks.length, progress.wrongQuestionIds.length, selectedTopics.size, weakTopics.length]);
@@ -641,7 +641,7 @@ function App() {
     setPracticeSource(source);
     setPracticeLimit(nextLimit > 0 ? nextLimit : practiceLimit);
     setPracticeMessage(nextCount > 0
-      ? `Configuracion de ${PRACTICE_SOURCE_META[source].label.toLowerCase()} cargada en Practicar.`
+      ? `${PRACTICE_SOURCE_META[source].label} cargado.`
       : PRACTICE_SOURCE_META[source].empty);
   }, [bookmarkedQuestions.length, practiceLimit, topicQuestions.length, weakQuestions.length, weakTopics, wrongQuestions.length]);
 
@@ -968,62 +968,75 @@ function App() {
   }, [advancePracticeSession, progress.inventory.skips, session, updateProgress]);
 
   if (!ready) {
-    return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#020617,#0f172a)", color: "#cbd5e1", fontFamily: "'Inter',sans-serif" }}>
+    return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-deep)", color: "var(--text-secondary)", fontFamily: "var(--font-body)", animation: "fadeIn var(--duration-fast) var(--ease-out)" }}>
       Preparando simulador...
     </div>;
   }
 
   const renderSummaryCards = () => (
-    <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 14, marginBottom: 18 }}>
-      <div style={{ background: "rgba(15,23,42,0.78)", border: "1px solid rgba(148,163,184,0.10)", borderRadius: 22, padding: 20, backdropFilter: "blur(18px)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-          <div style={{ width: 56, height: 56, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#1d4ed8,#7c3aed)", fontSize: 28 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginBottom: 16 }}>
+      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 20, padding: 16, boxShadow: "var(--shadow-card)" }}>
+        <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Rango</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--primary-soft)", fontSize: 24, boxShadow: "var(--shadow-glow)" }}>
             {rankState.current.icon}
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1 }}>Progreso global</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: rankState.current.color }}>{rankState.current.name}</div>
-            <div style={{ fontSize: 13, color: "#e2e8f0", marginTop: 2 }}>{progress.xp} XP acumulada</div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: rankState.current.color, fontFamily: "var(--font-heading)" }}>{rankState.current.name}</div>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{progress.xp} XP</div>
           </div>
         </div>
-        {rankState.next && <>
-          <div style={{ height: 8, background: "rgba(148,163,184,0.08)", borderRadius: 999, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${rankState.progress}%`, background: `linear-gradient(90deg,${rankState.current.color},${rankState.next.color})`, borderRadius: 999 }} />
-          </div>
-          <div style={{ marginTop: 8, fontSize: 12, color: "#64748b" }}>{rankState.next.minXP - progress.xp} XP para {rankState.next.icon} {rankState.next.name}</div>
-        </>}
       </div>
-      <div style={{ background: "rgba(15,23,42,0.78)", border: "1px solid rgba(148,163,184,0.10)", borderRadius: 22, padding: 20, backdropFilter: "blur(18px)" }}>
-        <div style={{ fontSize: 12, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Temas débiles</div>
-        {weakTopics.length ? weakTopics.map((topic) => (
-          <div key={topic.topic} style={{ marginBottom: 10 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 4 }}>
-              <span style={{ color: "#e2e8f0" }}>{topic.topic}</span>
-              <span style={{ color: topic.accuracy >= 70 ? "#34d399" : "#f87171", fontWeight: 700 }}>{topic.accuracy}%</span>
+      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 20, padding: 16, boxShadow: "var(--shadow-card)" }}>
+        <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Siguiente rango</div>
+        {rankState.next ? (
+          <>
+            <div style={{ marginTop: 8, fontSize: 17, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>{rankState.next.icon} {rankState.next.name}</div>
+            <div style={{ marginTop: 8, height: 6, background: "var(--surface-line)", borderRadius: 999, overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${rankState.progress}%`, background: `linear-gradient(90deg, ${rankState.current.color}, ${rankState.next.color})`, borderRadius: 999 }} />
             </div>
-            <div style={{ height: 5, background: "rgba(148,163,184,0.08)", borderRadius: 999, overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${topic.accuracy}%`, background: topic.accuracy >= 70 ? "#34d399" : "#f59e0b", borderRadius: 999 }} />
+            <div style={{ marginTop: 8, fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{rankState.next.minXP - progress.xp} XP restantes</div>
+          </>
+        ) : (
+          <div style={{ marginTop: 8, fontSize: 14, color: "var(--highlight)", fontWeight: 700 }}>Rango máximo alcanzado.</div>
+        )}
+      </div>
+      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 20, padding: 16, boxShadow: "var(--shadow-card)" }}>
+        <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Inventario</div>
+        <div style={{ marginTop: 8, fontSize: 22, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>
+          {progress.inventory.shields + progress.inventory.fiftyFifty + progress.inventory.hints + progress.inventory.skips + progress.inventory.doubleXP + progress.inventory.scratchCards + progress.inventory.chestKeys + progress.inventory.bossKeys + progress.inventory.wheelSpins}
+        </div>
+        <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)" }}>{achievementSet.size} logros desbloqueados</div>
+      </div>
+      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 20, padding: 16, boxShadow: "var(--shadow-card)" }}>
+        <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Peor rendimiento</div>
+        {weakTopics.length ? (
+          <>
+            <div style={{ marginTop: 8, display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)" }}>{weakTopics[0].topic}</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: weakTopics[0].accuracy >= 70 ? "var(--signal-correct)" : "var(--signal-wrong)", fontFamily: "var(--font-mono)" }}>{weakTopics[0].accuracy}%</div>
             </div>
-          </div>
-        )) : <div style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5 }}>Aún no hay suficientes respuestas evaluadas. Necesitas al menos 5 por tema.</div>}
-        <button
-          onClick={() => setPracticeSourcePreset("weak")}
-          disabled={!weakTopics.length}
-          style={{
-            width: "100%",
-            marginTop: 12,
-            padding: "10px 14px",
-            border: "1px solid rgba(248,113,113,0.28)",
-            borderRadius: 12,
-            background: weakTopics.length ? "rgba(248,113,113,0.10)" : "rgba(15,23,42,0.45)",
-            color: weakTopics.length ? "#fca5a5" : "#64748b",
-            fontSize: 12,
-            fontWeight: 700,
-            cursor: weakTopics.length ? "pointer" : "not-allowed",
-          }}
-        >
-          Cargar en Practicar
-        </button>
+            <button
+              onClick={() => setPracticeSourcePreset("weak")}
+              style={{
+                width: "100%",
+                marginTop: 10,
+                padding: "10px 12px",
+                border: "1px solid var(--wrong-soft)",
+                borderRadius: 12,
+                background: "var(--wrong-soft)",
+                color: "var(--signal-wrong)",
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              Cargar bloque
+            </button>
+          </>
+        ) : (
+          <div style={{ marginTop: 8, fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5 }}>Se mostrará cuando haya suficientes respuestas.</div>
+        )}
       </div>
     </div>
   );
@@ -1054,59 +1067,62 @@ function App() {
       },
     ];
     const practiceCtaLabel = hasPracticeQuestions
-      ? `Empezar práctica de ${effectivePracticeLimit} preguntas`
-      : "Configura tu práctica";
-    return <div style={{ minHeight: "100vh", background: "radial-gradient(circle at top, rgba(59,130,246,0.18), transparent 30%), linear-gradient(180deg,#020617,#0f172a 48%,#111827)", color: "#e2e8f0", fontFamily: "'Inter',-apple-system,sans-serif" }}>
+      ? `Iniciar práctica · ${effectivePracticeLimit} preguntas`
+      : "Configura la práctica";
+    const dailyDone = isDailyChallengeCompleted(progress);
+    return <div style={{ minHeight: "100vh", color: "var(--text-primary)", fontFamily: "var(--font-body)", animation: "fadeIn var(--duration-fast) var(--ease-out)" }}>
 
       {showAch && <AchievementPopup achievement={showAch} onClose={() => setShowAch(null)} />}
-      <div style={{ maxWidth: 1040, margin: "0 auto", padding: "40px 20px 56px" }}>
+      <div style={{ maxWidth: 1080, margin: "0 auto", padding: "36px 20px 56px" }}>
         <div style={{ textAlign: "center", marginBottom: 26 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 14, padding: "12px 18px", borderRadius: 999, marginBottom: 18, background: "rgba(15,23,42,0.72)", border: "1px solid rgba(148,163,184,0.12)", boxShadow: "0 12px 32px rgba(2,6,23,0.32)" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 14, padding: "12px 18px", borderRadius: 999, marginBottom: 18, background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)", boxShadow: "var(--shadow-card)" }}>
             <img src={googleCloudLogo} alt="Google Cloud" style={{ height: 24, width: "auto", opacity: 0.92 }} />
-            <span style={{ width: 1, height: 18, background: "rgba(148,163,184,0.18)" }} />
-            <span style={{ fontSize: 12, color: "#cbd5e1", letterSpacing: 1, textTransform: "uppercase", fontWeight: 700 }}>Professional Data Engineer</span>
+            <span style={{ width: 1, height: 18, background: "var(--surface-line-strong)" }} />
+            <span style={{ fontSize: 12, color: "var(--text-primary)", letterSpacing: 1, textTransform: "uppercase", fontWeight: 700, fontFamily: "var(--font-mono)" }}>Professional Data Engineer</span>
           </div>
-          <h1 style={{ margin: "0 0 8px", fontSize: 40, lineHeight: 1.05, fontWeight: 900, letterSpacing: -1 }}>DataForge <span style={{ fontSize: 20, fontWeight: 600, color: "#60a5fa" }}>PDE</span></h1>
-          <p style={{ margin: "0 0 6px", color: "#cbd5e1", fontSize: 16 }}>Prepara la certificación Professional Data Engineer con sesiones configurables y simulacro real.</p>
-          <p style={{ margin: 0, color: "#64748b", fontSize: 13 }}>Practicar: aprende a tu ritmo con sesiones configurables. Simulacro: mide tu nivel en condiciones de examen.</p>
+          <h1 style={{ margin: "0 0 8px", fontSize: 44, lineHeight: 1.02, fontWeight: 900, letterSpacing: -1.4, fontFamily: "var(--font-heading)" }}>DataForge <span style={{ fontSize: 20, fontWeight: 700, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>PDE</span></h1>
+          <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15, fontFamily: "var(--font-mono)" }}>319 preguntas · práctica + simulacro</p>
         </div>
 
         {renderSummaryCards()}
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 18 }}>
-          <div style={{ background: "linear-gradient(135deg, rgba(251,146,60,0.12), rgba(251,191,36,0.08))", border: "1px solid rgba(251,191,36,0.22)", borderRadius: 24, padding: 20, display: "flex", alignItems: "center", gap: 16 }}>
-            <div style={{ fontSize: 42, lineHeight: 1 }}>{progress.dailyStreak.current >= 7 ? "🔥" : progress.dailyStreak.current >= 3 ? "⚡" : "📅"}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 28, fontWeight: 900, color: progress.dailyStreak.current > 0 ? "#fbbf24" : "#94a3b8" }}>{progress.dailyStreak.current} {progress.dailyStreak.current === 1 ? "día" : "días"}</div>
-              <div style={{ fontSize: 12, color: "#94a3b8" }}>Racha diaria {progress.dailyStreak.best > 1 && <span style={{ color: "#fbbf24" }}>· Récord: {progress.dailyStreak.best}</span>}</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12, marginBottom: 18 }}>
+          <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 20, padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <div>
+              <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Racha diaria</div>
+              <div style={{ marginTop: 6, fontSize: 17, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>
+                <span style={{ color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{progress.dailyStreak.current}</span> {progress.dailyStreak.current === 1 ? "día" : "días"}
+              </div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Récord</div>
+              <div style={{ marginTop: 6, fontSize: 17, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{progress.dailyStreak.best}</div>
             </div>
           </div>
 
-          {(() => {
-            const dailyDone = isDailyChallengeCompleted(progress);
-            return <div style={{ background: dailyDone ? "rgba(34,197,94,0.08)" : "linear-gradient(135deg, rgba(168,85,247,0.12), rgba(236,72,153,0.08))", border: `1px solid ${dailyDone ? "rgba(34,197,94,0.22)" : "rgba(168,85,247,0.22)"}`, borderRadius: 24, padding: 20, display: "flex", alignItems: "center", gap: 16 }}>
-              <div style={{ fontSize: 42, lineHeight: 1 }}>{dailyDone ? "✅" : "🎯"}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 4 }}>{dailyDone ? "Reto completado" : "Reto diario"}</div>
-                <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: dailyDone ? 0 : 10 }}>{dailyDone ? `+${DAILY_CHALLENGE_BONUS_XP} XP bonus cobrado · Vuelve mañana` : `${DAILY_CHALLENGE_COUNT} preguntas · +${DAILY_CHALLENGE_BONUS_XP} XP bonus`}</div>
-                {!dailyDone && <button onClick={startDailyChallenge} style={{ padding: "8px 18px", border: "none", borderRadius: 12, background: "linear-gradient(135deg,#7c3aed,#a855f7)", color: "white", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>Aceptar reto</button>}
+          <div style={{ background: dailyDone ? "var(--correct-soft)" : "var(--accent-soft)", border: `1px solid ${dailyDone ? "var(--correct-soft)" : "var(--accent-medium)"}`, borderRadius: 20, padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <div>
+              <div style={{ fontSize: 11, color: dailyDone ? "var(--signal-correct)" : "var(--accent-300)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Reto diario</div>
+              <div style={{ marginTop: 6, fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>
+                {dailyDone ? "Completado" : `${DAILY_CHALLENGE_COUNT} preguntas · +${DAILY_CHALLENGE_BONUS_XP} XP`}
               </div>
-            </div>;
-          })()}
+            </div>
+            {!dailyDone && <button onClick={startDailyChallenge} style={{ padding: "10px 14px", border: "none", borderRadius: 12, background: "var(--gradient-mock)", color: "white", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Iniciar reto</button>}
+          </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1.15fr 0.85fr", gap: 14, marginBottom: 18 }}>
-          <div style={{ background: "rgba(15,23,42,0.82)", border: "1px solid rgba(96,165,250,0.16)", borderRadius: 28, padding: 24, boxShadow: "0 20px 40px rgba(2,6,23,0.28)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 14, marginBottom: 18, alignItems: "start" }}>
+          <div style={{ background: "var(--gradient-panel-strong)", border: "1px solid var(--primary-medium)", borderRadius: 28, padding: 24, boxShadow: "var(--shadow-elevated), var(--shadow-glow)" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <div>
-                <div style={{ fontSize: 13, color: "#60a5fa", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>Practicar</div>
-                <div style={{ fontSize: 26, fontWeight: 800, marginTop: 4 }}>Configura una sesión clara y rápida</div>
-                <div style={{ fontSize: 13, color: "#94a3b8", marginTop: 6 }}>Elige origen, orden y tamaño antes de empezar. Un solo CTA, sin ruido.</div>
+                <div style={{ fontSize: 12, color: "var(--primary-400)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Practicar</div>
+                <div style={{ fontSize: 28, fontWeight: 800, marginTop: 4, fontFamily: "var(--font-heading)" }}>Sesión a medida</div>
+                <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 6 }}>Control directo de fuente, orden y cantidad.</div>
               </div>
-              <div style={{ padding: "8px 14px", borderRadius: 999, background: "rgba(59,130,246,0.12)", color: "#93c5fd", fontSize: 12, fontWeight: 700 }}>Gamificada</div>
+              <div style={{ padding: "8px 14px", borderRadius: 999, background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Feedback inmediato</div>
             </div>
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 12, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Fuente</div>
+              <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Fuente</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
                 {practiceSourceOptions.map((option) => {
                   const active = practiceSource === option.key;
@@ -1117,7 +1133,7 @@ function App() {
                       onClick={() => {
                         if (option.key === "topics") {
                           setPracticeSource("topics");
-                          setPracticeMessage("Ajusta los temas y la cantidad antes de lanzar la práctica.");
+                          setPracticeMessage("Selecciona temas y cantidad.");
                         } else {
                           setPracticeSourcePreset(option.key);
                         }
@@ -1125,21 +1141,22 @@ function App() {
                       style={{
                         padding: "14px 14px",
                         borderRadius: 18,
-                        border: active ? "1px solid rgba(96,165,250,0.5)" : "1px solid rgba(148,163,184,0.12)",
-                        background: active ? "linear-gradient(180deg, rgba(37,99,235,0.18), rgba(15,23,42,0.72))" : "rgba(15,23,42,0.62)",
-                        color: option.disabled ? "#475569" : "#e2e8f0",
+                        border: active ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
+                        background: active ? "linear-gradient(180deg, var(--primary-soft), var(--surface-panel-muted))" : "var(--surface-panel-muted)",
+                        color: option.disabled ? "var(--text-muted)" : "var(--text-primary)",
                         textAlign: "left",
                         cursor: option.disabled ? "not-allowed" : "pointer",
                         opacity: option.disabled ? 0.6 : 1,
+                        transition: "all var(--duration-normal) var(--ease-out)",
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 6 }}>
-                        <span style={{ fontSize: 14, fontWeight: 800 }}>{PRACTICE_SOURCE_META[option.key].label}</span>
-                        <span style={{ padding: "4px 8px", borderRadius: 999, background: "rgba(15,23,42,0.68)", color: option.disabled ? "#64748b" : "#93c5fd", fontSize: 11, fontWeight: 700 }}>
+                        <span style={{ fontSize: 14, fontWeight: 800, fontFamily: "var(--font-heading)" }}>{PRACTICE_SOURCE_META[option.key].label}</span>
+                        <span style={{ padding: "4px 8px", borderRadius: 999, background: "var(--bg-primary)", color: option.disabled ? "var(--text-tertiary)" : "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>
                           {option.badge}
                         </span>
                       </div>
-                      <div style={{ fontSize: 12, color: option.disabled ? "#64748b" : "#94a3b8", lineHeight: 1.45 }}>
+                      <div style={{ fontSize: 12, color: option.disabled ? "var(--text-tertiary)" : "var(--text-secondary)", lineHeight: 1.45 }}>
                         {option.disabled ? PRACTICE_SOURCE_META[option.key].empty : PRACTICE_SOURCE_META[option.key].helper}
                       </div>
                     </button>
@@ -1150,22 +1167,23 @@ function App() {
 
             <div style={{ marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                <div style={{ fontSize: 12, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1 }}>Orden</div>
-                <div style={{ fontSize: 12, color: "#64748b" }}>{practiceSource === "topics" ? "Configurable" : "Se aplica al subconjunto cargado"}</div>
+                <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Orden</div>
+                <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{practiceSource === "topics" ? "Configurable" : "Aplicado al bloque cargado"}</div>
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 {["random", "sequential"].map((order) => (
                   <button key={order} onClick={() => setPracticeOrder(order)} style={{
                     padding: "10px 14px",
                     borderRadius: 12,
-                    border: practiceOrder === order ? "1px solid rgba(59,130,246,0.55)" : "1px solid rgba(148,163,184,0.12)",
-                    background: practiceOrder === order ? "rgba(37,99,235,0.18)" : "rgba(15,23,42,0.7)",
-                    color: practiceOrder === order ? "#bfdbfe" : "#94a3b8",
+                    border: practiceOrder === order ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
+                    background: practiceOrder === order ? "var(--primary-soft)" : "var(--surface-panel-muted)",
+                    color: practiceOrder === order ? "var(--primary-400)" : "var(--text-secondary)",
                     fontSize: 12,
                     fontWeight: 700,
                     cursor: "pointer",
+                    fontFamily: "var(--font-mono)",
                   }}>
-                    {order === "random" ? "Orden mezclado" : "Orden secuencial"}
+                    {order === "random" ? "Mezclado" : "Secuencial"}
                   </button>
                 ))}
               </div>
@@ -1174,8 +1192,8 @@ function App() {
             {practiceSource === "topics" && (
               <div style={{ marginBottom: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                  <div style={{ fontSize: 12, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1 }}>Temas</div>
-                  <button onClick={() => setSelectedTopics(selectedTopics.size === TOPICS.length ? new Set() : new Set(TOPICS))} style={{ border: "none", background: "transparent", color: "#93c5fd", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                  <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Temas</div>
+                  <button onClick={() => setSelectedTopics(selectedTopics.size === TOPICS.length ? new Set() : new Set(TOPICS))} style={{ border: "none", background: "transparent", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                     {selectedTopics.size === TOPICS.length ? "Deseleccionar todo" : "Seleccionar todo"}
                   </button>
                 </div>
@@ -1189,33 +1207,34 @@ function App() {
                       setPracticeMessage("");
                     }} onDoubleClick={() => {
                       setSelectedTopics(new Set([topic]));
-                      setPracticeMessage(`Filtrado rápido activado para ${topic}.`);
+                      setPracticeMessage(`Solo ${topic}.`);
                     }} style={{
                       padding: "8px 12px",
                       borderRadius: 999,
-                      border: selectedTopics.has(topic) ? "1px solid rgba(59,130,246,0.55)" : "1px solid rgba(148,163,184,0.12)",
-                      background: selectedTopics.has(topic) ? "rgba(37,99,235,0.16)" : "rgba(15,23,42,0.72)",
-                      color: selectedTopics.has(topic) ? "#bfdbfe" : "#94a3b8",
+                      border: selectedTopics.has(topic) ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
+                      background: selectedTopics.has(topic) ? "var(--primary-soft)" : "var(--surface-panel-muted)",
+                      color: selectedTopics.has(topic) ? "var(--primary-400)" : "var(--text-secondary)",
                       fontSize: 12,
                       cursor: "pointer",
+                      fontFamily: "var(--font-mono)",
                     }}>
                       {topic} <span style={{ opacity: 0.65 }}>({topicAnswered[topic] || 0}/{topicCounts[topic] || 0})</span>
                     </button>
                   ))}
                 </div>
-                <div style={{ fontSize: 11, color: "#475569" }}>Doble click en un tema para quedarte solo con ese dominio.</div>
+                <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Doble click para aislar un dominio.</div>
               </div>
             )}
 
             {practiceSource !== "topics" && (
-              <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: 18, background: "rgba(15,23,42,0.45)", border: "1px solid rgba(148,163,184,0.08)" }}>
+              <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: 18, background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: "#e2e8f0" }}>{practiceSummary.title}</div>
-                    <div style={{ marginTop: 4, fontSize: 12, color: "#94a3b8", lineHeight: 1.45 }}>{practiceSummary.subtitle}</div>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>{practiceSummary.title}</div>
+                    <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.45 }}>{practiceSummary.subtitle}</div>
                   </div>
-                  <button onClick={() => setPracticeSource("topics")} style={{ border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "9px 12px", background: "rgba(15,23,42,0.72)", color: "#cbd5e1", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-                    Volver a Temas
+                  <button onClick={() => setPracticeSource("topics")} style={{ border: "1px solid var(--surface-line)", borderRadius: 12, padding: "9px 12px", background: "var(--bg-primary)", color: "var(--text-primary)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                    Volver a dominio
                   </button>
                 </div>
               </div>
@@ -1223,8 +1242,8 @@ function App() {
 
             <div style={{ marginBottom: 18 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                <div style={{ fontSize: 12, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1 }}>Cantidad</div>
-                <button onClick={() => setShowCustomLimit((current) => !current)} style={{ border: "none", background: "transparent", color: "#93c5fd", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Cantidad</div>
+                <button onClick={() => setShowCustomLimit((current) => !current)} style={{ border: "none", background: "transparent", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                   {showCustomLimit ? "Ocultar personalización" : "Personalizar"}
                 </button>
               </div>
@@ -1244,13 +1263,14 @@ function App() {
                       style={{
                         padding: "10px 14px",
                         borderRadius: 12,
-                        border: active ? "1px solid rgba(59,130,246,0.55)" : "1px solid rgba(148,163,184,0.12)",
-                        background: active ? "rgba(37,99,235,0.18)" : "rgba(15,23,42,0.7)",
-                        color: disabled ? "#475569" : active ? "#bfdbfe" : "#94a3b8",
+                        border: active ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
+                        background: active ? "var(--primary-soft)" : "var(--surface-panel-muted)",
+                        color: disabled ? "var(--text-muted)" : active ? "var(--primary-400)" : "var(--text-secondary)",
                         fontSize: 12,
                         fontWeight: 700,
                         cursor: disabled ? "not-allowed" : "pointer",
                         opacity: disabled ? 0.55 : 1,
+                        fontFamily: "var(--font-mono)",
                       }}
                     >
                       {preset}
@@ -1267,13 +1287,14 @@ function App() {
                   style={{
                     padding: "10px 14px",
                     borderRadius: 12,
-                    border: effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "1px solid rgba(59,130,246,0.55)" : "1px solid rgba(148,163,184,0.12)",
-                    background: effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "rgba(37,99,235,0.18)" : "rgba(15,23,42,0.7)",
-                    color: hasPracticeQuestions ? (effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "#bfdbfe" : "#cbd5e1") : "#475569",
+                    border: effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
+                    background: effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "var(--primary-soft)" : "var(--surface-panel-muted)",
+                    color: hasPracticeQuestions ? (effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "var(--primary-400)" : "var(--text-primary)") : "var(--text-muted)",
                     fontSize: 12,
                     fontWeight: 700,
                     cursor: hasPracticeQuestions ? "pointer" : "not-allowed",
                     opacity: hasPracticeQuestions ? 1 : 0.55,
+                    fontFamily: "var(--font-mono)",
                   }}
                 >
                   {maxPresetLabel}
@@ -1296,65 +1317,65 @@ function App() {
                       width: 110,
                       padding: "10px 12px",
                       borderRadius: 12,
-                      border: "1px solid rgba(148,163,184,0.16)",
-                      background: "rgba(15,23,42,0.68)",
-                      color: "#e2e8f0",
+                      border: "1px solid var(--surface-line)",
+                      background: "var(--bg-primary)",
+                      color: "var(--text-primary)",
                       fontSize: 14,
                       outline: "none",
+                      fontFamily: "var(--font-mono)",
                     }}
                   />
-                  <span style={{ fontSize: 12, color: "#94a3b8" }}>El límite se ajusta automáticamente al máximo disponible.</span>
+                  <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>Se ajusta automáticamente al máximo disponible.</span>
                 </div>
               )}
             </div>
 
-            <div style={{ marginBottom: 18, padding: "16px 18px", borderRadius: 18, background: "linear-gradient(180deg, rgba(15,23,42,0.76), rgba(15,23,42,0.54))", border: "1px solid rgba(148,163,184,0.10)" }}>
-              <div style={{ fontSize: 12, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 }}>Resumen de sesión</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10 }}>
+            <div style={{ marginBottom: 18, padding: "16px 18px", borderRadius: 18, background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
+              <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 12, fontFamily: "var(--font-mono)" }}>Resumen</div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 10 }}>
                 <div>
-                  <div style={{ fontSize: 11, color: "#64748b" }}>Fuente</div>
-                  <div style={{ marginTop: 4, fontSize: 15, fontWeight: 800, color: "#e2e8f0" }}>{PRACTICE_SOURCE_META[practiceSource].label}</div>
+                  <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Fuente</div>
+                  <div style={{ marginTop: 4, fontSize: 15, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>{PRACTICE_SOURCE_META[practiceSource].label}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, color: "#64748b" }}>Disponibles</div>
-                  <div style={{ marginTop: 4, fontSize: 15, fontWeight: 800, color: "#e2e8f0" }}>{maxPracticeCount}</div>
+                  <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Disponibles</div>
+                  <div style={{ marginTop: 4, fontSize: 15, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>{maxPracticeCount}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, color: "#64748b" }}>Lanzarás</div>
-                  <div style={{ marginTop: 4, fontSize: 15, fontWeight: 800, color: "#60a5fa" }}>{hasPracticeQuestions ? effectivePracticeLimit : 0}</div>
+                  <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Lanzarás</div>
+                  <div style={{ marginTop: 4, fontSize: 15, fontWeight: 800, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{hasPracticeQuestions ? effectivePracticeLimit : 0}</div>
                 </div>
               </div>
-              <div style={{ marginTop: 12, fontSize: 12, color: "#94a3b8" }}>
+              <div style={{ marginTop: 12, fontSize: 12, color: "var(--text-secondary)" }}>
                 {practiceSummary.badge} • {practiceSummary.subtitle}
               </div>
             </div>
 
             {practiceMessage && (
-              <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: 14, background: "rgba(59,130,246,0.10)", border: "1px solid rgba(59,130,246,0.18)", color: "#bfdbfe", fontSize: 12, lineHeight: 1.45 }}>
+              <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: 14, background: "var(--info-soft)", border: "1px solid var(--signal-info)", color: "var(--signal-info)", fontSize: 12, lineHeight: 1.45 }}>
                 {practiceMessage}
               </div>
             )}
 
             {!hasPracticeQuestions && (
-              <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: 14, background: "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.10)", color: "#94a3b8", fontSize: 12, lineHeight: 1.45 }}>
+              <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: 14, background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)", color: "var(--text-secondary)", fontSize: 12, lineHeight: 1.45 }}>
                 {PRACTICE_SOURCE_META[practiceSource].empty}
               </div>
             )}
 
-            <button onClick={startPractice} disabled={!hasPracticeQuestions} style={{ width: "100%", padding: "16px 18px", border: "none", borderRadius: 18, background: hasPracticeQuestions ? "linear-gradient(135deg,#1d4ed8,#3b82f6)" : "#334155", color: "white", fontSize: 15, fontWeight: 800, cursor: hasPracticeQuestions ? "pointer" : "not-allowed" }}>
+            <button onClick={startPractice} disabled={!hasPracticeQuestions} style={{ width: "100%", padding: "16px 18px", border: "none", borderRadius: 18, background: hasPracticeQuestions ? "var(--gradient-practice)" : "var(--text-muted)", color: "white", fontSize: 15, fontWeight: 800, cursor: hasPracticeQuestions ? "pointer" : "not-allowed", fontFamily: "var(--font-mono)", boxShadow: hasPracticeQuestions ? "var(--shadow-glow)" : "none" }}>
               {practiceCtaLabel}
             </button>
-            <div style={{ marginTop: 10, fontSize: 12, color: "#64748b", textAlign: "center" }}>Feedback inmediato, progreso persistente y ayudas solo en modo práctica.</div>
+            <div style={{ marginTop: 10, fontSize: 12, color: "var(--text-tertiary)", textAlign: "center" }}>Ayudas y progreso activo solo en práctica.</div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <div style={{ background: "rgba(15,23,42,0.78)", border: "1px solid rgba(148,163,184,0.10)", borderRadius: 24, padding: 24 }}>
-              <div style={{ fontSize: 13, color: "#f59e0b", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>Simulacro</div>
-              <div style={{ fontSize: 24, fontWeight: 800, margin: "6px 0 8px" }}>50 preguntas, 90 minutos</div>
-              <p style={{ margin: "0 0 8px", color: "#94a3b8", fontSize: 14, lineHeight: 1.6 }}>Modo estricto: sin ayudas, sin minijuegos y con revisión final al terminar.</p>
-              <p style={{ margin: "0 0 16px", color: "#64748b", fontSize: 12, lineHeight: 1.5 }}>Mide tu nivel real en condiciones de examen. Aquí no hay atajos ni recompensas intermedias.</p>
-              <button onClick={startMock} style={{ width: "100%", padding: "16px 18px", border: "none", borderRadius: 16, background: "linear-gradient(135deg,#d97706,#f59e0b)", color: "white", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>
-                Iniciar simulacro real
+            <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--accent-medium)", borderRadius: 24, padding: 24, boxShadow: "var(--shadow-card)" }}>
+              <div style={{ fontSize: 12, color: "var(--accent-300)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Simulacro</div>
+              <div style={{ fontSize: 24, fontWeight: 800, margin: "6px 0 8px", fontFamily: "var(--font-heading)" }}>50 preguntas · 90 min</div>
+              <p style={{ margin: "0 0 16px", color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.6 }}>Sin ayudas. Sin recompensas. {PASS_PERCENT}% para aprobar.</p>
+              <button onClick={startMock} style={{ width: "100%", padding: "16px 18px", border: "none", borderRadius: 16, background: "var(--gradient-mock)", color: "white", fontSize: 15, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+                Iniciar simulacro
               </button>
             </div>
 
@@ -1362,38 +1383,38 @@ function App() {
               setSession(savedMockSession);
               setScreen("quiz");
               resetQuestionUi();
-            }} style={{ padding: "16px 18px", borderRadius: 20, border: "1px solid rgba(34,197,94,0.24)", background: "rgba(34,197,94,0.10)", color: "#86efac", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>
+            }} style={{ padding: "16px 18px", borderRadius: 20, border: "1px solid var(--correct-soft)", background: "var(--correct-soft)", color: "var(--signal-correct)", fontSize: 15, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
               Continuar simulacro activo
             </button>}
 
             {progress.mockHistory.length > 0 && (
-              <div style={{ background: "rgba(15,23,42,0.78)", border: "1px solid rgba(148,163,184,0.10)", borderRadius: 24, padding: 20 }}>
-                <div style={{ fontSize: 12, color: "#f59e0b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Historial de simulacros</div>
+              <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 24, padding: 20 }}>
+                <div style={{ fontSize: 11, color: "var(--accent-300)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Historial</div>
                 {progress.mockHistory.slice(0, 5).map((entry, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < Math.min(progress.mockHistory.length, 5) - 1 ? "1px solid rgba(148,163,184,0.07)" : "none" }}>
-                    <span style={{ fontSize: 12, color: "#94a3b8" }}>{new Date(entry.date).toLocaleDateString("es-ES")}</span>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: entry.passed ? "#34d399" : "#f87171" }}>{entry.percent}% {entry.passed ? "Apto" : "No apto"}</span>
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < Math.min(progress.mockHistory.length, 5) - 1 ? "1px solid var(--surface-line)" : "none" }}>
+                    <span style={{ fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{new Date(entry.date).toLocaleDateString("es-ES")}</span>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: entry.passed ? "var(--signal-correct)" : "var(--signal-wrong)", fontFamily: "var(--font-mono)" }}>{entry.percent}% {entry.passed ? "Apto" : "No apto"}</span>
                   </div>
                 ))}
               </div>
             )}
 
-            <div style={{ background: "rgba(15,23,42,0.78)", border: "1px solid rgba(148,163,184,0.10)", borderRadius: 24, padding: 20 }}>
-              <div style={{ fontSize: 12, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Inventario y logros</div>
+            <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: 24, padding: 20 }}>
+              <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Inventario y logros</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-                {progress.inventory.shields > 0 && <span style={{ background: "rgba(16,185,129,0.15)", color: "#6ee7b7", padding: "4px 10px", borderRadius: 999, fontSize: 11 }}>🛡️ {progress.inventory.shields}</span>}
-                {progress.inventory.fiftyFifty > 0 && <span style={{ background: "rgba(59,130,246,0.15)", color: "#93c5fd", padding: "4px 10px", borderRadius: 999, fontSize: 11 }}>✂️ {progress.inventory.fiftyFifty}</span>}
-                {progress.inventory.hints > 0 && <span style={{ background: "rgba(251,191,36,0.15)", color: "#fcd34d", padding: "4px 10px", borderRadius: 999, fontSize: 11 }}>💡 {progress.inventory.hints}</span>}
-                {progress.inventory.skips > 0 && <span style={{ background: "rgba(168,85,247,0.15)", color: "#d8b4fe", padding: "4px 10px", borderRadius: 999, fontSize: 11 }}>⏭️ {progress.inventory.skips}</span>}
-                {progress.inventory.wheelSpins > 0 && <span style={{ background: "rgba(245,158,11,0.15)", color: "#fcd34d", padding: "4px 10px", borderRadius: 999, fontSize: 11 }}>🎰 {progress.inventory.wheelSpins}</span>}
-                {progress.inventory.scratchCards > 0 && <span style={{ background: "rgba(236,72,153,0.15)", color: "#f9a8d4", padding: "4px 10px", borderRadius: 999, fontSize: 11 }}>🎫 {progress.inventory.scratchCards}</span>}
-                {progress.inventory.chestKeys > 0 && <span style={{ background: "rgba(168,85,247,0.15)", color: "#d8b4fe", padding: "4px 10px", borderRadius: 999, fontSize: 11 }}>📦 {progress.inventory.chestKeys}</span>}
-                {progress.inventory.bossKeys > 0 && <span style={{ background: "rgba(239,68,68,0.15)", color: "#fca5a5", padding: "4px 10px", borderRadius: 999, fontSize: 11 }}>🗝️ {progress.inventory.bossKeys}</span>}
-                {!totalPowerups && <span style={{ color: "#64748b", fontSize: 13 }}>Todavía no hay items acumulados.</span>}
+                {progress.inventory.shields > 0 && <span style={{ background: "var(--correct-soft)", color: "var(--signal-correct)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>🛡️ {progress.inventory.shields}</span>}
+                {progress.inventory.fiftyFifty > 0 && <span style={{ background: "var(--info-soft)", color: "var(--signal-info)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>✂️ {progress.inventory.fiftyFifty}</span>}
+                {progress.inventory.hints > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>💡 {progress.inventory.hints}</span>}
+                {progress.inventory.skips > 0 && <span style={{ background: "var(--primary-soft)", color: "var(--primary-400)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>⏭️ {progress.inventory.skips}</span>}
+                {progress.inventory.wheelSpins > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>🎰 {progress.inventory.wheelSpins}</span>}
+                {progress.inventory.scratchCards > 0 && <span style={{ background: "var(--primary-soft)", color: "var(--primary-400)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>🎫 {progress.inventory.scratchCards}</span>}
+                {progress.inventory.chestKeys > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>📦 {progress.inventory.chestKeys}</span>}
+                {progress.inventory.bossKeys > 0 && <span style={{ background: "var(--wrong-soft)", color: "var(--signal-wrong)", padding: "4px 10px", borderRadius: 999, fontSize: 11, fontFamily: "var(--font-mono)" }}>🗝️ {progress.inventory.bossKeys}</span>}
+                {!totalPowerups && <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>Sin items acumulados.</span>}
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                 {ACHIEVEMENTS.map((achievement) => (
-                  <div key={achievement.id} title={`${achievement.name}: ${achievement.desc}`} style={{ width: 34, height: 34, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, background: achievementSet.has(achievement.id) ? "rgba(251,191,36,0.12)" : "rgba(148,163,184,0.05)", border: achievementSet.has(achievement.id) ? "1px solid rgba(251,191,36,0.35)" : "1px solid rgba(148,163,184,0.08)", opacity: achievementSet.has(achievement.id) ? 1 : 0.22 }}>
+                  <div key={achievement.id} title={`${achievement.name}: ${achievement.desc}`} style={{ width: 34, height: 34, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, background: achievementSet.has(achievement.id) ? "var(--accent-soft)" : "rgba(139,149,168,0.06)", border: achievementSet.has(achievement.id) ? "1px solid var(--accent-medium)" : "1px solid var(--surface-line)", opacity: achievementSet.has(achievement.id) ? 1 : 0.22 }}>
                     {achievementSet.has(achievement.id) ? achievement.icon : "🔒"}
                   </div>
                 ))}
@@ -1402,7 +1423,7 @@ function App() {
           </div>
         </div>
         <div style={{ textAlign: "center", marginTop: 24 }}>
-          <div style={{ maxWidth: 760, margin: "0 auto 10px", fontSize: 11, color: "#64748b", lineHeight: 1.6 }}>
+          <div style={{ maxWidth: 760, margin: "0 auto 10px", fontSize: 11, color: "var(--text-tertiary)", lineHeight: 1.6 }}>
             Herramienta de estudio independiente, no afiliada ni patrocinada por Google LLC. Google Cloud y su logotipo se usan aquí solo como referencia visual para el examen.
           </div>
           <button onClick={() => {
@@ -1411,7 +1432,7 @@ function App() {
               setSavedMockSession(null);
               clearActiveMock();
             }
-          }} style={{ border: "none", background: "transparent", color: "#475569", fontSize: 11, cursor: "pointer", textDecoration: "underline" }}>
+          }} style={{ border: "none", background: "transparent", color: "var(--text-muted)", fontSize: 11, cursor: "pointer", textDecoration: "underline" }}>
             Restablecer progreso
           </button>
         </div>
@@ -1437,71 +1458,71 @@ function App() {
         ? (summary.percent >= 80 ? "Reto diario superado" : "Reto diario completado")
         : (summary.percent >= 80 ? "Sesión excelente" : summary.percent >= 60 ? "Buen entrenamiento" : "Seguimos iterando");
 
-    return <div style={{ minHeight: "100vh", background: "linear-gradient(180deg,#020617,#0f172a 52%,#111827)", color: "#e2e8f0", fontFamily: "'Inter',-apple-system,sans-serif" }}>
+    return <div style={{ minHeight: "100vh", color: "var(--text-primary)", fontFamily: "var(--font-body)", animation: "fadeIn var(--duration-fast) var(--ease-out)" }}>
 
       <Confetti active={resultPayload.mode === "mock" ? summary.passed : summary.percent >= 80} />
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 20px 56px" }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div style={{ display: "inline-flex", gap: 8, alignItems: "center", marginBottom: 12, padding: "8px 14px", borderRadius: 999, background: resultPayload.mode === "mock" ? "rgba(245,158,11,0.14)" : resultPayload.mode === "daily" ? "rgba(168,85,247,0.14)" : "rgba(59,130,246,0.14)", color: resultPayload.mode === "mock" ? "#fcd34d" : resultPayload.mode === "daily" ? "#d8b4fe" : "#93c5fd", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1 }}>
-            {resultPayload.mode === "mock" ? "Simulacro" : resultPayload.mode === "daily" ? "🎯 Reto diario" : "Practicar"}
+          <div style={{ display: "inline-flex", gap: 8, alignItems: "center", marginBottom: 12, padding: "8px 14px", borderRadius: 999, background: resultPayload.mode === "mock" ? "var(--accent-soft)" : resultPayload.mode === "daily" ? "var(--correct-soft)" : "var(--primary-soft)", color: resultPayload.mode === "mock" ? "var(--accent-300)" : resultPayload.mode === "daily" ? "var(--signal-correct)" : "var(--primary-400)", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
+            {resultPayload.mode === "mock" ? "Simulacro" : resultPayload.mode === "daily" ? "Reto diario" : "Practicar"}
           </div>
-          <h2 style={{ margin: "0 0 8px", fontSize: 34, fontWeight: 900 }}>{headline}</h2>
-          <p style={{ margin: 0, color: "#94a3b8", fontSize: 15 }}>
+          <h2 style={{ margin: "0 0 8px", fontSize: 34, fontWeight: 900, fontFamily: "var(--font-heading)" }}>{headline}</h2>
+          <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15 }}>
             {resultPayload.mode === "mock"
               ? `${summary.score}/${summary.questionCount} correctas • ${summary.percent}% • ${summary.passed ? "Apto" : "No apto"}`
               : `${summary.score}/${summary.answered} correctas • ${summary.percent}% • +${summary.xpGained} XP${summary.dailyBonus ? ` (incluye +${summary.dailyBonus} bonus reto)` : ""}`}
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 18 }}>
-          <div style={{ background: "rgba(15,23,42,0.78)", borderRadius: 18, padding: 16, border: "1px solid rgba(148,163,184,0.10)" }}>
-            <div style={{ fontSize: 24, fontWeight: 900, color: resultPayload.mode === "mock" ? (summary.passed ? "#34d399" : "#f87171") : "#60a5fa" }}>{summary.percent}%</div>
-            <div style={{ fontSize: 11, color: "#94a3b8" }}>Puntuación</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 18 }}>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: 18, padding: 16, border: "1px solid var(--surface-line)" }}>
+            <div style={{ fontSize: 24, fontWeight: 900, color: resultPayload.mode === "mock" ? (summary.passed ? "var(--signal-correct)" : "var(--signal-wrong)") : "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{summary.percent}%</div>
+            <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>Puntuación</div>
           </div>
-          <div style={{ background: "rgba(15,23,42,0.78)", borderRadius: 18, padding: 16, border: "1px solid rgba(148,163,184,0.10)" }}>
-            <div style={{ fontSize: 24, fontWeight: 900, color: "#fbbf24" }}>{resultPayload.mode === "mock" ? formatDuration(summary.elapsedSec) : `+${summary.xpGained}`}</div>
-            <div style={{ fontSize: 11, color: "#94a3b8" }}>{resultPayload.mode === "mock" ? "Tiempo usado" : "XP ganada"}</div>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: 18, padding: 16, border: "1px solid var(--surface-line)" }}>
+            <div style={{ fontSize: 24, fontWeight: 900, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? formatDuration(summary.elapsedSec) : `+${summary.xpGained}`}</div>
+            <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Tiempo usado" : "XP ganada"}</div>
           </div>
-          <div style={{ background: "rgba(15,23,42,0.78)", borderRadius: 18, padding: 16, border: "1px solid rgba(148,163,184,0.10)" }}>
-            <div style={{ fontSize: 24, fontWeight: 900, color: "#c084fc" }}>{resultPayload.mode === "mock" ? summary.questionCount : `x${summary.maxStreak}`}</div>
-            <div style={{ fontSize: 11, color: "#94a3b8" }}>{resultPayload.mode === "mock" ? "Preguntas" : "Racha máxima"}</div>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: 18, padding: 16, border: "1px solid var(--surface-line)" }}>
+            <div style={{ fontSize: 24, fontWeight: 900, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? summary.questionCount : `x${summary.maxStreak}`}</div>
+            <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Preguntas" : "Racha máxima"}</div>
           </div>
-          <div style={{ background: "rgba(15,23,42,0.78)", borderRadius: 18, padding: 16, border: "1px solid rgba(148,163,184,0.10)" }}>
-            <div style={{ fontSize: 24, fontWeight: 900, color: resultPayload.mode === "mock" ? (summary.passed ? "#34d399" : "#f87171") : "#fbbf24" }}>{resultPayload.mode === "mock" ? (summary.passed ? "Apto" : "No apto") : history.length}</div>
-            <div style={{ fontSize: 11, color: "#94a3b8" }}>{resultPayload.mode === "mock" ? "Estado" : "Preguntas vistas"}</div>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: 18, padding: 16, border: "1px solid var(--surface-line)" }}>
+            <div style={{ fontSize: 24, fontWeight: 900, color: resultPayload.mode === "mock" ? (summary.passed ? "var(--signal-correct)" : "var(--signal-wrong)") : "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? (summary.passed ? "Apto" : "No apto") : history.length}</div>
+            <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Estado" : "Preguntas vistas"}</div>
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "0.95fr 1.05fr", gap: 14, marginBottom: 18 }}>
-          <div style={{ background: "rgba(15,23,42,0.78)", borderRadius: 20, padding: 20, border: "1px solid rgba(148,163,184,0.10)" }}>
-            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Rendimiento por tema</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14, marginBottom: 18 }}>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: 20, padding: 20, border: "1px solid var(--surface-line)" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, fontFamily: "var(--font-heading)" }}>Rendimiento por tema</div>
             {Object.entries(topicStats).sort((a, b) => (a[1].correct / a[1].total) - (b[1].correct / b[1].total)).map(([topic, stats]) => {
               const percent = Math.round((stats.correct / stats.total) * 100);
               return <div key={topic} style={{ marginBottom: 10 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 4 }}>
-                  <span style={{ color: "#e2e8f0" }}>{topic}</span>
-                  <span style={{ color: percent >= 70 ? "#34d399" : "#f87171", fontWeight: 700 }}>{stats.correct}/{stats.total}</span>
+                  <span style={{ color: "var(--text-primary)" }}>{topic}</span>
+                  <span style={{ color: percent >= 70 ? "var(--signal-correct)" : "var(--signal-wrong)", fontWeight: 700, fontFamily: "var(--font-mono)" }}>{stats.correct}/{stats.total}</span>
                 </div>
-                <div style={{ height: 6, background: "rgba(148,163,184,0.08)", borderRadius: 999, overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${percent}%`, background: percent >= 70 ? "#34d399" : "#f59e0b", borderRadius: 999 }} />
+                <div style={{ height: 6, background: "var(--surface-line)", borderRadius: 999, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${percent}%`, background: percent >= 70 ? "var(--signal-correct)" : "var(--accent-300)", borderRadius: 999 }} />
                 </div>
               </div>;
             })}
           </div>
 
-          <div style={{ background: "rgba(15,23,42,0.78)", borderRadius: 20, padding: 20, border: "1px solid rgba(148,163,184,0.10)", maxHeight: 420, overflowY: "auto" }}>
-            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Revisión</div>
+          <div style={{ background: "var(--gradient-panel)", borderRadius: 20, padding: 20, border: "1px solid var(--surface-line)", maxHeight: 420, overflowY: "auto" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, fontFamily: "var(--font-heading)" }}>Revisión</div>
             {history.map((entry, index) => {
               const correctLabels = getCorrectOptionIndexes(entry.question).map((optionIndex) => entry.question.options[optionIndex].slice(0, 2)).join(", ");
-              return <div key={`${entry.question.id}-${index}`} style={{ display: "flex", gap: 10, padding: "10px 0", borderBottom: index < history.length - 1 ? "1px solid rgba(148,163,184,0.07)" : "none" }}>
-                <div style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: entry.correct ? "rgba(52,211,153,0.12)" : "rgba(248,113,113,0.12)", color: entry.correct ? "#34d399" : "#f87171", fontWeight: 800 }}>
+              return <div key={`${entry.question.id}-${index}`} style={{ display: "flex", gap: 10, padding: "10px 0", borderBottom: index < history.length - 1 ? "1px solid var(--surface-line)" : "none" }}>
+                <div style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: entry.correct ? "var(--correct-soft)" : "var(--wrong-soft)", color: entry.correct ? "var(--signal-correct)" : "var(--signal-wrong)", fontWeight: 800 }}>
                   {entry.correct ? "✓" : "✗"}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: "#e2e8f0", fontSize: 12, lineHeight: 1.45 }}>{entry.question.question}</div>
-                  <div style={{ color: "#64748b", fontSize: 11, marginTop: 4 }}>
+                  <div style={{ color: "var(--text-primary)", fontSize: 12, lineHeight: 1.45 }}>{entry.question.question}</div>
+                  <div style={{ color: "var(--text-tertiary)", fontSize: 11, marginTop: 4 }}>
                     {entry.question.topic}
-                    {!entry.correct && <span style={{ color: "#86efac", marginLeft: 8 }}>Resp: {correctLabels}</span>}
+                    {!entry.correct && <span style={{ color: "var(--signal-correct)", marginLeft: 8 }}>Resp: {correctLabels}</span>}
                   </div>
                 </div>
               </div>;
@@ -1510,8 +1531,8 @@ function App() {
         </div>
 
         <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={goToMenu} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: 16, background: "linear-gradient(135deg,#1d4ed8,#3b82f6)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>Volver al menu</button>
-          <button onClick={() => resultPayload.mode === "mock" ? startMock() : startPractice()} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: 16, background: resultPayload.mode === "mock" ? "linear-gradient(135deg,#d97706,#f59e0b)" : "linear-gradient(135deg,#7c3aed,#a855f7)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
+          <button onClick={goToMenu} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: 16, background: "var(--gradient-practice)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Volver al menú</button>
+          <button onClick={() => resultPayload.mode === "mock" ? startMock() : startPractice()} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: 16, background: resultPayload.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-success)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
             {resultPayload.mode === "mock" ? "Nuevo simulacro" : "Seguir practicando"}
           </button>
         </div>
@@ -1522,40 +1543,40 @@ function App() {
   const practiceMode = session?.mode === "practice";
   const practiceInventoryButtons = practiceMode && !showResult;
 
-  return <div style={{ minHeight: "100vh", background: session?.mode === "mock" ? "linear-gradient(180deg,#020617,#111827)" : "radial-gradient(circle at top, rgba(59,130,246,0.15), transparent 24%), linear-gradient(180deg,#020617,#0f172a 55%,#111827)", color: "#e2e8f0", fontFamily: "'Inter',-apple-system,sans-serif" }}>
+  return <div style={{ minHeight: "100vh", background: session?.mode === "mock" ? "linear-gradient(180deg, var(--bg-primary), var(--bg-deep))" : "radial-gradient(circle at top, rgba(15, 191, 163, 0.12), transparent 24%), linear-gradient(180deg, var(--bg-primary), var(--bg-deep) 55%, var(--bg-deep))", color: "var(--text-primary)", fontFamily: "var(--font-body)", animation: "fadeIn var(--duration-fast) var(--ease-out)" }}>
     <Confetti active={showConfetti} />
     {showWheel && <SpinWheel onComplete={handleWheelComplete} onClose={() => { setShowWheel(false); afterRewardClose(); }} />}
     {showScratch && <ScratchCard onComplete={handleScratchComplete} onClose={() => { setShowScratch(false); afterRewardClose(); }} />}
     {showChest && <MysteryChest onComplete={handleChestComplete} onClose={() => { setShowChest(false); afterRewardClose(); }} />}
     {showBoss && bossQuestion && <BossBattle question={bossQuestion} onComplete={handleBossComplete} onClose={() => { setShowBoss(false); setBossQuestion(null); afterRewardClose(); }} />}
     {showAch && <AchievementPopup achievement={showAch} onClose={() => setShowAch(null)} />}
-    {xpPop && <div key={xpPop.key} style={{ position: "fixed", left: "50%", top: "34%", transform: "translate(-50%,-50%)", fontSize: 30, fontWeight: 900, color: "#fbbf24", zIndex: 500, pointerEvents: "none", animation: "floatUp 1.3s ease-out forwards", textShadow: "0 2px 12px rgba(251,191,36,0.5)" }}>+{xpPop.amount} XP</div>}
+    {xpPop && <div key={xpPop.key} style={{ position: "fixed", left: "50%", top: "34%", transform: "translate(-50%,-50%)", fontSize: 30, fontWeight: 900, color: "var(--accent-300)", zIndex: 500, pointerEvents: "none", animation: "floatUp 1.3s ease-out forwards", textShadow: "0 2px 12px rgba(212,147,10,0.4)", fontFamily: "var(--font-mono)" }}>+{xpPop.amount} XP</div>}
 
-    <div style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(2,6,23,0.88)", borderBottom: "1px solid rgba(148,163,184,0.10)", backdropFilter: "blur(14px)" }}>
+    <div style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(10, 14, 23, 0.88)", borderBottom: "1px solid var(--surface-line)", backdropFilter: "blur(14px)" }}>
       <div style={{ maxWidth: 920, margin: "0 auto", padding: "12px 20px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 8 }}>
-          <button onClick={goToMenu} style={{ padding: "8px 12px", borderRadius: 12, border: "1px solid rgba(148,163,184,0.12)", background: "rgba(15,23,42,0.75)", color: "#cbd5e1", fontSize: 12, cursor: "pointer" }}>← Menu</button>
+          <button onClick={goToMenu} style={{ padding: "8px 12px", borderRadius: 12, border: "1px solid var(--surface-line)", background: "var(--surface-panel-muted)", color: "var(--text-primary)", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-mono)" }}>← Menú</button>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            <span style={{ padding: "6px 10px", borderRadius: 999, background: session?.mode === "mock" ? "rgba(245,158,11,0.14)" : "rgba(59,130,246,0.14)", color: session?.mode === "mock" ? "#fcd34d" : "#93c5fd", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1 }}>
+            <span style={{ padding: "6px 10px", borderRadius: 999, background: session?.mode === "mock" ? "var(--accent-soft)" : "var(--primary-soft)", color: session?.mode === "mock" ? "var(--accent-300)" : "var(--primary-400)", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
               {session?.mode === "mock" ? "Simulacro" : "Practicar"}
             </span>
-            {practiceMode && session.streak >= 2 && <span style={{ fontSize: 12, color: session.streak >= 5 ? "#f59e0b" : "#60a5fa", fontWeight: 800 }}>🔥 x{session.streak}</span>}
-            {practiceMode && progress.inventory.mult > 1 && <span style={{ fontSize: 12, color: "#34d399", fontWeight: 800 }}>⚡x{progress.inventory.mult} ({progress.inventory.multDur})</span>}
-            {session?.mode === "mock" && <span style={{ padding: "6px 10px", borderRadius: 12, background: mockRemainingSec < 300 ? "rgba(239,68,68,0.14)" : "rgba(148,163,184,0.12)", color: mockRemainingSec < 300 ? "#fca5a5" : "#e2e8f0", fontSize: 13, fontWeight: 800 }}>{formatDuration(mockRemainingSec)}</span>}
+            {practiceMode && session.streak >= 2 && <span style={{ fontSize: 12, color: session.streak >= 5 ? "var(--accent-300)" : "var(--primary-400)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>x{session.streak}</span>}
+            {practiceMode && progress.inventory.mult > 1 && <span style={{ fontSize: 12, color: "var(--signal-correct)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>mult x{progress.inventory.mult} ({progress.inventory.multDur})</span>}
+            {session?.mode === "mock" && <span style={{ padding: "6px 10px", borderRadius: 12, background: mockRemainingSec < 300 ? "var(--wrong-soft)" : "var(--surface-line)", color: mockRemainingSec < 300 ? "var(--signal-wrong)" : "var(--text-primary)", fontSize: 13, fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(mockRemainingSec)}</span>}
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 132 }}>
             <span style={{ fontSize: 20 }}>{rankState.current.icon}</span>
             <div>
-              <div style={{ fontSize: 11, color: "#94a3b8" }}>{rankState.current.name}</div>
-              <div style={{ fontSize: 12, color: "#fbbf24", fontWeight: 800 }}>{progress.xp} XP</div>
+              <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{rankState.current.name}</div>
+              <div style={{ fontSize: 12, color: "var(--accent-300)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>{progress.xp} XP</div>
             </div>
           </div>
-          <div style={{ flex: 1, height: 8, background: "rgba(148,163,184,0.10)", borderRadius: 999, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${((session.currentIndex + 1) / currentQuestions.length) * 100}%`, background: session?.mode === "mock" ? "linear-gradient(90deg,#f59e0b,#f97316)" : "linear-gradient(90deg,#2563eb,#7c3aed)", borderRadius: 999, transition: "width 0.25s" }} />
+          <div style={{ flex: 1, height: 8, background: "var(--surface-line)", borderRadius: 999, overflow: "hidden" }}>
+            <div style={{ height: "100%", width: `${((session.currentIndex + 1) / currentQuestions.length) * 100}%`, background: session?.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-practice)", borderRadius: 999, transition: "width 0.25s" }} />
           </div>
-          <div style={{ minWidth: 100, textAlign: "right", fontSize: 12, color: "#cbd5e1", fontWeight: 700 }}>
+          <div style={{ minWidth: 100, textAlign: "right", fontSize: 12, color: "var(--text-primary)", fontWeight: 700, fontFamily: "var(--font-mono)" }}>
             {session.currentIndex + 1}/{currentQuestions.length}
           </div>
         </div>
@@ -1565,82 +1586,82 @@ function App() {
     <div ref={qRef} style={{ maxWidth: 920, margin: "0 auto", padding: "24px 20px 40px" }}>
       {practiceMode && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, marginBottom: 14 }}>
-          <div style={{ background: "rgba(15,23,42,0.72)", borderRadius: 18, border: "1px solid rgba(148,163,184,0.10)", padding: 14 }}>
-            <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 6 }}>Feedback inmediato • minijuegos • ayudas activas</div>
+          <div style={{ background: "var(--surface-panel)", borderRadius: 18, border: "1px solid var(--surface-line)", padding: 14 }}>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 }}>Feedback inmediato • recompensas activas • ayudas disponibles</div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-              <span style={{ padding: "4px 10px", borderRadius: 999, background: "rgba(59,130,246,0.12)", color: "#93c5fd", fontSize: 11, fontWeight: 700 }}>Correctas {session.score}/{session.answered}</span>
-              {pendingRewardCount > 0 && <span style={{ padding: "4px 10px", borderRadius: 999, background: "rgba(245,158,11,0.12)", color: "#fcd34d", fontSize: 11, fontWeight: 700 }}>🎁 Pendientes {pendingRewardCount}</span>}
-              {progress.inventory.shields > 0 && <span style={{ padding: "4px 10px", borderRadius: 999, background: "rgba(16,185,129,0.12)", color: "#6ee7b7", fontSize: 11, fontWeight: 700 }}>🛡️ {progress.inventory.shields}</span>}
+              <span style={{ padding: "4px 10px", borderRadius: 999, background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Correctas {session.score}/{session.answered}</span>
+              {pendingRewardCount > 0 && <span style={{ padding: "4px 10px", borderRadius: 999, background: "var(--accent-soft)", color: "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Pendientes {pendingRewardCount}</span>}
+              {progress.inventory.shields > 0 && <span style={{ padding: "4px 10px", borderRadius: 999, background: "var(--correct-soft)", color: "var(--signal-correct)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>🛡️ {progress.inventory.shields}</span>}
             </div>
           </div>
           {practiceInventoryButtons && <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            {progress.inventory.fiftyFifty > 0 && <button onClick={use5050} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid rgba(59,130,246,0.35)", background: "rgba(59,130,246,0.12)", color: "#93c5fd", cursor: "pointer" }}>✂️</button>}
-            {progress.inventory.hints > 0 && <button onClick={useHint} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid rgba(251,191,36,0.35)", background: "rgba(251,191,36,0.12)", color: "#fcd34d", cursor: "pointer" }}>💡</button>}
-            {progress.inventory.skips > 0 && <button onClick={useSkip} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid rgba(168,85,247,0.35)", background: "rgba(168,85,247,0.12)", color: "#d8b4fe", cursor: "pointer" }}>⏭️</button>}
-            {progress.inventory.wheelSpins > 0 && <button onClick={() => useInventoryReward("wheel")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid rgba(245,158,11,0.35)", background: "rgba(245,158,11,0.12)", color: "#fcd34d", cursor: "pointer" }}>🎰</button>}
-            {progress.inventory.scratchCards > 0 && <button onClick={() => useInventoryReward("scratch")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid rgba(236,72,153,0.35)", background: "rgba(236,72,153,0.12)", color: "#f9a8d4", cursor: "pointer" }}>🎫</button>}
-            {progress.inventory.chestKeys > 0 && <button onClick={() => useInventoryReward("chest")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid rgba(168,85,247,0.35)", background: "rgba(168,85,247,0.12)", color: "#d8b4fe", cursor: "pointer" }}>📦</button>}
-            {progress.inventory.bossKeys > 0 && <button onClick={() => useInventoryReward("boss")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid rgba(239,68,68,0.35)", background: "rgba(239,68,68,0.12)", color: "#fca5a5", cursor: "pointer" }}>🗝️</button>}
+            {progress.inventory.fiftyFifty > 0 && <button onClick={use5050} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--signal-info)", background: "var(--info-soft)", color: "var(--signal-info)", cursor: "pointer" }}>✂️</button>}
+            {progress.inventory.hints > 0 && <button onClick={useHint} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>💡</button>}
+            {progress.inventory.skips > 0 && <button onClick={useSkip} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--primary-400)", background: "var(--primary-soft)", color: "var(--primary-400)", cursor: "pointer" }}>⏭️</button>}
+            {progress.inventory.wheelSpins > 0 && <button onClick={() => useInventoryReward("wheel")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>🎰</button>}
+            {progress.inventory.scratchCards > 0 && <button onClick={() => useInventoryReward("scratch")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--primary-400)", background: "var(--primary-soft)", color: "var(--primary-400)", cursor: "pointer" }}>🎫</button>}
+            {progress.inventory.chestKeys > 0 && <button onClick={() => useInventoryReward("chest")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>📦</button>}
+            {progress.inventory.bossKeys > 0 && <button onClick={() => useInventoryReward("boss")} style={{ width: 38, height: 38, borderRadius: 12, border: "1px solid var(--signal-wrong)", background: "var(--wrong-soft)", color: "var(--signal-wrong)", cursor: "pointer" }}>🗝️</button>}
           </div>}
         </div>
       )}
 
       {session?.mode === "mock" && (
-        <div style={{ background: "rgba(15,23,42,0.72)", borderRadius: 18, border: "1px solid rgba(148,163,184,0.10)", padding: 14, marginBottom: 14 }}>
-          <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 6 }}>Sin ayudas ni feedback inmediato. Las no respondidas al acabar el tiempo cuentan como incorrectas.</div>
+        <div style={{ background: "var(--surface-panel)", borderRadius: 18, border: "1px solid var(--surface-line)", padding: 14, marginBottom: 14 }}>
+          <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 }}>Sin ayudas ni feedback inmediato. Las no respondidas al acabar el tiempo cuentan como incorrectas.</div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 13, color: "#e2e8f0", fontWeight: 700 }}>Objetivo mínimo: {PASS_PERCENT}% • Apto/No apto</span>
-            <span style={{ fontSize: 13, color: mockRemainingSec < 300 ? "#fca5a5" : "#fcd34d", fontWeight: 800 }}>{formatDuration(mockRemainingSec)} restantes</span>
+            <span style={{ fontSize: 13, color: "var(--text-primary)", fontWeight: 700 }}>Objetivo mínimo: {PASS_PERCENT}% • Apto/No apto</span>
+            <span style={{ fontSize: 13, color: mockRemainingSec < 300 ? "var(--signal-wrong)" : "var(--accent-300)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(mockRemainingSec)} restantes</span>
           </div>
         </div>
       )}
 
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
-        <span style={{ padding: "5px 10px", borderRadius: 999, background: "rgba(59,130,246,0.12)", color: "#93c5fd", fontSize: 11, fontWeight: 700 }}>{currentQuestion.topic}</span>
-        <span style={{ padding: "5px 10px", borderRadius: 999, background: currentQuestion.difficulty === 3 ? "rgba(239,68,68,0.12)" : "rgba(234,179,8,0.12)", color: currentQuestion.difficulty === 3 ? "#fca5a5" : "#fcd34d", fontSize: 11, fontWeight: 700 }}>{"★".repeat(currentQuestion.difficulty)}</span>
-        {isMulti && <span style={{ padding: "5px 10px", borderRadius: 999, background: "rgba(168,85,247,0.12)", color: "#d8b4fe", fontSize: 11, fontWeight: 700 }}>Multi respuesta</span>}
-        {practiceMode && <button onClick={() => toggleBookmark(currentQuestion.id)} style={{ marginLeft: "auto", border: "none", background: "transparent", color: bookmarkSet.has(currentQuestion.id) ? "#fcd34d" : "#64748b", fontSize: 20, cursor: "pointer" }}>{bookmarkSet.has(currentQuestion.id) ? "★" : "☆"}</button>}
+        <span style={{ padding: "5px 10px", borderRadius: 999, background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{currentQuestion.topic}</span>
+        <span style={{ padding: "5px 10px", borderRadius: 999, background: currentQuestion.difficulty === 3 ? "var(--wrong-soft)" : "var(--accent-soft)", color: currentQuestion.difficulty === 3 ? "var(--signal-wrong)" : "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{"★".repeat(currentQuestion.difficulty)}</span>
+        {isMulti && <span style={{ padding: "5px 10px", borderRadius: 999, background: "var(--surface-panel-muted)", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Multi respuesta</span>}
+        {practiceMode && <button onClick={() => toggleBookmark(currentQuestion.id)} style={{ marginLeft: "auto", border: "none", background: "transparent", color: bookmarkSet.has(currentQuestion.id) ? "var(--accent-300)" : "var(--text-tertiary)", fontSize: 20, cursor: "pointer" }}>{bookmarkSet.has(currentQuestion.id) ? "★" : "☆"}</button>}
       </div>
 
       {showHint && practiceMode && (
-        <div style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.22)", borderRadius: 16, padding: "12px 16px", marginBottom: 14, color: "#fcd34d", fontSize: 13 }}>
+        <div style={{ background: "var(--accent-soft)", border: "1px solid var(--accent-medium)", borderRadius: 16, padding: "12px 16px", marginBottom: 14, color: "var(--accent-300)", fontSize: 13 }}>
           💡 Pista: {currentQuestion.explanation.split(".")[0]}.
         </div>
       )}
 
-      <div style={{ background: "rgba(15,23,42,0.78)", borderRadius: 24, border: "1px solid rgba(148,163,184,0.10)", padding: 24, boxShadow: "0 18px 60px rgba(2,6,23,0.25)" }}>
-        <div style={{ marginBottom: 18, fontSize: 19, fontWeight: 700, lineHeight: 1.6, color: "#f8fafc" }}>{currentQuestion.question}</div>
+      <div style={{ background: "var(--gradient-panel)", borderRadius: 24, border: "1px solid var(--surface-line)", padding: 24, boxShadow: "var(--shadow-elevated)" }}>
+        <div style={{ marginBottom: 18, fontSize: 19, fontWeight: 700, lineHeight: 1.6, color: "var(--text-primary)" }}>{currentQuestion.question}</div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
           {currentQuestion.options.map((option, index) => {
             if (hiddenOptions.has(index)) {
-              return <div key={index} style={{ padding: "14px 16px", borderRadius: 16, border: "1px dashed rgba(148,163,184,0.16)", background: "rgba(15,23,42,0.52)", color: "#475569", fontStyle: "italic" }}>Opción eliminada</div>;
+              return <div key={index} style={{ padding: "14px 16px", borderRadius: 16, border: "1px dashed var(--surface-line)", background: "var(--surface-panel-muted)", color: "var(--text-muted)", fontStyle: "italic" }}>Opción eliminada</div>;
             }
 
             const isSelected = selectedAnswer instanceof Set ? selectedAnswer.has(index) : selectedAnswer === index;
             const isCorrectOption = getCorrectOptionIndexes(currentQuestion).includes(index);
             const selectedIndexes = currentEvaluation?.selectedIndexes || [];
             const selectedHasOption = selectedIndexes.includes(index);
-            let background = "rgba(15,23,42,0.68)";
-            let border = "1px solid rgba(148,163,184,0.12)";
-            let color = "#e2e8f0";
+            let background = "var(--surface-panel-muted)";
+            let border = "1px solid var(--surface-line)";
+            let color = "var(--text-primary)";
             let animation = "";
 
             if (practiceMode && showResult) {
               if (isCorrectOption) {
-                background = "rgba(52,211,153,0.10)";
-                border = "2px solid #34d399";
-                color = "#86efac";
+                background = "var(--correct-soft)";
+                border = "2px solid var(--signal-correct)";
+                color = "var(--signal-correct)";
               } else if (selectedHasOption) {
-                background = "rgba(248,113,113,0.10)";
-                border = "2px solid #f87171";
-                color = "#fca5a5";
+                background = "var(--wrong-soft)";
+                border = "2px solid var(--signal-wrong)";
+                color = "var(--signal-wrong)";
                 animation = "shake 0.4s";
               }
             } else if (isSelected) {
-              background = session?.mode === "mock" ? "rgba(245,158,11,0.12)" : "rgba(37,99,235,0.14)";
-              border = session?.mode === "mock" ? "2px solid #f59e0b" : "2px solid #3b82f6";
-              color = session?.mode === "mock" ? "#fde68a" : "#bfdbfe";
+              background = session?.mode === "mock" ? "var(--accent-soft)" : "var(--info-soft)";
+              border = session?.mode === "mock" ? "2px solid var(--accent-300)" : "2px solid var(--signal-info)";
+              color = session?.mode === "mock" ? "var(--accent-300)" : "var(--signal-info)";
             }
 
             return <button key={index} onClick={() => {
@@ -1657,9 +1678,9 @@ function App() {
               }
             }} style={{ padding: "15px 16px", borderRadius: 18, border, background, color, fontSize: 14, textAlign: "left", cursor: "pointer", lineHeight: 1.45, animation, transition: "all 0.18s ease" }}>
               <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                {isMulti && <span style={{ width: 20, height: 20, borderRadius: 6, border: isSelected ? "2px solid currentColor" : "2px solid rgba(148,163,184,0.30)", background: isSelected ? "currentColor" : "transparent", color: "#0f172a", fontSize: 10, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{isSelected ? "✓" : ""}</span>}
+                {isMulti && <span style={{ width: 20, height: 20, borderRadius: 6, border: isSelected ? "2px solid currentColor" : "2px solid var(--surface-line-strong)", background: isSelected ? "currentColor" : "transparent", color: "var(--bg-primary)", fontSize: 10, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{isSelected ? "✓" : ""}</span>}
                 <span style={{ flex: 1 }}>{option}</span>
-                <span style={{ fontSize: 10, opacity: 0.55, flexShrink: 0 }}>{index + 1}</span>
+                <span style={{ fontSize: 10, opacity: 0.55, flexShrink: 0, fontFamily: "var(--font-mono)" }}>{index + 1}</span>
               </span>
             </button>;
           })}
@@ -1667,33 +1688,33 @@ function App() {
 
         {practiceMode && showResult ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ background: currentEvaluation?.isCorrect ? "rgba(52,211,153,0.08)" : "rgba(248,113,113,0.08)", border: `1px solid ${currentEvaluation?.isCorrect ? "rgba(52,211,153,0.18)" : "rgba(248,113,113,0.18)"}`, borderRadius: 18, padding: 16 }}>
+            <div style={{ background: currentEvaluation?.isCorrect ? "var(--correct-soft)" : "var(--wrong-soft)", border: `1px solid ${currentEvaluation?.isCorrect ? "var(--signal-correct)" : "var(--signal-wrong)"}`, borderRadius: 18, padding: 16 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 8 }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: currentEvaluation?.isCorrect ? "#86efac" : "#fca5a5" }}>{currentEvaluation?.isCorrect ? "Correcto" : "Incorrecto"}</div>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "#fcd34d" }}>+{session.history[session.history.length - 1]?.xp || 0} XP</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: currentEvaluation?.isCorrect ? "var(--signal-correct)" : "var(--signal-wrong)" }}>{currentEvaluation?.isCorrect ? "Correcto" : "Incorrecto"}</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>+{session.history[session.history.length - 1]?.xp || 0} XP</div>
               </div>
-              <div style={{ fontSize: 13, color: "#cbd5e1", lineHeight: 1.6 }}>{currentQuestion.explanation}</div>
+              <div style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.6 }}>{currentQuestion.explanation}</div>
             </div>
-            <button onClick={() => setShowDiscussion((value) => !value)} style={{ border: "1px solid rgba(168,85,247,0.24)", background: "rgba(168,85,247,0.10)", color: "#d8b4fe", borderRadius: 14, padding: "10px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+            <button onClick={() => setShowDiscussion((value) => !value)} style={{ border: "1px solid var(--primary-medium)", background: "var(--primary-soft)", color: "var(--primary-400)", borderRadius: 14, padding: "10px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
               {showDiscussion ? "Ocultar" : "Ver"} discusión ({currentQuestion.discussion.length})
             </button>
-            {showDiscussion && <div style={{ background: "rgba(15,23,42,0.65)", borderRadius: 18, border: "1px solid rgba(148,163,184,0.10)", padding: 14 }}>
+            {showDiscussion && <div style={{ background: "var(--surface-panel)", borderRadius: 18, border: "1px solid var(--surface-line)", padding: 14 }}>
               {currentQuestion.discussion.map((entry, index) => (
-                <div key={`${entry.user}-${index}`} style={{ paddingBottom: index < currentQuestion.discussion.length - 1 ? 12 : 0, marginBottom: index < currentQuestion.discussion.length - 1 ? 12 : 0, borderBottom: index < currentQuestion.discussion.length - 1 ? "1px solid rgba(148,163,184,0.08)" : "none" }}>
+                <div key={`${entry.user}-${index}`} style={{ paddingBottom: index < currentQuestion.discussion.length - 1 ? 12 : 0, marginBottom: index < currentQuestion.discussion.length - 1 ? 12 : 0, borderBottom: index < currentQuestion.discussion.length - 1 ? "1px solid var(--surface-line)" : "none" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                     <div style={{ width: 26, height: 26, borderRadius: "50%", background: `hsl(${index * 110 + 210},65%,38%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800 }}>{entry.user[0]}</div>
-                    <span style={{ fontSize: 12, color: "#e2e8f0", fontWeight: 700 }}>{entry.user}</span>
+                    <span style={{ fontSize: 12, color: "var(--text-primary)", fontWeight: 700 }}>{entry.user}</span>
                   </div>
-                  <div style={{ marginLeft: 34, fontSize: 12, color: "#94a3b8", lineHeight: 1.55 }}>{entry.text}</div>
+                  <div style={{ marginLeft: 34, fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.55 }}>{entry.text}</div>
                 </div>
               ))}
             </div>}
-            <button onClick={openQueuedPracticeReward} style={{ padding: "14px 16px", border: "none", borderRadius: 16, background: pendingRewardCount ? "linear-gradient(135deg,#d97706,#f59e0b)" : "linear-gradient(135deg,#059669,#10b981)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
+            <button onClick={openQueuedPracticeReward} style={{ padding: "14px 16px", border: "none", borderRadius: 16, background: pendingRewardCount ? "var(--gradient-mock)" : "var(--gradient-success)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
               {pendingRewardCount ? `Reclamar recompensa (${pendingRewardCount})` : session.currentIndex === currentQuestions.length - 1 ? "Ver resultados" : "Siguiente"} <span style={{ opacity: 0.5, fontSize: 11 }}>(Enter)</span>
             </button>
           </div>
         ) : (
-          <button onClick={submitCurrentAnswer} disabled={!canSubmitCurrent} style={{ width: "100%", padding: "15px 16px", border: "none", borderRadius: 16, background: canSubmitCurrent ? (session?.mode === "mock" ? "linear-gradient(135deg,#d97706,#f59e0b)" : "linear-gradient(135deg,#1d4ed8,#3b82f6)") : "#334155", color: "white", fontSize: 14, fontWeight: 800, cursor: canSubmitCurrent ? "pointer" : "not-allowed", opacity: canSubmitCurrent ? 1 : 0.55 }}>
+          <button onClick={submitCurrentAnswer} disabled={!canSubmitCurrent} style={{ width: "100%", padding: "15px 16px", border: "none", borderRadius: 16, background: canSubmitCurrent ? (session?.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-practice)") : "var(--text-muted)", color: "white", fontSize: 14, fontWeight: 800, cursor: canSubmitCurrent ? "pointer" : "not-allowed", opacity: canSubmitCurrent ? 1 : 0.55, fontFamily: "var(--font-mono)" }}>
             {session?.mode === "mock" ? "Guardar y continuar" : isMulti ? `Comprobar (${currentEvaluation?.selectedIndexes.length || 0}/${getCorrectOptionIndexes(currentQuestion).length})` : "Comprobar"} {canSubmitCurrent && <span style={{ opacity: 0.5, fontSize: 11 }}>(Enter)</span>}
           </button>
         )}

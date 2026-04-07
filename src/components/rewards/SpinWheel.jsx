@@ -17,24 +17,24 @@ export function SpinWheel({ onComplete, onClose }) {
     const c = canvasRef.current; if (!c) return;
     const ctx = c.getContext("2d"); const sz = c.width; const cx = sz/2; const rad = cx-12;
     ctx.clearRect(0,0,sz,sz);
-    ctx.save(); ctx.shadowColor="rgba(99,102,241,0.5)"; ctx.shadowBlur=40;
-    ctx.beginPath(); ctx.arc(cx,cx,rad,0,Math.PI*2); ctx.fillStyle="#1e293b"; ctx.fill(); ctx.restore();
+    ctx.save(); ctx.shadowColor="rgba(15,191,163,0.28)"; ctx.shadowBlur=40;
+    ctx.beginPath(); ctx.arc(cx,cx,rad,0,Math.PI*2); ctx.fillStyle="#151d2e"; ctx.fill(); ctx.restore();
     segs.forEach((s,i) => {
       const sa=(i*segAngle-90+r)*Math.PI/180, ea=((i+1)*segAngle-90+r)*Math.PI/180;
       ctx.beginPath(); ctx.moveTo(cx,cx); ctx.arc(cx,cx,rad,sa,ea); ctx.closePath();
       const g = ctx.createRadialGradient(cx,cx,0,cx,cx,rad);
       g.addColorStop(0, s.color+"88"); g.addColorStop(1, s.color);
-      ctx.fillStyle=g; ctx.fill(); ctx.strokeStyle="#0f172a"; ctx.lineWidth=2; ctx.stroke();
+      ctx.fillStyle=g; ctx.fill(); ctx.strokeStyle="#0f1520"; ctx.lineWidth=2; ctx.stroke();
       ctx.save(); ctx.translate(cx,cx); ctx.rotate(sa+(segAngle*Math.PI/360));
-      ctx.textAlign="right"; ctx.fillStyle="white"; ctx.font="bold 12px Inter,sans-serif";
+      ctx.textAlign="right"; ctx.fillStyle="#e8ecf2"; ctx.font="bold 12px 'IBM Plex Sans',sans-serif";
       ctx.fillText(s.label, rad-14, 4); ctx.restore();
     });
-    ctx.beginPath(); ctx.arc(cx,cx,24,0,Math.PI*2); ctx.fillStyle="#0f172a"; ctx.fill();
-    ctx.strokeStyle="#fbbf24"; ctx.lineWidth=3; ctx.stroke();
-    ctx.fillStyle="#fbbf24"; ctx.font="bold 18px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.beginPath(); ctx.arc(cx,cx,24,0,Math.PI*2); ctx.fillStyle="#0f1520"; ctx.fill();
+    ctx.strokeStyle="#ffb733"; ctx.lineWidth=3; ctx.stroke();
+    ctx.fillStyle="#ffb733"; ctx.font="bold 18px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.textBaseline="middle";
     ctx.fillText("\u2605",cx,cx);
     ctx.beginPath(); ctx.moveTo(cx-14,4); ctx.lineTo(cx+14,4); ctx.lineTo(cx,26); ctx.closePath();
-    ctx.fillStyle="#fbbf24"; ctx.fill();
+    ctx.fillStyle="#ffb733"; ctx.fill();
   };
 
   const spin = () => {
@@ -52,27 +52,27 @@ export function SpinWheel({ onComplete, onClose }) {
     requestAnimationFrame(anim);
   };
 
-  return <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,backdropFilter:"blur(10px)"}}>
-    <div style={{background:"linear-gradient(135deg,#1e293b,#0f172a)",borderRadius:24,padding:32,textAlign:"center",border:"2px solid rgba(251,191,36,0.3)",maxWidth:420,position:"relative",overflow:"hidden"}}>
-      <Particles count={15} color="#fbbf24" />
-      <h2 style={{margin:"0 0 4px",fontSize:22,color:"#fbbf24",fontWeight:800,position:"relative"}}>RULETA DE RECOMPENSAS</h2>
-      <p style={{margin:"0 0 16px",color:"#94a3b8",fontSize:13,position:"relative"}}>Gira y descubre tu premio</p>
+  return <div style={{position:"fixed",inset:0,background:"var(--bg-overlay)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,backdropFilter:"blur(10px)"}}>
+    <div style={{background:"var(--gradient-panel-strong)",borderRadius:24,padding:32,textAlign:"center",border:"2px solid var(--accent-medium)",maxWidth:420,position:"relative",overflow:"hidden",boxShadow:"var(--shadow-elevated)"}}>
+      <Particles count={15} color="var(--accent-300)" />
+      <h2 style={{margin:"0 0 4px",fontSize:22,color:"var(--accent-300)",fontWeight:800,position:"relative",fontFamily:"var(--font-heading)"}}>RULETA DE RECOMPENSAS</h2>
+      <p style={{margin:"0 0 16px",color:"var(--text-secondary)",fontSize:13,position:"relative"}}>Gira y descubre tu premio</p>
       <canvas ref={canvasRef} width={280} height={280} style={{margin:"0 auto 16px",display:"block",position:"relative"}}/>
       {result ? (
         <div style={{animation:"pulse 0.5s",position:"relative"}}>
           <div style={{fontSize:36,marginBottom:6}}>{"\uD83C\uDF89"}</div>
           <div style={{fontSize:24,fontWeight:800,color:result.color}}>{result.label}</div>
-          <div style={{color:"#94a3b8",fontSize:13,marginTop:4}}>
+          <div style={{color:"var(--text-secondary)",fontSize:13,marginTop:4}}>
             {result.xp?`+${result.xp} XP`:result.mult?`Multiplicador x${result.mult} activado`:result.scratch?"Rasca y gana desbloqueado":result.chest?"Cofre misterioso obtenido":result.power?"Power-up obtenido":""}
           </div>
-          <button onClick={onClose} style={{marginTop:16,padding:"10px 36px",background:"linear-gradient(135deg,#3b82f6,#2563eb)",border:"none",borderRadius:10,color:"white",fontSize:14,fontWeight:600,cursor:"pointer"}}>Continuar</button>
+          <button onClick={onClose} style={{marginTop:16,padding:"10px 36px",background:"var(--gradient-practice)",border:"none",borderRadius:10,color:"white",fontSize:14,fontWeight:600,cursor:"pointer"}}>Continuar</button>
         </div>
       ) : (
         <button onClick={spin} disabled={spinning} style={{
-          padding:"14px 52px",background:spinning?"#374151":"linear-gradient(135deg,#f59e0b,#f97316)",
+          padding:"14px 52px",background:spinning?"var(--text-muted)":"var(--gradient-mock)",
           border:"none",borderRadius:14,color:"white",fontSize:18,fontWeight:800,
-          cursor:spinning?"wait":"pointer",boxShadow:spinning?"none":"0 4px 25px rgba(245,158,11,0.5)",
-          animation:spinning?"":"pulse 1.5s infinite",position:"relative"
+          cursor:spinning?"wait":"pointer",boxShadow:spinning?"none":"0 4px 25px rgba(212,147,10,0.3)",
+          animation:spinning?"":"pulse 1.5s infinite",position:"relative",fontFamily:"var(--font-mono)"
         }}>{spinning?"Girando...":"\u2605 GIRAR \u2605"}</button>
       )}
     </div>

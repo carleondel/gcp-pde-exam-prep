@@ -1,0 +1,86 @@
+:root {
+  /* Backgrounds - control room panels */
+  --bg-deep: #0a0e17;
+  --bg-primary: #0f1520;
+  --bg-secondary: #151d2e;
+  --bg-tertiary: #1a2438;
+  --bg-overlay: rgba(10, 14, 23, 0.92);
+  --surface-panel: rgba(21, 29, 46, 0.86);
+  --surface-panel-strong: rgba(21, 29, 46, 0.94);
+  --surface-panel-muted: rgba(15, 21, 32, 0.72);
+  --surface-line: rgba(139, 149, 168, 0.14);
+  --surface-line-strong: rgba(139, 149, 168, 0.24);
+
+  /* Primary - petrol/teal */
+  --primary-400: #0fbfa3;
+  --primary-500: #0d9e87;
+  --primary-600: #0a7d6b;
+  --primary-soft: rgba(15, 191, 163, 0.12);
+  --primary-medium: rgba(15, 191, 163, 0.22);
+
+  /* Accent - copper/amber */
+  --accent-300: #ffb733;
+  --accent-400: #d4930a;
+  --accent-500: #b37a08;
+  --accent-soft: rgba(212, 147, 10, 0.14);
+  --accent-medium: rgba(212, 147, 10, 0.24);
+
+  /* Signal */
+  --signal-correct: #2dd4a0;
+  --signal-wrong: #f0605a;
+  --signal-warning: #e6a817;
+  --signal-info: #4a9eff;
+  --correct-soft: rgba(45, 212, 160, 0.14);
+  --wrong-soft: rgba(240, 96, 90, 0.14);
+  --warning-soft: rgba(230, 168, 23, 0.14);
+  --info-soft: rgba(74, 158, 255, 0.14);
+
+  /* Text */
+  --text-primary: #e8ecf2;
+  --text-secondary: #8b95a8;
+  --text-tertiary: #5a6478;
+  --text-muted: #3d4556;
+
+  /* Highlight - acid green */
+  --highlight: #8fff6a;
+
+  /* Typography */
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-heading: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+  --space-4xl: 48px;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-elevated: 0 16px 40px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 30px rgba(15, 191, 163, 0.16);
+
+  /* Gradients */
+  --gradient-panel: linear-gradient(180deg, rgba(26, 36, 56, 0.94), rgba(15, 21, 32, 0.88));
+  --gradient-panel-strong: linear-gradient(180deg, rgba(21, 29, 46, 0.98), rgba(10, 14, 23, 0.92));
+  --gradient-practice: linear-gradient(135deg, var(--primary-500), var(--signal-info));
+  --gradient-mock: linear-gradient(135deg, var(--accent-500), var(--accent-300));
+  --gradient-success: linear-gradient(135deg, var(--primary-600), var(--signal-correct));
+  --gradient-danger: linear-gradient(135deg, var(--signal-wrong), #b63b33);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+}
