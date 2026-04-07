@@ -1,16 +1,13 @@
-FROM node:20-alpine
-
+FROM node:20-alpine AS build
 WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY index.html vite.config.js ./
+COPY src/ src/
+COPY public/ public/
+RUN npm run build
 
-COPY package.json ./
-
-RUN npm install
-
-COPY index.html ./
-COPY main.jsx ./
-COPY vite.config.js ./
-COPY gcp-pde-exam-prep.jsx ./
-
-EXPOSE 5173
-
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

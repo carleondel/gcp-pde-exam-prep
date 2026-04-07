@@ -29,11 +29,11 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // ========== CONFIG ==========
-const DISCUSSIONS_FILE = join(__dirname, "examtopics-discussions.json");
-const SOURCE_FILE = join(__dirname, "gcp-pde-exam-prep.jsx");
-const OUTPUT_FILE = join(__dirname, "gcp-pde-exam-prep.jsx"); // sobreescribe
-const BACKUP_FILE = join(__dirname, "gcp-pde-exam-prep.backup.jsx");
-const MATCH_REPORT_FILE = join(__dirname, "match-report.json");
+const DISCUSSIONS_FILE = join(__dirname, "..", "data", "examtopics-discussions.json");
+const SOURCE_FILE = join(__dirname, "..", "src", "data", "questions.js");
+const OUTPUT_FILE = join(__dirname, "..", "src", "data", "questions.js");
+const BACKUP_FILE = join(__dirname, "..", "data", "questions.backup.js");
+const MATCH_REPORT_FILE = join(__dirname, "..", "data", "match-report.json");
 
 // Umbral minimo de similitud para considerar un match (0-1)
 const MIN_SIMILARITY = 0.55;

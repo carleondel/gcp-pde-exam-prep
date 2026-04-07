@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import googleCloudLogo from "./google-cloud-logo.svg";
+import googleCloudLogo from "./assets/google-cloud-logo.svg";
+import { QUESTIONS } from "./data/questions.js";
+import { TOPICS } from "./data/topics.js";
+import { RANKS, ACHIEVEMENTS } from "./data/gamification.js";
 import {
-  ACHIEVEMENTS,
   AchievementPopup,
   BossBattle,
   Confetti,
-  CSS,
-  QUESTIONS,
-  RANKS,
-  ScratchCard,
   MysteryChest,
+  ScratchCard,
   SpinWheel,
-  TOPICS,
-} from "./gcp-pde-exam-prep.jsx";
+} from "./components/rewards/index.js";
+import "./styles/animations.css";
 import {
   DAILY_CHALLENGE_BONUS_XP,
   DAILY_CHALLENGE_COUNT,
@@ -33,7 +32,7 @@ import {
   getCorrectOptionIndexes,
   pushWrongQuestionId,
   serializeSelection,
-} from "./quiz-engine";
+} from "./engine/quiz-engine";
 import {
   advanceSession,
   createMockSession,
@@ -43,7 +42,7 @@ import {
   hydrateMockSession,
   toStoredMockSession,
   withRecordedMockAnswer,
-} from "./session-manager";
+} from "./engine/session-manager";
 import {
   EMPTY_PROGRESS,
   clearActiveMock,
@@ -56,7 +55,7 @@ import {
   savePracticePrefs,
   saveProgress,
   updateDailyStreak,
-} from "./storage";
+} from "./engine/storage";
 
 const PRACTICE_PRESETS = [10, 20, 30, 50];
 const DEFAULT_PRACTICE_LIMIT = 20;
@@ -1058,7 +1057,7 @@ function App() {
       ? `Empezar práctica de ${effectivePracticeLimit} preguntas`
       : "Configura tu práctica";
     return <div style={{ minHeight: "100vh", background: "radial-gradient(circle at top, rgba(59,130,246,0.18), transparent 30%), linear-gradient(180deg,#020617,#0f172a 48%,#111827)", color: "#e2e8f0", fontFamily: "'Inter',-apple-system,sans-serif" }}>
-      <style>{CSS}</style>
+
       {showAch && <AchievementPopup achievement={showAch} onClose={() => setShowAch(null)} />}
       <div style={{ maxWidth: 1040, margin: "0 auto", padding: "40px 20px 56px" }}>
         <div style={{ textAlign: "center", marginBottom: 26 }}>
@@ -1439,7 +1438,7 @@ function App() {
         : (summary.percent >= 80 ? "Sesión excelente" : summary.percent >= 60 ? "Buen entrenamiento" : "Seguimos iterando");
 
     return <div style={{ minHeight: "100vh", background: "linear-gradient(180deg,#020617,#0f172a 52%,#111827)", color: "#e2e8f0", fontFamily: "'Inter',-apple-system,sans-serif" }}>
-      <style>{CSS}</style>
+
       <Confetti active={resultPayload.mode === "mock" ? summary.passed : summary.percent >= 80} />
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 20px 56px" }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
@@ -1524,7 +1523,6 @@ function App() {
   const practiceInventoryButtons = practiceMode && !showResult;
 
   return <div style={{ minHeight: "100vh", background: session?.mode === "mock" ? "linear-gradient(180deg,#020617,#111827)" : "radial-gradient(circle at top, rgba(59,130,246,0.15), transparent 24%), linear-gradient(180deg,#020617,#0f172a 55%,#111827)", color: "#e2e8f0", fontFamily: "'Inter',-apple-system,sans-serif" }}>
-    <style>{CSS}</style>
     <Confetti active={showConfetti} />
     {showWheel && <SpinWheel onComplete={handleWheelComplete} onClose={() => { setShowWheel(false); afterRewardClose(); }} />}
     {showScratch && <ScratchCard onComplete={handleScratchComplete} onClose={() => { setShowScratch(false); afterRewardClose(); }} />}
