@@ -65,6 +65,11 @@ const PRACTICE_SOURCE_META = {
     helper: "Selecciona los dominios que quieres cubrir.",
     empty: "Selecciona temas.",
   },
+  recent: {
+    label: "Recientes",
+    helper: "Prioriza ExamTopics reciente con las últimas incorporaciones.",
+    empty: "Aún no hay preguntas recientes importadas.",
+  },
   wrong: {
     label: "Solo fallos",
     helper: "Repasa solo lo que más te cuesta.",
@@ -83,7 +88,7 @@ const PRACTICE_SOURCE_META = {
 };
 
 function sanitizePracticeOrder(order) {
-  return order === "sequential" ? "sequential" : "random";
+  return ["random", "sequential", "recent-desc"].includes(order) ? order : "random";
 }
 
 function sanitizePracticeSource(source) {
@@ -219,6 +224,10 @@ function App() {
     () => progress.bookmarks.map((id) => questionMap.get(id)).filter(Boolean),
     [progress.bookmarks, questionMap]
   );
+  const recentQuestions = useMemo(
+    () => QUESTIONS.filter((question) => question.isRecent),
+    []
+  );
   const topicQuestions = useMemo(
     () => QUESTIONS.filter((question) => selectedTopics.has(question.topic)),
     [selectedTopics]
@@ -228,21 +237,32 @@ function App() {
     [weakTopicSet]
   );
   const practiceSourceQuestions = useMemo(() => {
+    if (practiceSource === "recent") return recentQuestions;
     if (practiceSource === "wrong") return wrongQuestions;
     if (practiceSource === "bookmarks") return bookmarkedQuestions;
     if (practiceSource === "weak") return weakQuestions;
     return topicQuestions;
-  }, [bookmarkedQuestions, practiceSource, topicQuestions, weakQuestions, wrongQuestions]);
+  }, [bookmarkedQuestions, practiceSource, recentQuestions, topicQuestions, weakQuestions, wrongQuestions]);
   const practiceSourceCounts = useMemo(() => ({
     topics: topicQuestions.length,
+    recent: recentQuestions.length,
     wrong: wrongQuestions.length,
     bookmarks: bookmarkedQuestions.length,
     weak: weakQuestions.length,
-  }), [bookmarkedQuestions.length, topicQuestions.length, weakQuestions.length, wrongQuestions.length]);
+  }), [bookmarkedQuestions.length, recentQuestions.length, topicQuestions.length, weakQuestions.length, wrongQuestions.length]);
   const maxPracticeCount = practiceSourceQuestions.length;
   const effectivePracticeLimit = maxPracticeCount > 0 ? Math.min(Math.max(1, practiceLimit), maxPracticeCount) : 0;
   const maxPresetLabel = maxPracticeCount > 0 ? `Máximo disponible (${maxPracticeCount})` : "Máximo disponible";
   const practiceSummary = useMemo(() => {
+    if (practiceSource === "recent") {
+      return {
+        title: "Recientes",
+        subtitle: recentQuestions.length
+          ? "Bloque priorizado con las preguntas más nuevas importadas."
+          : PRACTICE_SOURCE_META.recent.empty,
+        badge: formatPracticeBadge(recentQuestions.length, "pregunta", "preguntas"),
+      };
+    }
     if (practiceSource === "wrong") {
       return {
         title: "Solo fallos",
@@ -273,7 +293,7 @@ function App() {
         : "Sesión filtrada por dominio.",
       badge: formatPracticeBadge(selectedTopics.size, "tema", "temas"),
     };
-  }, [practiceSource, progress.bookmarks.length, progress.wrongQuestionIds.length, selectedTopics.size, weakTopics.length]);
+  }, [practiceSource, progress.bookmarks.length, progress.wrongQuestionIds.length, recentQuestions.length, selectedTopics.size, weakTopics.length]);
 
   const currentQuestions = useMemo(() => {
     if (!session) return [];
@@ -492,6 +512,8 @@ function App() {
 
     const nextMax = nextSource === "wrong"
       ? practiceSourceCounts.wrong
+      : nextSource === "recent"
+        ? practiceSourceCounts.recent
       : nextSource === "bookmarks"
         ? practiceSourceCounts.bookmarks
         : nextSource === "weak"
@@ -617,6 +639,10 @@ function App() {
       setPracticeMessage(PRACTICE_SOURCE_META.wrong.empty);
       return;
     }
+    if (source === "recent" && !recentQuestions.length) {
+      setPracticeMessage(PRACTICE_SOURCE_META.recent.empty);
+      return;
+    }
     if (source === "bookmarks" && !bookmarkedQuestions.length) {
       setPracticeMessage(PRACTICE_SOURCE_META.bookmarks.empty);
       return;
@@ -629,7 +655,9 @@ function App() {
       setSelectedTopics(new Set(weakTopics.map((topic) => topic.topic)));
     }
 
-    const nextCount = source === "wrong"
+    const nextCount = source === "recent"
+      ? recentQuestions.length
+      : source === "wrong"
       ? wrongQuestions.length
       : source === "bookmarks"
         ? bookmarkedQuestions.length
@@ -640,13 +668,16 @@ function App() {
 
     setPracticeSource(source);
     setPracticeLimit(nextLimit > 0 ? nextLimit : practiceLimit);
+    if (source === "recent") setPracticeOrder("recent-desc");
     setPracticeMessage(nextCount > 0
       ? `${PRACTICE_SOURCE_META[source].label} cargado.`
       : PRACTICE_SOURCE_META[source].empty);
-  }, [bookmarkedQuestions.length, practiceLimit, topicQuestions.length, weakQuestions.length, weakTopics, wrongQuestions.length]);
+  }, [bookmarkedQuestions.length, practiceLimit, recentQuestions.length, topicQuestions.length, weakQuestions.length, weakTopics, wrongQuestions.length]);
 
   const startPractice = useCallback(() => {
-    const questionIds = practiceSource === "wrong"
+    const questionIds = practiceSource === "recent"
+      ? recentQuestions.map((question) => question.id)
+      : practiceSource === "wrong"
       ? progress.wrongQuestionIds
       : practiceSource === "bookmarks"
         ? progress.bookmarks
@@ -673,7 +704,7 @@ function App() {
     setResultPayload(null);
     setScreen("quiz");
     resetQuestionUi();
-  }, [effectivePracticeLimit, practiceOrder, practiceSource, progress.bookmarks, progress.wrongQuestionIds, questionMap, resetQuestionUi, selectedTopics, weakTopicSet]);
+  }, [effectivePracticeLimit, practiceOrder, practiceSource, progress.bookmarks, progress.wrongQuestionIds, questionMap, recentQuestions, resetQuestionUi, selectedTopics, weakTopicSet]);
 
   const startMock = useCallback(() => {
     const questions = buildMockQuestions(QUESTIONS, MOCK_QUESTION_COUNT);
@@ -1051,6 +1082,11 @@ function App() {
         disabled: false,
       },
       {
+        key: "recent",
+        badge: formatPracticeBadge(practiceSourceCounts.recent, "reciente", "recientes"),
+        disabled: practiceSourceCounts.recent === 0,
+      },
+      {
         key: "wrong",
         badge: formatPracticeBadge(progress.wrongQuestionIds.length, "error", "errores"),
         disabled: practiceSourceCounts.wrong === 0,
@@ -1081,7 +1117,7 @@ function App() {
             <span style={{ fontSize: 12, color: "var(--text-primary)", letterSpacing: 1, textTransform: "uppercase", fontWeight: 700, fontFamily: "var(--font-mono)" }}>Professional Data Engineer</span>
           </div>
           <h1 style={{ margin: "0 0 8px", fontSize: 44, lineHeight: 1.02, fontWeight: 900, letterSpacing: -1.4, fontFamily: "var(--font-heading)" }}>DataForge <span style={{ fontSize: 20, fontWeight: 700, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>PDE</span></h1>
-          <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15, fontFamily: "var(--font-mono)" }}>319 preguntas · práctica + simulacro</p>
+          <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15, fontFamily: "var(--font-mono)" }}>{QUESTIONS.length} preguntas · práctica + simulacro</p>
         </div>
 
         {renderSummaryCards()}
@@ -1171,7 +1207,7 @@ function App() {
                 <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{practiceSource === "topics" ? "Configurable" : "Aplicado al bloque cargado"}</div>
               </div>
               <div style={{ display: "flex", gap: 8 }}>
-                {["random", "sequential"].map((order) => (
+                {["random", "sequential", "recent-desc"].map((order) => (
                   <button key={order} onClick={() => setPracticeOrder(order)} style={{
                     padding: "10px 14px",
                     borderRadius: 12,
@@ -1183,7 +1219,7 @@ function App() {
                     cursor: "pointer",
                     fontFamily: "var(--font-mono)",
                   }}>
-                    {order === "random" ? "Mezclado" : "Secuencial"}
+                    {order === "random" ? "Mezclado" : order === "sequential" ? "Secuencial" : "Más recientes"}
                   </button>
                 ))}
               </div>
@@ -1619,6 +1655,7 @@ function App() {
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
         <span style={{ padding: "5px 10px", borderRadius: 999, background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{currentQuestion.topic}</span>
         <span style={{ padding: "5px 10px", borderRadius: 999, background: currentQuestion.difficulty === 3 ? "var(--wrong-soft)" : "var(--accent-soft)", color: currentQuestion.difficulty === 3 ? "var(--signal-wrong)" : "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{"★".repeat(currentQuestion.difficulty)}</span>
+        {currentQuestion.isRecent && <span style={{ padding: "5px 10px", borderRadius: 999, background: "var(--accent-soft)", color: "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Reciente #{currentQuestion.sourceQuestionNumber || currentQuestion.id}</span>}
         {isMulti && <span style={{ padding: "5px 10px", borderRadius: 999, background: "var(--surface-panel-muted)", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Multi respuesta</span>}
         {practiceMode && <button onClick={() => toggleBookmark(currentQuestion.id)} style={{ marginLeft: "auto", border: "none", background: "transparent", color: bookmarkSet.has(currentQuestion.id) ? "var(--accent-300)" : "var(--text-tertiary)", fontSize: 20, cursor: "pointer" }}>{bookmarkSet.has(currentQuestion.id) ? "★" : "☆"}</button>}
       </div>

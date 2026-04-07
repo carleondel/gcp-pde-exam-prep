@@ -94,7 +94,17 @@ export function buildPracticeQuestions(allQuestions, options = {}) {
     selected = topicSet ? allQuestions.filter((question) => topicSet.has(question.topic)) : [...allQuestions];
   }
 
-  const ordered = order === "random" ? shuffle(selected) : selected;
+  let ordered = selected;
+  if (order === "random") {
+    ordered = shuffle(selected);
+  } else if (order === "recent-desc") {
+    ordered = [...selected].sort((left, right) => {
+      const rightRecent = right.sourceQuestionNumber ?? right.id ?? 0;
+      const leftRecent = left.sourceQuestionNumber ?? left.id ?? 0;
+      return rightRecent - leftRecent || right.id - left.id;
+    });
+  }
+
   if (typeof limit === "number" && Number.isFinite(limit) && limit > 0) {
     return ordered.slice(0, limit);
   }

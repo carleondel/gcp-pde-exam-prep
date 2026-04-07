@@ -1,0 +1,554 @@
+Professional Data Engineer topic 1 question 348 discussion
+Actual exam question from Google's Professional Data Engineer
+Question #: 348
+Topic #: 1
+[All Professional Data Engineer Questions]
+You are designing a data lake on Google Cloud to store vast amounts of customer interaction data from various sources, such as websites, mobile apps, and social media. You need to ensure that this data, which arrives in different formats, is consistently cataloged and easy for data analysts to discover and use. You also want to perform basic data quality checks and transformations before the data is consumed by downstream applications. You need an automated and managed data governance solution. What should you do?
+
+A. Use Cloud Storage as the central repository. Use Vertex AI to classify and process the data and perform data quality checks.
+B. Stream all the data directly into BigQuery, where it is automatically cataloged and governed.
+C. Use Cloud Storage and BigQuery as repositories. Use Dataplex Universal Catalog for metadata discovery, data quality checks, and transformations.
+D. Use Cloud Storage as the central repository. Use a Cloud Run function to catalog, transform the data, and perform data quality checks.
+Suggested Answer: C
+Community vote distribution
+C (100%)
+by jreale64 at March 14, 2026, 12:53 p.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+jreale64 3 weeks, 3 days ago
+Selected Answer: C
+C: Dataplex: It is a fully managed Google Cloud data fabric platform, specifically designed to unify data management, governance, and analytics across a data lake environment. It automates data classification, metadata discovery, data quality, and provides a consistent governance layer.
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 346
+Topic #: 1
+[All Professional Data Engineer Questions]
+Your retail company is concerned about their BigQuery analytics spend. The company runs several queries that require the use of the same aggregation for the store ID and real-time sales volume. You need to implement the optimal solution that minimizes analytics spend and returns faster results. What should you do?
+
+A. Create a new table from a CSV file with the repeated aggregation for the other queries to reference for faster processing.
+B. Create a materialized view to minimize repetitive computations.
+C. Use join acceleration with primary and foreign keys to increase query joining to live data.
+D. Leverage partitioning to minimize the number of bytes read.
+Suggested Answer: B
+Community vote distribution
+B (100%)
+by jreale64 at March 14, 2026, 12:50 p.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+jreale64 3 weeks, 3 days ago
+Selected Answer: B
+B: Materialized views in BigQuery store the precomputed results of a query. Unlike logical views, which execute the query every time they are referenced, materialized views store the result set and automatically update as data in the base tables changes.
+upvoted 1 times
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 345
+Topic #: 1
+[All Professional Data Engineer Questions]
+You are preparing data to serve a sales demand prediction model. The training data undergoes several pre-processing steps, including scaling numerical features and one-hot encoding categorical features. The model is deployed on Vertex AI Endpoints. You need to prevent training-serving skew and ensure accurate predictions in production. You want a solution that is easy to implement.
+
+What should you do?
+
+A. Implement a custom handler within the Vertex AI Endpoint to automatically perform data transformations before the model makes a prediction.
+B. Replicate the exact same pre-processing logic in the inference pipeline that was used during model training.
+C. Store the raw, unprocessed data in a separate Cloud Storage bucket exclusively for serving.
+D. Ensure the serving data is a smaller, random sample of the training data.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+jreale64 3 weeks, 3 days ago
+Selected Answer: B
+B: Training-serving skew occurs when the data used to train your model differs in its characteristics or processing from the data used for making predictions in production. The problem explicitly mentions preprocessing steps like scaling numerical features and one-hot encoding categorical features. If these transformations are not applied identically during inference as they were during training, the model will receive inconsistent input, leading to inaccurate predictions.
+upvoted 1 times
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 344
+Topic #: 1
+[All Professional Data Engineer Questions]
+You are building a system to process financial transactions. The system must handle a high throughput of concurrent user operations and each operation requires low-latency reads and writes to individual records. You need to identify a storage solution that guarantees ACID compliance for the processed transactions. You want a Google Cloud managed service. What should you do?
+
+A. Select Bigtable.
+B. Select BigQuery.
+C. Select Cloud Storage.
+D. Select Spanner.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+jreale64 3 weeks, 3 days ago
+Selected Answer: D
+D: High performance for concurrent user operations: Capable of handling many operations simultaneously.
+Low-latency reads and writes to individual records: Optimized for fast transactional operations on specific records.
+Ensures ACID compliance: This is crucial for financial transactions (Atomicity, Consistency, Isolation, Durability).
+Google Cloud managed service: A serverless solution with minimal user management.
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 338
+Topic #: 1
+[All Professional Data Engineer Questions]
+Your organization stores highly personal data in BigQuery and needs to comply with strict data privacy regulations. You need to ensure that sensitive data values are rendered unreadable whenever an employee leaves the organization. What should you do?
+
+A. Use column-level access controls with policy tags and revoke viewer permissions when employees leave the organization.
+B. Use dynamic data masking and revoke viewer permissions when employees leave the organization.
+C. Use customer-managed encryption keys (CMEK) and delete keys when employees leave the organization.
+D. Use AEAD functions and delete keys when employees leave the organization.
+Suggested Answer: D
+Community vote distribution
+D (100%)
+by 67bdb19 at Jan. 16, 2026, 8:15 a.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+DerfelCardarn 2 months, 2 weeks ago
+Selected Answer: D
+C is too complex
+upvoted 3 times
+
+Actual exam question from Google's Professional Machine Learning Engineer
+Question #: 333
+Topic #: 1
+[All Professional Machine Learning Engineer Questions]
+Your company's business stakeholders want to understand the factors driving customer churn to inform their business strategy. You need to build a customer churn prediction model that prioritizes simple interpretability of your model's results. You need to choose the ML framework and modeling technique that will explain which features led to the prediction. What should you do?
+
+A. Build a TensorFlow deep neural network (DNN) model, and use SHAP values for feature importance analysis.
+B. Build a PyTorch long short-term memory (LSTM) network, and use attention mechanisms for interpretability.
+C. Build a logistic regression model in scikit-learn, and interpret the model's output coefficients to understand feature impact.
+D. Build a linear regression model in scikit-learn, and interpret the model's standardized coefficients to understand feature impact.
+Suggested Answer: C
+Community vote distribution
+C (100%)
+by Duke_CT at June 20, 2025, 3:52 a.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+OpenKnowledge 5 months, 3 weeks ago
+Selected Answer: C
+Linear Regression and Logistic Regression using Scikit-learn are inherently interpretable. The relationship between features and the target variable is directly represented by coefficients.
+
+The use case described in this question is classification (Churned and Not Churned) problem. So Logistic regression is the choice here which leads to Option C
+upvoted 1 times
+Fer660 7 months, 1 week ago
+Selected Answer: C
+Not A: does not prioritize simple interpretability of your model's results
+Not B: does not prioritize simple interpretability of your model's results
+C: We need logistic regression because we have two classes (churned/not churned)
+Not D: linear regression will not help much when the labels are binary (churned/not churned)
+upvoted 2 times
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 332
+Topic #: 1
+[All Professional Data Engineer Questions]
+You are designing BigQuery tables for large volumes of clickstream event data. Your data analyst team will most frequently query by specific event date ranges and filter by the user ID UUID. You want to optimize table structure for query cost and performance. What should you do?
+
+A. Partition the table by the user ID column and cluster the table by the event date column.
+B. Create an ingestion-time partitioned table and cluster it by the user ID column.
+C. Cluster the table by both the event date and the user ID columns.
+D. Partition the table by the event date column and cluster the table by user ID column.
+Suggested Answer: D
+by 67bdb19 at Jan. 16, 2026, 8:16 a.m.
+Comments
+Currently there are no comments in this discussion, be the first to comment!
+
+Actual exam question from Google's Professional Machine Learning Engineer
+Question #: 331
+Topic #: 1
+[All Professional Machine Learning Engineer Questions]
+You are creating a retraining policy for a customer churn prediction model deployed in Vertex AI. New training data is added weekly. You want to implement a model retraining process that minimizes cost and effort. What should you do?
+
+A. Retrain the model when a significant shift in the distribution of customer attributes is detected in the production data compared to the training data.
+B. Retrain the model when the model's latency increases by 10% due to increased traffic.
+C. Retrain the model when the model accuracy drops by 10% on the new training dataset.
+D. Retrain the model every week when new training data is available.
+Suggested Answer: A
+Community vote distribution
+A (100%)
+by Duke_CT at June 20, 2025, 3:52 a.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+Rafa1312 6 months, 1 week ago
+Selected Answer: A
+I will ping A
+upvoted 1 times
+Fer660 7 months, 1 week ago
+Selected Answer: A
+A is better than C. The distribution-based triggers might catch some skew that accuracy alone has a hard time detecting (e.g. with under-represented classes).
+upvoted 1 times
+qaz09 9 months ago
+Selected Answer: A
+A - retrains model only when needed
+B - latency is not the parameter for retraining
+C - could be, but I choose A over C
+D - weekly retraining might be to frequent. If we want to minimize cost, it is better to retrain when there is a visible need for it
+upvoted 1 times
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 329
+Topic #: 1
+[All Professional Data Engineer Questions]
+Your Cloud Storage data lake has raw, processed, and historical data in different buckets. Data older than two years is rarely accessed, and all data must be retained for no longer than seven years. You are concerned about rising storage costs. How should you control costs for the historical data bucket?
+
+A. Write a script on a Compute Engine instance, triggered daily by Cloud Scheduler, to scan all objects and delete any older than seven years.
+B. Configure an Object Lifecycle Management rule to transition objects older than two years to the Archive storage class and eventually delete them after seven years.
+C. Enable the Autoclass feature on your Cloud Storage buckets and select Opt-in to object transitions to Coldline and Archive storage classes.
+D. Replicate the buckets to a different region with lower storage costs and configure an Object Lifecycle Management rule to delete objects after seven years.
+Suggested Answer: B
+by 67bdb19 at Jan. 16, 2026, 8:16 a.m.
+Comments
+Currently there are no comments in this discussion, be the first to comment!
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 328
+Topic #: 1
+[All Professional Data Engineer Questions]
+You need to load a dataset with multiple terabytes of clickstream data into BigQuery. The data arrives each day as compressed JSON files in a Cloud Storage bucket. You need a low-cost, programmatic, and scalable solution to load the data into BigQuery. What should you do?
+
+A. Create an external table in BigQuery pointing to the Cloud Storage bucket and run the INSERT INTO ... SELECT * FROM external_table command.
+B. Use the BigQuery Data Transfer Service from Cloud Storage.
+C. Create a Cloud Run function to run a Python script to read and parse each JSON file, and use the BigQuery streaming insert API.
+D. Use Cloud Data Fusion to create a pipeline to load the JSON files into BigQuery.
+Suggested Answer: A
+Community vote distribution
+A (50%)
+B (50%)
+by 67bdb19 at Jan. 16, 2026, 8:15 a.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+hola_prep 1 month, 2 weeks ago
+Selected Answer: A
+why option A is correct
+Low-cost
+Scalable
+Programmatic
+upvoted 1 times
+NickForDiscussions 2 months, 2 weeks ago
+Selected Answer: B
+Should be B. When you use BigQuery Data Transfer Service you don't pay for the load job, you only pay for the storage in BigQuery. If you go with Option A you are paying for the query plus the storage.
+upvoted 1 times
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 327
+Topic #: 1
+[All Professional Data Engineer Questions]
+Your company wants to implement a Retrieval-Augmented Generation (RAG) system to allow employees to query an extensive knowledge base of internal documents, such as policy manuals and project reports. You need to prepare this unstructured text for embedding to be used in the RAG system. What should you do to ensure the system can retrieve the most relevant information?
+
+A. Use Cloud Data Loss Prevention (Cloud DLP) to scan and redact sensitive information within the documents before processing.
+B. Store the documents as compressed files in a traditional relational database to enable more efficient storage and retrieval.
+C. Convert the unstructured documents into high-dimensional numerical vectors that capture the semantic meaning and relationships of the text.
+D. Index each word from the documents into a search engine to enable keyword-based search.
+Suggested Answer: C
+by 67bdb19 at Jan. 16, 2026, 8:15 a.m.
+Comments
+Currently there are no comments in this discussion, be the first to comment!
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 326
+Topic #: 1
+[All Professional Data Engineer Questions]
+Your team runs a complex analytical query daily that processes terabytes of data. Recently, after running for 20 minutes, the query fails with a “Resources exceeded” error. You need to resolve this issue. What should you do?
+
+A. Move from BigQuery on-demand to slot reservations.
+B. Analyze the SQL syntax for errors.
+C. Increase the maximum table size limit.
+D. Increase your project’s BigQuery API request quota.
+Suggested Answer: A
+by 67bdb19 at Jan. 16, 2026, 8:16 a.m.
+Comments
+Currently there are no comments in this discussion, be the first to comment!
+
+Actual exam question from Google's Professional Machine Learning Engineer
+Question #: 325
+Topic #: 1
+[All Professional Machine Learning Engineer Questions]
+You are building an ML model to predict customer churn for a subscription service. You have trained your model on Vertex AI using historical data, and deployed it to a Vertex AI endpoint for real-time predictions. After a few weeks, you notice that the model's performance, measured by AUC (area under the ROC curve), has dropped significantly in production compared to its performance during training. How should you troubleshoot this problem?
+
+A. Monitor the training/serving skew of feature values for requests sent to the endpoint.
+B. Monitor the resource utilization of the endpoint, such as CPU and memory usage, to identify potential bottlenecks in performance.
+C. Enable Vertex Explainable AI feature attribution to analyze model predictions and understand the impact of each feature on the model's predictions.
+D. Monitor the latency of the endpoint to determine whether predictions are being served within the expected time frame.
+Suggested Answer: A
+Community vote distribution
+A (100%)
+by Duke_CT at June 20, 2025, 3:52 a.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+qaz09 9 months ago
+Selected Answer: A
+Since the performance dropped after a few weeks, the solution is to monitor training/serving skew
+upvoted 3 times
+kirukkuman 9 months, 1 week ago
+Selected Answer: A
+A significant drop in AUC means the patterns the model learned are no longer effective on the new, live data. Detecting a skew or drift between the statistical properties of the training data and the serving data is the most direct way to confirm and diagnose this issue. Vertex AI Model Monitoring is designed specifically for this purpose.
+upvoted 3 times
+
+Actual exam question from Google's Professional Machine Learning Engineer
+Question #: 324
+Topic #: 1
+[All Professional Machine Learning Engineer Questions]
+You need to train an XGBoost model on a small dataset. Your training code requires custom dependencies. You need to set up a Vertex AI custom training job. You want to minimize the startup time of the training job while following Google-recommended practices. What should you do?
+
+A. Create a custom container that includes the data and the custom dependencies. In your training application, load the data into a pandas DataFrame and train the model.
+B. Store the data in a Cloud Storage bucket, and use the XGBoost prebuilt custom container to run your training application. Create a Python source distribution that installs the custom dependencies at runtime. In your training application, read the data from Cloud Storage and train the model.
+C. Use the XGBoost prebuilt custom container. Create a Python source distribution that includes the data and installs the custom dependencies at runtime. In your training application, load the data into a pandas DataFrame and train the model.
+D. Store the data in a Cloud Storage bucket, and create a custom container with your training application and its custom dependencies. In your training application, read the data from Cloud Storage and train the model.
+Suggested Answer: D
+Community vote distribution
+D (100%)
+by AlizCert at June 13, 2025, 9:27 a.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+qaz09 9 months ago
+Selected Answer: D
+question 278 -> D
+upvoted 2 times
+kirukkuman 9 months, 1 week ago
+Selected Answer: D
+The key to minimizing startup time is to pre-install all necessary libraries and custom dependencies into a custom container image. When the Vertex AI training job starts, it can immediately run your code without wasting time downloading and installing packages. This directly addresses the main requirement.
+upvoted 3 times
+AlizCert 9 months, 4 weeks ago
+Selected Answer: D
+On the basis of exclusion. B and C can't be (installing deps at runtime). A (container contains data - antipattern). -> D
+upvoted 4 times
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 323
+Topic #: 1
+[All Professional Data Engineer Questions]
+Your company uses separate Google Cloud projects for development, staging, and production. Developers need edit access in the development project, read-only access in the staging project, and no access in the production project. You need an effective and manageable solution to assign and enforce these permissions according to Google-recommended practices. What should you do?
+
+A. Create separate VPC Service Controls perimeters for each project and use access levels.
+B. Grant individual developers specific IAM roles directly on each project.
+C. Configure firewall rules within each project’s VPC to block traffic from unauthorized developer machines.
+D. Create Google Groups for access levels, assign developers to groups, and grant the groups the appropriate IAM roles on each project.
+Suggested Answer: D
+by 67bdb19 at Jan. 16, 2026, 8:15 a.m.
+Comments
+Currently there are no comments in this discussion, be the first to comment!
+
+Actual exam question from Google's Professional Machine Learning Engineer
+Question #: 321
+Topic #: 1
+[All Professional Machine Learning Engineer Questions]
+You are developing a model to detect fraudulent credit card transactions. You need to prioritize detection, because missing even one fraudulent transaction could severely impact the credit card holder. You used AutoML to train a model on users' profile information and credit card transaction data. After training the initial model, you notice that the model is failing to detect many fraudulent transactions. How should you increase the number of fraudulent transactions that are detected?
+
+A. Add more non-fraudulent examples to the training set.
+B. Reduce the maximum number of node hours for training.
+C. Increase the probability threshold to classify a fraudulent transaction.
+D. Decrease the probability threshold to classify a fraudulent transaction.
+Suggested Answer: D
+Community vote distribution
+D (100%)
+by hit_cloudie at May 21, 2025, 8:45 a.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+qaz09 9 months ago
+Selected Answer: D
+Lower probability threshold -> more transactions marked as fraud
+upvoted 3 times
+hit_cloudie 10 months, 3 weeks ago
+Selected Answer: D
+This will increase the number of transactions flagged as fraudulent, improving recall (even at the cost of more false positives, which is acceptable in fraud detection).
+upvoted 4 times
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 320
+Topic #: 1
+[All Professional Data Engineer Questions]
+Your company uses Looker Studio connected to BigQuery for reporting. Users are experiencing slow dashboard load times due to complex queries on a large table. The queries involve aggregations and filtering on several columns. You need to optimize query performance to decrease the dashboard load times. What should you do?
+
+A. Configure Looker Studio to use a shorter data refresh interval to ensure fresh data is always displayed.
+B. Create a materialized view in BigQuery that pre-calculates the aggregations and filters used in the Looker Studio dashboards.
+C. Implement row-level security in BigQuery to restrict data access and reduce the amount of data processed by the queries.
+D. Use BigQuery BI Engine to accelerate query performance by caching frequently accessed data.
+Suggested Answer: BD
+Community vote distribution
+D (100%)
+by 67bdb19 at Jan. 16, 2026, 8:15 a.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+5523042 2 weeks, 4 days ago
+Selected Answer: D
+It is D
+upvoted 1 times
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 319
+Topic #: 1
+[All Professional Data Engineer Questions]
+You are preparing an organization-wide dataset. You need to preprocess customer data stored in a restricted bucket in Cloud Storage. The data will be used to create consumer analyses. You need to follow data privacy requirements, including protecting certain sensitive data elements, while also retaining all of the data for potential future use cases. What should you do?
+
+A. Use the Cloud Data Loss Prevention API and Dataflow to detect and remove sensitive fields from the data in Cloud Storage. Write the filtered data in BigQuery.
+B. Use customer-managed encryption keys (CMEK) to directly encrypt the data in Cloud Storage. Use federated queries from BigQuery. Share the encryption key by following the principle of least privilege.
+C. Use Dataflow and the Cloud Data Loss Prevention API to mask sensitive data. Write the processed data in BigQuery.
+D. Use Dataflow and Cloud KMS to encrypt sensitive fields and write the encrypted data in BigQuery. Share the encryption key by following the principle of least privilege.
+Suggested Answer: C
+Community vote distribution
+C (100%)
+by HectorLeon2099 at Dec. 4, 2024, 5:49 p.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+HectorLeon2099 Highly Voted 1 year, 4 months ago
+Selected Answer: C
+It's C. "A" removes data and retaining all is a requirement.
+upvoted 6 times
+22c1725 Most Recent 10 months, 2 weeks ago
+Selected Answer: C
+Not A since "while also retaining all of the data" is required.
+upvoted 1 times
+22c1725 10 months, 2 weeks ago
+Selected Answer: C
+Removing data will lead to unability to do study & consumer analyses. since it's likely all of consumer data is under PII.
+upvoted 1 times
+EIM_Exam_Topics 2 weeks ago
+While I agree with C, removing data does not lead to the inability to do consumer analyses. Analyses such as segmentation and clustering don't require PII data.
+upvoted 1 times
+Nagamanikanta 1 year, 1 month ago
+Selected Answer: C
+option C
+we can simply mask the data and process in biguery
+upvoted 1 times
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 318
+Topic #: 1
+[All Professional Data Engineer Questions]
+You are using BigQuery with a regional dataset that includes a table with the daily sales volumes. This table is updated multiple times per day. You need to protect your sales table in case of regional failures with a recovery point objective (RPO) of less than 24 hours, while keeping costs to a minimum. What should you do?
+
+A. Schedule a daily export of the table to a Cloud Storage dual or multi-region bucket.
+B. Schedule a daily copy of the dataset to a backup region.
+C. Schedule a daily BigQuery snapshot of the table.
+D. Modify ETL job to load the data into both the current and another backup region.
+Suggested Answer: A
+Community vote distribution
+A (58%)
+D (25%)
+Other
+by HectorLeon2099 at Dec. 4, 2024, 5:57 p.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+22c1725 10 months, 2 weeks ago
+Selected Answer: A
+Not 'C' snapchot are stored in the same region.
+upvoted 1 times
+desertlotus1211 12 months ago
+Selected Answer: A
+almost the same as 211, 211 says multi-region vs regional...
+upvoted 1 times
+Parandhaman_Margan 1 year ago
+Selected Answer: C
+Meets the RPO requirement (< 24 hours)
+Cost-effective solution
+Quick recovery from regional failures
+upvoted 1 times
+gabbferreira 11 months, 2 weeks ago
+snapshots are stored in the same region, so it dont protect from regional failure
+upvoted 2 times
+MarcoPellegrino 1 year, 1 month ago
+Selected Answer: D
+https://cloud.google.com/blog/topics/developers-practitioners/backup-disaster-recovery-strategies-bigquery
+
+Google presents both A and D
+Why A:
+- Cost: Lower. GCS storage is significantly cheaper than BigQuery storage. You pay for storage in GCS and minimal egress charges when exporting.
+- Complexity: Simpler. You schedule a daily export job. Restoring involves importing from GCS to BigQuery in another region.
+- Consistency: Easier to manage. The export process creates a consistent snapshot of the data at the time of export. You might have some latency (up to 24 hours in this scenario), but the data within the export is consistent.
+- RPO: Meets the requirement. A daily export ensures an RPO of less than 24 hours.
+- RTO: Depends on the restore process from GCS to BigQuery. You can pre-provision slots in the backup region to minimize restore time.
+upvoted 1 times
+FireAtMe 1 year, 3 months ago
+Selected Answer: A
+Both A and B works. But it is cheaper to save data in GCS.
+upvoted 1 times
+joelcaro 1 year, 3 months ago
+Selected Answer: D
+Opción D: Modify ETL job to load the data into both the current and another backup region
+Evaluación:
+Ajustar el ETL para escribir en dos tablas (una en la región principal y otra en una región de respaldo) asegura que los datos estén disponibles en ambas ubicaciones casi en tiempo real.
+Esto garantiza un RPO de menos de 24 horas, ya que las actualizaciones intradía se reflejan en ambas regiones.
+Aunque podría aumentar los costos de almacenamiento por duplicar los datos, es la solución más efectiva y directa para proteger contra fallos regionales.
+upvoted 2 times
+mdell 1 year, 3 months ago
+Selected Answer: B
+In most cases, it is cheaper to copy a BigQuery dataset to a new region directly rather than exporting it to a Cloud Storage bucket and then loading it into a new BigQuery dataset in the desired region, as you only pay for data transfer costs when copying within BigQuery, while exporting to a bucket incurs additional storage charges for the exported data in Cloud Storage, even if it's only temporary.
+Key points to consider:
+
+No extra storage cost for copying:
+When copying a BigQuery dataset to a new region, you only pay for the data transfer cost, not the storage of the data in a separate location.
+
+Storage cost for exporting:
+Exporting data to a Cloud Storage bucket means you are charged for the storage of that data in the bucket until you delete it, even if you are just temporarily storing it for transfer.
+upvoted 1 times
+HectorLeon2099 1 year, 4 months ago
+Selected Answer: A
+Option A is the most cost efficient: https://cloud.google.com/blog/topics/developers-practitioners/backup-disaster-recovery-strategies-bigquery
+upvoted 4 times
+mdell 1 year, 3 months ago
+Additionally it only mentions backing up the sales table and not the entire dataset
+upvoted 1 times
+
+Actual exam question from Google's Professional Data Engineer
+Question #: 317
+Topic #: 1
+[All Professional Data Engineer Questions]
+You have several different unstructured data sources, within your on-premises data center as well as in the cloud. The data is in various formats, such as Apache Parquet and CSV. You want to centralize this data in Cloud Storage. You need to set up an object sink for your data that allows you to use your own encryption keys. You want to use a GUI-based solution. What should you do?
+
+A. Use BigQuery Data Transfer Service to move files into BigQuery.
+B. Use Storage Transfer Service to move files into Cloud Storage
+C. Use Dataflow to move files into Cloud Storage
+D. Use Cloud Data Fusion to move files into Cloud Storage.
+Suggested Answer: D
+Community vote distribution
+D (71%)
+B (29%)
+by noiz at Dec. 14, 2024, 2:24 a.m.
+Comments
+Chosen Answer: ABCD
+This is a voting comment (?). It is better to Upvote an existing comment if you don't have anything to add.
+Please explain your answer
+22c1725 10 months, 2 weeks ago
+Selected Answer: D
+I would go with "D" since GUI is required.
+upvoted 1 times
+apoio.certificacoes.closer 1 year, 3 months ago
+Selected Answer: D
+I have read in previous questions that Transfer Services only uses CMEK in-transit.
+https://cloud.google.com/storage-transfer/docs/on-prem-security#in-flight
+upvoted 2 times
+m_a_p_s 1 year, 3 months ago
+Selected Answer: D
+D - only Cloud Data Fusion is a GUI-based solution.
+upvoted 4 times
+skycracker 1 year, 3 months ago
+Selected Answer: D
+data fusion allows encryption
+upvoted 3 times
+noiz 1 year, 3 months ago
+Selected Answer: B
+Is B incorrect?
+Transfer service + CloudKMS
+upvoted 4 times
+22c1725 10 months, 2 weeks ago
+There is no GUI.
+upvoted 1 times

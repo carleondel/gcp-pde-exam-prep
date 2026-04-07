@@ -1,0 +1,227 @@
+[
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 348,
+    "question": "You are designing a data lake on Google Cloud to store vast amounts of customer interaction data from various sources, such as websites, mobile apps, and social media. You need to ensure that this data, which arrives in different formats, is consistently cataloged and easy for data analysts to discover and use. You also want to perform basic data quality checks and transformations before the data is consumed by downstream applications. You need an automated and managed data governance solution. What should you do?",
+    "options": [
+      "A. Use Cloud Storage as the central repository. Use Vertex AI to classify and process the data and perform data quality checks.",
+      "B. Stream all the data directly into BigQuery, where it is automatically cataloged and governed.",
+      "C. Use Cloud Storage and BigQuery as repositories. Use Dataplex Universal Catalog for metadata discovery, data quality checks, and transformations.",
+      "D. Use Cloud Storage as the central repository. Use a Cloud Run function to catalog, transform the data, and perform data quality checks."
+    ],
+    "suggestedAnswer": "C",
+    "discussionSummary": "C: Dataplex: It is a fully managed Google Cloud data fabric platform, specifically designed to unify data management, governance, and analytics across a data lake environment.",
+    "parsedCorrect": 2,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 346,
+    "question": "Your retail company is concerned about their BigQuery analytics spend. The company runs several queries that require the use of the same aggregation for the store ID and real-time sales volume. You need to implement the optimal solution that minimizes analytics spend and returns faster results. What should you do?",
+    "options": [
+      "A. Create a new table from a CSV file with the repeated aggregation for the other queries to reference for faster processing.",
+      "B. Create a materialized view to minimize repetitive computations.",
+      "C. Use join acceleration with primary and foreign keys to increase query joining to live data.",
+      "D. Leverage partitioning to minimize the number of bytes read."
+    ],
+    "suggestedAnswer": "B",
+    "discussionSummary": "B: Materialized views in BigQuery store the precomputed results of a query.",
+    "parsedCorrect": 1,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 345,
+    "question": "You are preparing data to serve a sales demand prediction model. The training data undergoes several pre-processing steps, including scaling numerical features and one-hot encoding categorical features. The model is deployed on Vertex AI Endpoints. You need to prevent training-serving skew and ensure accurate predictions in production. You want a solution that is easy to implement. What should you do?",
+    "options": [
+      "A. Implement a custom handler within the Vertex AI Endpoint to automatically perform data transformations before the model makes a prediction.",
+      "B. Replicate the exact same pre-processing logic in the inference pipeline that was used during model training.",
+      "C. Store the raw, unprocessed data in a separate Cloud Storage bucket exclusively for serving.",
+      "D. Ensure the serving data is a smaller, random sample of the training data."
+    ],
+    "suggestedAnswer": "",
+    "discussionSummary": "B: Training-serving skew occurs when the data used to train your model differs in its characteristics or processing from the data used for making predictions in production.",
+    "parsedCorrect": 1,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 344,
+    "question": "You are building a system to process financial transactions. The system must handle a high throughput of concurrent user operations and each operation requires low-latency reads and writes to individual records. You need to identify a storage solution that guarantees ACID compliance for the processed transactions. You want a Google Cloud managed service. What should you do?",
+    "options": [
+      "A. Select Bigtable.",
+      "B. Select BigQuery.",
+      "C. Select Cloud Storage.",
+      "D. Select Spanner."
+    ],
+    "suggestedAnswer": "",
+    "discussionSummary": "D: High performance for concurrent user operations: Capable of handling many operations simultaneously.",
+    "parsedCorrect": 3,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 338,
+    "question": "Your organization stores highly personal data in BigQuery and needs to comply with strict data privacy regulations. You need to ensure that sensitive data values are rendered unreadable whenever an employee leaves the organization. What should you do?",
+    "options": [
+      "A. Use column-level access controls with policy tags and revoke viewer permissions when employees leave the organization.",
+      "B. Use dynamic data masking and revoke viewer permissions when employees leave the organization.",
+      "C. Use customer-managed encryption keys (CMEK) and delete keys when employees leave the organization.",
+      "D. Use AEAD functions and delete keys when employees leave the organization."
+    ],
+    "suggestedAnswer": "D",
+    "discussionSummary": "C is too complex",
+    "parsedCorrect": 3,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 332,
+    "question": "You are designing BigQuery tables for large volumes of clickstream event data. Your data analyst team will most frequently query by specific event date ranges and filter by the user ID UUID. You want to optimize table structure for query cost and performance. What should you do?",
+    "options": [
+      "A. Partition the table by the user ID column and cluster the table by the event date column.",
+      "B. Create an ingestion-time partitioned table and cluster it by the user ID column.",
+      "C. Cluster the table by both the event date and the user ID columns.",
+      "D. Partition the table by the event date column and cluster the table by user ID column."
+    ],
+    "suggestedAnswer": "D",
+    "discussionSummary": "Respuesta sugerida: D.",
+    "parsedCorrect": 3,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 329,
+    "question": "Your Cloud Storage data lake has raw, processed, and historical data in different buckets. Data older than two years is rarely accessed, and all data must be retained for no longer than seven years. You are concerned about rising storage costs. How should you control costs for the historical data bucket?",
+    "options": [
+      "A. Write a script on a Compute Engine instance, triggered daily by Cloud Scheduler, to scan all objects and delete any older than seven years.",
+      "B. Configure an Object Lifecycle Management rule to transition objects older than two years to the Archive storage class and eventually delete them after seven years.",
+      "C. Enable the Autoclass feature on your Cloud Storage buckets and select Opt-in to object transitions to Coldline and Archive storage classes.",
+      "D. Replicate the buckets to a different region with lower storage costs and configure an Object Lifecycle Management rule to delete objects after seven years."
+    ],
+    "suggestedAnswer": "B",
+    "discussionSummary": "Respuesta sugerida: B.",
+    "parsedCorrect": 1,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 328,
+    "question": "You need to load a dataset with multiple terabytes of clickstream data into BigQuery. The data arrives each day as compressed JSON files in a Cloud Storage bucket. You need a low-cost, programmatic, and scalable solution to load the data into BigQuery. What should you do?",
+    "options": [
+      "A. Create an external table in BigQuery pointing to the Cloud Storage bucket and run the INSERT INTO ... SELECT * FROM external_table command.",
+      "B. Use the BigQuery Data Transfer Service from Cloud Storage.",
+      "C. Create a Cloud Run function to run a Python script to read and parse each JSON file, and use the BigQuery streaming insert API.",
+      "D. Use Cloud Data Fusion to create a pipeline to load the JSON files into BigQuery."
+    ],
+    "suggestedAnswer": "A",
+    "discussionSummary": "why option A is correct\nLow-cost\nScalable\nProgrammatic",
+    "parsedCorrect": 0,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 327,
+    "question": "Your company wants to implement a Retrieval-Augmented Generation (RAG) system to allow employees to query an extensive knowledge base of internal documents, such as policy manuals and project reports. You need to prepare this unstructured text for embedding to be used in the RAG system. What should you do to ensure the system can retrieve the most relevant information?",
+    "options": [
+      "A. Use Cloud Data Loss Prevention (Cloud DLP) to scan and redact sensitive information within the documents before processing.",
+      "B. Store the documents as compressed files in a traditional relational database to enable more efficient storage and retrieval.",
+      "C. Convert the unstructured documents into high-dimensional numerical vectors that capture the semantic meaning and relationships of the text.",
+      "D. Index each word from the documents into a search engine to enable keyword-based search."
+    ],
+    "suggestedAnswer": "C",
+    "discussionSummary": "Respuesta sugerida: C.",
+    "parsedCorrect": 2,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 326,
+    "question": "Your team runs a complex analytical query daily that processes terabytes of data. Recently, after running for 20 minutes, the query fails with a “Resources exceeded” error. You need to resolve this issue. What should you do?",
+    "options": [
+      "A. Move from BigQuery on-demand to slot reservations.",
+      "B. Analyze the SQL syntax for errors.",
+      "C. Increase the maximum table size limit.",
+      "D. Increase your project’s BigQuery API request quota."
+    ],
+    "suggestedAnswer": "A",
+    "discussionSummary": "Respuesta sugerida: A.",
+    "parsedCorrect": 0,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 323,
+    "question": "Your company uses separate Google Cloud projects for development, staging, and production. Developers need edit access in the development project, read-only access in the staging project, and no access in the production project. You need an effective and manageable solution to assign and enforce these permissions according to Google-recommended practices. What should you do?",
+    "options": [
+      "A. Create separate VPC Service Controls perimeters for each project and use access levels.",
+      "B. Grant individual developers specific IAM roles directly on each project.",
+      "C. Configure firewall rules within each project’s VPC to block traffic from unauthorized developer machines.",
+      "D. Create Google Groups for access levels, assign developers to groups, and grant the groups the appropriate IAM roles on each project."
+    ],
+    "suggestedAnswer": "D",
+    "discussionSummary": "Respuesta sugerida: D.",
+    "parsedCorrect": 3,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 320,
+    "question": "Your company uses Looker Studio connected to BigQuery for reporting. Users are experiencing slow dashboard load times due to complex queries on a large table. The queries involve aggregations and filtering on several columns. You need to optimize query performance to decrease the dashboard load times. What should you do?",
+    "options": [
+      "A. Configure Looker Studio to use a shorter data refresh interval to ensure fresh data is always displayed.",
+      "B. Create a materialized view in BigQuery that pre-calculates the aggregations and filters used in the Looker Studio dashboards.",
+      "C. Implement row-level security in BigQuery to restrict data access and reduce the amount of data processed by the queries.",
+      "D. Use BigQuery BI Engine to accelerate query performance by caching frequently accessed data."
+    ],
+    "suggestedAnswer": "BD",
+    "discussionSummary": "It is D",
+    "parsedCorrect": 3,
+    "parseConflict": true
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 319,
+    "question": "You are preparing an organization-wide dataset. You need to preprocess customer data stored in a restricted bucket in Cloud Storage. The data will be used to create consumer analyses. You need to follow data privacy requirements, including protecting certain sensitive data elements, while also retaining all of the data for potential future use cases. What should you do?",
+    "options": [
+      "A. Use the Cloud Data Loss Prevention API and Dataflow to detect and remove sensitive fields from the data in Cloud Storage. Write the filtered data in BigQuery.",
+      "B. Use customer-managed encryption keys (CMEK) to directly encrypt the data in Cloud Storage. Use federated queries from BigQuery. Share the encryption key by following the principle of least privilege.",
+      "C. Use Dataflow and the Cloud Data Loss Prevention API to mask sensitive data. Write the processed data in BigQuery.",
+      "D. Use Dataflow and Cloud KMS to encrypt sensitive fields and write the encrypted data in BigQuery. Share the encryption key by following the principle of least privilege."
+    ],
+    "suggestedAnswer": "C",
+    "discussionSummary": "It's C.",
+    "parsedCorrect": 2,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 318,
+    "question": "You are using BigQuery with a regional dataset that includes a table with the daily sales volumes. This table is updated multiple times per day. You need to protect your sales table in case of regional failures with a recovery point objective (RPO) of less than 24 hours, while keeping costs to a minimum. What should you do?",
+    "options": [
+      "A. Schedule a daily export of the table to a Cloud Storage dual or multi-region bucket.",
+      "B. Schedule a daily copy of the dataset to a backup region.",
+      "C. Schedule a daily BigQuery snapshot of the table.",
+      "D. Modify ETL job to load the data into both the current and another backup region."
+    ],
+    "suggestedAnswer": "A",
+    "discussionSummary": "Opción D: Modify ETL job to load the data into both the current and another backup region\nEvaluación:\nAjustar el ETL para escribir en dos tablas (una en la región principal y otra en una región de respaldo) asegura que los datos estén disponibles en ambas ubicaciones casi en tiem",
+    "parsedCorrect": 0,
+    "parseConflict": false
+  },
+  {
+    "sourceExam": "professional-data-engineer",
+    "sourceQuestionNumber": 317,
+    "question": "You have several different unstructured data sources, within your on-premises data center as well as in the cloud. The data is in various formats, such as Apache Parquet and CSV. You want to centralize this data in Cloud Storage. You need to set up an object sink for your data that allows you to use your own encryption keys. You want to use a GUI-based solution. What should you do?",
+    "options": [
+      "A. Use BigQuery Data Transfer Service to move files into BigQuery.",
+      "B. Use Storage Transfer Service to move files into Cloud Storage",
+      "C. Use Dataflow to move files into Cloud Storage",
+      "D. Use Cloud Data Fusion to move files into Cloud Storage."
+    ],
+    "suggestedAnswer": "D",
+    "discussionSummary": "D - only Cloud Data Fusion is a GUI-based solution.",
+    "parsedCorrect": 3,
+    "parseConflict": false
+  }
+]

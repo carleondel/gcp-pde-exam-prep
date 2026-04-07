@@ -1,0 +1,211 @@
+{
+  "timestamp": "2026-04-07T16:00:43.330Z",
+  "batch": "examtopics-2026-04",
+  "summary": {
+    "totalRawEntries": 20,
+    "importedPdeEntries": 15,
+    "excludedNonPdeEntries": 5,
+    "newQuestionsAdded": 0,
+    "mergedQuestionsUpdated": 15,
+    "conflictsMarked": 1,
+    "lowConfidenceCount": 6,
+    "discardedEntries": [
+      {
+        "sourceExam": "professional-machine-learning-engineer",
+        "sourceQuestionNumber": 333
+      },
+      {
+        "sourceExam": "professional-machine-learning-engineer",
+        "sourceQuestionNumber": 331
+      },
+      {
+        "sourceExam": "professional-machine-learning-engineer",
+        "sourceQuestionNumber": 325
+      },
+      {
+        "sourceExam": "professional-machine-learning-engineer",
+        "sourceQuestionNumber": 324
+      },
+      {
+        "sourceExam": "professional-machine-learning-engineer",
+        "sourceQuestionNumber": 321
+      }
+    ],
+    "recentRange": [
+      317,
+      348
+    ],
+    "missingRecentNumbers": [
+      321,
+      322,
+      324,
+      325,
+      330,
+      331,
+      333,
+      334,
+      335,
+      336,
+      337,
+      339,
+      340,
+      341,
+      342,
+      343,
+      347
+    ],
+    "finalQuestionCount": 333
+  },
+  "details": [
+    {
+      "id": 348,
+      "sourceQuestionNumber": 348,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "medium",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 346,
+      "sourceQuestionNumber": 346,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "medium",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 345,
+      "sourceQuestionNumber": 345,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "medium",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 344,
+      "sourceQuestionNumber": 344,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "medium",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 338,
+      "sourceQuestionNumber": 338,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "medium",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 332,
+      "sourceQuestionNumber": 332,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "low",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 329,
+      "sourceQuestionNumber": 329,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "low",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 328,
+      "sourceQuestionNumber": 328,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "medium",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 327,
+      "sourceQuestionNumber": 327,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "low",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 326,
+      "sourceQuestionNumber": 326,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "low",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 323,
+      "sourceQuestionNumber": 323,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "low",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 320,
+      "sourceQuestionNumber": 320,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "low",
+      "conflict": true,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 350,
+      "sourceQuestionNumber": 319,
+      "status": "merged",
+      "matchReason": "fuzzy",
+      "similarity": 100,
+      "confidence": "high",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 126,
+      "sourceQuestionNumber": 318,
+      "status": "merged",
+      "matchReason": "same-id",
+      "similarity": 100,
+      "confidence": "medium",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    },
+    {
+      "id": 349,
+      "sourceQuestionNumber": 317,
+      "status": "merged",
+      "matchReason": "fuzzy",
+      "similarity": 100,
+      "confidence": "high",
+      "conflict": false,
+      "sourceExam": "professional-data-engineer"
+    }
+  ]
+}
