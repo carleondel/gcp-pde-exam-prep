@@ -62,10 +62,10 @@ export const QUESTIONS = [
     ],
     "correct": [
       1,
-      3,
+      4,
       5
     ],
-    "explanation": "Restrict access to tables by role This enforces least-privilege access control and reduces unauthorized data exposure.",
+    "explanation": "Segregating data (E) allows granular least-privilege IAM roles. Restricting API access per-user (D) is not a standard GCP capability.",
     "discussion": [
       {
         "user": "samdhimal",
@@ -256,8 +256,8 @@ export const QUESTIONS = [
       "C. Set the BigQuery dataset to be multi-regional. In the event of an emergency, use a point-in-time snapshot to recover the data.",
       "D. Set the BigQuery dataset to be multi-regional. Create a scheduled query to make copies of the data to tables suffixed with the time of the backup."
     ],
-    "correct": 0,
-    "explanation": "Set the BigQuery dataset to be regional This reducing GCP spend through resource right-sizing, committed use discounts, and preemptible instances.",
+    "correct": 1,
+    "explanation": "BigQuery time travel only retains data for up to 7 days. To achieve a 30-day RPO, you must schedule queries to copy and persist the data.",
     "discussion": [
       {
         "user": "DeepakVenkatachalam",
@@ -1273,9 +1273,9 @@ export const QUESTIONS = [
     ],
     "correct": [
       0,
-      1
+      2
     ],
-    "explanation": "Use managed export, and store the data in a Cloud Storage bucket using Nearline or Co This earlier NoSQL option for structured data; migrations to Firestore recommended for new projects with better performance.",
+    "explanation": "Importing backups into Datastore (B) incurs high storage costs. Cloud Storage (A) and BigQuery (C) are cheaper for long-term archival of Datastore exports.",
     "discussion": [
       {
         "user": "Ganshank",
@@ -2730,8 +2730,8 @@ export const QUESTIONS = [
       "C. Load the original message to Google Cloud SQL, and export the table every hour to BigQuery via streaming inserts.",
       "D. Estimate the average latency for data availability after streaming inserts, and always run queries after waiting twice as long."
     ],
-    "correct": 3,
-    "explanation": "Estimate the average latency for data availability after streaming inserts, and alway This optimizes query performance through data organization and indexing.",
+    "correct": 0,
+    "explanation": "Waiting based on average latency is unreliable. Batch loading every 2 minutes (720/day) guarantees strong consistency and stays within BigQuery's 1,500 load jobs/table/day limit.",
     "discussion": [
       {
         "user": "noob_master",
@@ -4067,8 +4067,8 @@ export const QUESTIONS = [
       "C. Materialize the dimensional data in views.",
       "D. Partition the data by transaction date."
     ],
-    "correct": 0,
-    "explanation": "Denormalize the data This reducing GCP spend through resource right-sizing, committed use discounts, and preemptible instances.",
+    "correct": 3,
+    "explanation": "Denormalizing increases storage costs via data duplication. Partitioning by transaction date optimizes performance for recent data while keeping storage costs unchanged.",
     "discussion": [
       {
         "user": "waiebdi",
@@ -4505,8 +4505,8 @@ export const QUESTIONS = [
       "C. For each index, have a separate table and use a timestamp as row key.",
       "D. For each index, have a separate table and use a reverse timestamp as row key."
     ],
-    "correct": 3,
-    "explanation": "For each index, have a separate table and use a reverse timestamp as row key This NoSQL wide-column store optimized for time-series and analytical workloads with millisecond latency, automatic scaling, and replication.",
+    "correct": 1,
+    "explanation": "A separate table per metric is a Bigtable anti-pattern. Use a single table with a reverse timestamp in the row key to sort most recent data at the top.",
     "discussion": [
       {
         "user": "John_Pongthorn",
@@ -5889,8 +5889,8 @@ export const QUESTIONS = [
       "C. Implement clustering in BigQuery on the ingest date column.",
       "D. Tier older data onto Cloud Storage files and create an external BigQuery table."
     ],
-    "correct": 0,
-    "explanation": "Re-create the table using data partitioning on the package delivery date This optimizes query performance through data organization and indexing.",
+    "correct": 1,
+    "explanation": "Option A changes partitioning but doesn't create a clustered table. Option B correctly clusters on the high-cardinality package-tracking ID column.",
     "discussion": [
       {
         "user": "e70ea9e",
@@ -6034,7 +6034,7 @@ export const QUESTIONS = [
       "D. Modify ETL job to load the data into both the current and another backup region."
     ],
     "correct": 0,
-    "explanation": "Opción D: Modify ETL job to load the data into both the current and another backup region\nEvaluación:\nAjustar el ETL para escribir en dos tablas (una en la región principal y otra en una región de respaldo) asegura que los datos estén disponibles en ambas ubicaciones casi en tiem",
+    "explanation": "A is correct. Exporting to a dual/multi-region GCS bucket provides regional failure protection at minimal cost (GCS storage is much cheaper than BQ storage). A daily export meets the <24h RPO requirement. C fails because snapshots stay in the same region. D is overkill — dual-region ETL doubles compute and storage costs for near-real-time RPO that was never required. B works but costs more than GCS.",
     "discussion": [
       {
         "user": "22c1725",
@@ -6257,8 +6257,8 @@ export const QUESTIONS = [
       "C. Add the external IP addresses of the Dataflow worker as authorized networks in the Cloud SQL instance.",
       "D. Set up VPC Network Peering between Project A and Project B. Create a Compute Engine instance without external IP in Project B as a proxy."
     ],
-    "correct": 0,
-    "explanation": "Set up VPC Network Peering between Project A and Project B This Google's fully managed streaming and batch data processing service that provides exactly-once semantics with auto-scaling and low latency.",
+    "correct": 3,
+    "explanation": "VPC Peering is non-transitive. Project A cannot route through Project B's peering to the Google-managed Cloud SQL VPC. A proxy VM in Project B is the standard workaround.",
     "discussion": [
       {
         "user": "aoifneofi_ef",
@@ -6859,10 +6859,10 @@ export const QUESTIONS = [
       "E. Use Pub/Sub Seek with a timestamp."
     ],
     "correct": [
-      2,
+      3,
       4
     ],
-    "explanation": "Create a new Pub/Sub subscription two days before deployment This Google's managed pub/sub messaging service enabling asynchronous communication with built-in ordering guarantees and at-least-once delivery semantics.",
+    "explanation": "To seek to a past timestamp (E), the subscription must first retain acknowledged messages (D). Creating a new subscription days prior (C) is a manual anti-pattern.",
     "discussion": [
       {
         "user": "tibuenoc",
@@ -7237,8 +7237,8 @@ export const QUESTIONS = [
       "C. Create an Airflow DAG with Dataproc and BigQuery operators. Use a single shared DAG. Use Cloud Storage object trigger to launch a Cloud Function that triggers the DAG.",
       "D. Create a separate DAG for each table. Use a Cloud Storage object trigger to launch a Cloud Function that triggers the DAG."
     ],
-    "correct": 3,
-    "explanation": "Create a separate DAG for each table This Google Cloud Storage provides object storage with strong consistency, lifecycle policies, and versioning; regional buckets optimize for single-region performance.",
+    "correct": 2,
+    "explanation": "A single parameterized shared DAG triggered by a Cloud Function is more maintainable for hundreds of identical workflows than managing hundreds of separate DAGs.",
     "discussion": [
       {
         "user": "cuadradobertoliniseb",
@@ -8890,8 +8890,8 @@ export const QUESTIONS = [
       "C. Drain the old pipeline, then start the new pipeline.",
       "D. Cancel the old pipeline, then start the new pipeline."
     ],
-    "correct": 2,
-    "explanation": "Drain the old pipeline, then start the new pipeline This Google's fully managed streaming and batch data processing service that provides exactly-once semantics with auto-scaling and low latency.",
+    "correct": 0,
+    "explanation": "In-place update preserves window state and replaces the job without stopping ingestion, avoiding latency spikes associated with draining.",
     "discussion": [
       {
         "user": "raaad",
@@ -8938,8 +8938,8 @@ export const QUESTIONS = [
       "C. Use Data Catalog to automatically catalog BigQuery datasets and Pub/Sub topics. Use custom connectors to manually catalog PostgreSQL tables.",
       "D. Use custom connectors to manually catalog BigQuery datasets, Pub/Sub topics, and PostgreSQL tables."
     ],
-    "correct": 1,
-    "explanation": "Use Data Catalog to automatically catalog BigQuery datasets and Pub/Sub topics This Google's managed pub/sub messaging service enabling asynchronous communication with built-in ordering guarantees and at-least-once delivery semantics.",
+    "correct": 2,
+    "explanation": "Google provides open-source custom connectors for PostgreSQL in Data Catalog, requiring less custom development than writing scripts using APIs manually.",
     "discussion": [
       {
         "user": "raaad",
@@ -9130,8 +9130,8 @@ export const QUESTIONS = [
       "C. Create the gdpr tag template with public visibility. Assign bigquery.dataViewer to HR group on tables with sensitive data.",
       "D. Create the gdpr tag template with public visibility. Assign datacatalog.tagTemplateViewer to all employees. Assign bigquery.dataViewer to HR group."
     ],
-    "correct": 2,
-    "explanation": "Create the gdpr tag template with public visibility This approach meets the stated requirements.",
+    "correct": 1,
+    "explanation": "Public visibility requires data access to view tags. Private visibility allows all employees to search tags via tagTemplateViewer without needing BigQuery dataViewer access.",
     "discussion": [
       {
         "user": "raaad",
@@ -9958,8 +9958,8 @@ export const QUESTIONS = [
       "C. Create a Spark job on Dataproc Serverless.",
       "D. Use BigQuery and GoogleSQL to normalize the data, and schedule recurring queries."
     ],
-    "correct": 3,
-    "explanation": "Use BigQuery and GoogleSQL to normalize the data, and schedule recurring queries This optimizes query performance through data organization and indexing.",
+    "correct": 0,
+    "explanation": "GoogleSQL requires writing code. Cloud Data Fusion with Wrangler provides a visual, no-code interface for data preparation and normalization.",
     "discussion": [
       {
         "user": "Matt_108",
@@ -11250,8 +11250,8 @@ export const QUESTIONS = [
       "C. Execute the job in a new Dataproc cluster.",
       "D. Execute as a Dataproc Serverless job."
     ],
-    "correct": 2,
-    "explanation": "Execute the job in a new Dataproc cluster This Google Cloud Storage provides object storage with strong consistency, lifecycle policies, and versioning; regional buckets optimize for single-region performance.",
+    "correct": 3,
+    "explanation": "Dataproc Serverless eliminates cluster provisioning entirely while still allowing customization of executor cores and memory via Spark properties.",
     "discussion": [
       {
         "user": "chicity_de",
@@ -11398,8 +11398,8 @@ export const QUESTIONS = [
       "C. Use Dataflow to move files into Cloud Storage.",
       "D. Use Cloud Data Fusion to move files into Cloud Storage."
     ],
-    "correct": 3,
-    "explanation": "Use Cloud Data Fusion to move files into Cloud Storage This Google Cloud Storage provides object storage with strong consistency, lifecycle policies, and versioning; regional buckets optimize for single-region performance.",
+    "correct": 1,
+    "explanation": "Storage Transfer Service is purpose-built for transferring files to Cloud Storage with GUI and CMEK support. Data Fusion is an ETL tool, overkill and expensive for simple file centralization.",
     "discussion": [
       {
         "user": "m_a_p_s",
@@ -11494,8 +11494,8 @@ export const QUESTIONS = [
       "C. Use Dataflow and Cloud DLP API to mask sensitive data. Write to BigQuery.",
       "D. Use Dataflow and Cloud KMS to encrypt sensitive fields and write to BigQuery."
     ],
-    "correct": 2,
-    "explanation": "Use Dataflow and Cloud DLP API to mask sensitive data. Write to BigQuery This approach meets the stated requirements.",
+    "correct": 3,
+    "explanation": "Masking permanently replaces original values. Encrypting fields with Cloud KMS allows authorized decryption later, satisfying the requirement to retain data for future use.",
     "discussion": [
       {
         "user": "HectorLeon2099",
@@ -11730,8 +11730,8 @@ export const QUESTIONS = [
       "C. Create a view on the table to present to the visualization tool.",
       "D. Create IAM roles on the appropriate columns."
     ],
-    "correct": 2,
-    "explanation": "Create a view on the table to present to the visualization tool This reducing GCP spend through resource right-sizing, committed use discounts, and preemptible instances.",
+    "correct": 1,
+    "explanation": "Logical views run the underlying query and don't reduce bytes scanned. A smaller physical table physically reduces bytes scanned, minimizing query costs.",
     "discussion": [
       {
         "user": "Radhika7983",
@@ -12167,8 +12167,8 @@ export const QUESTIONS = [
       "C. Set exclude_from_indexes = 'actors, tags'",
       "D. Set exclude_from_indexes = 'date_published'"
     ],
-    "correct": 3,
-    "explanation": "Set exclude_from_indexes = 'date_published' This earlier NoSQL option for structured data; migrations to Firestore recommended for new projects with better performance.",
+    "correct": 2,
+    "explanation": "Combinatorial explosion in Datastore is caused by indexing multiple array properties. Exclude the array properties (like actors, tags), not single-value fields like date_published.",
     "discussion": [
       {
         "user": "Wasss123",
@@ -12711,8 +12711,8 @@ export const QUESTIONS = [
       "C. Set up MySQL for each server. Periodically query and update a master MySQL database.",
       "D. Have each server write to Pub/Sub. Use a pull subscription with Cloud Dataflow."
     ],
-    "correct": 1,
-    "explanation": "Have each application server write bid events to Cloud Pub/Sub This balances scalability, cost, and performance requirements.",
+    "correct": 3,
+    "explanation": "Pub/Sub cannot push data directly into Cloud SQL. Dataflow natively integrates with Pub/Sub and provides event-time processing and windowing for real-time bid ordering.",
     "discussion": [
       {
         "user": "jvg637",
@@ -12907,8 +12907,8 @@ export const QUESTIONS = [
       "C. Add calibration data to the output and document users need to apply it.",
       "D. Develop an algorithm to predict variance and apply correction to all data."
     ],
-    "correct": 1,
-    "explanation": "Introduce a new MapReduce job to apply sensor calibration to raw data, chain all othe This managed ETL/ELT service with low-code visual interface; prebuilt connectors simplify data pipeline creation.",
+    "correct": 0,
+    "explanation": "Chaining a new MapReduce job forces massive disk I/O. Modifying the existing job to calibrate in-memory first is the most performant solution.",
     "discussion": [
       {
         "user": "SteelWarrior",
@@ -13963,8 +13963,8 @@ export const QUESTIONS = [
       "C. Java using MapReduce",
       "D. Python using MapReduce"
     ],
-    "correct": 0,
-    "explanation": "PigLatin using Pig This managed ETL/ELT service with low-code visual interface; prebuilt connectors simplify data pipeline creation.",
+    "correct": 2,
+    "explanation": "Java using MapReduce provides low-level API control for custom data splitting (InputSplits) and explicit checkpointing, which higher-level abstractions like Pig don't support.",
     "discussion": [
       {
         "user": "IsaB",
@@ -14540,8 +14540,8 @@ export const QUESTIONS = [
       "C. Create a feature cross, bucketize at minute level, and use L1 regularization.",
       "D. Create a feature cross, bucketize at minute level, and use L2 regularization."
     ],
-    "correct": 3,
-    "explanation": "Create a feature cross, bucketize at minute level, and use L2 regularization This ensures better model generalization and prevents overfitting on unseen data.",
+    "correct": 2,
+    "explanation": "Feature crosses of geographical coordinates create sparse data. L1 regularization drives irrelevant weights to zero, recommended by Google for sparse feature crosses unlike L2.",
     "discussion": [
       {
         "user": "AHUI",
@@ -14684,8 +14684,8 @@ export const QUESTIONS = [
       "C. Remove the bias from the data and collect declined applications.",
       "D. Match loan applicants with their social profiles for feature engineering."
     ],
-    "correct": 1,
-    "explanation": "Train a linear regression to predict a credit default risk score This ensures better model generalization and prevents overfitting on unseen data.",
+    "correct": 2,
+    "explanation": "Training only on granted applications introduces severe selection bias. The model must account for this bias by analyzing declined applications to accurately predict defaults.",
     "discussion": [
       {
         "user": "GHN74",
@@ -14780,8 +14780,8 @@ export const QUESTIONS = [
       "C. Add a second cluster with single-cluster routing.",
       "D. Increase the size of existing cluster twice and execute analytics workload."
     ],
-    "correct": 1,
-    "explanation": "Add a second cluster with multi-cluster routing, use live-traffic app profile for reg This NoSQL wide-column store optimized for time-series and analytical workloads with millisecond latency, automatic scaling, and replication.",
+    "correct": 2,
+    "explanation": "Multi-cluster routing routes to the nearest cluster and cannot guarantee workload isolation. Single-cluster routing on App Profiles directs each workload to a specific cluster.",
     "discussion": [
       {
         "user": "[Removed]",
@@ -15217,8 +15217,8 @@ export const QUESTIONS = [
       "C. Create a Cloud Run function to run a Python script to read and parse each JSON file, and use the BigQuery streaming insert API.",
       "D. Use Cloud Data Fusion to create a pipeline to load the JSON files into BigQuery."
     ],
-    "correct": 0,
-    "explanation": "why option A is correct\nLow-cost\nScalable\nProgrammatic",
+    "correct": 1,
+    "explanation": "B is correct. DTS uses free load jobs — you only pay for storage. Option A uses INSERT INTO...SELECT which is a query and charges per bytes scanned, making it expensive at multi-TB scale.",
     "discussion": [
       {
         "user": "hola_prep",
@@ -15351,8 +15351,8 @@ export const QUESTIONS = [
       "C. Store the raw, unprocessed data in a separate Cloud Storage bucket exclusively for serving.",
       "D. Ensure the serving data is a smaller, random sample of the training data."
     ],
-    "correct": 1,
-    "explanation": "B: Training-serving skew occurs when the data used to train your model differs in its characteristics or processing from the data used for making predictions in production.",
+    "correct": 0,
+    "explanation": "Manually replicating preprocessing logic causes training-serving skew. A Custom Prediction Routine packages the exact transformations with the model to prevent this.",
     "discussion": [
       {
         "user": "jreale64",
@@ -15435,8 +15435,8 @@ export const QUESTIONS = [
       "C. Use Dataflow to move files into Cloud Storage",
       "D. Use Cloud Data Fusion to move files into Cloud Storage."
     ],
-    "correct": 3,
-    "explanation": "D - only Cloud Data Fusion is a GUI-based solution.",
+    "correct": 1,
+    "explanation": "Storage Transfer Service is purpose-built for transferring files to Cloud Storage with GUI and CMEK support. Data Fusion is an ETL tool, overkill and expensive for simple file centralization.",
     "discussion": [
       {
         "user": "22c1725",
@@ -15479,8 +15479,8 @@ export const QUESTIONS = [
       "C. Use Dataflow and the Cloud Data Loss Prevention API to mask sensitive data. Write the processed data in BigQuery.",
       "D. Use Dataflow and Cloud KMS to encrypt sensitive fields and write the encrypted data in BigQuery. Share the encryption key by following the principle of least privilege."
     ],
-    "correct": 2,
-    "explanation": "It's C.",
+    "correct": 3,
+    "explanation": "Data masking permanently replaces original values. Encrypting fields with Cloud KMS protects privacy while allowing authorized decryption later, retaining data for future use.",
     "discussion": [
       {
         "user": "HectorLeon2099",

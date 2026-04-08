@@ -114,8 +114,8 @@
       "C. Create a Cloud Run function to run a Python script to read and parse each JSON file, and use the BigQuery streaming insert API.",
       "D. Use Cloud Data Fusion to create a pipeline to load the JSON files into BigQuery."
     ],
-    "suggestedAnswer": "A",
-    "discussionSummary": "why option A is correct\nLow-cost\nScalable\nProgrammatic",
+    "suggestedAnswer": "B",
+    "discussionSummary": "B is correct. DTS uses free load jobs — you only pay for storage. Option A uses INSERT INTO...SELECT which is a query and charges per bytes scanned, making it expensive at multi-TB scale.",
     "parsedCorrect": 0,
     "parseConflict": false
   },
@@ -205,7 +205,7 @@
       "D. Modify ETL job to load the data into both the current and another backup region."
     ],
     "suggestedAnswer": "A",
-    "discussionSummary": "Opción D: Modify ETL job to load the data into both the current and another backup region\nEvaluación:\nAjustar el ETL para escribir en dos tablas (una en la región principal y otra en una región de respaldo) asegura que los datos estén disponibles en ambas ubicaciones casi en tiem",
+    "discussionSummary": "A is correct. Exporting to a dual/multi-region GCS bucket provides regional failure protection at minimal cost (GCS storage is much cheaper than BQ storage). A daily export meets the <24h RPO requirement. C fails because snapshots stay in the same region. D is overkill — dual-region ETL doubles compute and storage costs for near-real-time RPO that was never required. B works but costs more than GCS.",
     "parsedCorrect": 0,
     "parseConflict": false
   },
