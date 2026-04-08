@@ -3,6 +3,7 @@ import googleCloudLogo from "./assets/google-cloud-logo.svg";
 import { QUESTIONS } from "./data/questions.js";
 import { TOPICS } from "./data/topics.js";
 import { RANKS, ACHIEVEMENTS } from "./data/gamification.js";
+import { EXAM_DOMAINS, computeDomainStats, computeCanonicalTopicStats, getWeakestDomain, getCanonicalTopic } from "./data/pde-topics.js";
 import {
   AchievementPopup,
   BossBattle,
@@ -257,13 +258,9 @@ function App() {
   const bookmarkSet = useMemo(() => new Set(progress.bookmarks), [progress.bookmarks]);
   const weakTopics = useMemo(() => computeWeakTopics(progress.topicHistory).slice(0, 4), [progress.topicHistory]);
   const rankState = useMemo(() => getRankState(progress.xp), [progress.xp]);
-  const topicAnswered = useMemo(() => {
-    const counts = {};
-    Object.entries(progress.topicHistory).forEach(([topic, entries]) => {
-      counts[topic] = new Set(entries.map(e => e.questionId)).size;
-    });
-    return counts;
-  }, [progress.topicHistory]);
+  const domainStats = useMemo(() => computeDomainStats(progress.topicHistory), [progress.topicHistory]);
+  const canonicalTopicStats = useMemo(() => computeCanonicalTopicStats(progress.topicHistory), [progress.topicHistory]);
+  const weakestDomain = useMemo(() => getWeakestDomain(domainStats), [domainStats]);
   const weakTopicSet = useMemo(() => new Set(weakTopics.map((topic) => topic.topic)), [weakTopics]);
   const wrongQuestions = useMemo(
     () => progress.wrongQuestionIds.map((id) => questionMap.get(id)).filter(Boolean),
@@ -1297,6 +1294,178 @@ function App() {
     </div>;
   }
 
+  const renderNextAction = () => {
+    const activeBlockMeta = savedBlockSession?.meta?.blockStudy || null;
+    const hasActiveBlock = activeBlockMeta && activeBlockMeta.trackId === blockCatalog.trackId;
+    if (hasActiveBlock) {
+      return (
+        <div style={{ background: "linear-gradient(135deg, var(--info-soft), var(--primary-soft))", border: "1px solid var(--signal-info)", borderRadius: "var(--radius-xl)", padding: "18px 20px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)", flexWrap: "wrap" }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>Continuar Bloque {activeBlockMeta.blockIndex + 1}</div>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>Tu bloque actual esta a medias.</div>
+          </div>
+          <button onClick={continueSavedBlock} style={{ padding: "12px 20px", border: "none", borderRadius: "var(--radius-md)", background: "var(--gradient-practice)", color: "white", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Continuar</button>
+        </div>
+      );
+    }
+    const suggested = suggestedBlock;
+    if (suggested && !isBlockMastered(getBlockProgressRecord(progress, blockCatalog.trackId, suggested.blockIndex))) {
+      const suggestedProgress = getBlockProgressRecord(progress, blockCatalog.trackId, suggested.blockIndex);
+      const hasRounds = suggestedProgress?.rounds?.length > 0;
+      return (
+        <div style={{ background: "linear-gradient(135deg, var(--primary-soft), var(--accent-soft))", border: "1px solid var(--primary-medium)", borderRadius: "var(--radius-xl)", padding: "18px 20px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)", flexWrap: "wrap" }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>{hasRounds ? "Repetir" : "Empezar"} Bloque {suggested.blockIndex + 1} <span style={{ color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{suggested.label}</span></div>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>Siguiente bloque sugerido.</div>
+          </div>
+          <button onClick={() => { setSelectedBlockIndex(suggested.blockIndex); startBlock(suggested); }} style={{ padding: "12px 20px", border: "none", borderRadius: "var(--radius-md)", background: "var(--gradient-practice)", color: "white", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>{hasRounds ? "Repetir" : "Empezar"}</button>
+        </div>
+      );
+    }
+    if (weakestDomain) {
+      return (
+        <div style={{ background: "linear-gradient(135deg, var(--wrong-soft), var(--accent-soft))", border: "1px solid var(--signal-warning)", borderRadius: "var(--radius-xl)", padding: "18px 20px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)", flexWrap: "wrap" }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>Reforzar {weakestDomain.short}</div>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>Tu dominio mas flojo: {weakestDomain.accuracy}% con {weakestDomain.total} intentos.</div>
+          </div>
+          <button onClick={() => {
+            const domainTopics = weakestDomain.topics.flatMap((canonical) =>
+              TOPICS.filter((t) => getCanonicalTopic(t) === canonical)
+            );
+            setSelectedTopics(new Set(domainTopics));
+            setPracticeSource("topics");
+            setPracticeMessage(`Cargados temas de ${weakestDomain.short}.`);
+          }} style={{ padding: "12px 20px", border: "none", borderRadius: "var(--radius-md)", background: "var(--gradient-danger)", color: "white", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Practicar</button>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const renderDomainProgress = () => (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Dominios PDE</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {domainStats.map((domain) => {
+          const pct = domain.accuracy;
+          const lowData = domain.total < 10;
+          const barColor = lowData ? "var(--text-muted)" : pct >= 70 ? "var(--signal-correct)" : pct >= 50 ? "var(--signal-warning)" : "var(--signal-wrong)";
+          return (
+            <div key={domain.id} style={{ display: "grid", gridTemplateColumns: "140px 1fr auto", alignItems: "center", gap: 10 }}>
+              <div style={{ fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={domain.name}>{domain.short}</div>
+              <div style={{ height: 8, background: "var(--surface-line)", borderRadius: "var(--radius-pill)", overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${lowData ? 0 : pct}%`, background: barColor, borderRadius: "var(--radius-pill)", transition: "width 0.3s" }} />
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 110, justifyContent: "flex-end" }}>
+                {lowData ? (
+                  <span style={{ fontSize: 11, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span>
+                ) : (
+                  <span style={{ fontSize: 13, fontWeight: 800, color: barColor, fontFamily: "var(--font-mono)" }}>{pct}%</span>
+                )}
+                <span style={{ fontSize: 11, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>({domain.total})</span>
+                {lowData && <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: "var(--radius-pill)", background: "var(--surface-panel-muted)", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>pocos datos</span>}
+                {!lowData && pct < 70 && <span style={{ fontSize: 10, color: "var(--signal-warning)" }}>⚠</span>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const renderTopicHeatmap = () => {
+    const heatmapColor = (accuracy) => {
+      if (accuracy === null) return "var(--text-muted)";
+      if (accuracy >= 90) return "var(--highlight)";
+      if (accuracy >= 70) return "var(--signal-correct)";
+      if (accuracy >= 50) return "var(--signal-warning)";
+      return "var(--signal-wrong)";
+    };
+    const heatmapBg = (accuracy) => {
+      if (accuracy === null) return "var(--surface-panel-muted)";
+      if (accuracy >= 90) return "rgba(143, 255, 106, 0.12)";
+      if (accuracy >= 70) return "var(--correct-soft)";
+      if (accuracy >= 50) return "var(--warning-soft)";
+      return "var(--wrong-soft)";
+    };
+    return (
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+          <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Temas</div>
+          <button onClick={() => setSelectedTopics(selectedTopics.size === TOPICS.length ? new Set() : new Set(TOPICS))} style={{ border: "none", background: "transparent", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+            {selectedTopics.size === TOPICS.length ? "Deseleccionar todo" : "Seleccionar todo"}
+          </button>
+        </div>
+        {EXAM_DOMAINS.map((domain) => (
+          <div key={domain.id} style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 10, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6, fontFamily: "var(--font-mono)" }}>{domain.short}</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {canonicalTopicStats.filter((s) => s.domainId === domain.id).map((stat) => {
+                const rawTopics = TOPICS.filter((t) => getCanonicalTopic(t) === stat.topic);
+                const allSelected = rawTopics.every((t) => selectedTopics.has(t));
+                const qCount = rawTopics.reduce((sum, t) => sum + (topicCounts[t] || 0), 0);
+                const tooltipText = stat.total >= 10 ? `${stat.correct}/${stat.total} correctas` : `${stat.total} intentos`;
+                return (
+                  <button
+                    key={stat.topic}
+                    title={`${stat.topic}: ${tooltipText} · ${qCount} preguntas`}
+                    onClick={() => {
+                      const next = new Set(selectedTopics);
+                      rawTopics.forEach((t) => allSelected ? next.delete(t) : next.add(t));
+                      setSelectedTopics(next);
+                      setPracticeSource("topics");
+                      if (qCount < 5) setPracticeMessage(`${stat.topic}: solo ${qCount} preguntas disponibles.`);
+                      else setPracticeMessage("");
+                    }}
+                    onDoubleClick={() => {
+                      setSelectedTopics(new Set(rawTopics));
+                      setPracticeSource("topics");
+                      setPracticeMessage(`Solo ${stat.topic}.`);
+                    }}
+                    style={{
+                      padding: "6px 10px",
+                      borderRadius: "var(--radius-pill)",
+                      border: allSelected ? `1px solid ${heatmapColor(stat.accuracy)}` : "1px solid var(--surface-line)",
+                      background: allSelected ? heatmapBg(stat.accuracy) : "var(--surface-panel-muted)",
+                      color: allSelected ? heatmapColor(stat.accuracy) : "var(--text-secondary)",
+                      fontSize: 11,
+                      cursor: "pointer",
+                      fontFamily: "var(--font-mono)",
+                    }}
+                  >
+                    {stat.topic} <span style={{ opacity: 0.65 }}>{stat.accuracy !== null ? `${stat.accuracy}%` : "—"}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+        <div style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: 4 }}>Doble click para aislar un tema. Tooltip para detalle.</div>
+      </div>
+    );
+  };
+
+  const renderMockSparkline = () => {
+    if (!progress.mockHistory.length) return null;
+    const last5 = progress.mockHistory.slice(0, 5);
+    const avg = Math.round(last5.reduce((s, e) => s + e.percent, 0) / last5.length);
+    const recent3 = last5.slice(0, Math.min(3, last5.length));
+    const older = last5.slice(Math.min(3, last5.length));
+    const recentAvg = recent3.length ? recent3.reduce((s, e) => s + e.percent, 0) / recent3.length : 0;
+    const olderAvg = older.length ? older.reduce((s, e) => s + e.percent, 0) / older.length : recentAvg;
+    const trend = recentAvg > olderAvg + 2 ? "↑" : recentAvg < olderAvg - 2 ? "↓" : "→";
+    const trendColor = trend === "↑" ? "var(--signal-correct)" : trend === "↓" ? "var(--signal-wrong)" : "var(--text-secondary)";
+    return (
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginTop: 10 }}>
+        {last5.slice().reverse().map((entry, i) => (
+          <div key={i} title={`${entry.percent}% — ${new Date(entry.date).toLocaleDateString("es-ES")}`} style={{ width: 16, height: Math.max(4, (entry.percent / 100) * 36), borderRadius: 3, background: entry.passed ? "var(--signal-correct)" : "var(--signal-wrong)", opacity: 0.7 + (i / last5.length) * 0.3 }} />
+        ))}
+        <span style={{ fontSize: 12, fontWeight: 800, color: trendColor, fontFamily: "var(--font-mono)", marginLeft: 6 }}>{avg}% {trend}</span>
+      </div>
+    );
+  };
+
   const renderSummaryCards = () => (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "var(--space-md)", marginBottom: 16 }}>
       <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 16, boxShadow: "var(--shadow-card)" }}>
@@ -1429,6 +1598,8 @@ function App() {
         </div>
 
         {renderSummaryCards()}
+        {renderNextAction()}
+        {renderDomainProgress()}
 
         <div style={{ background: "linear-gradient(180deg, rgba(15, 191, 163, 0.14), rgba(6, 15, 25, 0.92))", border: "1px solid var(--primary-medium)", borderRadius: "var(--radius-2xl)", padding: 24, marginBottom: 18, boxShadow: "var(--shadow-elevated)" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-md)", flexWrap: "wrap", marginBottom: 18 }}>
@@ -1720,42 +1891,7 @@ function App() {
               </div>
             </div>
 
-            {practiceSource === "topics" && (
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                  <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Temas</div>
-                  <button onClick={() => setSelectedTopics(selectedTopics.size === TOPICS.length ? new Set() : new Set(TOPICS))} style={{ border: "none", background: "transparent", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-                    {selectedTopics.size === TOPICS.length ? "Deseleccionar todo" : "Seleccionar todo"}
-                  </button>
-                </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-sm)", marginBottom: 8 }}>
-                  {TOPICS.map((topic) => (
-                    <button key={topic} onClick={() => {
-                      const next = new Set(selectedTopics);
-                      if (next.has(topic)) next.delete(topic);
-                      else next.add(topic);
-                      setSelectedTopics(next);
-                      setPracticeMessage("");
-                    }} onDoubleClick={() => {
-                      setSelectedTopics(new Set([topic]));
-                      setPracticeMessage(`Solo ${topic}.`);
-                    }} style={{
-                      padding: "8px 12px",
-                      borderRadius: "var(--radius-pill)",
-                      border: selectedTopics.has(topic) ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
-                      background: selectedTopics.has(topic) ? "var(--primary-soft)" : "var(--surface-panel-muted)",
-                      color: selectedTopics.has(topic) ? "var(--primary-400)" : "var(--text-secondary)",
-                      fontSize: 12,
-                      cursor: "pointer",
-                      fontFamily: "var(--font-mono)",
-                    }}>
-                      {topic} <span style={{ opacity: 0.65 }}>({topicAnswered[topic] || 0}/{topicCounts[topic] || 0})</span>
-                    </button>
-                  ))}
-                </div>
-                <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Doble click para aislar un dominio.</div>
-              </div>
-            )}
+            {practiceSource === "topics" && renderTopicHeatmap()}
 
             {practiceSource !== "topics" && (
               <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: "var(--radius-lg)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
@@ -1927,6 +2063,7 @@ function App() {
                     <span style={{ fontSize: 13, fontWeight: 800, color: entry.passed ? "var(--signal-correct)" : "var(--signal-wrong)", fontFamily: "var(--font-mono)" }}>{entry.percent}% {entry.passed ? "Apto" : "No apto"}</span>
                   </div>
                 ))}
+                {renderMockSparkline()}
               </div>
             )}
 
@@ -2232,7 +2369,7 @@ function App() {
               <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 {isMulti && <span style={{ width: 20, height: 20, borderRadius: 6, border: isSelected ? "2px solid currentColor" : "2px solid var(--surface-line-strong)", background: isSelected ? "currentColor" : "transparent", color: "var(--bg-primary)", fontSize: 10, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{isSelected ? "✓" : ""}</span>}
                 <span style={{ flex: 1 }}>{option}</span>
-                <span style={{ fontSize: 10, opacity: 0.55, flexShrink: 0, fontFamily: "var(--font-mono)" }}>{index + 1}</span>
+                <span style={{ width: 22, height: 22, borderRadius: 6, border: "1px solid var(--surface-line-strong)", background: "var(--surface-panel-muted)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "var(--text-tertiary)", flexShrink: 0, fontFamily: "var(--font-mono)" }}>{index + 1}</span>
               </span>
             </button>;
           })}
