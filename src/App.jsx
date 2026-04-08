@@ -34,24 +34,43 @@ import {
   serializeSelection,
 } from "./engine/quiz-engine";
 import {
+  BLOCK_SIZE_PRESETS,
+  BLOCK_MASTERY_PERCENT,
+  DEFAULT_BLOCK_SIZE,
+  buildBlockCatalog,
+  buildBlockRoundSummary,
+  getBlockProgressRecord,
+  getBlockRoundNumber,
+  getSuggestedBlockIndex,
+  hasBlockChanged,
+  isBlockMastered,
+} from "./engine/block-study";
+import {
   advanceSession,
   createMockSession,
   createPracticeSession,
   getMockStatus,
   getRemainingTime,
+  hydrateBlockSession,
   hydrateMockSession,
+  toStoredBlockSession,
   toStoredMockSession,
   withRecordedMockAnswer,
 } from "./engine/session-manager";
 import {
   EMPTY_PROGRESS,
+  clearActiveBlockSession,
   clearActiveMock,
   completeDailyChallenge,
   isDailyChallengeCompleted,
+  loadActiveBlockSession,
   loadActiveMock,
+  loadBlockPrefs,
   loadPracticePrefs,
   loadProgress,
+  saveActiveBlockSession,
   saveActiveMock,
+  saveBlockPrefs,
   savePracticePrefs,
   saveProgress,
   updateDailyStreak,
@@ -107,6 +126,11 @@ function sanitizePracticeLimit(limit) {
   return Math.floor(numeric);
 }
 
+function sanitizeBlockSize(size) {
+  const numeric = Number(size);
+  return BLOCK_SIZE_PRESETS.includes(numeric) ? numeric : DEFAULT_BLOCK_SIZE;
+}
+
 function sameSet(left, right) {
   if (left.size !== right.size) return false;
   for (const value of left) {
@@ -124,6 +148,26 @@ function formatDuration(totalSeconds) {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+function normalizeSessionUi(session) {
+  return {
+    selectedAnswer: session?.ui?.selectedAnswer ?? null,
+    showResult: !!session?.ui?.showResult,
+    showDiscussion: !!session?.ui?.showDiscussion,
+    hiddenOptions: Array.isArray(session?.ui?.hiddenOptions) ? session.ui.hiddenOptions : [],
+    showHint: !!session?.ui?.showHint,
+  };
+}
+
+function serializeUiState(selectedAnswer, hiddenOptions, showResult, showDiscussion, showHint) {
+  return {
+    selectedAnswer: serializeSelection(selectedAnswer),
+    showResult,
+    showDiscussion,
+    hiddenOptions: [...hiddenOptions],
+    showHint,
+  };
 }
 
 function getRankState(xp) {
@@ -171,6 +215,7 @@ function App() {
   const qRef = useRef(null);
   const previousAchievementsRef = useRef([]);
   const storedPracticePrefs = useMemo(() => loadPracticePrefs() || {}, []);
+  const storedBlockPrefs = useMemo(() => loadBlockPrefs() || {}, []);
   const questionMap = useMemo(() => new Map(QUESTIONS.map((question) => [question.id, question])), []);
   const topicCounts = useMemo(() => buildTopicCounts(), []);
   const [ready, setReady] = useState(false);
@@ -178,11 +223,15 @@ function App() {
   const [progress, setProgress] = useState(EMPTY_PROGRESS);
   const [session, setSession] = useState(null);
   const [savedMockSession, setSavedMockSession] = useState(null);
+  const [savedBlockSession, setSavedBlockSession] = useState(null);
   const [resultPayload, setResultPayload] = useState(null);
   const [selectedTopics, setSelectedTopics] = useState(() => new Set(sanitizePracticeTopics(storedPracticePrefs.topics)));
   const [practiceOrder, setPracticeOrder] = useState(() => sanitizePracticeOrder(storedPracticePrefs.order));
   const [practiceSource, setPracticeSource] = useState(() => sanitizePracticeSource(storedPracticePrefs.source));
   const [practiceLimit, setPracticeLimit] = useState(() => sanitizePracticeLimit(storedPracticePrefs.limit));
+  const [blockTrackSize, setBlockTrackSize] = useState(() => sanitizeBlockSize(storedBlockPrefs.trackSize));
+  const [selectedBlockIndex, setSelectedBlockIndex] = useState(() => Math.max(0, Number(storedBlockPrefs.blockIndex) || 0));
+  const [blockMessage, setBlockMessage] = useState("");
   const [showCustomLimit, setShowCustomLimit] = useState(() => {
     const initialLimit = sanitizePracticeLimit(storedPracticePrefs.limit);
     return !PRACTICE_PRESETS.includes(initialLimit);
@@ -250,6 +299,21 @@ function App() {
     bookmarks: bookmarkedQuestions.length,
     weak: weakQuestions.length,
   }), [bookmarkedQuestions.length, recentQuestions.length, topicQuestions.length, weakQuestions.length, wrongQuestions.length]);
+  const blockCatalog = useMemo(() => buildBlockCatalog(QUESTIONS, blockTrackSize), [blockTrackSize]);
+  const effectiveSelectedBlockIndex = useMemo(() => {
+    if (!blockCatalog.blocks.length) return 0;
+    return Math.min(Math.max(0, selectedBlockIndex), blockCatalog.blocks.length - 1);
+  }, [blockCatalog.blocks.length, selectedBlockIndex]);
+  const selectedBlock = blockCatalog.blocks[effectiveSelectedBlockIndex] || null;
+  const suggestedBlockIndex = useMemo(
+    () => getSuggestedBlockIndex(blockCatalog.blocks, progress, savedBlockSession),
+    [blockCatalog.blocks, progress, savedBlockSession]
+  );
+  const suggestedBlock = blockCatalog.blocks[suggestedBlockIndex] || null;
+  const selectedBlockProgress = useMemo(
+    () => selectedBlock ? getBlockProgressRecord(progress, selectedBlock.trackId, selectedBlock.blockIndex) : null,
+    [progress, selectedBlock]
+  );
   const maxPracticeCount = practiceSourceQuestions.length;
   const effectivePracticeLimit = maxPracticeCount > 0 ? Math.min(Math.max(1, practiceLimit), maxPracticeCount) : 0;
   const maxPresetLabel = maxPracticeCount > 0 ? `Máximo disponible (${maxPracticeCount})` : "Máximo disponible";
@@ -301,11 +365,14 @@ function App() {
   }, [session, questionMap]);
 
   const currentQuestion = session ? currentQuestions[session.currentIndex] : null;
+  const practiceMode = session?.mode === "practice";
+  const blockMode = practiceMode && session?.meta?.source === "blocks";
+  const blockSessionMeta = blockMode ? session.meta.blockStudy : null;
   const currentEvaluation = currentQuestion ? evaluateAnswer(currentQuestion, selectedAnswer) : null;
   const isMulti = currentQuestion ? Array.isArray(currentQuestion.correct) : false;
   const canSubmitCurrent = currentQuestion ? canSubmitAnswer(currentQuestion, selectedAnswer) : false;
   const mockRemainingSec = session?.mode === "mock" ? getRemainingTime(session, now) : 0;
-  const pendingRewardCount = session?.mode === "practice" ? session.rewardQueue.length : 0;
+  const pendingRewardCount = practiceMode ? session.rewardQueue.length : 0;
 
   const resetQuestionUi = useCallback(() => {
     setSelectedAnswer(null);
@@ -333,8 +400,57 @@ function App() {
     setProgress((prev) => applyUnlockedAchievements(updater(prev)));
   }, [applyUnlockedAchievements]);
 
+  const recordBlockRound = useCallback((finishedSession, summary) => {
+    const blockMeta = finishedSession.meta?.blockStudy;
+    if (!blockMeta) return;
+
+    updateProgress((prev) => {
+      const tracks = prev.blockStudy?.tracks || {};
+      const track = tracks[blockMeta.trackId] || { blocks: {} };
+      const blockRecord = track.blocks?.[blockMeta.blockIndex] || {
+        blockIndex: blockMeta.blockIndex,
+        label: blockMeta.label,
+        size: blockMeta.size,
+        questionIds: blockMeta.questionIds,
+        orderNumbers: blockMeta.orderNumbers,
+        blockSignature: blockMeta.blockSignature,
+        rounds: [],
+        lastStudiedAt: null,
+        lastPercent: 0,
+        bestPercent: 0,
+      };
+      const rounds = [...(blockRecord.rounds || []), summary];
+      return {
+        ...prev,
+        blockStudy: {
+          tracks: {
+            ...tracks,
+            [blockMeta.trackId]: {
+              blocks: {
+                ...(track.blocks || {}),
+                [blockMeta.blockIndex]: {
+                  ...blockRecord,
+                  label: blockMeta.label,
+                  size: blockMeta.size,
+                  questionIds: blockMeta.questionIds,
+                  orderNumbers: blockMeta.orderNumbers,
+                  blockSignature: blockMeta.blockSignature,
+                  rounds,
+                  lastStudiedAt: summary.finishedAt,
+                  lastPercent: summary.percent,
+                  bestPercent: Math.max(blockRecord.bestPercent || 0, summary.percent),
+                },
+              },
+            },
+          },
+        },
+      };
+    });
+  }, [updateProgress]);
+
   const finishPracticeSession = useCallback((finishedSession) => {
-    const isDaily = finishedSession.source === "daily";
+    const isDaily = finishedSession.meta?.source === "daily";
+    const isBlocks = finishedSession.meta?.source === "blocks";
     const dailyBonus = isDaily && !isDailyChallengeCompleted(progress) ? DAILY_CHALLENGE_BONUS_XP : 0;
     const baseXp = finishedSession.history.reduce((sum, entry) => sum + entry.xp, 0);
     const summary = {
@@ -351,15 +467,25 @@ function App() {
         xp: prev.xp + dailyBonus,
       }));
     }
+    const blockRoundSummary = isBlocks ? buildBlockRoundSummary(finishedSession) : null;
+    if (blockRoundSummary) {
+      recordBlockRound(finishedSession, blockRoundSummary);
+      clearActiveBlockSession();
+      setSavedBlockSession(null);
+    }
     setSession(finishedSession);
     setResultPayload({
-      mode: isDaily ? "daily" : "practice",
+      mode: isBlocks ? "blocks" : isDaily ? "daily" : "practice",
       history: finishedSession.history,
       summary,
+      blockStudy: isBlocks ? {
+        ...finishedSession.meta.blockStudy,
+        roundSummary: blockRoundSummary,
+      } : null,
     });
     setScreen("results");
     resetQuestionUi();
-  }, [progress, resetQuestionUi, updateProgress]);
+  }, [progress, recordBlockRound, resetQuestionUi, updateProgress]);
 
   const finalizeMockSession = useCallback((sessionToFinish, reason = "completed") => {
     if (!sessionToFinish || sessionToFinish.mode !== "mock") return;
@@ -433,6 +559,7 @@ function App() {
       return;
     }
     setSession(nextSession);
+    if (nextSession.meta?.source === "blocks") setSavedBlockSession(nextSession);
     resetQuestionUi();
   }, [finishPracticeSession, resetQuestionUi]);
 
@@ -469,7 +596,9 @@ function App() {
   useEffect(() => {
     const savedProgress = loadProgress();
     const storedMock = loadActiveMock();
+    const storedBlock = loadActiveBlockSession();
     const restoredMock = storedMock ? hydrateMockSession(storedMock, questionMap) : null;
+    const restoredBlock = storedBlock ? hydrateBlockSession(storedBlock, questionMap) : null;
 
     previousAchievementsRef.current = savedProgress.achievements;
     setProgress(savedProgress);
@@ -478,8 +607,27 @@ function App() {
       setSavedMockSession(restoredMock);
       setSession(restoredMock);
       setScreen("quiz");
+    } else if (restoredBlock) {
+      const uiState = normalizeSessionUi(restoredBlock);
+      const restoreSelection = (question) => {
+        const raw = uiState.selectedAnswer;
+        if (!Array.isArray(raw)) return raw;
+        if (Array.isArray(question?.correct)) return new Set(raw);
+        return raw.length ? raw[0] : null;
+      };
+      setSavedBlockSession(restoredBlock);
+      setBlockTrackSize(sanitizeBlockSize(restoredBlock.meta?.blockStudy?.size));
+      setSelectedBlockIndex(restoredBlock.meta?.blockStudy?.blockIndex || 0);
+      setSession(restoredBlock);
+      setSelectedAnswer(restoreSelection(restoredBlock.questions[restoredBlock.currentIndex]));
+      setShowResult(uiState.showResult);
+      setShowDiscussion(uiState.showDiscussion);
+      setHiddenOptions(new Set(uiState.hiddenOptions));
+      setShowHint(uiState.showHint);
+      setScreen("quiz");
     } else {
       clearActiveMock();
+      clearActiveBlockSession();
       setScreen("menu");
     }
 
@@ -490,6 +638,13 @@ function App() {
     if (!ready) return;
     saveProgress(progress);
   }, [progress, ready]);
+
+  useEffect(() => {
+    if (!blockCatalog.blocks.length) return;
+    if (selectedBlockIndex !== effectiveSelectedBlockIndex) {
+      setSelectedBlockIndex(effectiveSelectedBlockIndex);
+    }
+  }, [blockCatalog.blocks.length, effectiveSelectedBlockIndex, selectedBlockIndex]);
 
   useEffect(() => {
     if (!ready) return;
@@ -553,9 +708,31 @@ function App() {
 
   useEffect(() => {
     if (!ready) return;
+    saveBlockPrefs({
+      trackSize: blockTrackSize,
+      blockIndex: effectiveSelectedBlockIndex,
+    });
+  }, [blockTrackSize, effectiveSelectedBlockIndex, ready]);
+
+  useEffect(() => {
+    if (!ready) return;
     if (savedMockSession) saveActiveMock(toStoredMockSession(savedMockSession));
     else clearActiveMock();
   }, [ready, savedMockSession]);
+
+  useEffect(() => {
+    if (!ready) return;
+    const activeBlockSession = session?.mode === "practice" && session.meta?.source === "blocks" && session.status !== "finished"
+      ? session
+      : savedBlockSession;
+
+    if (!activeBlockSession || activeBlockSession.status === "finished") {
+      clearActiveBlockSession();
+      return;
+    }
+
+    saveActiveBlockSession(toStoredBlockSession(activeBlockSession));
+  }, [ready, savedBlockSession, session]);
 
   useEffect(() => {
     const previous = previousAchievementsRef.current;
@@ -583,6 +760,26 @@ function App() {
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
+
+  useEffect(() => {
+    if (!blockMode || !session) return;
+    const nextUi = serializeUiState(selectedAnswer, hiddenOptions, showResult, showDiscussion, showHint);
+    setSession((prev) => {
+      if (!prev || prev.mode !== "practice" || prev.meta?.source !== "blocks") return prev;
+      const currentUi = prev.ui || {};
+      const same =
+        JSON.stringify(currentUi.selectedAnswer ?? null) === JSON.stringify(nextUi.selectedAnswer)
+        && !!currentUi.showResult === nextUi.showResult
+        && !!currentUi.showDiscussion === nextUi.showDiscussion
+        && JSON.stringify(currentUi.hiddenOptions || []) === JSON.stringify(nextUi.hiddenOptions)
+        && !!currentUi.showHint === nextUi.showHint;
+      if (same) return prev;
+      return {
+        ...prev,
+        ui: nextUi,
+      };
+    });
+  }, [blockMode, hiddenOptions, selectedAnswer, session, showDiscussion, showHint, showResult]);
 
   useEffect(() => {
     if (screen !== "quiz" || !currentQuestion) return;
@@ -674,6 +871,79 @@ function App() {
       : PRACTICE_SOURCE_META[source].empty);
   }, [bookmarkedQuestions.length, practiceLimit, recentQuestions.length, topicQuestions.length, weakQuestions.length, weakTopics, wrongQuestions.length]);
 
+  const openBlockSession = useCallback((block, existingSession = null) => {
+    if (!block) return;
+
+    const blockProgress = getBlockProgressRecord(progress, block.trackId, block.blockIndex);
+    const sessionToOpen = existingSession || createPracticeSession(
+      block.questionIds.map((id) => questionMap.get(id)).filter(Boolean),
+      {
+        order: "block-fixed-desc",
+        source: "blocks",
+        questionLimit: block.questionIds.length,
+        blockStudy: {
+          trackId: block.trackId,
+          blockIndex: block.blockIndex,
+          size: block.size,
+          label: block.label,
+          questionIds: block.questionIds,
+          orderNumbers: block.orderNumbers,
+          blockSignature: block.blockSignature,
+          roundNumber: getBlockRoundNumber(blockProgress),
+        },
+      }
+    );
+
+    setSavedBlockSession(sessionToOpen);
+    setSession(sessionToOpen);
+    setResultPayload(null);
+    setScreen("quiz");
+    setShowDiscussion(!!sessionToOpen.ui?.showDiscussion);
+    resetQuestionUi();
+
+    const uiState = normalizeSessionUi(sessionToOpen);
+    const restoredSelection = currentQuestion => {
+      if (!currentQuestion) return null;
+      const raw = uiState.selectedAnswer;
+      if (Array.isArray(raw)) {
+        if (Array.isArray(currentQuestion.correct)) return new Set(raw);
+        return raw.length ? raw[0] : null;
+      }
+      return raw;
+    };
+
+    const question = sessionToOpen.questions[sessionToOpen.currentIndex];
+    setSelectedAnswer(restoredSelection(question));
+    setShowResult(uiState.showResult);
+    setShowDiscussion(uiState.showDiscussion);
+    setHiddenOptions(new Set(uiState.hiddenOptions));
+    setShowHint(uiState.showHint);
+  }, [progress, questionMap, resetQuestionUi]);
+
+  const startBlock = useCallback((block = selectedBlock) => {
+    if (!block) return;
+    setBlockTrackSize(sanitizeBlockSize(block.size));
+    setSelectedBlockIndex(block.blockIndex);
+    setBlockMessage("");
+    openBlockSession(block);
+  }, [openBlockSession, selectedBlock]);
+
+  const continueSavedBlock = useCallback(() => {
+    if (!savedBlockSession) return;
+    setBlockTrackSize(sanitizeBlockSize(savedBlockSession.meta?.blockStudy?.size));
+    setSelectedBlockIndex(savedBlockSession.meta?.blockStudy?.blockIndex || 0);
+    openBlockSession(savedBlockSession.meta?.blockStudy ? {
+      ...savedBlockSession.meta.blockStudy,
+      trackId: savedBlockSession.meta.blockStudy.trackId,
+      blockIndex: savedBlockSession.meta.blockStudy.blockIndex,
+      size: savedBlockSession.meta.blockStudy.size,
+      label: savedBlockSession.meta.blockStudy.label,
+      questionIds: savedBlockSession.meta.blockStudy.questionIds,
+      orderNumbers: savedBlockSession.meta.blockStudy.orderNumbers,
+      blockSignature: savedBlockSession.meta.blockStudy.blockSignature,
+    } : null, savedBlockSession);
+  }, [openBlockSession, savedBlockSession]);
+
   const startPractice = useCallback(() => {
     const questionIds = practiceSource === "recent"
       ? recentQuestions.map((question) => question.id)
@@ -735,11 +1005,20 @@ function App() {
 
   const goToMenu = useCallback(() => {
     if (session?.mode === "practice" && session.answered > 0 && session.status !== "finished") {
-      if (!window.confirm("¿Salir de la sesión? Se perderá el progreso de esta práctica.")) return;
+      const message = session.meta?.source === "blocks"
+        ? "¿Salir del bloque? La vuelta no se registrará todavía, pero podrás continuarla después."
+        : "¿Salir de la sesión? Se perderá el progreso de esta práctica.";
+      if (!window.confirm(message)) return;
     }
     setScreen("menu");
     setResultPayload(null);
-    if (session?.mode === "practice" || session?.status === "finished") setSession(null);
+    if (session?.mode === "practice" && session.meta?.source === "blocks" && session.status !== "finished") {
+      setSavedBlockSession(session);
+      setBlockMessage(`Bloque ${session.meta.blockStudy.label} pausado en ${session.currentIndex + 1}/${session.questions.length}.`);
+      setSession(null);
+    } else if (session?.mode === "practice" || session?.status === "finished") {
+      setSession(null);
+    }
     resetQuestionUi();
   }, [resetQuestionUi, session]);
 
@@ -939,9 +1218,23 @@ function App() {
       history: [...session.history, historyEntry],
       rewardQueue,
     });
+    if (session.meta?.source === "blocks") {
+      setSavedBlockSession({
+        ...session,
+        answered: session.answered + 1,
+        score: session.score + (evaluation.isCorrect ? 1 : 0),
+        streak: nextStreak,
+        maxStreak: Math.max(session.maxStreak, nextStreak),
+        history: [...session.history, historyEntry],
+        rewardQueue,
+        ui: {
+          ...serializeUiState(selectedAnswer, hiddenOptions, true, showDiscussion, showHint),
+        },
+      });
+    }
     setXpPop({ amount: xpInfo.xp, key: Date.now() });
     setShowResult(true);
-  }, [canSubmitCurrent, currentQuestion, finalizeMockSession, progress.inventory.bossKeys, progress.inventory.doubleXP, progress.inventory.mult, progress.inventory.shields, resetQuestionUi, selectedAnswer, session, updateProgress]);
+  }, [canSubmitCurrent, currentQuestion, finalizeMockSession, hiddenOptions, progress.inventory.bossKeys, progress.inventory.doubleXP, progress.inventory.mult, progress.inventory.shields, resetQuestionUi, selectedAnswer, session, showDiscussion, showHint, updateProgress]);
 
   useEffect(() => {
     const submitHandler = () => submitCurrentAnswer();
@@ -1075,6 +1368,21 @@ function App() {
   if (screen === "menu") {
     const totalPowerups = progress.inventory.shields + progress.inventory.fiftyFifty + progress.inventory.hints + progress.inventory.skips + progress.inventory.doubleXP + progress.inventory.scratchCards + progress.inventory.chestKeys + progress.inventory.bossKeys + progress.inventory.wheelSpins;
     const hasPracticeQuestions = maxPracticeCount > 0;
+    const activeBlockMeta = savedBlockSession?.meta?.blockStudy || null;
+    const activeBlockIndex = activeBlockMeta?.trackId === blockCatalog.trackId ? activeBlockMeta.blockIndex : null;
+    const selectedBlockRounds = selectedBlockProgress?.rounds || [];
+    const selectedBlockChanged = selectedBlock ? hasBlockChanged(selectedBlock, selectedBlockProgress) : false;
+    const selectedBlockMastered = isBlockMastered(selectedBlockProgress);
+    const selectedBlockStatus = activeBlockIndex === selectedBlock?.blockIndex
+      ? "In progress"
+      : selectedBlockChanged
+        ? "Updated"
+        : !selectedBlockProgress?.rounds?.length
+          ? "Not started"
+          : selectedBlockMastered
+            ? `Mastered (${BLOCK_MASTERY_PERCENT}%+)`
+            : `Reviewed ${selectedBlockProgress.rounds.length}x`;
+    const visibleBlocks = blockCatalog.blocks;
     const practiceSourceOptions = [
       {
         key: "topics",
@@ -1121,6 +1429,193 @@ function App() {
         </div>
 
         {renderSummaryCards()}
+
+        <div style={{ background: "linear-gradient(180deg, rgba(15, 191, 163, 0.14), rgba(6, 15, 25, 0.92))", border: "1px solid var(--primary-medium)", borderRadius: "var(--radius-2xl)", padding: 24, marginBottom: 18, boxShadow: "var(--shadow-elevated)" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-md)", flexWrap: "wrap", marginBottom: 18 }}>
+            <div>
+              <div style={{ fontSize: 12, color: "var(--primary-400)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Bloques</div>
+              <div style={{ fontSize: 30, fontWeight: 900, marginTop: 4, fontFamily: "var(--font-heading)" }}>Rondas fijas de estudio</div>
+              <div style={{ marginTop: 6, fontSize: 14, color: "var(--text-secondary)", maxWidth: 720 }}>
+                Orden descendente estable, vueltas por bloque y continuidad aunque recargues la página.
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: "var(--space-sm)", flexWrap: "wrap" }}>
+              {savedBlockSession && (
+                <button
+                  onClick={continueSavedBlock}
+                  style={{
+                    padding: "10px 14px",
+                    borderRadius: "var(--radius-md)",
+                    border: "1px solid var(--signal-info)",
+                    background: "var(--info-soft)",
+                    color: "var(--signal-info)",
+                    fontSize: 12,
+                    fontWeight: 800,
+                    cursor: "pointer",
+                    fontFamily: "var(--font-mono)",
+                  }}
+                >
+                  Continuar B{savedBlockSession.meta.blockStudy.blockIndex + 1}
+                </button>
+              )}
+              {BLOCK_SIZE_PRESETS.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => {
+                    setBlockTrackSize(size);
+                    setSelectedBlockIndex(0);
+                    setBlockMessage(`Track de ${size} preguntas cargado.`);
+                  }}
+                  style={{
+                    padding: "10px 14px",
+                    borderRadius: "var(--radius-md)",
+                    border: blockTrackSize === size ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
+                    background: blockTrackSize === size ? "var(--primary-soft)" : "var(--surface-panel-muted)",
+                    color: blockTrackSize === size ? "var(--primary-400)" : "var(--text-secondary)",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    fontFamily: "var(--font-mono)",
+                  }}
+                >
+                  {size} preguntas
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {selectedBlock && (
+            <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.3fr) minmax(280px, 0.9fr)", gap: 14, marginBottom: 18 }}>
+              <div style={{ background: "var(--gradient-panel-strong)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 20 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)", flexWrap: "wrap", marginBottom: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
+                      {selectedBlock.blockIndex === suggestedBlock?.blockIndex ? "Bloque sugerido" : "Bloque seleccionado"}
+                    </div>
+                    <div style={{ marginTop: 6, fontSize: 26, fontWeight: 900, fontFamily: "var(--font-heading)" }}>
+                      Bloque {selectedBlock.blockIndex + 1} <span style={{ color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{selectedBlock.label}</span>
+                    </div>
+                  </div>
+                  <span style={{ padding: "6px 10px", borderRadius: "var(--radius-pill)", background: selectedBlockChanged ? "var(--accent-soft)" : selectedBlockMastered ? "var(--correct-soft)" : "var(--surface-panel-muted)", color: selectedBlockChanged ? "var(--accent-300)" : selectedBlockMastered ? "var(--signal-correct)" : "var(--text-primary)", fontSize: 11, fontWeight: 800, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: 1 }}>
+                    {selectedBlockStatus}
+                  </span>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 10, marginBottom: 14 }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Preguntas</div>
+                    <div style={{ marginTop: 4, fontSize: 18, fontWeight: 800, fontFamily: "var(--font-mono)" }}>{selectedBlock.questionIds.length}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Vueltas</div>
+                    <div style={{ marginTop: 4, fontSize: 18, fontWeight: 800, fontFamily: "var(--font-mono)" }}>{selectedBlockRounds.length}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Último %</div>
+                    <div style={{ marginTop: 4, fontSize: 18, fontWeight: 800, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{selectedBlockProgress ? `${selectedBlockProgress.lastPercent}%` : "-"}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Mejor %</div>
+                    <div style={{ marginTop: 4, fontSize: 18, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{selectedBlockProgress ? `${selectedBlockProgress.bestPercent}%` : "-"}</div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  {activeBlockIndex === selectedBlock.blockIndex ? (
+                    <button onClick={continueSavedBlock} style={{ padding: "14px 16px", border: "none", borderRadius: "var(--radius-lg)", background: "var(--gradient-practice)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+                      Continuar
+                    </button>
+                  ) : (
+                    <button onClick={() => startBlock(selectedBlock)} style={{ padding: "14px 16px", border: "none", borderRadius: "var(--radius-lg)", background: "var(--gradient-practice)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+                      {selectedBlockRounds.length ? `Repetir vuelta ${selectedBlockRounds.length + 1}` : "Empezar bloque"}
+                    </button>
+                  )}
+                  {selectedBlock.blockIndex < blockCatalog.blocks.length - 1 && (
+                    <button onClick={() => setSelectedBlockIndex(selectedBlock.blockIndex + 1)} style={{ padding: "14px 16px", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-lg)", background: "var(--surface-panel-muted)", color: "var(--text-primary)", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+                      Siguiente bloque
+                    </button>
+                  )}
+                  {selectedBlock.blockIndex > 0 && (
+                    <button onClick={() => setSelectedBlockIndex(selectedBlock.blockIndex - 1)} style={{ padding: "14px 16px", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-lg)", background: "var(--surface-panel-muted)", color: "var(--text-primary)", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+                      Bloque anterior
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 20 }}>
+                <div style={{ fontSize: 12, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)", marginBottom: 12 }}>Últimas vueltas</div>
+                {selectedBlockRounds.length ? selectedBlockRounds.slice(-3).reverse().map((round, index, rounds) => (
+                  <div key={round.roundNumber} style={{ display: "flex", justifyContent: "space-between", gap: 10, padding: "10px 0", borderBottom: index < rounds.length - 1 ? "1px solid var(--surface-line)" : "none" }}>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>Vuelta {round.roundNumber}</div>
+                      <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)" }}>{new Date(round.finishedAt).toLocaleString("es-ES")}</div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: round.percent >= BLOCK_MASTERY_PERCENT ? "var(--signal-correct)" : "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{round.percent}%</div>
+                      <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{round.correctCount}/{round.questionCount}</div>
+                    </div>
+                  </div>
+                )) : (
+                  <div style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                    Todavía no hay vueltas registradas para este bloque.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10 }}>
+            {visibleBlocks.map((block) => {
+              const blockProgress = getBlockProgressRecord(progress, block.trackId, block.blockIndex);
+              const blockRounds = blockProgress?.rounds || [];
+              const isActive = activeBlockIndex === block.blockIndex;
+              const isSelected = selectedBlock?.blockIndex === block.blockIndex;
+              const isUpdated = hasBlockChanged(block, blockProgress);
+              const isMastered = isBlockMastered(blockProgress);
+              const label = isActive
+                ? "In progress"
+                : isUpdated
+                  ? "Updated"
+                  : !blockRounds.length
+                    ? "Not started"
+                    : isMastered
+                      ? "Mastered"
+                      : `Reviewed ${blockRounds.length}x`;
+              return (
+                <button
+                  key={block.id}
+                  onClick={() => {
+                    setSelectedBlockIndex(block.blockIndex);
+                    setBlockMessage("");
+                  }}
+                  style={{
+                    padding: 14,
+                    borderRadius: "var(--radius-lg)",
+                    border: isSelected ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
+                    background: isSelected ? "linear-gradient(180deg, var(--primary-soft), var(--surface-panel-muted))" : "var(--surface-panel-muted)",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "center", marginBottom: 8 }}>
+                    <span style={{ fontSize: 13, fontWeight: 800, fontFamily: "var(--font-heading)" }}>Bloque {block.blockIndex + 1}</span>
+                    <span style={{ fontSize: 11, color: isActive ? "var(--signal-info)" : isMastered ? "var(--signal-correct)" : "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>{blockProgress ? `${blockProgress.lastPercent}%` : "-"}</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)", marginBottom: 6 }}>{block.label}</div>
+                  <div style={{ fontSize: 11, color: isUpdated ? "var(--accent-300)" : "var(--text-tertiary)" }}>{label}</div>
+                </button>
+              );
+            })}
+          </div>
+
+          {blockMessage && (
+            <div style={{ marginTop: 14, padding: "12px 14px", borderRadius: "var(--radius-md)", background: "var(--info-soft)", border: "1px solid var(--signal-info)", color: "var(--signal-info)", fontSize: 12, lineHeight: 1.45 }}>
+              {blockMessage}
+            </div>
+          )}
+        </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "var(--space-md)", marginBottom: 18 }}>
           <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)" }}>
@@ -1479,6 +1974,8 @@ function App() {
   if (screen === "results" && resultPayload) {
     const summary = resultPayload.summary;
     const history = resultPayload.history;
+    const isBlockResult = resultPayload.mode === "blocks";
+    const blockResult = resultPayload.blockStudy;
     const topicStats = resultPayload.mode === "mock"
       ? summary.byTopic
       : history.reduce((acc, entry) => {
@@ -1492,6 +1989,8 @@ function App() {
       ? (summary.passed ? "Simulacro superado" : "Simulacro completado")
       : resultPayload.mode === "daily"
         ? (summary.percent >= 80 ? "Reto diario superado" : "Reto diario completado")
+        : isBlockResult
+          ? (summary.percent >= BLOCK_MASTERY_PERCENT ? "Bloque consolidado" : "Bloque completado")
         : (summary.percent >= 80 ? "Sesión excelente" : summary.percent >= 60 ? "Buen entrenamiento" : "Seguimos iterando");
 
     return <div style={{ minHeight: "100vh", color: "var(--text-primary)", fontFamily: "var(--font-body)", animation: "fadeIn var(--duration-fast) var(--ease-out)" }}>
@@ -1499,15 +1998,22 @@ function App() {
       <Confetti active={resultPayload.mode === "mock" ? summary.passed : summary.percent >= 80} />
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 20px 56px" }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div style={{ display: "inline-flex", gap: "var(--space-sm)", alignItems: "center", marginBottom: 12, padding: "8px 14px", borderRadius: "var(--radius-pill)", background: resultPayload.mode === "mock" ? "var(--accent-soft)" : resultPayload.mode === "daily" ? "var(--correct-soft)" : "var(--primary-soft)", color: resultPayload.mode === "mock" ? "var(--accent-300)" : resultPayload.mode === "daily" ? "var(--signal-correct)" : "var(--primary-400)", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
-            {resultPayload.mode === "mock" ? "Simulacro" : resultPayload.mode === "daily" ? "Reto diario" : "Practicar"}
+          <div style={{ display: "inline-flex", gap: "var(--space-sm)", alignItems: "center", marginBottom: 12, padding: "8px 14px", borderRadius: "var(--radius-pill)", background: resultPayload.mode === "mock" ? "var(--accent-soft)" : resultPayload.mode === "daily" ? "var(--correct-soft)" : isBlockResult ? "var(--info-soft)" : "var(--primary-soft)", color: resultPayload.mode === "mock" ? "var(--accent-300)" : resultPayload.mode === "daily" ? "var(--signal-correct)" : isBlockResult ? "var(--signal-info)" : "var(--primary-400)", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
+            {resultPayload.mode === "mock" ? "Simulacro" : resultPayload.mode === "daily" ? "Reto diario" : isBlockResult ? "Bloques" : "Practicar"}
           </div>
           <h2 style={{ margin: "0 0 8px", fontSize: 34, fontWeight: 900, fontFamily: "var(--font-heading)" }}>{headline}</h2>
           <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15 }}>
             {resultPayload.mode === "mock"
               ? `${summary.score}/${summary.questionCount} correctas • ${summary.percent}% • ${summary.passed ? "Apto" : "No apto"}`
+              : isBlockResult
+                ? `${summary.score}/${summary.answered} correctas • ${summary.percent}% • vuelta ${blockResult?.roundSummary?.roundNumber ?? "?"} • +${summary.xpGained} XP`
               : `${summary.score}/${summary.answered} correctas • ${summary.percent}% • +${summary.xpGained} XP${summary.dailyBonus ? ` (incluye +${summary.dailyBonus} bonus reto)` : ""}`}
           </p>
+          {isBlockResult && blockResult && (
+            <p style={{ margin: "10px 0 0", color: "var(--signal-info)", fontSize: 13, fontFamily: "var(--font-mono)" }}>
+              Bloque {blockResult.blockIndex + 1} · {blockResult.label}
+            </p>
+          )}
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 18 }}>
@@ -1516,16 +2022,16 @@ function App() {
             <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>Puntuación</div>
           </div>
           <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-lg)", padding: 16, border: "1px solid var(--surface-line)" }}>
-            <div style={{ fontSize: 24, fontWeight: 900, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? formatDuration(summary.elapsedSec) : `+${summary.xpGained}`}</div>
-            <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Tiempo usado" : "XP ganada"}</div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? formatDuration(summary.elapsedSec) : isBlockResult ? formatDuration(blockResult?.roundSummary?.elapsedSec || 0) : `+${summary.xpGained}`}</div>
+            <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Tiempo usado" : isBlockResult ? "Tiempo bloque" : "XP ganada"}</div>
           </div>
           <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-lg)", padding: 16, border: "1px solid var(--surface-line)" }}>
-            <div style={{ fontSize: 24, fontWeight: 900, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? summary.questionCount : `x${summary.maxStreak}`}</div>
-            <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Preguntas" : "Racha máxima"}</div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? summary.questionCount : isBlockResult ? `V${blockResult?.roundSummary?.roundNumber ?? "-"}` : `x${summary.maxStreak}`}</div>
+            <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Preguntas" : isBlockResult ? "Vuelta" : "Racha máxima"}</div>
           </div>
           <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-lg)", padding: 16, border: "1px solid var(--surface-line)" }}>
-            <div style={{ fontSize: 24, fontWeight: 900, color: resultPayload.mode === "mock" ? (summary.passed ? "var(--signal-correct)" : "var(--signal-wrong)") : "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? (summary.passed ? "Apto" : "No apto") : history.length}</div>
-            <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Estado" : "Preguntas vistas"}</div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: resultPayload.mode === "mock" ? (summary.passed ? "var(--signal-correct)" : "var(--signal-wrong)") : "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? (summary.passed ? "Apto" : "No apto") : isBlockResult ? `${blockResult?.roundSummary?.correctCount ?? 0}/${blockResult?.roundSummary?.questionCount ?? history.length}` : history.length}</div>
+            <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{resultPayload.mode === "mock" ? "Estado" : isBlockResult ? "Aciertos" : "Preguntas vistas"}</div>
           </div>
         </div>
 
@@ -1566,17 +2072,20 @@ function App() {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <button onClick={goToMenu} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: "var(--radius-lg)", background: "var(--gradient-practice)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Volver al menú</button>
-          <button onClick={() => resultPayload.mode === "mock" ? startMock() : startPractice()} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: "var(--radius-lg)", background: resultPayload.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-success)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
-            {resultPayload.mode === "mock" ? "Nuevo simulacro" : "Seguir practicando"}
+          <button onClick={() => resultPayload.mode === "mock" ? startMock() : isBlockResult ? startBlock(blockCatalog.blocks[blockResult.blockIndex]) : startPractice()} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: "var(--radius-lg)", background: resultPayload.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-success)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+            {resultPayload.mode === "mock" ? "Nuevo simulacro" : isBlockResult ? `Repetir vuelta ${blockResult?.roundSummary?.roundNumber + 1 || ""}` : "Seguir practicando"}
           </button>
+          {isBlockResult && blockCatalog.blocks[blockResult.blockIndex + 1] && (
+            <button onClick={() => startBlock(blockCatalog.blocks[blockResult.blockIndex + 1])} style={{ flex: 1, padding: "14px 16px", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-lg)", background: "var(--surface-panel-muted)", color: "var(--text-primary)", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+              Siguiente bloque
+            </button>
+          )}
         </div>
       </div>
     </div>;
   }
-
-  const practiceMode = session?.mode === "practice";
   const practiceInventoryButtons = practiceMode && !showResult;
 
   return <div style={{ minHeight: "100vh", background: session?.mode === "mock" ? "linear-gradient(180deg, var(--bg-primary), var(--bg-deep))" : "radial-gradient(circle at top, rgba(15, 191, 163, 0.12), transparent 24%), linear-gradient(180deg, var(--bg-primary), var(--bg-deep) 55%, var(--bg-deep))", color: "var(--text-primary)", fontFamily: "var(--font-body)", animation: "fadeIn var(--duration-fast) var(--ease-out)" }}>
@@ -1594,8 +2103,11 @@ function App() {
           <button onClick={goToMenu} style={{ padding: "8px 12px", borderRadius: "var(--radius-md)", border: "1px solid var(--surface-line)", background: "var(--surface-panel-muted)", color: "var(--text-primary)", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-mono)" }}>← Menú</button>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", flexWrap: "wrap", justifyContent: "flex-end" }}>
             <span style={{ padding: "6px 10px", borderRadius: "var(--radius-pill)", background: session?.mode === "mock" ? "var(--accent-soft)" : "var(--primary-soft)", color: session?.mode === "mock" ? "var(--accent-300)" : "var(--primary-400)", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
-              {session?.mode === "mock" ? "Simulacro" : "Practicar"}
+              {session?.mode === "mock" ? "Simulacro" : blockMode ? "Bloques" : "Practicar"}
             </span>
+            {blockMode && blockSessionMeta && <span style={{ padding: "6px 10px", borderRadius: "var(--radius-pill)", background: "var(--info-soft)", color: "var(--signal-info)", fontSize: 11, fontWeight: 800, letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
+              B{blockSessionMeta.blockIndex + 1} · V{blockSessionMeta.roundNumber}
+            </span>}
             {practiceMode && session.streak >= 2 && <span style={{ fontSize: 12, color: session.streak >= 5 ? "var(--accent-300)" : "var(--primary-400)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>x{session.streak}</span>}
             {practiceMode && progress.inventory.mult > 1 && <span style={{ fontSize: 12, color: "var(--signal-correct)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>mult x{progress.inventory.mult} ({progress.inventory.multDur})</span>}
             {session?.mode === "mock" && <span style={{ padding: "6px 10px", borderRadius: "var(--radius-md)", background: mockRemainingSec < 300 ? "var(--wrong-soft)" : "var(--surface-line)", color: mockRemainingSec < 300 ? "var(--signal-wrong)" : "var(--text-primary)", fontSize: 13, fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(mockRemainingSec)}</span>}
@@ -1623,7 +2135,9 @@ function App() {
       {practiceMode && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "var(--space-md)", marginBottom: 14 }}>
           <div style={{ background: "var(--surface-panel)", borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", padding: 14 }}>
-            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 }}>Feedback inmediato • recompensas activas • ayudas disponibles</div>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 }}>
+              {blockMode ? `Bloque ${blockSessionMeta.label} • orden fijo • vuelta ${blockSessionMeta.roundNumber}` : "Feedback inmediato • recompensas activas • ayudas disponibles"}
+            </div>
             <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", flexWrap: "wrap" }}>
               <span style={{ padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Correctas {session.score}/{session.answered}</span>
               {pendingRewardCount > 0 && <span style={{ padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "var(--accent-soft)", color: "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Pendientes {pendingRewardCount}</span>}
@@ -1655,6 +2169,7 @@ function App() {
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", flexWrap: "wrap", marginBottom: 14 }}>
         <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{currentQuestion.topic}</span>
         <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: currentQuestion.difficulty === 3 ? "var(--wrong-soft)" : "var(--accent-soft)", color: currentQuestion.difficulty === 3 ? "var(--signal-wrong)" : "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{"★".repeat(currentQuestion.difficulty)}</span>
+        {blockMode && blockSessionMeta && <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--surface-panel-muted)", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{blockSessionMeta.label}</span>}
         {currentQuestion.isRecent && <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--accent-soft)", color: "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Reciente #{currentQuestion.sourceQuestionNumber || currentQuestion.id}</span>}
         {isMulti && <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--surface-panel-muted)", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Multi respuesta</span>}
         {practiceMode && <button onClick={() => toggleBookmark(currentQuestion.id)} style={{ marginLeft: "auto", border: "none", background: "transparent", color: bookmarkSet.has(currentQuestion.id) ? "var(--accent-300)" : "var(--text-tertiary)", fontSize: 20, cursor: "pointer" }}>{bookmarkSet.has(currentQuestion.id) ? "★" : "☆"}</button>}

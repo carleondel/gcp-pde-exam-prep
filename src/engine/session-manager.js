@@ -1,23 +1,24 @@
 import { MOCK_DURATION_SEC } from "./quiz-engine";
 
-export function createPracticeSession(questions, meta = {}) {
-  const now = Date.now();
+export function createPracticeSession(questions, meta = {}, state = {}) {
+  const now = state.startedAt ?? Date.now();
   return {
-    id: `practice-${now}`,
+    id: state.id ?? `practice-${now}`,
     mode: "practice",
-    status: "active",
+    status: state.status ?? "active",
     questions,
     questionIds: questions.map((question) => question.id),
-    currentIndex: 0,
+    currentIndex: state.currentIndex ?? 0,
     startedAt: now,
-    currentQuestionStartedAt: now,
-    score: 0,
-    answered: 0,
-    streak: 0,
-    maxStreak: 0,
-    history: [],
-    rewardQueue: [],
+    currentQuestionStartedAt: state.currentQuestionStartedAt ?? now,
+    score: state.score ?? 0,
+    answered: state.answered ?? 0,
+    streak: state.streak ?? 0,
+    maxStreak: state.maxStreak ?? 0,
+    history: state.history ?? [],
+    rewardQueue: state.rewardQueue ?? [],
     meta,
+    ui: state.ui ?? {},
   };
 }
 
@@ -97,5 +98,55 @@ export function hydrateMockSession(stored, questionMap) {
     startedAt: stored.startedAt,
     durationSec: stored.durationSec,
     status: stored.status,
+  });
+}
+
+export function toStoredBlockSession(session) {
+  if (!session || session.mode !== "practice" || session.meta?.source !== "blocks") return null;
+  return {
+    id: session.id,
+    questionIds: session.questionIds,
+    currentIndex: session.currentIndex,
+    startedAt: session.startedAt,
+    currentQuestionStartedAt: session.currentQuestionStartedAt,
+    status: session.status,
+    score: session.score,
+    answered: session.answered,
+    streak: session.streak,
+    maxStreak: session.maxStreak,
+    history: session.history.map((entry) => ({
+      questionId: entry.question.id,
+      selectedIndexes: entry.selectedIndexes,
+      correct: entry.correct,
+      correctIndexes: entry.correctIndexes,
+      xp: entry.xp,
+      time: entry.time,
+    })),
+    rewardQueue: session.rewardQueue,
+    meta: session.meta,
+    ui: session.ui || {},
+  };
+}
+
+export function hydrateBlockSession(stored, questionMap) {
+  if (!stored?.questionIds?.length) return null;
+  const questions = stored.questionIds.map((id) => questionMap.get(id)).filter(Boolean);
+  if (!questions.length) return null;
+  return createPracticeSession(questions, stored.meta || {}, {
+    id: stored.id,
+    currentIndex: Math.min(stored.currentIndex || 0, questions.length - 1),
+    startedAt: stored.startedAt,
+    currentQuestionStartedAt: stored.currentQuestionStartedAt,
+    status: stored.status,
+    score: stored.score,
+    answered: stored.answered,
+    streak: stored.streak,
+    maxStreak: stored.maxStreak,
+    history: Array.isArray(stored.history) ? stored.history.map((entry) => ({
+      ...entry,
+      question: questionMap.get(entry.questionId),
+    })).filter((entry) => entry.question) : [],
+    rewardQueue: Array.isArray(stored.rewardQueue) ? stored.rewardQueue : [],
+    ui: stored.ui || {},
   });
 }

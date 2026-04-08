@@ -3,6 +3,8 @@ import { MOCK_HISTORY_LIMIT } from "./quiz-engine";
 const PROGRESS_KEY = "pde.progress.v2";
 const ACTIVE_MOCK_KEY = "pde.activeMock.v2";
 const PRACTICE_PREFS_KEY = "pde.practicePrefs.v1";
+const BLOCK_PREFS_KEY = "pde.blockPrefs.v1";
+const ACTIVE_BLOCK_SESSION_KEY = "pde.activeBlockSession.v1";
 
 export const EMPTY_PROGRESS = {
   xp: 0,
@@ -44,6 +46,9 @@ export const EMPTY_PROGRESS = {
   dailyChallenge: {
     lastCompletedDate: null,
     totalCompleted: 0,
+  },
+  blockStudy: {
+    tracks: {},
   },
 };
 
@@ -95,6 +100,11 @@ export function loadProgress() {
     dailyChallenge: {
       ...EMPTY_PROGRESS.dailyChallenge,
       ...(stored.dailyChallenge || {}),
+    },
+    blockStudy: {
+      ...EMPTY_PROGRESS.blockStudy,
+      ...(stored.blockStudy || {}),
+      tracks: sanitizeObject(stored.blockStudy?.tracks) || {},
     },
   };
 }
@@ -169,4 +179,29 @@ export function loadPracticePrefs() {
 export function savePracticePrefs(preferences) {
   if (!hasStorage()) return;
   window.localStorage.setItem(PRACTICE_PREFS_KEY, JSON.stringify(preferences));
+}
+
+export function loadBlockPrefs() {
+  if (!hasStorage()) return null;
+  return sanitizeObject(safeParse(window.localStorage.getItem(BLOCK_PREFS_KEY)));
+}
+
+export function saveBlockPrefs(preferences) {
+  if (!hasStorage()) return;
+  window.localStorage.setItem(BLOCK_PREFS_KEY, JSON.stringify(preferences));
+}
+
+export function loadActiveBlockSession() {
+  if (!hasStorage()) return null;
+  return safeParse(window.localStorage.getItem(ACTIVE_BLOCK_SESSION_KEY));
+}
+
+export function saveActiveBlockSession(session) {
+  if (!hasStorage()) return;
+  window.localStorage.setItem(ACTIVE_BLOCK_SESSION_KEY, JSON.stringify(session));
+}
+
+export function clearActiveBlockSession() {
+  if (!hasStorage()) return;
+  window.localStorage.removeItem(ACTIVE_BLOCK_SESSION_KEY);
 }
