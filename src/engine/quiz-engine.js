@@ -1,3 +1,5 @@
+import { xpDiminishingFactor } from "../data/gamification.js";
+
 export const MOCK_DURATION_SEC = 90 * 60;
 export const MOCK_QUESTION_COUNT = 50;
 export const PASS_PERCENT = 70;
@@ -69,17 +71,19 @@ export function get5050HiddenOptions(question) {
   return shuffle(getWrongOptionIndexes(question)).slice(0, 2);
 }
 
-export function calculatePracticeXp(question, elapsedSec, streak, multiplier = 1, hasDoubleXP = false) {
+export function calculatePracticeXp(question, elapsedSec, streak, multiplier = 1, hasDoubleXP = false, totalXp = 0) {
   const base = question.difficulty === 3 ? 45 : question.difficulty === 2 ? 30 : 20;
   const streakBonus = Math.min(streak * 8, 80);
   const speedBonus = elapsedSec < 8 ? 40 : elapsedSec < 15 ? 20 : elapsedSec < 25 ? 8 : 0;
   const effectiveMultiplier = hasDoubleXP ? multiplier * 2 : multiplier;
+  const dimFactor = xpDiminishingFactor(totalXp);
   return {
-    xp: Math.round((base + streakBonus + speedBonus) * effectiveMultiplier),
+    xp: Math.round((base + streakBonus + speedBonus) * effectiveMultiplier * dimFactor),
     base,
     streakBonus,
     speedBonus,
     effectiveMultiplier,
+    diminishingFactor: dimFactor,
   };
 }
 

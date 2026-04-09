@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import googleCloudLogo from "./assets/google-cloud-logo.svg";
 import { QUESTIONS } from "./data/questions.js";
 import { TOPICS } from "./data/topics.js";
-import { RANKS, ACHIEVEMENTS } from "./data/gamification.js";
+import { RANKS, ACHIEVEMENTS, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
 import { EXAM_DOMAINS, computeDomainStats, computeCanonicalTopicStats, getWeakestDomain, getCanonicalTopic } from "./data/pde-topics.js";
 import {
   AchievementPopup,
@@ -180,6 +180,7 @@ function getRankState(xp) {
 
 function getAchievementSnapshot(progress) {
   return {
+    xp: progress.xp,
     correct: progress.stats.totalCorrect,
     maxStreak: progress.stats.maxStreak,
     fastCorrect: progress.stats.fastCorrect,
@@ -190,6 +191,9 @@ function getAchievementSnapshot(progress) {
     scratchUsed: progress.stats.scratchUsed,
     powerupsUsed: progress.stats.powerupsUsed,
     bossWins: progress.stats.bossWins,
+    highestTierDefeated: progress.stats.highestTierDefeated || 0,
+    totalBossDmgDealt: progress.stats.totalBossDmgDealt || 0,
+    flawlessBossWin: !!progress.stats.flawlessBossWin,
   };
 }
 
@@ -247,7 +251,8 @@ function App() {
   const [showScratch, setShowScratch] = useState(false);
   const [showChest, setShowChest] = useState(false);
   const [showBoss, setShowBoss] = useState(false);
-  const [bossQuestion, setBossQuestion] = useState(null);
+  const [bossQuestions, setBossQuestions] = useState(null);
+  const [bossDragon, setBossDragon] = useState(null);
   const [rewardFlow, setRewardFlow] = useState("manual");
   const [showAch, setShowAch] = useState(null);
   const [xpPop, setXpPop] = useState(null);
@@ -386,9 +391,10 @@ function App() {
       .map((achievement) => achievement.id);
 
     if (!unlocked.length) return candidate;
+    const bonusXp = applyDiminishing(unlocked.length * 75, candidate.xp);
     return {
       ...candidate,
-      xp: candidate.xp + unlocked.length * 75,
+      xp: candidate.xp + bonusXp,
       achievements: [...candidate.achievements, ...unlocked],
     };
   }, []);
@@ -448,7 +454,8 @@ function App() {
   const finishPracticeSession = useCallback((finishedSession) => {
     const isDaily = finishedSession.meta?.source === "daily";
     const isBlocks = finishedSession.meta?.source === "blocks";
-    const dailyBonus = isDaily && !isDailyChallengeCompleted(progress) ? DAILY_CHALLENGE_BONUS_XP : 0;
+    const rawDailyBonus = isDaily && !isDailyChallengeCompleted(progress) ? DAILY_CHALLENGE_BONUS_XP : 0;
+    const dailyBonus = rawDailyBonus > 0 ? applyDiminishing(rawDailyBonus, progress.xp) : 0;
     const baseXp = finishedSession.history.reduce((sum, entry) => sum + entry.xp, 0);
     const summary = {
       score: finishedSession.score,
@@ -566,10 +573,13 @@ function App() {
     if (rewardKey === "scratch") setShowScratch(true);
     if (rewardKey === "chest") setShowChest(true);
     if (rewardKey === "boss") {
-      setBossQuestion(QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)]);
+      const dragon = selectDragon(progress.xp);
+      const battleQuestions = getBattleQuestions(QUESTIONS, dragon);
+      setBossDragon(dragon);
+      setBossQuestions(battleQuestions);
       setShowBoss(true);
     }
-  }, []);
+  }, [progress.xp]);
 
   const openQueuedPracticeReward = useCallback(() => {
     if (!session || session.mode !== "practice") return;
@@ -1042,6 +1052,7 @@ function App() {
   }, [openRewardByKey, updateProgress]);
 
   const handleWheelComplete = useCallback((prize) => {
+    let xpAwarded = 0;
     updateProgress((prev) => {
       const inventory = { ...prev.inventory };
       if (prize.mult) {
@@ -1058,9 +1069,10 @@ function App() {
         else inventory.doubleXP += 1;
       }
 
+      xpAwarded = prize.xp ? applyDiminishing(prize.xp, prev.xp) : 0;
       return {
         ...prev,
-        xp: prev.xp + (prize.xp || 0),
+        xp: prev.xp + xpAwarded,
         inventory,
         stats: {
           ...prev.stats,
@@ -1070,7 +1082,7 @@ function App() {
       };
     });
 
-    if (prize.xp) setXpPop({ amount: prize.xp, key: Date.now() });
+    if (xpAwarded) setXpPop({ amount: xpAwarded, key: Date.now() });
     if (prize.jackpot) {
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 2500);
@@ -1078,6 +1090,7 @@ function App() {
   }, [updateProgress]);
 
   const handleScratchComplete = useCallback((prize) => {
+    let xpAwarded = 0;
     updateProgress((prev) => {
       const inventory = { ...prev.inventory };
       if (prize.mult) {
@@ -1086,9 +1099,10 @@ function App() {
       }
       if (prize.freeze) inventory.shields += 1;
       if (prize.skip) inventory.skips += 1;
+      xpAwarded = prize.xp ? applyDiminishing(prize.xp, prev.xp) : 0;
       return {
         ...prev,
-        xp: prev.xp + (prize.xp || 0),
+        xp: prev.xp + xpAwarded,
         inventory,
         stats: {
           ...prev.stats,
@@ -1096,10 +1110,11 @@ function App() {
         },
       };
     });
-    if (prize.xp) setXpPop({ amount: prize.xp, key: Date.now() });
+    if (xpAwarded) setXpPop({ amount: xpAwarded, key: Date.now() });
   }, [updateProgress]);
 
   const handleChestComplete = useCallback((item) => {
+    let xpAwarded = 0;
     updateProgress((prev) => {
       const inventory = { ...prev.inventory };
       if (item.freeze) inventory.shields += 1;
@@ -1109,9 +1124,10 @@ function App() {
       }
       if (item.spin) inventory.wheelSpins += 1;
       if (item.bossKey) inventory.bossKeys += 1;
+      xpAwarded = item.xp ? applyDiminishing(item.xp, prev.xp) : 0;
       return {
         ...prev,
-        xp: prev.xp + (item.xp || 0),
+        xp: prev.xp + xpAwarded,
         inventory,
         stats: {
           ...prev.stats,
@@ -1119,22 +1135,40 @@ function App() {
         },
       };
     });
-    if (item.xp) setXpPop({ amount: item.xp, key: Date.now() });
+    if (xpAwarded) setXpPop({ amount: xpAwarded, key: Date.now() });
   }, [updateProgress]);
 
-  const handleBossComplete = useCallback((won) => {
-    if (!won) return;
-    updateProgress((prev) => ({
-      ...prev,
-      xp: prev.xp + 500,
-      stats: {
-        ...prev.stats,
-        bossWins: prev.stats.bossWins + 1,
-      },
-    }));
-    setXpPop({ amount: 500, key: Date.now() });
-    setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 2500);
+  const handleBossComplete = useCallback((result) => {
+    const { won, dragon, dmgDealt = 0, dmgTaken = 0, flawless = false } = result || {};
+    let xpAwarded = 0;
+    updateProgress((prev) => {
+      const winsByDragon = { ...(prev.stats.bossWinsByDragon || {}) };
+      if (won && dragon) {
+        winsByDragon[dragon.id] = (winsByDragon[dragon.id] || 0) + 1;
+      }
+      xpAwarded = won && dragon ? applyDiminishing(dragon.xpReward, prev.xp) : 0;
+      return {
+        ...prev,
+        xp: prev.xp + xpAwarded,
+        stats: {
+          ...prev.stats,
+          bossFights: (prev.stats.bossFights || 0) + 1,
+          bossWins: won ? prev.stats.bossWins + 1 : prev.stats.bossWins,
+          bossWinsByDragon: winsByDragon,
+          totalBossDmgDealt: (prev.stats.totalBossDmgDealt || 0) + dmgDealt,
+          totalBossDmgTaken: (prev.stats.totalBossDmgTaken || 0) + dmgTaken,
+          highestTierDefeated: won && dragon
+            ? Math.max(prev.stats.highestTierDefeated || 0, dragon.tier)
+            : prev.stats.highestTierDefeated || 0,
+          flawlessBossWin: prev.stats.flawlessBossWin || (won && flawless),
+        },
+      };
+    });
+    if (won && xpAwarded) {
+      setXpPop({ amount: xpAwarded, key: Date.now() });
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2500);
+    }
   }, [updateProgress]);
 
   const submitCurrentAnswer = useCallback(() => {
@@ -1159,7 +1193,7 @@ function App() {
     const hasShield = progress.inventory.shields > 0;
     const nextStreak = evaluation.isCorrect ? session.streak + 1 : hasShield ? session.streak : 0;
     const xpInfo = evaluation.isCorrect
-      ? calculatePracticeXp(currentQuestion, elapsedSec, nextStreak, progress.inventory.mult, progress.inventory.doubleXP > 0)
+      ? calculatePracticeXp(currentQuestion, elapsedSec, nextStreak, progress.inventory.mult, progress.inventory.doubleXP > 0, progress.xp)
       : { xp: 8 };
     const historyEntry = {
       question: currentQuestion,
@@ -2230,7 +2264,7 @@ function App() {
     {showWheel && <SpinWheel onComplete={handleWheelComplete} onClose={() => { setShowWheel(false); afterRewardClose(); }} />}
     {showScratch && <ScratchCard onComplete={handleScratchComplete} onClose={() => { setShowScratch(false); afterRewardClose(); }} />}
     {showChest && <MysteryChest onComplete={handleChestComplete} onClose={() => { setShowChest(false); afterRewardClose(); }} />}
-    {showBoss && bossQuestion && <BossBattle question={bossQuestion} onComplete={handleBossComplete} onClose={() => { setShowBoss(false); setBossQuestion(null); afterRewardClose(); }} />}
+    {showBoss && bossQuestions && bossDragon && <BossBattle questions={bossQuestions} dragon={bossDragon} onComplete={handleBossComplete} onClose={() => { setShowBoss(false); setBossQuestions(null); setBossDragon(null); afterRewardClose(); }} />}
     {showAch && <AchievementPopup achievement={showAch} onClose={() => setShowAch(null)} />}
     {xpPop && <div key={xpPop.key} style={{ position: "fixed", left: "50%", top: "34%", transform: "translate(-50%,-50%)", fontSize: 30, fontWeight: 900, color: "var(--accent-300)", zIndex: 500, pointerEvents: "none", animation: "floatUp 1.3s ease-out forwards", textShadow: "0 2px 12px rgba(212,147,10,0.4)", fontFamily: "var(--font-mono)" }}>+{xpPop.amount} XP</div>}
 

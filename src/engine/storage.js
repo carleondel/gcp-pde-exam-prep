@@ -24,6 +24,12 @@ export const EMPTY_PROGRESS = {
     scratchUsed: 0,
     powerupsUsed: 0,
     bossWins: 0,
+    bossFights: 0,
+    bossWinsByDragon: {},
+    totalBossDmgDealt: 0,
+    totalBossDmgTaken: 0,
+    highestTierDefeated: 0,
+    flawlessBossWin: false,
   },
   inventory: {
     shields: 0,
@@ -88,6 +94,7 @@ export function loadProgress() {
       ...EMPTY_PROGRESS.stats,
       ...(stored.stats || {}),
       topicsOk: sanitizeArray(stored.stats?.topicsOk),
+      bossWinsByDragon: sanitizeObject(stored.stats?.bossWinsByDragon) || {},
     },
     inventory: {
       ...EMPTY_PROGRESS.inventory,
