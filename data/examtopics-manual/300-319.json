@@ -1,0 +1,445 @@
+{
+  "metadata": {
+    "source": "ExamTopics manual paste",
+    "capturedAt": "2026-04-09",
+    "questionRange": "300-319",
+    "notes": "Structured from user-provided chat batch. Includes question text, options, and suggested answer. Discussion comments omitted from this normalized capture."
+  },
+  "questions": [
+    {
+      "examQuestionNumber": 319,
+      "questionText": "You are preparing an organization-wide dataset. You need to preprocess customer data stored in a restricted bucket in Cloud Storage. The data will be used to create consumer analyses. You need to follow data privacy requirements, including protecting certain sensitive data elements, while also retaining all of the data for potential future use cases. What should you do?",
+      "options": [
+        "A. Use the Cloud Data Loss Prevention API and Dataflow to detect and remove sensitive fields from the data in Cloud Storage. Write the filtered data in BigQuery.",
+        "B. Use customer-managed encryption keys (CMEK) to directly encrypt the data in Cloud Storage. Use federated queries from BigQuery. Share the encryption key by following the principle of least privilege.",
+        "C. Use Dataflow and the Cloud Data Loss Prevention API to mask sensitive data. Write the processed data in BigQuery.",
+        "D. Use Dataflow and Cloud KMS to encrypt sensitive fields and write the encrypted data in BigQuery. Share the encryption key by following the principle of least privilege."
+      ],
+      "suggestedAnswer": "C",
+      "topComments": [
+        {
+          "user": "HectorLeon2099",
+          "text": "It's C. \"A\" removes data and retaining all is a requirement.",
+          "votes": 6
+        },
+        {
+          "user": "22c1725",
+          "text": "Not A since \"while also retaining all of the data\" is required.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 318,
+      "questionText": "You are using BigQuery with a regional dataset that includes a table with the daily sales volumes. This table is updated multiple times per day. You need to protect your sales table in case of regional failures with a recovery point objective (RPO) of less than 24 hours, while keeping costs to a minimum. What should you do?",
+      "options": [
+        "A. Schedule a daily export of the table to a Cloud Storage dual or multi-region bucket.",
+        "B. Schedule a daily copy of the dataset to a backup region.",
+        "C. Schedule a daily BigQuery snapshot of the table.",
+        "D. Modify ETL job to load the data into both the current and another backup region."
+      ],
+      "suggestedAnswer": "A",
+      "topComments": [
+        {
+          "user": "HectorLeon2099",
+          "text": "Option A is the most cost efficient: https://cloud.google.com/blog/topics/developers-practitioners/backup-disaster-recovery-strategies-bigquery",
+          "votes": 4
+        },
+        {
+          "user": "gabbferreira",
+          "text": "snapshots are stored in the same region, so it dont protect from regional failure",
+          "votes": 2
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 317,
+      "questionText": "You have several different unstructured data sources, within your on-premises data center as well as in the cloud. The data is in various formats, such as Apache Parquet and CSV. You want to centralize this data in Cloud Storage. You need to set up an object sink for your data that allows you to use your own encryption keys. You want to use a GUI-based solution. What should you do?",
+      "options": [
+        "A. Use BigQuery Data Transfer Service to move files into BigQuery.",
+        "B. Use Storage Transfer Service to move files into Cloud Storage",
+        "C. Use Dataflow to move files into Cloud Storage",
+        "D. Use Cloud Data Fusion to move files into Cloud Storage."
+      ],
+      "suggestedAnswer": "D",
+      "topComments": [
+        {
+          "user": "m_a_p_s",
+          "text": "D - only Cloud Data Fusion is a GUI-based solution.",
+          "votes": 4
+        },
+        {
+          "user": "apoio.certificacoes.closer",
+          "text": "I have read in previous questions that Transfer Services only uses CMEK in-transit. https://cloud.google.com/storage-transfer/docs/on-prem-security#in-flight",
+          "votes": 2
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 316,
+      "questionText": "You are administering a BigQuery on-demand environment. Your business intelligence tool is submitting hundreds of queries each day that aggregate a large (50 TB) sales history fact table at the day and month levels. These queries have a slow response time and are exceeding cost expectations. You need to decrease response time, lower query costs, and minimize maintenance. What should you do?",
+      "options": [
+        "A. Build authorized views on top of the sales table to aggregate data at the day and month level.",
+        "B. Enable BI Engine and add your sales table as a preferred table.",
+        "C. Build materialized views on top of the sales table to aggregate data at the day and month level.",
+        "D. Create a scheduled query to build sales day and sales month aggregate tables on an hourly basis."
+      ],
+      "suggestedAnswer": "C",
+      "topComments": [
+        {
+          "user": "hussain.sain",
+          "text": "C is the answer. Materialized views store precomputed results, improving performance and lowering cost for repeated aggregations.",
+          "votes": 2
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 315,
+      "questionText": "You are using Workflows to call an API that returns a 1KB JSON response, apply some complex business logic on this response, wait for the logic to complete, and then perform a load from a Cloud Storage file to BigQuery. The Workflows standard library does not have sufficient capabilities to perform your complex logic, and you want to use Python's standard library instead. You want to optimize your workflow for simplicity and speed of execution. What should you do?",
+      "options": [
+        "A. Create a Cloud Composer environment and run the logic in Cloud Composer.",
+        "B. Create a Dataproc cluster, and use PySpark to apply the logic on your JSON file.",
+        "C. Invoke a Cloud Function instance that uses Python to apply the logic on your JSON file.",
+        "D. Invoke a subworkflow in Workflows to apply the logic on your JSON file."
+      ],
+      "suggestedAnswer": "C",
+      "topComments": [
+        {
+          "user": "FireAtMe",
+          "text": "Cloud Functions is a serverless compute service ideal for executing lightweight, event-driven tasks with low latency.",
+          "votes": 2
+        },
+        {
+          "user": "22c1725",
+          "text": "A not possible since you will be running the same logic inside airflow. Dataproc is unneeded.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 314,
+      "questionText": "You are configuring networking for a Dataflow job. The data pipeline uses custom container images with the libraries that are required for the transformation logic preinstalled. The data pipeline reads the data from Cloud Storage and writes the data to BigQuery. You need to ensure cost-effective and secure communication between the pipeline and Google APIs and services. What should you do?",
+      "options": [
+        "A. Disable external IP addresses from worker VMs and enable Private Google Access.",
+        "B. Leave external IP addresses assigned to worker VMs while enforcing firewall rules.",
+        "C. Disable external IP addresses and establish a Private Service Connect endpoint IP address.",
+        "D. Enable Cloud NAT to provide outbound internet connectivity while enforcing firewall rules."
+      ],
+      "suggestedAnswer": "A",
+      "topComments": [
+        {
+          "user": "m_a_p_s",
+          "text": "While option C is technically implementable, option A is a straightforward and simpler solution.",
+          "votes": 2
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 313,
+      "questionText": "You want to migrate an Apache Spark 3 batch job from on-premises to Google Cloud. You need to minimally change the job so that the job reads from Cloud Storage and writes the result to BigQuery. Your job is optimized for Spark, where each executor has 8 vCPU and 16 GB memory, and you want to be able to choose similar settings. You want to minimize installation and management effort to run your job. What should you do?",
+      "options": [
+        "A. Execute the job as part of a deployment in a new Google Kubernetes Engine cluster.",
+        "B. Execute the job from a new Compute Engine VM.",
+        "C. Execute the job in a new Dataproc cluster.",
+        "D. Execute as a Dataproc Serverless job."
+      ],
+      "suggestedAnswer": "D",
+      "topComments": [
+        {
+          "user": "chicity_de",
+          "text": "Priority is minimize installation and management effort which is done via Dataproc Serverless. You can still specify resource settings for the job.",
+          "votes": 11
+        },
+        {
+          "user": "Positron75",
+          "text": "Dataproc Serverless allows configuring those parameters: https://cloud.google.com/dataproc-serverless/docs/concepts/properties",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 312,
+      "questionText": "You are migrating your on-premises data warehouse to BigQuery. As part of the migration, you want to facilitate cross-team collaboration to get the most value out of the organization’s data. You need to design an architecture that would allow teams within the organization to securely publish, discover, and subscribe to read-only data in a self-service manner. You need to minimize costs while also maximizing data freshness. What should you do?",
+      "options": [
+        "A. Use Analytics Hub to facilitate data sharing.",
+        "B. Create authorized datasets to publish shared data in the subscribing team's project.",
+        "C. Create a new dataset for sharing in each individual team’s project. Grant the subscribing team the bigquery.dataViewer role on the dataset.",
+        "D. Use BigQuery Data Transfer Service to copy datasets to a centralized BigQuery project for sharing."
+      ],
+      "suggestedAnswer": "A",
+      "topComments": [
+        {
+          "user": "FireAtMe",
+          "text": "Analytics Hub is a fully managed data sharing platform that lets organizations publish, discover, and subscribe to datasets securely without duplicating or moving data.",
+          "votes": 4
+        },
+        {
+          "user": "22c1725",
+          "text": "Analytics Hub is designed to enable secure and scalable data sharing across organizational boundaries.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 311,
+      "questionText": "Your chemical company needs to manually check documentation for customer order. You use a pull subscription in Pub/Sub so that sales agents get details from the order. You must ensure that you do not process orders twice with different sales agents and that you do not add more complexity to this workflow. What should you do?",
+      "options": [
+        "A. Use a Deduplicate PTransform in Dataflow before sending the messages to the sales agents.",
+        "B. Create a transactional database that monitors the pending messages.",
+        "C. Use Pub/Sub exactly-once delivery in your pull subscription.",
+        "D. Create a new Pub/Sub push subscription to monitor the orders processed in the agent's system."
+      ],
+      "suggestedAnswer": "C",
+      "topComments": [
+        {
+          "user": "JimmyBK",
+          "text": "I remember seeing this in the exam.",
+          "votes": 7
+        },
+        {
+          "user": "22c1725",
+          "text": "\"that you do not add more complexity to this workflow\". I would go with C.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 310,
+      "questionText": "You need to look at BigQuery data from a specific table multiple times a day. The underlying table you are querying is several petabytes in size, but you want to filter your data and provide simple aggregations to downstream users. You want to run queries faster and get up-to-date insights quicker. What should you do?",
+      "options": [
+        "A. Run a scheduled query to pull the necessary data at specific intervals dally.",
+        "B. Use a cached query to accelerate time to results.",
+        "C. Limit the query columns being pulled in the final result.",
+        "D. Create a materialized view based off of the query being run."
+      ],
+      "suggestedAnswer": "D",
+      "topComments": [
+        {
+          "user": "AllenChen123",
+          "text": "Create a materialized view as query source. Materialized views are precomputed views that periodically cache query results for increased performance and efficiency.",
+          "votes": 7
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 309,
+      "questionText": "You work for an airline and you need to store weather data in a BigQuery table. Weather data will be used as input to a machine learning model. The model only uses the last 30 days of weather data. You want to avoid storing unnecessary data and minimize costs. What should you do?",
+      "options": [
+        "A. Create a BigQuery table where each record has an ingestion timestamp. Run a scheduled query to delete all the rows with an ingestion timestamp older than 30 days.",
+        "B. Create a BigQuery table partitioned by datetime value of the weather date. Set up partition expiration to 30 days.",
+        "C. Create a BigQuery table partitioned by ingestion time. Set up partition expiration to 30 days.",
+        "D. Create a BigQuery table with a datetime column for the day the weather data refers to. Run a scheduled query to delete rows with a datetime value older than 30 days."
+      ],
+      "suggestedAnswer": "B",
+      "topComments": [
+        {
+          "user": "AllenChen123",
+          "text": "Partition based on weather date, with partition expiration set.",
+          "votes": 6
+        },
+        {
+          "user": "joao_01",
+          "text": "It's not a good point. The granularity goes to DAYs, not SECONDs. So, the right answer is B.",
+          "votes": 7
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 308,
+      "questionText": "You are migrating a large number of files from a public HTTPS endpoint to Cloud Storage. The files are protected from unauthorized access using signed URLs. You created a TSV file that contains the list of object URLs and started a transfer job by using Storage Transfer Service. You notice that the job has run for a long time and eventually failed. Checking the logs of the transfer job reveals that the job was running fine until one point, and then it failed due to HTTP 403 errors on the remaining files. You verified that there were no changes to the source system. You need to fix the problem to resume the migration process. What should you do?",
+      "options": [
+        "A. Set up Cloud Storage FUSE, and mount the Cloud Storage bucket on a Compute Engine instance. Remove the completed files from the TSV file. Use a shell script to iterate through the TSV file and download the remaining URLs to the FUSE mount point.",
+        "B. Renew the TLS certificate of the HTTPS endpoint. Remove the completed files from the TSV file and rerun the Storage Transfer Service job.",
+        "C. Create a new TSV file for the remaining files by generating signed URLs with a longer validity period. Split the TSV file into multiple smaller files and submit them as separate Storage Transfer Service jobs in parallel.",
+        "D. Update the file checksums in the TSV file from using MD5 to SHA256. Remove the completed files from the TSV file and rerun the Storage Transfer Service job."
+      ],
+      "suggestedAnswer": "C",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "The likely issue is expired signed URLs. Generate new signed URLs with a longer validity period and split the TSV into smaller jobs to improve manageability and throughput.",
+          "votes": 7
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 307,
+      "questionText": "You need to connect multiple applications with dynamic public IP addresses to a Cloud SQL instance. You configured users with strong passwords and enforced the SSL connection to your Cloud SQL instance. You want to use Cloud SQL public IP and ensure that you have secured connections. What should you do?",
+      "options": [
+        "A. Add CIDR 0.0.0.0/0 network to Authorized Network. Use Identity and Access Management (IAM) to add users.",
+        "B. Add all application networks to Authorized Network and regularly update them.",
+        "C. Leave the Authorized Network empty. Use Cloud SQL Auth proxy on all applications.",
+        "D. Add CIDR 0.0.0.0/0 network to Authorized Network. Use Cloud SQL Auth proxy on all applications."
+      ],
+      "suggestedAnswer": "C",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Using the Cloud SQL Auth proxy is recommended for secure connections with dynamic IP addresses. Leave Authorized Networks empty and rely on the proxy for secure connectivity.",
+          "votes": 10
+        },
+        {
+          "user": "JyoGCP",
+          "text": "0.0.0.0/0 is not recommended for security reasons. Keep access as restricted as possible.",
+          "votes": 4
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 306,
+      "questionText": "You are preparing an organization-wide dataset. You need to preprocess customer data stored in a restricted bucket in Cloud Storage. The data will be used to create consumer analyses. You need to comply with data privacy requirements. What should you do?",
+      "options": [
+        "A. Use Dataflow and the Cloud Data Loss Prevention API to mask sensitive data. Write the processed data in BigQuery.",
+        "B. Use customer-managed encryption keys (CMEK) to directly encrypt the data in Cloud Storage. Use federated queries from BigQuery. Share the encryption key by following the principle of least privilege.",
+        "C. Use the Cloud Data Loss Prevention API and Dataflow to detect and remove sensitive fields from the data in Cloud Storage. Write the filtered data in BigQuery.",
+        "D. Use Dataflow and Cloud KMS to encrypt sensitive fields and write the encrypted data in BigQuery. Share the encryption key by following the principle of least privilege."
+      ],
+      "suggestedAnswer": "A",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Masking sensitive information protects privacy while preserving data utility for consumer analyses.",
+          "votes": 13
+        },
+        {
+          "user": "AlizCert",
+          "text": "Using masking instead of removing data preserves the ability to distinguish between individual customers for analysis.",
+          "votes": 3
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 305,
+      "questionText": "Your organization uses a multi-cloud data storage strategy, storing data in Cloud Storage, and data in Amazon Web Services’ (AWS) S3 storage buckets. All data resides in US regions. You want to query up-to-date data by using BigQuery, regardless of which cloud the data is stored in. You need to allow users to query the tables from BigQuery without giving direct access to the data in the storage buckets. What should you do?",
+      "options": [
+        "A. Setup a BigQuery Omni connection to the AWS S3 bucket data. Create BigLake tables over the Cloud Storage and S3 data and query the data using BigQuery directly.",
+        "B. Set up a BigQuery Omni connection to the AWS S3 bucket data. Create external tables over the Cloud Storage and S3 data and query the data using BigQuery directly.",
+        "C. Use the Storage Transfer Service to copy data from the AWS S3 buckets to Cloud Storage buckets. Create BigLake tables over the Cloud Storage data and query the data using BigQuery directly.",
+        "D. Use the Storage Transfer Service to copy data from the AWS S3 buckets to Cloud Storage buckets. Create external tables over the Cloud Storage data and query the data using BigQuery directly."
+      ],
+      "suggestedAnswer": "A",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "BigQuery Omni plus BigLake lets you query Cloud Storage and S3 directly from BigQuery without moving data or granting direct bucket access.",
+          "votes": 13
+        },
+        {
+          "user": "AllenChen123",
+          "text": "To run BigQuery analytics on Amazon S3, you first connect with BigQuery Omni and then create a BigLake table that references the S3 data.",
+          "votes": 6
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 304,
+      "questionText": "You have a table that contains millions of rows of sales data, partitioned by date. Various applications and users query this data many times a minute. The query requires aggregating values by using AVG, MAX, and SUM, and does not require joining to other tables. The required aggregations are only computed over the past year of data, though you need to retain full historical data in the base tables. You want to ensure that the query results always include the latest data from the tables, while also reducing computation cost, maintenance overhead, and duration. What should you do?",
+      "options": [
+        "A. Create a materialized view to aggregate the base table data. Include a filter clause to specify the last one year of partitions.",
+        "B. Create a materialized view to aggregate the base table data. Configure a partition expiration on the base table to retain only the last one year of partitions.",
+        "C. Create a view to aggregate the base table data. Include a filter clause to specify the last year of partitions.",
+        "D. Create a new table that aggregates the base table data. Include a filter clause to specify the last year of partitions. Set up a scheduled query to recreate the new table every hour."
+      ],
+      "suggestedAnswer": "A",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "A materialized view with a filter on the last year of partitions reduces computation cost and maintenance while still returning fresh data.",
+          "votes": 11
+        },
+        {
+          "user": "d11379b",
+          "text": "Materialized views return fresh data; if changes invalidate the view, BigQuery reads directly from the base tables for freshness.",
+          "votes": 2
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 303,
+      "questionText": "You are managing a Dataplex environment with raw and curated zones. A data engineering team is uploading JSON and CSV files to a bucket asset in the curated zone but the files are not being automatically discovered by Dataplex. What should you do to ensure that the files are discovered by Dataplex?",
+      "options": [
+        "A. Move the JSON and CSV files to the raw zone.",
+        "B. Enable auto-discovery of files for the curated zone.",
+        "C. Use the bg command-line tool to load the JSON and CSV files into BigQuery tables.",
+        "D. Grant object level access to the CSV and JSON files in Cloud Storage."
+      ],
+      "suggestedAnswer": "A",
+      "topComments": [
+        {
+          "user": "GCP001",
+          "text": "Curated zones require Parquet, Avro, or ORC. JSON and CSV should be moved to the raw zone. https://cloud.google.com/dataplex/docs/add-zone#curated-zones",
+          "votes": 28
+        },
+        {
+          "user": "Positron75",
+          "text": "The documentation is explicit that invalid data format in curated zones includes data not in Avro, Parquet, or ORC formats.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 302,
+      "questionText": "You work for a farming company. You have one BigQuery table named sensors, which is about 500 MB and contains the list of your 5000 sensors, with columns for id, name, and location. This table is updated every hour. Each sensor generates one metric every 30 seconds along with a timestamp, which you want to store in BigQuery. You want to run an analytical query on the data once a week for monitoring purposes. You also want to minimize costs. What data model should you use?",
+      "options": [
+        "A. 1. Create a metrics column in the sensors table. 2. Set RECORD type and REPEATED mode for the metrics column. 3. Use an UPDATE statement every 30 seconds to add new metrics.",
+        "B. 1. Create a metrics column in the sensors table. 2. Set RECORD type and REPEATED mode for the metrics column. 3. Use an INSERT statement every 30 seconds to add new metrics.",
+        "C. 1. Create a metrics table partitioned by timestamp. 2. Create a sensorId column in the metrics table, that points to the id column in the sensors table. 3. Use an INSERT statement every 30 seconds to append new metrics to the metrics table. 4. Join the two tables, if needed, when running the analytical query.",
+        "D. 1. Create a metrics table partitioned by timestamp. 2. Create a sensorId column in the metrics table, which points to the id column in the sensors table. 3. Use an UPDATE statement every 30 seconds to append new metrics to the metrics table. 4. Join the two tables, if needed, when running the analytical query."
+      ],
+      "suggestedAnswer": "C",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Use a separate metrics table partitioned by timestamp, append with INSERTs, and join to the sensors table only when needed for analytics.",
+          "votes": 11
+        },
+        {
+          "user": "rajshiv",
+          "text": "A separate partitioned metrics table with INSERTs is best; BigQuery is not optimized for repeated UPDATEs to nested fields.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 301,
+      "questionText": "You are architecting a data transformation solution for BigQuery. Your developers are proficient with SQL and want to use the ELT development technique. In addition, your developers need an intuitive coding environment and the ability to manage SQL as code. You need to identify a solution for your developers to build these pipelines. What should you do?",
+      "options": [
+        "A. Use Dataform to build, manage, and schedule SQL pipelines.",
+        "B. Use Dataflow jobs to read data from Pub/Sub, transform the data, and load the data to BigQuery.",
+        "C. Use Data Fusion to build and execute ETL pipelines.",
+        "D. Use Cloud Composer to load data and run SQL pipelines by using the BigQuery job operators."
+      ],
+      "suggestedAnswer": "A",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Dataform aligns with ELT, supports SQL as code, provides an intuitive environment, and includes scheduling/orchestration.",
+          "votes": 8
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 300,
+      "questionText": "You currently have transactional data stored on-premises in a PostgreSQL database. To modernize your data environment, you want to run transactional workloads and support analytics needs with a single database. You need to move to Google Cloud without changing database management systems, and minimize cost and complexity. What should you do?",
+      "options": [
+        "A. Migrate and modernize your database with Cloud Spanner.",
+        "B. Migrate your workloads to AlloyDB for PostgreSQL.",
+        "C. Migrate to BigQuery to optimize analytics.",
+        "D. Migrate your PostgreSQL database to Cloud SQL for PostgreSQL."
+      ],
+      "suggestedAnswer": "B",
+      "topComments": [
+        {
+          "user": "8ad5266",
+          "text": "Cloud SQL for PostgreSQL minimizes cost. AlloyDB gives more performance but at higher cost.",
+          "votes": 7
+        },
+        {
+          "user": "mednoun",
+          "text": "If the requirement is a single database for transactional and analytical needs, AlloyDB is the database that fits both.",
+          "votes": 2
+        }
+      ]
+    }
+  ]
+}

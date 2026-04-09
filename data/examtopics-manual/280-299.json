@@ -1,0 +1,420 @@
+{
+  "metadata": {
+    "source": "ExamTopics manual paste",
+    "capturedAt": "2026-04-09",
+    "questionRange": "280-299",
+    "notes": "Structured from user-provided chat batch. Includes question text, options, and suggested answer. Discussion comments omitted from this normalized capture. Question 297 appeared twice in the raw paste; deduplicated here."
+  },
+  "questions": [
+    {
+      "examQuestionNumber": 299,
+      "questionText": "You have an upstream process that writes data to Cloud Storage. This data is then read by an Apache Spark job that runs on Dataproc. These jobs are run in the us-central1 region, but the data could be stored anywhere in the United States. You need to have a recovery process in place in case of a catastrophic single region failure. You need an approach with a maximum of 15 minutes of data loss (RPO=15 mins). You want to ensure that there is minimal latency when reading the data. What should you do?",
+      "options": [
+        "A. 1. Create two regional Cloud Storage buckets, one in the us-central1 region and one in the us-south1 region. 2. Have the upstream process write data to the us-central1 bucket. Use the Storage Transfer Service to copy data hourly from the us-central1 bucket to the us-south1 bucket. 3. Run the Dataproc cluster in a zone in the us-central1 region, reading from the bucket in that region. 4. In case of regional failure, redeploy your Dataproc clusters to the us-south1 region and read from the bucket in that region instead.",
+        "B. 1. Create a Cloud Storage bucket in the US multi-region. 2. Run the Dataproc cluster in a zone in the us-central1 region, reading data from the US multi-region bucket. 3. In case of a regional failure, redeploy the Dataproc cluster to the us-central2 region and continue reading from the same bucket.",
+        "C. 1. Create a dual-region Cloud Storage bucket in the us-central1 and us-south1 regions. 2. Enable turbo replication. 3. Run the Dataproc cluster in a zone in the us-central1 region, reading from the bucket in the us-south1 region. 4. In case of a regional failure, redeploy your Dataproc cluster to the us-south1 region and continue reading from the same bucket.",
+        "D. 1. Create a dual-region Cloud Storage bucket in the us-central1 and us-south1 regions. 2. Enable turbo replication. 3. Run the Dataproc cluster in a zone in the us-central1 region, reading from the bucket in the same region. 4. In case of a regional failure, redeploy the Dataproc clusters to the us-south1 region and read from the same bucket."
+      ],
+      "suggestedAnswer": "D",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Turbo replication in a dual-region bucket gives near-real-time synchronization for RPO <= 15 minutes, and reading from the same region minimizes latency.",
+          "votes": 6
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 298,
+      "questionText": "One of your encryption keys stored in Cloud Key Management Service (Cloud KMS) was exposed. You need to re- encrypt all of your CMEK-protected Cloud Storage data that used that key, and then delete the compromised key. You also want to reduce the risk of objects getting written without customer-managed encryption key (CMEK) protection in the future. What should you do?",
+      "options": [
+        "A. Rotate the Cloud KMS key version. Continue to use the same Cloud Storage bucket.",
+        "B. Create a new Cloud KMS key. Set the default CMEK key on the existing Cloud Storage bucket to the new one.",
+        "C. Create a new Cloud KMS key. Create a new Cloud Storage bucket. Copy all objects from the old bucket to the new one bucket while specifying the new Cloud KMS key in the copy command.",
+        "D. Create a new Cloud KMS key. Create a new Cloud Storage bucket configured to use the new key as the default CMEK key. Copy all objects from the old bucket to the new bucket without specifying a key."
+      ],
+      "suggestedAnswer": "D",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Create a new bucket with a new default CMEK key and copy objects without specifying a key so they are re-encrypted consistently under the new default.",
+          "votes": 12
+        },
+        {
+          "user": "chickenwingz",
+          "text": "Rotating a key does not re-encrypt existing data, and setting a key only on copy commands does not protect future uploads by default.",
+          "votes": 8
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 297,
+      "questionText": "You migrated your on-premises Apache Hadoop Distributed File System (HDFS) data lake to Cloud Storage. The data scientist team needs to process the data by using Apache Spark and SQL. Security policies need to be enforced at the column level. You need a cost-effective solution that can scale into a data mesh. What should you do?",
+      "options": [
+        "A. 1. Deploy a long-living Dataproc cluster with Apache Hive and Ranger enabled. 2. Configure Ranger for column level security. 3. Process with Dataproc Spark or Hive SQL.",
+        "B. 1. Define a BigLake table. 2. Create a taxonomy of policy tags in Data Catalog. 3. Add policy tags to columns. 4. Process with the Spark-BigQuery connector or BigQuery SQL.",
+        "C. 1. Load the data to BigQuery tables. 2. Create a taxonomy of policy tags in Data Catalog. 3. Add policy tags to columns. 4. Process with the Spark-BigQuery connector or BigQuery SQL.",
+        "D. 1. Apply an Identity and Access Management (IAM) policy at the file level in Cloud Storage. 2. Define a BigQuery external table for SQL processing. 3. Use Dataproc Spark to process the Cloud Storage files."
+      ],
+      "suggestedAnswer": "B",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "BigLake with policy tags gives column-level governance over Cloud Storage data and supports both Spark and SQL in a cost-effective, scalable design.",
+          "votes": 18
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 296,
+      "questionText": "Your infrastructure team has set up an interconnect link between Google Cloud and the on-premises network. You are designing a high-throughput streaming pipeline to ingest data in streaming from an Apache Kafka cluster hosted on- premises. You want to store the data in BigQuery, with as minimal latency as possible. What should you do?",
+      "options": [
+        "A. Setup a Kafka Connect bridge between Kafka and Pub/Sub. Use a Google-provided Dataflow template to read the data from Pub/Sub, and write the data to BigQuery.",
+        "B. Use a proxy host in the VPC in Google Cloud connecting to Kafka. Write a Dataflow pipeline, read data from the proxy host, and write the data to BigQuery.",
+        "C. Use Dataflow, write a pipeline that reads the data from Kafka, and writes the data to BigQuery.",
+        "D. Setup a Kafka Connect bridge between Kafka and Pub/Sub. Write a Dataflow pipeline, read the data from Pub/Sub, and write the data to BigQuery."
+      ],
+      "suggestedAnswer": "C",
+      "topComments": [
+        {
+          "user": "Anudeep58",
+          "text": "Direct Dataflow integration with Kafka offers lower latency by avoiding intermediate systems.",
+          "votes": 2
+        },
+        {
+          "user": "saschak94",
+          "text": "Adding Pub/Sub as an extra hop would increase latency compared to subscribing to Kafka directly from Dataflow.",
+          "votes": 7
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 295,
+      "questionText": "You are designing the architecture to process your data from Cloud Storage to BigQuery by using Dataflow. The network team provided you with the Shared VPC network and subnetwork to be used by your pipelines. You need to enable the deployment of the pipeline on the Shared VPC network. What should you do?",
+      "options": [
+        "A. Assign the compute.networkUser role to the Dataflow service agent.",
+        "B. Assign the compute.networkUser role to the service account that executes the Dataflow pipeline.",
+        "C. Assign the dataflow.admin role to the Dataflow service agent.",
+        "D. Assign the dataflow.admin role to the service account that executes the Dataflow pipeline."
+      ],
+      "suggestedAnswer": "B",
+      "topComments": [
+        {
+          "user": "pamrona",
+          "text": "If VMs need to attach to a subnet, grant compute.networkUser to the runtime service account, not the service agent.",
+          "votes": 1
+        },
+        {
+          "user": "Jeyaraj",
+          "text": "The service account that executes the pipeline needs compute.networkUser on the Shared VPC resources because Dataflow uses it to create and manage worker instances.",
+          "votes": 3
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 294,
+      "questionText": "You work for a large ecommerce company. You are using Pub/Sub to ingest the clickstream data to Google Cloud for analytics. You observe that when a new subscriber connects to an existing topic to analyze data, they are unable to subscribe to older data. For an upcoming yearly sale event in two months, you need a solution that, once implemented, will enable any new subscriber to read the last 30 days of data. What should you do?",
+      "options": [
+        "A. Create a new topic, and publish the last 30 days of data each time a new subscriber connects to an existing topic.",
+        "B. Set the topic retention policy to 30 days.",
+        "C. Set the subscriber retention policy to 30 days.",
+        "D. Ask the source system to re-push the data to Pub/Sub, and subscribe to it."
+      ],
+      "suggestedAnswer": "B",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Setting topic retention to 30 days makes messages available for new subscribers to consume historical data for that period.",
+          "votes": 12
+        },
+        {
+          "user": "joao_01",
+          "text": "Subscription retention maxes out at 7 days, while topic retention can go up to 31 days, so topic retention is the right mechanism here.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 293,
+      "questionText": "Your organization is modernizing their IT services and migrating to Google Cloud. You need to organize the data that will be stored in Cloud Storage and BigQuery. You need to enable a data mesh approach to share the data between sales, product design, and marketing departments. What should you do?",
+      "options": [
+        "A. 1. Create a project for storage of the data for each of your departments. 2. Enable each department to create Cloud Storage buckets and BigQuery datasets. 3. Create user groups for authorized readers for each bucket and dataset. 4. Enable the IT team to administer the user groups to add or remove users as the departments’ request.",
+        "B. 1. Create multiple projects for storage of the data for each of your departments’ applications. 2. Enable each department to create Cloud Storage buckets and BigQuery datasets. 3. Publish the data that each department shared in Analytics Hub. 4. Enable all departments to discover and subscribe to the data they need in Analytics Hub.",
+        "C. 1. Create a project for storage of the data for your organization. 2. Create a central Cloud Storage bucket with three folders to store the files for each department. 3. Create a central BigQuery dataset with tables prefixed with the department name. 4. Give viewer rights for the storage project for the users of your departments.",
+        "D. 1. Create multiple projects for storage of the data for each of your departments’ applications. 2. Enable each department to create Cloud Storage buckets and BigQuery datasets. 3. In Dataplex, map each department to a data lake and the Cloud Storage buckets, and map the BigQuery datasets to zones. 4. Enable each department to own and share the data of their data lakes."
+      ],
+      "suggestedAnswer": "D",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Dataplex fits a data mesh by giving departments decentralized ownership plus discoverability and sharing across data lakes.",
+          "votes": 11
+        },
+        {
+          "user": "daed09",
+          "text": "Because the question includes Cloud Storage assets as well as BigQuery, Dataplex is a better fit than Analytics Hub.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 292,
+      "questionText": "You have terabytes of customer behavioral data streaming from Google Analytics into BigQuery daily. Your customers’ information, such as their preferences, is hosted on a Cloud SQL for MySQL database. Your CRM database is hosted on a Cloud SQL for PostgreSQL instance. The marketing team wants to use your customers’ information from the two databases and the customer behavioral data to create marketing campaigns for yearly active customers. You need to ensure that the marketing team can run the campaigns over 100 times a day on typical days and up to 300 during sales. At the same time, you want to keep the load on the Cloud SQL databases to a minimum. What should you do?",
+      "options": [
+        "A. Create BigQuery connections to both Cloud SQL databases. Use BigQuery federated queries on the two databases and the Google Analytics data on BigQuery to run these queries.",
+        "B. Create a job on Apache Spark with Dataproc Serverless to query both Cloud SQL databases and the Google Analytics data on BigQuery for these queries.",
+        "C. Create streams in Datastream to replicate the required tables from both Cloud SQL databases to BigQuery for these queries.",
+        "D. Create a Dataproc cluster with Trino to establish connections to both Cloud SQL databases and BigQuery, to execute the queries."
+      ],
+      "suggestedAnswer": "C",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Use Datastream to replicate the required Cloud SQL tables into BigQuery so the marketing team can query frequently without loading the operational databases.",
+          "votes": 11
+        },
+        {
+          "user": "joao_01",
+          "text": "Federated queries would put analytical load on Cloud SQL and are slower than querying replicated data directly in BigQuery.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 291,
+      "questionText": "You designed a data warehouse in BigQuery to analyze sales data. You want a self-serving, low-maintenance, and cost- effective solution to share the sales dataset to other business units in your organization. What should you do?",
+      "options": [
+        "A. Create an Analytics Hub private exchange, and publish the sales dataset.",
+        "B. Enable the other business units’ projects to access the authorized views of the sales dataset.",
+        "C. Create and share views with the users in the other business units.",
+        "D. Use the BigQuery Data Transfer Service to create a schedule that copies the sales dataset to the other business units’ projects."
+      ],
+      "suggestedAnswer": "A",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Analytics Hub provides a centralized, low-maintenance way to share datasets internally across business units.",
+          "votes": 7
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 290,
+      "questionText": "You are designing a messaging system by using Pub/Sub to process clickstream data with an event-driven consumer app that relies on a push subscription. You need to configure the messaging system that is reliable enough to handle temporary downtime of the consumer app. You also need the messaging system to store the input messages that cannot be consumed by the subscriber. The system needs to retry failed messages gradually, avoiding overloading the consumer app, and store the failed messages after a maximum of 10 retries in a topic. How should you configure the Pub/Sub subscription?",
+      "options": [
+        "A. Increase the acknowledgement deadline to 10 minutes.",
+        "B. Use immediate redelivery as the subscription retry policy, and configure dead lettering to a different topic with maximum delivery attempts set to 10.",
+        "C. Use exponential backoff as the subscription retry policy, and configure dead lettering to the same source topic with maximum delivery attempts set to 10.",
+        "D. Use exponential backoff as the subscription retry policy, and configure dead lettering to a different topic with maximum delivery attempts set to 10."
+      ],
+      "suggestedAnswer": "D",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Use exponential backoff to avoid overloading the consumer app and dead lettering to a different topic after 10 attempts.",
+          "votes": 17
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 289,
+      "questionText": "You have data located in BigQuery that is used to generate reports for your company. You have noticed some weekly executive report fields do not correspond to format according to company standards. For example, report errors include different telephone formats and different country code identifiers. This is a frequent issue, so you need to create a recurring job to normalize the data. You want a quick solution that requires no coding. What should you do?",
+      "options": [
+        "A. Use Cloud Data Fusion and Wrangler to normalize the data, and set up a recurring job.",
+        "B. Use Dataflow SQL to create a job that normalizes the data, and that after the first run of the job, schedule the pipeline to execute recurrently.",
+        "C. Create a Spark job and submit it to Dataproc Serverless.",
+        "D. Use BigQuery and GoogleSQL to normalize the data, and schedule recurring queries in BigQuery."
+      ],
+      "suggestedAnswer": "A",
+      "topComments": [
+        {
+          "user": "Matt_108",
+          "text": "Cloud Data Fusion with Wrangler is a no-code way to build and schedule a normalization pipeline.",
+          "votes": 8
+        },
+        {
+          "user": "RenePetersen",
+          "text": "Writing SQL transformations would still be considered coding, so it does not meet the no-coding requirement.",
+          "votes": 6
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 288,
+      "questionText": "You are part of a healthcare organization where data is organized and managed by respective data owners in various storage services. As a result of this decentralized ecosystem, discovering and managing data has become difficult. You need to quickly identify and implement a cost-optimized solution to assist your organization with the following: Data management and discovery, Data lineage tracking, Data quality validation. How should you build the solution?",
+      "options": [
+        "A. Use BigLake to convert the current solution into a data lake architecture.",
+        "B. Build a new data discovery tool on Google Kubernetes Engine that helps with new source onboarding and data lineage tracking.",
+        "C. Use BigQuery to track data lineage, and use Dataprep to manage data and perform data quality validation.",
+        "D. Use Dataplex to manage data, track data lineage, and perform data quality validation."
+      ],
+      "suggestedAnswer": "D",
+      "topComments": [
+        {
+          "user": "987af6b",
+          "text": "Dataplex is the cost-optimized managed choice for data management and discovery, lineage tracking, and data quality validation.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 287,
+      "questionText": "You are administering shared BigQuery datasets that contain views used by multiple teams in your organization. The marketing team is concerned about the variability of their monthly BigQuery analytics spend using the on-demand billing model. You need to help the marketing team establish a consistent BigQuery analytics spend each month. What should you do?",
+      "options": [
+        "A. Create a BigQuery Enterprise reservation with a baseline of 250 slots and autoscaling set to 500 for the marketing team, and bill them back accordingly.",
+        "B. Establish a BigQuery quota for the marketing team, and limit the maximum number of bytes scanned each day.",
+        "C. Create a BigQuery reservation with a baseline of 500 slots with no autoscaling for the marketing team, and bill them back accordingly.",
+        "D. Create a BigQuery Standard pay-as-you go reservation with a baseline of 0 slots and autoscaling set to 500 for the marketing team, and bill them back accordingly."
+      ],
+      "suggestedAnswer": "C",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "A fixed reservation with no autoscaling gives predictable monthly spend, unlike quotas or autoscaling which still allow variability or limit business use.",
+          "votes": 13
+        },
+        {
+          "user": "baimus",
+          "text": "A quota only caps the maximum; it does not make monthly cost consistent. A fixed reservation is the only predictable option.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 286,
+      "questionText": "You have thousands of Apache Spark jobs running in your on-premises Apache Hadoop cluster. You want to migrate the jobs to Google Cloud. You want to use managed services to run your jobs instead of maintaining a long-lived Hadoop cluster yourself. You have a tight timeline and want to keep code changes to a minimum. What should you do?",
+      "options": [
+        "A. Move your data to BigQuery. Convert your Spark scripts to a SQL-based processing approach.",
+        "B. Rewrite your jobs in Apache Beam. Run your jobs in Dataflow.",
+        "C. Copy your data to Compute Engine disks. Manage and run your jobs directly on those instances.",
+        "D. Move your data to Cloud Storage. Run your jobs on Dataproc."
+      ],
+      "suggestedAnswer": "D",
+      "topComments": [
+        {
+          "user": "hussain.sain",
+          "text": "Dataproc supports existing Spark and Hadoop workloads with minimal code changes and avoids maintaining your own long-lived cluster.",
+          "votes": 2
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 285,
+      "questionText": "You have 100 GB of data stored in a BigQuery table. This data is outdated and will only be accessed one or two times a year for analytics with SQL. For backup purposes, you want to store this data to be immutable for 3 years. You want to minimize storage costs. What should you do?",
+      "options": [
+        "A. 1. Create a BigQuery table clone. 2. Query the clone when you need to perform analytics.",
+        "B. 1. Create a BigQuery table snapshot. 2. Restore the snapshot when you need to perform analytics.",
+        "C. 1. Perform a BigQuery export to a Cloud Storage bucket with archive storage class. 2. Enable versioning on the bucket. 3. Create a BigQuery external table on the exported files.",
+        "D. 1. Perform a BigQuery export to a Cloud Storage bucket with archive storage class. 2. Set a locked retention policy on the bucket. 3. Create a BigQuery external table on the exported files."
+      ],
+      "suggestedAnswer": "D",
+      "topComments": [
+        {
+          "user": "judy_data",
+          "text": "Exporting to Cloud Storage Archive with bucket retention lock is the most straightforward and cost-effective immutable backup solution.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 284,
+      "questionText": "You have a network of 1000 sensors. The sensors generate time series data: one metric per sensor per second, along with a timestamp. You already have 1 TB of data, and expect the data to grow by 1 GB every day. You need to access this data in two ways. The first access pattern requires retrieving the metric from one specific sensor stored at a specific timestamp, with a median single-digit millisecond latency. The second access pattern requires running complex analytic queries on the data, including joins, once a day. How should you store this data?",
+      "options": [
+        "A. Store your data in BigQuery. Concatenate the sensor ID and timestamp, and use it as the primary key.",
+        "B. Store your data in Bigtable. Concatenate the sensor ID and timestamp and use it as the row key. Perform an export to BigQuery every day.",
+        "C. Store your data in Bigtable. Concatenate the sensor ID and metric, and use it as the row key. Perform an export to BigQuery every day.",
+        "D. Store your data in BigQuery. Use the metric as a primary key."
+      ],
+      "suggestedAnswer": "B",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Bigtable gives single-digit millisecond lookups by row key, and daily export to BigQuery supports the separate analytical access pattern.",
+          "votes": 16
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 283,
+      "questionText": "You have created an external table for Apache Hive partitioned data that resides in a Cloud Storage bucket, which contains a large number of files. You notice that queries against this table are slow. You want to improve the performance of these queries. What should you do?",
+      "options": [
+        "A. Change the storage class of the Hive partitioned data objects from Coldline to Standard.",
+        "B. Create an individual external table for each Hive partition by using a common table name prefix. Use wildcard table queries to reference the partitioned data.",
+        "C. Upgrade the external table to a BigLake table. Enable metadata caching for the table.",
+        "D. Migrate the Hive partitioned data objects to a multi-region Cloud Storage bucket."
+      ],
+      "suggestedAnswer": "C",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Upgrade to BigLake and enable metadata caching to improve performance over a large number of Hive-partitioned files.",
+          "votes": 8
+        },
+        {
+          "user": "AllenChen123",
+          "text": "BigLake metadata caching is specifically documented as a performance improvement for these kinds of external tables.",
+          "votes": 4
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 282,
+      "questionText": "You are using a Dataflow streaming job to read messages from a message bus that does not support exactly-once delivery. Your job then applies some transformations, and loads the result into BigQuery. You want to ensure that your data is being streamed into BigQuery with exactly-once delivery semantics. You expect your ingestion throughput into BigQuery to be about 1.5 GB per second. What should you do?",
+      "options": [
+        "A. Use the BigQuery Storage Write API and ensure that your target BigQuery table is regional.",
+        "B. Use the BigQuery Storage Write API and ensure that your target BigQuery table is multiregional.",
+        "C. Use the BigQuery Streaming API and ensure that your target BigQuery table is regional.",
+        "D. Use the BigQuery Streaming API and ensure that your target BigQuery table is multiregional."
+      ],
+      "suggestedAnswer": "B",
+      "topComments": [
+        {
+          "user": "AlizCert",
+          "text": "Storage Write API with a multiregional table matches the required throughput because multiregions support 3 GB/s while regions support only 300 MB/s.",
+          "votes": 18
+        },
+        {
+          "user": "gord_nat",
+          "text": "Has to be multiregional because the write throughput requirement is 1.5 GB/s.",
+          "votes": 1
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 281,
+      "questionText": "You work for a large ecommerce company. You store your customer's order data in Bigtable. You have a garbage collection policy set to delete the data after 30 days and the number of versions is set to 1. When the data analysts run a query to report total customer spending, the analysts sometimes see customer data that is older than 30 days. You need to ensure that the analysts do not see customer data older than 30 days while minimizing cost and overhead. What should you do?",
+      "options": [
+        "A. Set the expiring values of the column families to 29 days and keep the number of versions to 1.",
+        "B. Use a timestamp range filter in the query to fetch the customer's data for a specific range.",
+        "C. Schedule a job daily to scan the data in the table and delete data older than 30 days.",
+        "D. Set the expiring values of the column families to 30 days and set the number of versions to 2."
+      ],
+      "suggestedAnswer": "B",
+      "topComments": [
+        {
+          "user": "AllenChen123",
+          "text": "Bigtable garbage collection can take up to a week, so you should always add a timestamp range filter to exclude old data from reads.",
+          "votes": 10
+        }
+      ]
+    },
+    {
+      "examQuestionNumber": 280,
+      "questionText": "You are running a streaming pipeline with Dataflow and are using hopping windows to group the data as the data arrives. You noticed that some data is arriving late but is not being marked as late data, which is resulting in inaccurate aggregations downstream. You need to find a solution that allows you to capture the late data in the appropriate window. What should you do?",
+      "options": [
+        "A. Use watermarks to define the expected data arrival window. Allow late data as it arrives.",
+        "B. Change your windowing function to tumbling windows to avoid overlapping window periods.",
+        "C. Change your windowing function to session windows to define your windows based on certain activity.",
+        "D. Expand your hopping window so that the late data has more time to arrive within the grouping."
+      ],
+      "suggestedAnswer": "A",
+      "topComments": [
+        {
+          "user": "raaad",
+          "text": "Use watermarks and allow late data so late events can still be captured in the correct window.",
+          "votes": 7
+        }
+      ]
+    }
+  ]
+}
