@@ -45,7 +45,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Mitigating neural network overfitting using dropout.",
+    "correctRationale": "Dropout is a standard regularization technique used during the training of neural networks. It works by randomly 'dropping out' (ignoring) a subset of neurons during each training pass, which prevents the network from memorizing the training data (overfitting) and forces it to generalize better to unseen test data.",
+    "optionRationales": [
+      "Wrong: Threading helps parallelize computations to speed up training time, but it does not change the model's architecture or mathematical ability to generalize to new data.",
+      "Wrong: Serialization is the process of saving the model's architecture and weights to a file (like a .pb file) for later use; it has nothing to do with training accuracy.",
+      "Correct: Dropout layers randomly deactivate neurons during training, which breaks co-dependencies between nodes and forces the model to learn more robust, generalized features.",
+      "Wrong: Dimensionality reduction (like PCA) reduces the number of input features before training. While it can help simplify a model, Dropout is the specific, direct method used within the network's architecture to prevent neuron-level overfitting."
+    ]
   },
   {
     "id": 2,
@@ -99,7 +107,17 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Enforcing least privilege and monitoring in BigQuery.",
+    "correctRationale": "To implement least privilege in BigQuery, you must organize data logically into different datasets or tables so you can apply fine-grained Identity and Access Management (IAM) roles. Additionally, Cloud Audit Logs (Data Access logs) provide the monitoring layer necessary to verify compliance and detect policy violations.",
+    "optionRationales": [
+      "Wrong: Disabling writes prevents data from being updated, but it does not restrict read access, meaning unauthorized users could still view sensitive information.",
+      "Correct: Using IAM roles at the dataset or table level ensures that department users are only granted access to the specific resources they need to do their jobs.",
+      "Wrong: Encryption protects data at rest from unauthorized physical or disk-level access, but it does not restrict query access for authenticated users within the GCP project.",
+      "Wrong: BigQuery API access cannot be natively restricted on a per-user basis as a security control; data access is controlled via IAM permissions, not API blocking.",
+      "Correct: Segregating data across multiple tables or datasets creates the necessary logical boundaries required to attach distinct IAM policies for different departments.",
+      "Correct: Cloud Audit Logging automatically captures Data Access logs, which track exactly who queried what data, allowing the central IT team to audit and detect any unauthorized access attempts."
+    ]
   },
   {
     "id": 3,
@@ -147,7 +165,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Real-time streaming ingestion into BigQuery at scale.",
+    "correctRationale": "Cloud Dataflow provides a fully managed, auto-scaling pipeline capable of processing unbounded streaming data. Using the BigQuery Streaming API (via Dataflow), data is immediately available for querying within seconds, easily satisfying the 1-minute availability requirement while scaling to handle 50,000 sensors.",
+    "optionRationales": [
+      "Wrong: The `bq load` command is designed for batch loading operations. It is not suitable for continuous, high-throughput micro-batching every 60 seconds due to job overhead and rate limits.",
+      "Correct: Dataflow effortlessly handles streaming ingestion and writes directly to BigQuery via the Streaming API, ensuring data is instantly available for real-time analysis.",
+      "Wrong: Standard DML INSERT statements or the legacy `tabledata.insertAll` API are not built for continuous high-throughput ingestion from 50,000 sensors and will quickly encounter rate limits and performance bottlenecks.",
+      "Wrong: MERGE is a DML statement used for batch upserts (updating existing records while inserting new ones). It is highly quota-limited and inappropriate for high-frequency, real-time streaming ingestion."
+    ]
   },
   {
     "id": 4,
@@ -195,7 +221,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Secure and efficient bulk data transfer to Google Cloud.",
+    "correctRationale": "Exporting to Avro is ideal because it is a compressed, strongly-typed format natively supported by BigQuery. For a 10 TB dataset, a direct network upload using `gsutil` is efficient, practical over standard internet lines, and keeps sensitive patient data entirely within secure, authenticated channels.",
+    "optionRationales": [
+      "Correct: Avro preserves database schemas, and `gsutil` is a secure, encrypted tool fully capable of handling a 10 TB upload directly to Cloud Storage for BigQuery ingestion.",
+      "Wrong: Google Transfer Appliance is physically shipped to your data center and is typically recommended for massive datasets (e.g., 20+ TB) or when network bandwidth is severely constrained. For 10 TB, standard network upload is much faster than the physical shipping process.",
+      "Wrong: Creating a public URL for sensitive patient records is a catastrophic security violation, completely ignoring the 'secure' requirement.",
+      "Wrong: Just like the CSV option, placing sensitive patient records on a public URL so the Storage Transfer Service can read it is a massive HIPAA and security violation."
+    ]
   },
   {
     "id": 5,
@@ -243,7 +277,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Handling high-frequency updates for near real-time dashboards in BigQuery.",
+    "correctRationale": "BigQuery is an OLAP data warehouse optimized for massive scans, not an OLTP database for high-frequency row-level updates. The best practice is an append-only architecture: stream changes into a daily movement table, calculate the real-time balance dynamically using a view, and run a nightly batch job to update the historical baseline, avoiding DML limits.",
+    "optionRationales": [
+      "Wrong: BigQuery imposes strict concurrency limits on DML UPDATE statements. Executing thousands of updates per hour will hit quotas and result in severely degraded performance.",
+      "Wrong: Partitioning the table by item improves read performance for specific items, but it does not solve the fundamental quota and performance limitations of high-frequency DML updates.",
+      "Correct: Streaming appends avoid DML limits entirely. Calculating the current state via a View ensures the dashboard is accurate in real-time, while the nightly rollup keeps the View performant.",
+      "Wrong: Using the BigQuery bulk loader introduces batch processing latency. By batching the changes, you sacrifice the 'near real-time' requirement of the dashboard."
+    ]
   },
   {
     "id": 6,
@@ -291,7 +333,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery cost-effective data retention and Disaster Recovery.",
+    "correctRationale": "BigQuery's native Time Travel feature only retains historical data for up to 7 days. To meet a 30-day RPO, you must explicitly copy the data using scheduled queries. Furthermore, utilizing regional storage rather than multi-regional storage satisfies the requirement to minimize costs.",
+    "optionRationales": [
+      "Wrong: Point-in-time snapshots (Time Travel) only go back 7 days natively. If an error is discovered on day 25, the data cannot be recovered, failing the 30-day RPO.",
+      "Correct: Regional storage keeps costs low, and a scheduled query automates the creation of table copies (or explicit snapshots) to retain the data for the full 30 days.",
+      "Wrong: Multi-regional storage is significantly more expensive than regional storage, and point-in-time snapshots still fail the 30-day retention requirement.",
+      "Wrong: While this meets the 30-day RPO via scheduled queries, configuring the dataset to be multi-regional directly violates the prompt's requirement to minimize cost."
+    ]
   },
   {
     "id": 7,
@@ -339,7 +389,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Event-driven pipeline orchestration with Cloud Composer.",
+    "correctRationale": "Because the initial load job has a variable execution time, standard time-based scheduling (cron) is ineffective and risky. Cloud Composer (managed Apache Airflow) natively supports dependencies via DAGs. By exporting the Dataprep logic as a Dataflow template, Composer can trigger the pipeline precisely when the upstream load job finishes.",
+    "optionRationales": [
+      "Wrong: A cron schedule triggers at a fixed time. If the upstream load job takes longer than usual, the Dataprep cron job will trigger too early and process incomplete data.",
+      "Wrong: App Engine cron is also strictly time-based and lacks the native ability to listen for the completion of a separate Google Cloud load job.",
+      "Wrong: Cloud Scheduler is a time-based cron service. It cannot dynamically wait for a variable-length load job to complete before firing.",
+      "Correct: Cloud Composer handles complex event-driven dependencies. Exporting to a Dataflow template allows Composer's Airflow operators to trigger the job exactly when the prerequisite load task signals completion."
+    ]
   },
   {
     "id": 8,
@@ -387,7 +445,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Multi-step workflow orchestration in Google Cloud.",
+    "correctRationale": "Cloud Composer is a fully managed workflow orchestration service built on Apache Airflow. It is designed specifically to author, schedule, and monitor complex pipelines spanning multiple services (like Dataproc and Dataflow) by defining dependencies as Directed Acyclic Graphs (DAGs).",
+    "optionRationales": [
+      "Wrong: Standard cron only handles simple time-based triggers. It cannot natively manage job states, complex dependencies, or retries across multiple cloud services.",
+      "Correct: Cloud Composer provides a managed Airflow environment, which is the industry standard for orchestrating multi-step interdependent data pipelines.",
+      "Wrong: Cloud Scheduler is a managed cron service. While it can trigger individual jobs via HTTP/PubSub, it lacks the workflow dependency and state management logic needed for complex pipelines.",
+      "Wrong: Dataproc Workflow Templates are excellent for orchestrating Spark/Hadoop jobs *within* a Dataproc cluster, but they cannot orchestrate external Cloud Dataflow jobs."
+    ]
   },
   {
     "id": 9,
@@ -435,7 +501,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cost-effective scaling of Dataproc clusters.",
+    "correctRationale": "Adding preemptible worker nodes is the standard method for drastically reducing Dataproc compute costs while speeding up processing. However, because preemptible instances can be reclaimed by Google at any time, configuring graceful decommissioning ensures that YARN waits for active tasks to finish before the node shuts down, preventing lost work.",
+    "optionRationales": [
+      "Wrong: Non-preemptible workers are billed at standard compute rates, which fails the requirement to minimize costs.",
+      "Wrong: Forcefully decommissioning nodes will abruptly kill any running tasks on those nodes, resulting in lost work in progress.",
+      "Wrong: Cloud Monitoring cannot react fast enough to a preemption event to reliably trigger a script to save YARN application state. Graceful decommissioning handles this natively.",
+      "Correct: Preemptible nodes provide the lowest cost, while graceful decommissioning ensures YARN safely completes active tasks before nodes are removed."
+    ]
   },
   {
     "id": 10,
@@ -475,7 +549,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Real-time stream redaction and quarantine using Cloud DLP.",
+    "correctRationale": "To actively prevent PII from ever reaching downstream analytics, you must intercept the data in flight. A serverless Cloud Function can subscribe to the Pub/Sub topic, send the payload to the Cloud DLP API for scanning, and use the results to dynamically route clean data forward while dropping dirty data into a quarantine bucket.",
+    "optionRationales": [
+      "Wrong: BigQuery authorized views only restrict access to data *after* it has already landed in the data warehouse, meaning the analytics system has already been exposed.",
+      "Wrong: Installing third-party tools on Compute Engine VMs requires manual OS patching, infrastructure management, and scaling configuration, violating the 'cloud-native managed services' requirement.",
+      "Wrong: Cloud Logging is an observability tool used to monitor post-event logs. It cannot actively intercept, alter, or quarantine an in-flight message stream.",
+      "Correct: Cloud Functions (serverless) integrated with the managed Cloud DLP API provides a fully managed, scalable solution to inspect and route traffic before it hits the analytics systems."
+    ]
   },
   {
     "id": 11,
@@ -523,7 +605,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Centralized pipeline orchestration and monitoring.",
+    "correctRationale": "Cloud Composer is a fully managed workflow orchestration service built on Apache Airflow. It allows you to define workflows as Directed Acyclic Graphs (DAGs), providing a centralized UI to schedule, monitor, and manually trigger interconnected data jobs across GCP and third-party services.",
+    "optionRationales": [
+      "Correct: Cloud Composer uses Airflow DAGs to seamlessly schedule, visualize, monitor, and manually execute multi-step pipelines.",
+      "Wrong: Cloud Monitoring (Stackdriver) is an observability platform for metrics and alerting. It is not an orchestrator and cannot manage pipeline dependencies or schedules.",
+      "Wrong: Building a custom App Engine application to handle scheduling and API status checks requires massive development and operational overhead to reinvent what Cloud Composer already does natively.",
+      "Wrong: Running cron jobs on a Compute Engine instance introduces a single point of failure, requires manual OS/infrastructure management, and lacks a native UI for pipeline monitoring."
+    ]
   },
   {
     "id": 12,
@@ -575,7 +665,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Troubleshooting Pub/Sub subscriber processing spikes.",
+    "correctRationale": "When a subscriber successfully processes a message, it must send an acknowledgement (ack) back to Pub/Sub. If the code fails to send the ack, or if an unhandled runtime error crashes the function before the ack is sent, Pub/Sub assumes delivery failed. Once the ack deadline expires, Pub/Sub continuously redelivers the same messages, causing a massive artificial spike in the processing rate without logging explicit GCP infrastructure errors.",
+    "optionRationales": [
+      "Wrong: If the publisher quota were too small, the publish rate would be throttled and API errors would occur on the publishing side; it would not increase the subscriber's processing rate.",
+      "Wrong: The 10 MB limit applies to the size of a single message, not the total size of outstanding messages. Exceeding message size limits results in immediate API rejection errors.",
+      "Correct: Unhandled runtime errors cause the Cloud Function to exit prematurely. Because the message is never explicitly acknowledged, Pub/Sub endlessly redelivers it.",
+      "Wrong: If the subscriber code couldn't keep up, the backlog (undelivered messages) would grow, but the observed processing rate would not suddenly jump to 'orders of magnitude higher'.",
+      "Correct: Failing to execute the `ack()` call after processing forces Pub/Sub to interpret the message as dropped, leading to continuous redelivery loops."
+    ]
   },
   {
     "id": 13,
@@ -623,7 +722,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Dataflow windowing strategies for user activity gaps.",
+    "correctRationale": "In Apache Beam (Cloud Dataflow), Session Windows are specifically designed to group events based on periods of user activity separated by periods of inactivity. Setting a session window with a 60-minute gap perfectly captures the business logic of evaluating a cart only after a user has been inactive on the site for 1 hour.",
+    "optionRationales": [
+      "Wrong: Fixed-time windows divide time into rigid blocks (e.g., 1:00 PM to 2:00 PM). They do not track individual user activity and will arbitrarily split active sessions that cross the top of the hour.",
+      "Wrong: Sliding windows calculate overlapping aggregates (e.g., 'the last hour, updated every 5 minutes'). They do not logically group individual user sessions based on inactivity.",
+      "Correct: Session windows dynamically size themselves per user, remaining open as long as the user is active, and closing exactly when the specified 60-minute inactivity gap is met.",
+      "Wrong: A global window processes all pipeline data indefinitely. While you could technically implement complex custom triggers to simulate session behavior, it is an anti-pattern when Session Windows exist natively."
+    ]
   },
   {
     "id": 14,
@@ -671,7 +778,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Filtering PCollections in Apache Beam.",
+    "correctRationale": "A ParDo (Parallel Do) transform is the core element-wise processing function in Apache Beam. It allows you to execute custom logic on every element in a PCollection. To filter data, you simply write a ParDo that inspects the element and only emits it downstream if it is valid, silently discarding corrupt data.",
+    "optionRationales": [
+      "Wrong: SideInputs are used to broadcast supplementary, slow-changing reference data to worker nodes. They are not used to perform element-by-element conditional filtering of the main input stream.",
+      "Correct: A ParDo transform is the idiomatic way to inspect elements and selectively emit or drop them, effectively filtering the stream.",
+      "Wrong: A Partition transform splits data into multiple new PCollections (e.g., one for good data, one for bad data). While it can separate the data, ParDo is the simpler and more direct way to simply discard records.",
+      "Wrong: GroupByKey requires key-value pairs and triggers a massive network shuffle across the cluster. Using it just to filter out bad rows introduces catastrophic and unnecessary performance overhead."
+    ]
   },
   {
     "id": 15,
@@ -719,7 +834,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing BigQuery costs and performance with partitioning.",
+    "correctRationale": "When a BigQuery table is partitioned by a DATE or TIMESTAMP column, the data is physically divided into separate segments based on that date. When analysts filter their queries to a specific 30-90 day window, BigQuery automatically prunes (ignores) the irrelevant partitions, drastically reducing the amount of data scanned and the resulting cost.",
+    "optionRationales": [
+      "Correct: Re-creating the table with Date/Timestamp partitioning ensures that queries filtering by date only scan the relevant partitions, maintaining full SQL capability while slashing costs.",
+      "Wrong: Exporting to CSV on Cloud Storage completely destroys the performance and usability of the data for the Data Science team, and removes the ability to use native BigQuery SQL.",
+      "Wrong: Maintaining multiple tables requires complex pipeline rewrites and forces users to write cumbersome UNION queries, which is exactly the administrative nightmare partitioning was designed to solve.",
+      "Wrong: Sharding tables by day (creating a new table per day with a suffix) is a legacy BigQuery anti-pattern that degrades query performance and increases metadata overhead compared to native partitioning."
+    ]
   },
   {
     "id": 16,
@@ -767,7 +890,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Reliable IoT event ingestion bypassing unreliable networks.",
+    "correctRationale": "Because the local data centers and their leased lines are the point of failure, the most reliable and cost-effective solution is to bypass them entirely. Cloud Pub/Sub provides a globally available, highly reliable, auto-scaling HTTPS endpoint that devices can publish to directly over the internet, completely eliminating the need for leased lines.",
+    "optionRationales": [
+      "Wrong: Deploying and maintaining Kafka clusters in numerous remote data centers introduces massive hardware, licensing, and operational costs, failing the 'cost-effective' requirement.",
+      "Correct: Having edge devices publish directly to Cloud Pub/Sub offloads the buffering and ingestion reliability to Google's highly available edge network, resolving the leased-line bottleneck.",
+      "Wrong: Cloud Interconnect provides enterprise-grade dedicated network connections to Google Cloud. It is extremely expensive and fails the 'most cost-effective' requirement.",
+      "Wrong: Cloud Dataflow is a processing engine. It cannot natively ingest raw traffic from external IoT devices; it requires an ingestion buffer like Pub/Sub to receive the data first."
+    ]
   },
   {
     "id": 17,
@@ -815,7 +946,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Building conversational AI interfaces.",
+    "correctRationale": "Dialogflow (now Dialogflow CX/ES) is Google Cloud's end-to-end conversational AI platform. It natively handles audio ingestion (Speech-to-Text), Natural Language Understanding (extracting intent and context), and seamlessly integrates with backend webhooks to fulfill actions, such as issuing orders.",
+    "optionRationales": [
+      "Wrong: The Speech-to-Text API only converts audio to a raw text string. It has no capability to understand the meaning of the words, extract user intent, or route commands to backend systems.",
+      "Wrong: The Natural Language API analyzes text for sentiment, entities, and syntax, but it does not process audio, nor does it provide a framework for conversational state management and backend fulfillment.",
+      "Correct: Dialogflow is specifically designed to handle the entire lifecycle of a voice command, from speech recognition to intent extraction and backend order fulfillment.",
+      "Wrong: AutoML Natural Language is used to train custom ML models for document classification and entity extraction. It is not an interactive conversational bot framework."
+    ]
   },
   {
     "id": 18,
@@ -863,7 +1002,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Multi-cloud pipeline orchestration.",
+    "correctRationale": "Cloud Composer is built on Apache Airflow. Airflow has a massive open-source ecosystem of providers and operators designed to interact with AWS, Azure, on-premises databases, and Google Cloud natively. This makes Composer the ideal tool for orchestrating complex dependencies in a hybrid/multi-cloud pipeline.",
+    "optionRationales": [
+      "Wrong: Cloud Dataflow is an Apache Beam data processing engine. While it transforms data, it is not an orchestration tool for triggering third-party cloud services or managing workflow dependencies.",
+      "Correct: Cloud Composer's foundation on Airflow gives it native capabilities to orchestrate and manage dependencies across Google Cloud, external cloud providers, and on-premises environments.",
+      "Wrong: Cloud Dataprep is a visual UI tool (powered by Trifacta) used for data exploration and cleaning, not for workflow orchestration.",
+      "Wrong: Cloud Dataproc is a managed Hadoop/Spark service for big data processing, not a workflow orchestrator for cross-cloud pipelines."
+    ]
   },
   {
     "id": 19,
@@ -911,7 +1058,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Secure, zero-copy data sharing in BigQuery.",
+    "correctRationale": "Analytics Hub (which manages BigQuery shared datasets) allows organizations to securely share data across boundaries without moving or duplicating the underlying storage. Because the third parties query the live dataset directly, the data is always perfectly current, and you incur zero additional storage or pipeline maintenance costs.",
+    "optionRationales": [
+      "Correct: Analytics Hub provides secure, zero-copy data sharing. The data remains current, and costs are minimized because there is no data duplication.",
+      "Wrong: Exporting data to Cloud Storage introduces batch latency (the data is no longer current) and incurs unnecessary egress and storage duplication costs.",
+      "Wrong: Creating a separate dataset and copying the data into it doubles your BigQuery storage costs and requires ongoing pipeline maintenance to keep the copy synchronized.",
+      "Wrong: Running a Dataflow job to continuously copy data to a new location incurs high compute costs, increases storage costs, and introduces synchronization delays."
+    ]
   },
   {
     "id": 20,
@@ -963,7 +1118,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimized Change Data Capture (CDC) ingestion in BigQuery.",
+    "correctRationale": "The standard architecture for high-performance CDC in BigQuery is a two-step process. First, stream the raw change events (inserts, updates, deletes) into an append-only staging table to handle high ingestion throughput without hitting limits. Second, run a scheduled batch `MERGE` query to reconcile those changes into the final reporting table, which optimizes downstream analytical queries and avoids DML quotas.",
+    "optionRationales": [
+      "Wrong: Applying individual `UPDATE` and `DELETE` DML statements in real-time is an anti-pattern in BigQuery. It will quickly exceed concurrent DML limits and severely degrade performance.",
+      "Correct: Streaming incoming CDC records into an append-only staging table handles high throughput easily and avoids BigQuery DML rate limits.",
+      "Wrong: Periodically deleting outdated records is a manual, error-prone process that does not handle updates or late-arriving data efficiently.",
+      "Correct: A periodic `MERGE` statement acts as a bulk upsert, efficiently reconciling the staging data against the reporting table in a single, high-performance operation.",
+      "Wrong: While materialized views are powerful, they currently have limitations regarding the complex window functions (like `ROW_NUMBER()`) necessary to extract the latest CDC record from an append-only delta table."
+    ]
   },
   {
     "id": 21,
@@ -1011,7 +1175,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Serverless streaming pipeline architecture.",
+    "correctRationale": "Google Cloud's native serverless streaming architecture pairs Cloud Pub/Sub for ingestion with Cloud Dataflow for processing. Both services are fully managed and scale automatically from zero to millions of events. Furthermore, Dataflow (via Apache Beam) natively handles complex time-based windowing (like 1-hour windows) and late data management.",
+    "optionRationales": [
+      "Wrong: Apache Kafka and Cloud Dataproc require manual cluster provisioning, tuning, and infrastructure management, violating the 'scale automatically' requirement.",
+      "Wrong: While Dataflow handles the processing, managing an Apache Kafka cluster for ingestion requires significant operational overhead and infrastructure management.",
+      "Wrong: Dataproc (running Spark Streaming) is a cluster-based service that requires manual scaling and tuning, lacking the true serverless auto-scaling of Dataflow.",
+      "Correct: Pub/Sub provides serverless, at-least-once message ingestion, and Dataflow seamlessly auto-scales while handling the complex 1-hour windowing logic."
+    ]
   },
   {
     "id": 22,
@@ -1059,7 +1231,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery dataset-level isolation and least privilege IAM.",
+    "correctRationale": "In BigQuery, datasets are the standard logical boundary for data isolation. By creating a dataset for each department, you can apply IAM roles specific to that dataset. Assigning Leads the `roles/bigquery.dataEditor` (WRITER) role allows them to manage tables, while assigning Analysts the `roles/bigquery.dataViewer` (READER) role restricts them to query-only access.",
+    "optionRationales": [
+      "Wrong: The OWNER role allows users to delete the entire dataset and modify its IAM permissions. This violates the principle of least privilege, as Leads only need to create/update tables (WRITER).",
+      "Correct: A dataset per department guarantees isolation. The WRITER role gives leads table modification rights, and the READER role gives analysts query-only access.",
+      "Wrong: Assigning IAM roles at the Project level grants those users access to *all* datasets in the project, entirely destroying the requirement that departments only see their own data.",
+      "Wrong: Project-level roles break data isolation, and creating a single table for an entire department is a terrible schema design that prevents logical data modeling."
+    ]
   },
   {
     "id": 23,
@@ -1107,7 +1287,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Bigtable row key design and hotspotting.",
+    "correctRationale": "Cloud Bigtable stores rows lexicographically by row key. If the row key starts with a timestamp, all incoming writes for the current time are routed to a single node, causing a massive performance bottleneck (hotspot). Prefixing the row key with a high-cardinality value, such as the stock symbol, distributes the writes evenly across all nodes in the cluster.",
+    "optionRationales": [
+      "Correct: Starting the row key with the stock symbol ensures that concurrent trades for different stocks are distributed evenly across the Bigtable cluster, resolving the write hotspot.",
+      "Wrong: While a random number fixes the write hotspot, it completely destroys read performance. The application needs to retrieve history for a *given company*, which is impossible without full table scans if the key starts randomly.",
+      "Wrong: BigQuery is an analytical data warehouse. It is not designed to serve low-latency operational queries to thousands of concurrent users.",
+      "Wrong: Writing a daily summary to Cloud Storage does nothing to resolve the real-time application degradation currently happening in Bigtable due to row key design."
+    ]
   },
   {
     "id": 24,
@@ -1161,7 +1349,17 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Multi-tenant data isolation and IAM in BigQuery.",
+    "correctRationale": "To achieve strict multi-tenant isolation in BigQuery, the best practice is to store each client's data in their own distinct dataset. You then secure that dataset by applying IAM policies that explicitly restrict access to only the approved users or groups for that specific client.",
+    "optionRationales": [
+      "Wrong: Partitions are a physical storage mechanism for query optimization and cost reduction; they are not an access control boundary. You cannot easily restrict IAM access to a specific partition.",
+      "Correct: Datasets serve as the primary organizational boundary in BigQuery, making them the perfect container for isolating client data.",
+      "Wrong: Placing all clients in the same dataset but different tables makes IAM management incredibly complex and risks accidental cross-client data exposure.",
+      "Correct: Once data is in separate datasets, restricting access to explicitly approved users guarantees isolation.",
+      "Wrong: Clients prefer to use their own suite of analytics tools, which will require distinct human or application identities, not a single monolithic service account.",
+      "Correct: Applying specific IAM roles (like `roles/bigquery.dataViewer`) to the approved users on their specific dataset enforces the security requirement."
+    ]
   },
   {
     "id": 25,
@@ -1209,7 +1407,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Monitoring health of Pub/Sub to Dataflow pipelines.",
+    "correctRationale": "To detect if a Dataflow pipeline has stalled or failed, you monitor both the source and the sink. If the pipeline stops processing, the Pub/Sub source will build up a backlog (an increase in `num_undelivered_messages`), and the pipeline will stop writing output to Cloud Storage (a decrease in the rate of change of `used_bytes`).",
+    "optionRationales": [
+      "Wrong: A decrease in undelivered messages means the pipeline is successfully draining the queue faster than events arrive, which is a sign of a healthy, functioning pipeline.",
+      "Correct: An increasing Pub/Sub backlog coupled with a dropping destination write rate strongly indicates that the Dataflow pipeline has stopped processing data.",
+      "Wrong: The metrics are applied to the wrong services. The source (Pub/Sub) uses `num_undelivered_messages`, not `used_bytes`. The destination (Cloud Storage) uses `used_bytes`.",
+      "Wrong: Again, the metrics are swapped. You cannot monitor `used_bytes` on a Pub/Sub topic, nor can you monitor `num_undelivered_messages` on a Cloud Storage bucket."
+    ]
   },
   {
     "id": 26,
@@ -1257,7 +1463,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cloud-native IoT ingestion and buffering.",
+    "correctRationale": "Cloud Pub/Sub acts as a highly scalable, globally distributed shock absorber. It effortlessly absorbs massive data spikes when edge devices reconnect after network outages. Once buffered in Pub/Sub, Cloud Dataflow smoothly pulls and processes the messages, providing a fully managed, serverless architecture that replaces problematic on-prem Kafka clusters.",
+    "optionRationales": [
+      "Wrong: Edge TPUs are specialized hardware chips used for running machine learning inference locally on edge devices. They are not data storage or message brokering systems.",
+      "Wrong: Cloud Dataflow is a processing engine. It cannot inherently scale an overloaded, on-premises Kafka cluster; the bottleneck is the Kafka ingestion layer itself.",
+      "Correct: Pub/Sub natively absorbs massive ingestion spikes from poorly connected devices, while Dataflow handles the downstream stream processing.",
+      "Wrong: Virtualizing Kafka on Compute Engine VMs merely shifts the heavy operational and scaling burden from on-prem to the cloud. It is not a fully managed 'cloud-native' architecture."
+    ]
   },
   {
     "id": 27,
@@ -1309,7 +1523,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cost-effective archival of Datastore data.",
+    "correctRationale": "Cloud Datastore allows you to create managed exports of your entities. To archive these snapshots for a long time at the lowest possible cost, you can store the export files in Cloud Storage (using Nearline/Coldline/Archive classes) or import them into BigQuery, which offers cheap long-term storage and analytical capabilities.",
+    "optionRationales": [
+      "Correct: Exporting Datastore entities directly to Cloud Storage Coldline/Archive provides the absolute lowest cost for long-term snapshot retention.",
+      "Wrong: Importing historical backups into a live Datastore namespace incurs active database storage pricing, which is vastly more expensive than GCS and violates the 'keep costs low' requirement.",
+      "Correct: Managed exports can be loaded into BigQuery. BigQuery storage becomes extremely cheap (long-term pricing) after 90 days, and it provides the added benefit of making the historical data queryable.",
+      "Wrong: Writing a custom application to read all entities and stream them to BigQuery incurs massive Datastore read operations costs and compute costs, defeating the purpose of managed exports.",
+      "Wrong: Cloud Source Repositories is a Git version control system for source code. Storing massive JSON databases there violates its use case, size quotas, and best practices."
+    ]
   },
   {
     "id": 28,
@@ -1361,7 +1584,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery performance optimization for mutations and ML.",
+    "correctRationale": "BigQuery is an analytical columnar database that performs best with denormalized (nested/repeated) data, avoiding expensive JOIN operations on massive 1.5 PB datasets. Furthermore, BigQuery is not designed for high-frequency DML `UPDATE` operations. Maximizing performance requires appending status changes as new rows (an append-only log) and calculating the final status downstream.",
+    "optionRationales": [
+      "Correct: Denormalizing data leverages BigQuery's columnar storage, reducing the need for costly JOINs and massively accelerating analytical and ML queries.",
+      "Wrong: Preserving a highly structured (normalized) schema on 1.5 PB of data forces BigQuery to perform massive JOINs, which will severely degrade query performance and usability.",
+      "Wrong: Using `UPDATE` statements for thousands of hourly transactions on a 1.5 PB dataset will quickly hit BigQuery's DML concurrency limits and degrade performance.",
+      "Correct: An append-only architecture (inserting new rows instead of updating existing ones) avoids DML limits entirely and is the standard best practice for mutating data in data warehouses.",
+      "Wrong: Copying 1.5 PB of data daily to Avro files and querying it as an external source is incredibly slow and expensive compared to utilizing BigQuery's native managed storage."
+    ]
   },
   {
     "id": 29,
@@ -1401,7 +1633,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Data lake storage architecture for maximum availability.",
+    "correctRationale": "Cloud Storage acts as the foundational data lake in Google Cloud, capable of natively storing any file format (CSV, Avro, PDF). For a batch pipeline where performance is not a factor but maximum availability is required, a multi-regional Cloud Storage bucket ensures data survives even if an entire GCP region goes offline.",
+    "optionRationales": [
+      "Wrong: HDFS requires running a persistent Dataproc cluster, which introduces massive operational overhead, higher costs, and is significantly less available than managed Cloud Storage.",
+      "Wrong: BigQuery is an analytical data warehouse, not an object store. It cannot natively store unstructured data like PDF files.",
+      "Wrong: While regional Cloud Storage offers high availability, it is vulnerable to a total region outage. It does not provide the *maximum* availability requested.",
+      "Correct: Multi-regional Cloud Storage natively handles all file types, integrates perfectly with all GCP compute services, and provides the highest possible availability by replicating data across geographic regions."
+    ]
   },
   {
     "id": 30,
@@ -1449,7 +1689,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Hybrid data warehouse and data lake architecture.",
+    "correctRationale": "To perform enterprise-grade data warehouse analytics in Google Cloud, BigQuery is the native choice. However, because external cloud providers cannot query BigQuery directly using their batch tools, you must also store a copy of the dataset as flat files (e.g., compressed Avro or Parquet) in Cloud Storage so it can be exposed externally.",
+    "optionRationales": [
+      "Wrong: Storing the data exclusively in BigQuery fails the requirement to expose the dataset as raw files for batch analysis tools running in other cloud providers.",
+      "Wrong: Cloud Bigtable is a NoSQL wide-column database optimized for low-latency operational serving, not for petabyte-scale data warehouse analytics.",
+      "Correct: BigQuery satisfies the internal data warehouse analytics requirement, while the compressed copy in Cloud Storage fulfills the requirement to expose files to external cloud providers.",
+      "Wrong: Splitting the data 80/20 based on usage breaks the requirement to perform data warehouse analytics on the *entire* dataset."
+    ]
   },
   {
     "id": 31,
@@ -1497,7 +1745,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Rapid prototyping of custom image recognition models.",
+    "correctRationale": "Cloud Vision AutoML enables users with limited machine learning expertise to train highly accurate, custom computer vision models in a matter of days. Since the dataset already has 1,000 labeled examples per component (the exact target recommended by Google for AutoML), it is the perfect tool to meet the tight deadline.",
+    "optionRationales": [
+      "Correct: AutoML Vision natively handles transfer learning and architecture search under the hood, allowing you to deploy a working custom model in days using the 1,000 examples per label.",
+      "Wrong: Reducing the dataset size removes valuable training data. 1,000 examples per label is the recommended target for AutoML, so cutting it in half would only degrade model accuracy.",
+      "Wrong: The standard Cloud Vision API uses pre-trained models. It can recognize generic objects (like 'machinery'), but it cannot recognize 750 proprietary, custom manufacturing components.",
+      "Wrong: Building, tuning, and training a custom TensorFlow model using transfer learning requires significant data science engineering and will easily exceed the 'few working days' deadline."
+    ]
   },
   {
     "id": 32,
@@ -1545,7 +1801,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Hardware accelerators for custom TensorFlow ops.",
+    "correctRationale": "While Cloud TPUs are incredibly fast for standard matrix multiplications, they do not support custom TensorFlow operations written in C++ within the main training loop. To accelerate this specific workload, you must use GPUs, but you must first write the necessary GPU kernel support for those custom C++ operations.",
+    "optionRationales": [
+      "Wrong: TPUs do not natively support custom C++ TensorFlow operations. Running the code without adjustment will result in failure or fallback to the CPU.",
+      "Wrong: Even if you write kernel support, TPUs cannot efficiently execute custom C++ ops inside the training loop. TPUs require operations to be compiled via XLA.",
+      "Correct: GPUs provide massive acceleration for bulky matrix multiplications and explicitly support custom C++ kernels once they are implemented.",
+      "Wrong: CPU clusters are highly inefficient for deep learning matrix multiplications. Scaling out CPUs will result in extremely long training times and high costs compared to GPU acceleration."
+    ]
   },
   {
     "id": 33,
@@ -1593,7 +1857,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Diagnosing and fixing model underfitting.",
+    "correctRationale": "If the Root Mean Square Error (RMSE) is extremely high on the training set (twice as high as the test set), it means the model is severely underfitting. The model lacks the mathematical capacity to learn the underlying patterns of the training data. The solution is to increase model complexity by adding layers or increasing vocabulary size.",
+    "optionRationales": [
+      "Wrong: Adjusting the train/test split ratio does not change the model's architectural capacity to learn complex patterns.",
+      "Wrong: Collecting more data helps fix *overfitting* (high variance). If a model is underfitting (high bias), it already cannot learn from the data it currently has.",
+      "Wrong: Regularization techniques (dropout, L1/L2) are used to penalize complexity and fix overfitting. Applying them to an underfit model will restrict its capacity further and make the performance worse.",
+      "Correct: Introducing an additional layer gives the neural network more parameters (capacity) to learn the complex relationships in the training data, reducing the underfitting."
+    ]
   },
   {
     "id": 34,
@@ -1641,7 +1913,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery historical data retention for late-arriving error detection.",
+    "correctRationale": "Because pipeline errors are only detected 2 weeks later, BigQuery's native 7-day Time Travel cannot be used to restore the data. Organizing data into separate monthly tables allows you to easily export just the finalized months to Cloud Storage, providing an infinitely scalable, ultra-low-cost backup solution.",
+    "optionRationales": [
+      "Wrong: Storing all data in a single table means every time you export, you are re-exporting and compressing years of unmodified historical data, which wastes compute and storage costs.",
+      "Correct: Monthly table partitioning (or native time-partitioning) allows targeted exports to Cloud Storage, utilizing GCS's cheap cold storage classes for long-term retention >14 days.",
+      "Wrong: Duplicating the data into a separate BigQuery dataset incurs active database storage costs, which is significantly more expensive than archival Cloud Storage.",
+      "Wrong: BigQuery snapshot decorators (Time Travel) have a hard limit of 7 days of retention. They are mathematically incapable of restoring data corrupted 2 weeks ago."
+    ]
   },
   {
     "id": 35,
@@ -1689,7 +1969,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Fully managed transactional database for exponential growth.",
+    "correctRationale": "Cloud Datastore (now Firestore in Datastore mode) is a fully managed, serverless NoSQL database. It scales automatically from zero to massive traffic without any operational overhead, and critically, it supports ACID transactions, which are mandatory for processing financial records in a point-of-sale application.",
+    "optionRationales": [
+      "Wrong: Cloud SQL is a managed relational database, but it is not serverless. You must manually provision machine types and manage vertical scaling, violating the 'do not want to manage infrastructure scaling' requirement.",
+      "Wrong: BigQuery is an analytical data warehouse. It is not designed to be the primary transactional backend for point-of-sale applications.",
+      "Wrong: Cloud Bigtable requires you to manually provision and scale cluster nodes. Furthermore, it does not support multi-row ACID transactions needed for payment processing.",
+      "Correct: Datastore provides full ACID transaction support while scaling completely automatically with zero infrastructure management."
+    ]
   },
   {
     "id": 36,
@@ -1737,7 +2025,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Bulk DML updates in BigQuery.",
+    "correctRationale": "BigQuery limits the number of concurrent and daily DML operations (like `UPDATE`). Attempting to update 1 million records iteratively or in high frequency will trigger a `quotaExceeded` error. The standard data warehousing pattern is to load the new records into a staging table and use a single `MERGE` statement to apply all updates at once.",
+    "optionRationales": [
+      "Wrong: Reducing the number of daily updates throttles the pipeline artificially and introduces complex tracking logic just to avoid a quota limit that can be solved architecturally.",
+      "Wrong: You cannot arbitrarily increase the BigQuery DML operational quotas via the GCP Console; these are hard system limits designed to protect the shared infrastructure.",
+      "Wrong: Splitting the file into smaller UPDATE statements actually makes the problem worse. BigQuery limits the *number* of DML operations, not the size of them.",
+      "Correct: Loading the CSV into a temporary table and executing a single `MERGE` query performs a highly optimized bulk upsert, processing all 1 million records in a single operation."
+    ]
   },
   {
     "id": 37,
@@ -1789,7 +2085,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "GCP Resource Hierarchy and IAM Groups.",
+    "correctRationale": "To minimize the number of policies you have to manage, you should leverage GCP's resource hierarchy (Folder/Organization level) so that permissions inherit down to all individual projects automatically. Additionally, assigning IAM roles to Google Groups instead of individual users allows you to manage team membership in one place without altering IAM policies.",
+    "optionRationales": [
+      "Wrong: Cloud Deployment Manager is an Infrastructure-as-Code tool. While it can deploy resources, it does not inherently simplify IAM architectural design or policy inheritance.",
+      "Correct: Applying a policy at the Folder or Organization level ensures it cascades down automatically, eliminating the need to configure IAM on every single new project.",
+      "Correct: Assigning IAM roles to a Group means you only have one policy to maintain. When team members change, you update the Group, not the IAM policy.",
+      "Wrong: Service accounts are for machine-to-machine authentication. Human analysts using BI tools to query BigQuery still require human user credentials.",
+      "Wrong: Manually identifying members and creating explicit IAM policies on every single bucket and dataset is the exact opposite of simplifying access control; it maximizes administrative overhead."
+    ]
   },
   {
     "id": 38,
@@ -1837,7 +2142,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "High-throughput, globally consistent relational databases.",
+    "correctRationale": "Cloud Spanner is the only Google Cloud database designed to provide the structure of a relational database (ANSI SQL, schemas) with the horizontal scalability of a NoSQL database. It provides strict global consistency and easily handles 250,000 writes per second across global replicas.",
+    "optionRationales": [
+      "Wrong: BigQuery requires you to select a location (regional or multi-regional) and is not designed as an OLTP backend to process 250,000 single-row inserts per second.",
+      "Correct: Cloud Spanner provides a single global endpoint, supports ANSI SQL, guarantees strong external consistency, and scales horizontally to meet the 250k/sec throughput requirement.",
+      "Wrong: Cloud SQL for PostgreSQL is a traditional relational database that cannot scale horizontally for writes. It will fail completely under a load of 250,000 records per second.",
+      "Wrong: While Cloud Bigtable can easily handle 250,000 writes per second, it is a NoSQL wide-column store and does not support ANSI SQL."
+    ]
   },
   {
     "id": 39,
@@ -1885,7 +2198,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Low-latency serving of BigQuery ML predictions.",
+    "correctRationale": "BigQuery is an analytical engine designed for processing massive datasets, not for sub-100 millisecond operational serving. To serve BQML predictions to a REST API quickly, the standard pattern is to run a batch prediction job, export the results via Dataflow, and load them into Cloud Bigtable, which excels at single-digit millisecond key-value lookups.",
+    "optionRationales": [
+      "Wrong: Even with a highly optimized WHERE clause, BigQuery query execution times are typically measured in seconds, failing the strict 100ms latency requirement.",
+      "Wrong: An Authorized View still executes a BigQuery SQL job under the hood. It provides security, but does absolutely nothing to reduce the latency to under 100ms.",
+      "Wrong: Cloud Dataflow is a data processing engine. You cannot easily expose a Dataflow pipeline as a low-latency serving database for a REST API.",
+      "Correct: Cloud Bigtable is specifically designed for high-throughput, low-latency (<10ms) serving. Pre-computing the BQML predictions and storing them in Bigtable easily meets the SLA."
+    ]
   },
   {
     "id": 40,
@@ -1933,7 +2254,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Standard GCP Data Platform architecture.",
+    "correctRationale": "A standard cloud-native data architecture matches specific tools to specific consumption patterns: Cloud Pub/Sub provides the real-time event stream, BigQuery ingests the data to provide ANSI SQL access to both streaming and historical data, and Cloud Storage acts as the data lake for cheap, batch historical file exports.",
+    "optionRationales": [
+      "Wrong: Cloud Dataflow is a processing engine, not an event stream buffer for consumers. Cloud SQL cannot scale to handle massive historical market data analytics.",
+      "Correct: Pub/Sub delivers real-time events, BigQuery provides the SQL analytics warehouse, and Cloud Storage handles the bulk batch file exports.",
+      "Wrong: Cloud Dataproc and Dataflow are processing engines. They do not natively expose a persistent publish/subscribe stream endpoint for external consumers like Pub/Sub does.",
+      "Wrong: Cloud Dataproc is for Hadoop/Spark processing, and Cloud SQL is a relational database incapable of storing and analyzing massive volumes of historical market data."
+    ]
   },
   {
     "id": 41,
@@ -1981,7 +2310,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Streaming ingestion and processing of continuous JSON data into scalable storage and analytics.",
+    "correctRationale": "Pub/Sub effectively decouples the producer from the consumer. Dataflow handles continuous streaming transformations from JSON to Avro and can branch the output to both Cloud Storage (for cost-efficient long-term historical storage) and BigQuery (for near real-time SQL queries).",
+    "optionRationales": [
+      "Wrong: Polling an API is not a scalable pattern for continuous stream ingestion and does not provide decoupled message buffering.",
+      "Wrong: Cloud SQL is a relational database not designed for high-throughput continuous event streaming, and periodic exports do not satisfy the near real-time SQL requirement.",
+      "Wrong: Spark on Dataproc with HDFS does not provide the fully managed, cost-efficient storage of GCS, nor the native near real-time SQL capabilities of BigQuery.",
+      "Correct: This architecture natively integrates highly scalable managed services (Pub/Sub for ingestion, Dataflow for streaming ETL, GCS for cheap archive, BQ for real-time analytics)."
+    ]
   },
   {
     "id": 42,
@@ -2033,7 +2370,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Scaling Dataflow worker resources to alleviate CPU bottlenecks.",
+    "correctRationale": "When pipeline workers hit maximum CPU utilization, you must provide more compute resources. This can be achieved by either scaling out horizontally (increasing the maximum number of workers) or scaling up vertically (using a larger machine type with more CPU cores).",
+    "optionRationales": [
+      "Correct: Increasing the maxNumWorkers parameter allows Dataflow's autoscaler to provision more nodes, distributing the CPU load across a larger cluster.",
+      "Correct: Upgrading from n1-standard-1 to a larger instance type (like n1-standard-4) provides more CPU cores and memory per worker, directly addressing the compute bottleneck.",
+      "Wrong: Changing the pipeline's region does not change the compute capacity of the workers and will not resolve CPU exhaustion.",
+      "Wrong: Adding Bigtable as an intermediate buffer adds architectural complexity and latency, but does not solve the fundamental lack of compute power in the Dataflow workers.",
+      "Wrong: Cloud Spanner is a relational database, not an intermediate stream buffer, and routing data through it does not fix Dataflow CPU starvation."
+    ]
   },
   {
     "id": 43,
@@ -2085,7 +2431,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Scaling Dataflow and Bigtable to handle high-throughput writes and concurrent read queries.",
+    "correctRationale": "Pipeline slowness and dashboard latency indicate bottlenecks at both the processing and storage layers. Increasing Dataflow max workers scales out the write throughput, while increasing Bigtable nodes scales out the database's capacity to ingest writes and serve reads to thousands of concurrent users.",
+    "optionRationales": [
+      "Wrong: Local execution runs the Dataflow pipeline on a single local machine, which severely degrades performance and eliminates parallel processing.",
+      "Correct: Raising the maxNumWorkers parameter in PipelineOptions allows Dataflow to scale horizontally and process/write the time series data faster.",
+      "Correct: Adding nodes to the Bigtable cluster linearly increases its write throughput and read QPS, resolving the latency for the dashboard users.",
+      "Wrong: The Flatten transform simply merges multiple PCollections into one; it does not optimize or improve the physical write throughput to Bigtable.",
+      "Wrong: CoGroupByKey performs a relational join (grouping by key) across multiple PCollections, which introduces heavy shuffling overhead and does not improve write speeds."
+    ]
   },
   {
     "id": 44,
@@ -2133,7 +2488,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Orchestrating complex, scheduled Dataproc workflows with sequential and concurrent dependencies.",
+    "correctRationale": "Cloud Composer, built on Apache Airflow, is the dedicated GCP service for orchestrating complex workflows. It uses Directed Acyclic Graphs (DAGs) which easily define scheduled, sequential, and concurrent task executions across Dataproc clusters.",
+    "optionRationales": [
+      "Wrong: While Dataproc Workflow Templates can manage task execution order, they do not have a built-in cron scheduling mechanism and require an external trigger.",
+      "Wrong: Initialization actions are shell scripts that run only once when a cluster boots up; they are not used for scheduling or managing complex job dependencies.",
+      "Correct: Cloud Composer natively supports scheduling and complex DAG orchestration, making it the perfect tool for interdependent Spark jobs.",
+      "Wrong: A custom Bash script using the Cloud SDK requires manual cron server management and lacks the robust dependency handling, monitoring, and retries of a managed orchestrator."
+    ]
   },
   {
     "id": 45,
@@ -2181,7 +2544,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Decoupling asynchronous microservices using Cloud Pub/Sub topics and subscriptions.",
+    "correctRationale": "Cloud Pub/Sub is the native managed messaging service for decoupling systems. By having generators publish to a topic and runners consume via subscriptions, the architecture scales automatically and new apps can simply attach new subscriptions without impacting existing producers.",
+    "optionRationales": [
+      "Wrong: Building a custom API on App Engine introduces a single point of failure, requires manual routing logic, and tightly couples the generating and running applications.",
+      "Correct: Pub/Sub natively provides decoupled, infinitely scalable publish/subscribe semantics perfectly suited for multi-application asynchronous communication.",
+      "Wrong: Polling a Cloud SQL table to manage job queues creates database locks, connection limits, and severe performance bottlenecks at high scale.",
+      "Wrong: Cloud Spanner is an expensive, globally consistent relational database; using it as an ad-hoc message queue is a significant anti-pattern that wastes resources."
+    ]
   },
   {
     "id": 46,
@@ -2233,7 +2604,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Fundamental assumptions of unsupervised anomaly detection models.",
+    "correctRationale": "Unsupervised anomaly detection algorithms learn the distribution of 'normal' data and flag instances that deviate significantly. This approach assumes that anomalies (mutations) are statistically rare in the training set and that their feature space will look distinctly different from the norm.",
+    "optionRationales": [
+      "Correct: Anomaly detection models require the vast majority of the dataset to be 'normal' so they can establish a baseline; anomalies must be rare.",
+      "Wrong: If there is an equal distribution of normal and mutated samples, you should use a supervised classification model (like logistic regression), not anomaly detection.",
+      "Correct: Unsupervised models detect outliers by flagging deviations from the norm, meaning they can successfully catch future mutations even if their specific features differ from past mutations.",
+      "Wrong: Expecting future anomalies to look exactly like past anomalies is the premise of supervised learning, which requires predefined labels.",
+      "Wrong: If you already have perfectly labeled data for mutated vs. normal samples, you would use a supervised classification approach, not an unsupervised one."
+    ]
   },
   {
     "id": 47,
@@ -2281,7 +2661,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Designing Cloud Spanner primary keys to distribute load and prevent write hotspots.",
+    "correctRationale": "Cloud Spanner stores data lexicographically by primary key. To avoid write hotspots (where all inserts hit a single node), primary keys must not be monotonically increasing. A random Version 4 UUID ensures that consecutive writes are evenly distributed across the entire Spanner keyspace.",
+    "optionRationales": [
+      "Wrong: The current epoch time is a monotonically increasing value, which will cause all new writes to bottleneck on the single Spanner split responsible for the end of the table.",
+      "Wrong: While a product name adds minor variance, prepending/appending time will still cause severe hotspots for frequently sold products grouped closely in time.",
+      "Correct: A Version 4 UUID is mathematically random, ensuring that massive volumes of simultaneous inserts are evenly scattered across all available Spanner nodes.",
+      "Wrong: Sequential order identification numbers are monotonically increasing and represent a classic Spanner anti-pattern that creates massive write hotspots."
+    ]
   },
   {
     "id": 48,
@@ -2329,7 +2717,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Centralizing and securing audit logs using aggregated log sinks and dedicated projects.",
+    "correctRationale": "To ensure analysts (who have Project Owner roles) cannot tamper with or view audit logs, the logs must be exported out of their projects entirely. An aggregated log sink at the folder/organization level routes all logs into a single, separate project tightly controlled by the audit team.",
+    "optionRationales": [
+      "Wrong: Since Data Analysts are IAM Owners in their projects, they can simply grant themselves access to Stackdriver Logging or delete the logs.",
+      "Wrong: Exporting logs to a bucket within the analysts' own project means the analysts have inherent access to that bucket via their Project Owner roles.",
+      "Wrong: A 'project-level export sink' only exports logs for a single project. Managing individual sinks across dozens of projects does not scale and is prone to misconfiguration.",
+      "Correct: An aggregated sink automatically captures logs across all projects, and sending them to a dedicated audit project physically isolates the data from the analysts."
+    ]
   },
   {
     "id": 49,
@@ -2377,7 +2773,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Monitoring BigQuery slot utilization per project via Cloud Monitoring.",
+    "correctRationale": "Cloud Monitoring automatically ingests system metrics from GCP services. For BigQuery, it provides the native `slots/allocated_for_project` metric, which precisely tracks the number of compute slots currently assigned to a given project.",
+    "optionRationales": [
+      "Wrong: The `query/scanned_bytes` metric measures the amount of data read from disk for billing purposes; it does not indicate active slot compute utilization.",
+      "Correct: The native `slots/allocated_for_project` metric provides immediate visibility into slot allocation, allowing teams to monitor usage directly via a dashboard.",
+      "Wrong: Exporting logs to calculate custom metrics from `totalSlotMs` is an overly complex workaround that ignores the natively provided monitoring metric.",
+      "Wrong: Creating organization-level log exports to build custom metrics is massive operational overhead when BigQuery already exposes slot utilization natively to Cloud Monitoring."
+    ]
   },
   {
     "id": 50,
@@ -2425,7 +2829,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Managing major pipeline updates safely using the Dataflow Drain operation.",
+    "correctRationale": "Major topological changes (like changing windowing algorithms or triggers) cannot be updated in-flight using the `--update` flag. To prevent data loss, you must use the 'Drain' option, which stops new data ingestion but allows the pipeline to finish processing all currently buffered elements before shutting down.",
+    "optionRationales": [
+      "Wrong: The `--update` flag will fail when applied to a pipeline with major topological changes, such as different windowing or triggering strategies.",
+      "Wrong: Passing `--update` with a completely new job name is syntactically invalid; updates must target the exact running job name to attempt a state transfer.",
+      "Wrong: The 'Cancel' option immediately terminates workers and discards all buffered in-flight data, resulting in permanent data loss.",
+      "Correct: 'Drain' gracefully finishes processing existing in-flight elements and writes them to the sink, guaranteeing zero data loss before the new job starts."
+    ]
   },
   {
     "id": 51,
@@ -2473,7 +2885,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Offline data transfer for massive datasets constrained by low network bandwidth.",
+    "correctRationale": "Transferring 2 PB over a 20 Mbps connection would take approximately 25 years. The only way to migrate this volume of data within 6 months is to bypass the network entirely using Google's Transfer Appliance, a physical hardware device shipped to your datacenter.",
+    "optionRationales": [
+      "Correct: Transfer Appliance is an offline migration tool specifically designed to physically transport petabytes of data when network bandwidth is insufficient.",
+      "Wrong: `gsutil cp -J` compresses data, but even with high compression, a 20 Mbps link cannot transfer petabyte-scale data within the 6-month deadline.",
+      "Wrong: Storage Transfer Service executes over the internet or Interconnect. A 20 Mbps physical bandwidth limit makes an online transfer mathematically impossible in 6 months.",
+      "Wrong: Using `trickle` or `ionice` artificially limits the bandwidth even further, which makes the transfer process slower, not faster."
+    ]
   },
   {
     "id": 52,
@@ -2521,7 +2941,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Visual data preparation and cleansing for non-developers using Cloud Dataprep.",
+    "correctRationale": "Cloud Dataprep by Trifacta is a visual, UI-driven service designed for data exploration and transformation. It enables non-developers (like analysts) to create and modify data recipes graphically, handle schema shifts, and execute transformations on a schedule via Dataflow.",
+    "optionRationales": [
+      "Correct: Dataprep perfectly fits the requirement for a graphical tool that empowers non-developers to manage changing schemas and schedule executions.",
+      "Wrong: BigQuery SQL requires coding knowledge, and hardcoded SQL scripts struggle to adapt to shifting schemas without developer intervention.",
+      "Wrong: Writing a Python Dataflow pipeline requires software engineering expertise, violating the requirement to enable non-developer analysts.",
+      "Wrong: Apache Spark on Dataproc requires deep programming skills (Java/Scala/Python) and infrastructure management, making it unsuitable for non-developers."
+    ]
   },
   {
     "id": 53,
@@ -2573,7 +3001,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Migrating ORC data from GCS to a Dataproc cluster's local HDFS for maximum performance.",
+    "correctRationale": "To maximize performance for I/O intensive jobs, data should reside in the Dataproc cluster's internal HDFS. You can move data from GCS to HDFS by either downloading it to the master node and using Hadoop utilities to copy it into HDFS, or by leveraging Hive itself to read from a GCS external table and write to an internal HDFS table.",
+    "optionRationales": [
+      "Wrong: `gsutil` copies files to the local OS filesystem of a node, not into the distributed Hadoop File System (HDFS).",
+      "Wrong: Copying data to an arbitrary node's local filesystem does not make it available to the HDFS cluster as a whole.",
+      "Correct: You can stage the files on the master node via `gsutil`, and then use standard Hadoop commands (`hadoop fs -put`) to move them into HDFS.",
+      "Correct: This is the native Hadoop ecosystem approach: define an external Hive table pointing to the GCS bucket, then execute an INSERT query to replicate the data into a native HDFS Hive table.",
+      "Wrong: Loading data into BigQuery just to pull it back down into Hive via a connector is extremely inefficient and ignores that the files are already in GCS."
+    ]
   },
   {
     "id": 54,
@@ -2621,7 +3058,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Orchestrating complex, long-running, interdependent workflows across GCP services.",
+    "correctRationale": "Cloud Composer (managed Apache Airflow) is specifically designed to schedule and orchestrate complex Directed Acyclic Graphs (DAGs). It easily handles interdependent tasks spanning shell scripts, Hadoop jobs, and BigQuery, executing long-running operations with defined retry policies.",
+    "optionRationales": [
+      "Wrong: Cloud Scheduler is a simple managed cron service; it triggers single endpoints but cannot natively manage complex interdependent steps, state, or complex DAGs.",
+      "Wrong: Cloud Dataflow is a data processing engine (Apache Beam) for streaming/batch data, not a workflow orchestrator for arbitrary shell scripts or external Hadoop jobs.",
+      "Wrong: Cloud Functions have a strict maximum execution timeout of 9 minutes, making them impossible to use for batch jobs that run for hours.",
+      "Correct: Cloud Composer orchestrates multi-step workflows, manages complex dependencies, natively integrates with GCP services, and executes long-running tasks with configurable retries."
+    ]
   },
   {
     "id": 55,
@@ -2669,7 +3114,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Custom image classification via AutoML Vision for automated detection via API.",
+    "correctRationale": "Detecting specific types of damage on packages requires a custom image classification model. AutoML Vision allows you to train a highly accurate custom ML model using your own labeled images (damaged vs. intact) without deep data science expertise, and it automatically exposes the model via a REST API for real-time inference.",
+    "optionRationales": [
+      "Wrong: BigQuery ML supports structured tabular data (like regression or classification on rows/columns), not unstructured image classification.",
+      "Correct: AutoML Vision is designed exactly for this: training custom visual models on user-provided images and deploying them behind a scalable API.",
+      "Wrong: The pre-trained Cloud Vision API detects general objects (e.g., 'box', 'text'), but it is not trained on your company's specific, proprietary definition of package 'damage'.",
+      "Wrong: Creating a custom TensorFlow model requires deep ML expertise, and a Datalab notebook does not provide an automated, production-ready real-time API."
+    ]
   },
   {
     "id": 56,
@@ -2717,7 +3170,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Securing BigQuery access using Authorized Views and isolated datasets.",
+    "correctRationale": "Authorized Views allow users to query specific slices of data without needing direct read permissions on the underlying source tables. By placing authorized views in a dedicated dataset for each team, you restrict the team's IAM access exclusively to their view dataset, isolating the source data securely.",
+    "optionRationales": [
+      "Wrong: While table-level ACLs exist now, historically and structurally, managing individual table permissions for many teams in a single dataset becomes an administrative nightmare compared to dataset isolation.",
+      "Wrong: Standard SQL views require the executing user to possess direct read permissions on the underlying source tables, defeating the security requirement.",
+      "Wrong: If authorized views are kept in the same dataset as the source tables, granting dataset-level view access exposes all other tables in that dataset to the team.",
+      "Correct: Separating the authorized views into team-specific datasets ensures strict access control. The view uses its own authorization to query the hidden source data."
+    ]
   },
   {
     "id": 57,
@@ -2765,7 +3226,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Circumventing BigQuery streaming buffer consistency limitations with micro-batch loading.",
+    "correctRationale": "Data ingested via streaming inserts resides in a temporary streaming buffer that may not be immediately available for strongly consistent aggregations. Standard batch load jobs guarantee immediate strong consistency upon completion. Running a micro-batch load every 2 minutes ensures consistency while staying well under the 100,000 load jobs/day quota.",
+    "optionRationales": [
+      "Correct: Switching from streaming inserts to micro-batch load jobs ensures the data is immediately and strongly consistent for aggregation queries while honoring daily load quotas.",
+      "Wrong: You cannot 'batch load' individual messages. Initiating a load job for every message (10,000/min) would instantly violate BigQuery's quota of 100,000 load jobs per table per day.",
+      "Wrong: Staging data in Cloud SQL introduces a severe performance bottleneck, and exporting it only once an hour entirely violates the 'near real-time' requirement.",
+      "Wrong: Streaming buffer latency is highly variable. Waiting an 'average' time guarantees nothing and will still result in missing data and inconsistent aggregations."
+    ]
   },
   {
     "id": 58,
@@ -2813,7 +3282,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Mitigating I/O bottlenecks in Dataproc by using HDFS on persistent disks for intermediate data.",
+    "correctRationale": "While the Cloud Storage connector is ideal for initial input and final output, it introduces network latency for intermediate data. If a Hadoop job is heavily disk I/O intensive (like MapReduce shuffles), provisioning sufficient Persistent Disks (or Local SSDs) and configuring the job to write intermediate data to native local HDFS avoids network bottlenecks.",
+    "optionRationales": [
+      "Wrong: RAM cannot infinitely hold unbounded intermediate disk spills for heavily I/O intensive Hadoop jobs without risking OutOfMemory exceptions.",
+      "Correct: Provisioning Persistent Disks and storing intermediate shuffle data on native HDFS keeps the heavy I/O operations local, drastically accelerating performance.",
+      "Wrong: Scaling up CPU cores increases compute and network limits, but does not solve a fundamental local disk read/write bottleneck.",
+      "Wrong: Link aggregation (bonding multiple NICs) is a physical hardware configuration, not a supported or relevant feature for scaling Dataproc VM bandwidth."
+    ]
   },
   {
     "id": 59,
@@ -2861,7 +3338,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Lift-and-shift migration of Spark ML pipelines using Dataproc and the BigQuery connector.",
+    "correctRationale": "To migrate quickly without rewriting code, you should run your existing Spark ML models on a managed Dataproc cluster. By using the Spark-BigQuery connector, the existing Spark pipelines can read training data directly and efficiently from BigQuery into Spark DataFrames.",
+    "optionRationales": [
+      "Wrong: Vertex AI is optimized for frameworks like TensorFlow, PyTorch, and scikit-learn. Migrating raw Spark ML pipelines into Vertex requires significant adaptation, slowing down the migration.",
+      "Wrong: Rewriting an entire working Spark ML codebase into TensorFlow is a massive, time-consuming engineering effort that violates the 'migrate quickly' requirement.",
+      "Correct: Dataproc natively runs Spark ML without code changes, and the BigQuery connector enables high-performance direct data reads from the warehouse.",
+      "Wrong: Spinning up unmanaged Spark on bare Compute Engine VMs adds massive operational overhead, and manually exporting BQ data is an anti-pattern compared to using the connector."
+    ]
   },
   {
     "id": 60,
@@ -2909,7 +3394,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Leveraging BigQuery's native GIS and ML capabilities for massive predictive datasets.",
+    "correctRationale": "BigQuery is a highly scalable data warehouse capable of handling petabytes of data. It uniquely combines native geospatial functions (BigQuery GIS for GeoJSON) and built-in predictive modeling capabilities (BigQuery ML) using standard SQL, making it the perfect fit for the 40 TB dataset.",
+    "optionRationales": [
+      "Correct: BigQuery natively supports massive scale (40 TB), geographic data types (GIS), and built-in predictive modeling (BQML) without moving data to external systems.",
+      "Wrong: Cloud Bigtable is a NoSQL wide-column store optimized for low-latency reads/writes; it lacks native geospatial querying and built-in machine learning capabilities.",
+      "Wrong: Cloud Datastore (Firestore) is a NoSQL document database for transactional application backends, not an OLAP data warehouse for training ML models over 40 TB of telemetry.",
+      "Wrong: Cloud SQL for PostgreSQL supports PostGIS, but it is limited to 64 TB of storage and is not designed as a distributed analytical warehouse for training ML models."
+    ]
   },
   {
     "id": 61,
@@ -2957,7 +3450,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Dataflow Sliding Windows to calculate continuous moving averages on streams.",
+    "correctRationale": "A moving average requires calculating metrics over an overlapping time period that updates frequently. In Apache Beam/Dataflow, a 'Sliding Window' perfectly matches this requirement by capturing data over a set duration (e.g., 1 hour) and emitting results at a regular frequency (e.g., every 5 minutes).",
+    "optionRationales": [
+      "Correct: A sliding window continuously calculates the 1-hour moving average at a granular interval (every 5 minutes), allowing for immediate alerting if the threshold is breached.",
+      "Wrong: A fixed time window (tumbling window) calculates the average only once at the end of the hour. If a drop occurs midway, you won't know until the hour is over.",
+      "Wrong: Using Cloud Scheduler to count Bigtable rows hourly provides a delayed, batch-oriented check, not a continuous real-time moving average on a live stream.",
+      "Wrong: Polling BigQuery every five minutes via a script is an inefficient batch anti-pattern that adds unnecessary latency compared to native Dataflow stream windowing."
+    ]
   },
   {
     "id": 62,
@@ -3005,7 +3506,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Configuring Cloud SQL High Availability (HA) against zonal failures.",
+    "correctRationale": "To survive a zone failure, Cloud SQL requires a High Availability configuration. This provisions a standby instance (historically referred to as a failover replica) in a secondary zone within the same region. If the primary zone fails, Cloud SQL automatically fails over to the standby instance.",
+    "optionRationales": [
+      "Correct: Provisioning a standby/failover instance in a different zone ensures synchronous replication and automatic failover during a zonal outage.",
+      "Wrong: A read replica scales read performance asynchronously. It does not provide automatic failover and is not designed as a primary high availability mechanism.",
+      "Wrong: External read replicas are for replicating data out of GCP to on-premises or other clouds, offering no automatic zonal HA within the managed GCP environment.",
+      "Wrong: Automated backups protect against data loss but do not provide high availability; you would have to manually restore the backup to a new instance during an outage."
+    ]
   },
   {
     "id": 63,
@@ -3053,7 +3562,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Differentiating Apache Kafka's log-based stream capabilities from GCP Pub/Sub.",
+    "correctRationale": "The specific requirements to 'seek to a particular offset' (replaying a stream from a precise historical index) and 'retain per-key ordering' (guaranteeing FIFO order for specific partition keys) are fundamental, native features of Apache Kafka's log-based architecture.",
+    "optionRationales": [
+      "Correct: Kafka natively supports seeking to specific consumer offsets, handles hundreds of topics easily, and guarantees strict ordering per partition key.",
+      "Wrong: Cloud Storage is an object storage service, not a publish/subscribe messaging system or streaming broker.",
+      "Wrong: Dataflow is a data processing engine for transforming streams, not an ingestion buffer or message queue that stores offsets.",
+      "Wrong: Firebase Cloud Messaging is designed for delivering push notifications to mobile/web clients, not for high-throughput backend data ingestion."
+    ]
   },
   {
     "id": 64,
@@ -3101,7 +3618,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing Dataproc cluster architecture for cost-effective, fault-tolerant batch processing.",
+    "correctRationale": "Cloud Dataproc fulfills the 'managed service' requirement. Decoupling storage by using Cloud Storage instead of HDFS ensures data persistence. For long-running, fault-tolerant batch jobs, provisioning 50% of the cluster as preemptible VMs drastically reduces compute costs, while standard persistent disks keep storage cheap.",
+    "optionRationales": [
+      "Correct: Utilizing GCS allows stateless ephemeral clusters, preemptible VMs drastically reduce compute costs, and standard PDs minimize costs for non-I/O intensive jobs.",
+      "Wrong: SSD persistent disks are significantly more expensive than standard disks and are only necessary for highly I/O bound workloads, violating the cost-effectiveness goal.",
+      "Wrong: Manually installing Hadoop on Compute Engine VMs defeats the 'managed service' requirement and incurs high operational management overhead.",
+      "Wrong: Relying on preemptible instances for native HDFS storage guarantees catastrophic data loss when the VMs are inevitably preempted."
+    ]
   },
   {
     "id": 65,
@@ -3149,7 +3674,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Improving ML model performance via Hyperparameter Tuning.",
+    "correctRationale": "If a machine learning model trained with default parameters performs adequately but needs improvement, the standard next step in the ML lifecycle is hyperparameter tuning. This systematically searches for the optimal configuration (like the regularization parameter C in an SVM) for the specific dataset.",
+    "optionRationales": [
+      "Correct: Hyperparameter tuning systematically optimizes the model's internal settings, directly leading to potential increases in the AUC metric.",
+      "Wrong: Deep neural networks do not 'always' beat SVMs. For tabular data or smaller datasets, well-tuned SVMs or ensemble trees often outperform neural networks.",
+      "Wrong: Deploying the model shifts focus to production serving; it does absolutely nothing to mathematically improve the model's predictive power or AUC.",
+      "Wrong: AUC evaluates the ranking order of probabilities. Linearly scaling all predictions by a constant factor does not change their relative order, meaning the AUC remains exactly the same."
+    ]
   },
   {
     "id": 66,
@@ -3197,7 +3730,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Securing Dataproc initialization actions in a private VPC without internet access.",
+    "correctRationale": "Initialization actions run setup scripts when Dataproc nodes boot up. If the nodes are in a private network without internet access, they cannot download packages from public repositories. Hosting the dependencies in a Google Cloud Storage bucket allows the nodes to download them internally via Private Google Access.",
+    "optionRationales": [
+      "Wrong: The Cloud SQL Proxy securely connects applications to Cloud SQL databases; it does not route outbound internet traffic or provide software dependencies.",
+      "Wrong: Setting up an SSH tunnel to route internet traffic explicitly violates the company's strict 'no internet access' security policy.",
+      "Correct: Copying dependencies to a GCS bucket allows the internal nodes to download them securely via Private Google Access during the initialization script.",
+      "Wrong: The Network User role allows a service account to attach resources to a Shared VPC; it does not grant internet access or host dependency files."
+    ]
   },
   {
     "id": 67,
@@ -3245,7 +3786,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Selecting Cloud SQL for managed, auto-scaling relational database workloads.",
+    "correctRationale": "Cloud SQL is a fully managed relational database that provides strict transactional consistency and standard SQL querying. It comfortably supports datasets up to 6 TB (its upper limit is 64 TB) and features an 'Automatic storage increase' setting to automatically scale up disk capacity.",
+    "optionRationales": [
+      "Correct: Cloud SQL meets all requirements: it is fully managed, transactionally consistent, supports SQL, handles 6 TB easily, and can automatically increase its storage capacity.",
+      "Wrong: Cloud Bigtable is a NoSQL wide-column store; it does not support relational SQL queries or multi-row ACID transactional consistency.",
+      "Wrong: While Cloud Spanner supports SQL and transactions, it requires manual node provisioning or custom logic for compute autoscaling, whereas Cloud SQL natively auto-increases storage.",
+      "Wrong: Cloud Datastore (Firestore) is a NoSQL document database, lacking relational SQL querying capabilities."
+    ]
   },
   {
     "id": 68,
@@ -3293,7 +3842,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Auditing BigQuery access using Stackdriver Audit Logs.",
+    "correctRationale": "Before locking down a data warehouse, you must understand current usage patterns to avoid breaking critical workflows. Google Cloud Audit Logs automatically record 'Data Access' events, providing an immutable history of exactly who queried which BigQuery datasets and tables.",
+    "optionRationales": [
+      "Correct: Audit logs provide a centralized, immutable history of all user interactions and queries within BigQuery, establishing the necessary baseline for access control.",
+      "Wrong: Reviewing IAM policies only tells you who *has permission* to access the data, not who is *actually* accessing it and what queries they are running.",
+      "Wrong: Monitoring query slots shows aggregate compute resource utilization, but it does not reveal user identities or specific table access patterns.",
+      "Wrong: The Billing API shows project expenditures but provides zero insight into user-level query behavior or data access history."
+    ]
   },
   {
     "id": 69,
@@ -3341,7 +3898,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Selecting Cloud Spanner for massive-scale operational transactional databases.",
+    "correctRationale": "For operational, transactional (ACID) databases, the choices are Cloud SQL or Cloud Spanner. At 20 TB, the requirement exceeds the historical limits of Cloud SQL (originally 10 TB). Cloud Spanner is the enterprise-grade, horizontally scalable relational database designed specifically for massive operational workloads.",
+    "optionRationales": [
+      "Wrong: Historically, Cloud SQL had a maximum capacity of 10 TB (though now increased). For a 20 TB enterprise operational system, Spanner is the architecturally correct choice for massive scale.",
+      "Wrong: Cloud Bigtable is a NoSQL wide-column store and does not support the multi-row ACID transactions required by standard relational operational systems.",
+      "Correct: Cloud Spanner is a globally scalable, strongly consistent relational database that easily handles 20 TB of operational transaction data.",
+      "Wrong: Cloud Datastore is a NoSQL document database designed for application backends, not for migrating massive 20 TB enterprise relational operational systems."
+    ]
   },
   {
     "id": 70,
@@ -3389,7 +3954,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing Bigtable schema design for high-throughput time-series data.",
+    "correctRationale": "Bigtable is ideal for high-throughput time-series data and charges by provisioned nodes, avoiding per-query billing. To prevent excessive row header overhead, time-series schemas in Bigtable use a 'tall and wide' pattern: grouping a minute's worth of 1-second interval readings as separate columns within a single minute-based row key.",
+    "optionRationales": [
+      "Wrong: BigQuery charges by the amount of data processed per query, directly violating the requirement to 'avoid being charged for every query'.",
+      "Wrong: BigQuery bills per query, and attempting to create millions of columns (one for each second) violates BigQuery's schema column limits.",
+      "Wrong: A 'narrow' Bigtable schema creates a new row for every single second for millions of computers, leading to massive metadata overhead and inefficient read performance.",
+      "Correct: Bigtable avoids per-query charges. Grouping 60 one-second readings into columns under a single per-minute row key reduces metadata overhead and is the recommended pattern for time-series."
+    ]
   },
   {
     "id": 71,
@@ -3437,7 +4010,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Implementing 'Trust No One' encryption using Customer-Supplied Encryption Keys (CSEK).",
+    "correctRationale": "The 'Trust No One' approach requires that Google never has access to the raw encryption keys. Customer-Supplied Encryption Keys (CSEK) allow you to provide the key via the `.boto` file during upload. Google uses the key in memory and discards it, ensuring Google cannot decrypt the data at rest.",
+    "optionRationales": [
+      "Wrong: `gcloud kms` uses Customer-Managed Encryption Keys (CMEK), meaning the key material is stored inside Google's infrastructure, violating the 'Trust No One' requirement.",
+      "Wrong: Destroying a CMEK key manually permanently destroys your ability to access your own archived data, and Google still held the key prior to destruction.",
+      "Wrong: Saving the raw CSEK in Cloud Memorystore (an unencrypted cache) is a severe security violation that leaves the plaintext key exposed within the Google Cloud environment.",
+      "Correct: Using a CSEK ensures Google never stores the key. Securing the key externally in an isolated project ensures only your security team can ever decrypt the data."
+    ]
   },
   {
     "id": 72,
@@ -3477,7 +4058,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Centralized cross-project monitoring and alerting using Cloud Monitoring.",
+    "correctRationale": "Cloud Monitoring (formerly Stackdriver) is the native, fully-managed GCP service designed to aggregate metrics, health checks, and logs from all GCP services across multiple projects. It includes built-in alerting mechanisms (email, SMS, PagerDuty) without requiring custom infrastructure.",
+    "optionRationales": [
+      "Correct: Cloud Monitoring natively integrates with BigQuery, Dataflow, and Dataproc, allowing you to create cross-project alerting policies out-of-the-box.",
+      "Wrong: Running Airflow on a Compute Engine VM just to push metrics is a massive anti-pattern that creates unnecessary operational overhead for natively available metrics.",
+      "Wrong: Exporting logs to BigQuery to poll them with a custom App Engine app is reinventing the wheel and introduces high latency compared to native Cloud Monitoring alerts.",
+      "Wrong: Writing custom API consumers in App Engine requires managing custom code, handling API rate limits, and building a reliable notification engine from scratch."
+    ]
   },
   {
     "id": 73,
@@ -3525,7 +4114,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Handling categorical variables in BigQuery ML via SQL one-hot encoding.",
+    "correctRationale": "Machine learning models require numerical inputs. Categorical text variables like 'city' must be transformed into a numerical format, typically via one-hot encoding (creating binary columns for each category). Using standard SQL in BigQuery prepares the data for BQML regression without requiring external processing code.",
+    "optionRationales": [
+      "Wrong: Dropping the city column removes a 'key predictive component,' which will deliberately worsen the model's accuracy.",
+      "Correct: Using SQL to one-hot encode categorical data transforms text into binary features, fulfilling the model's mathematical requirements entirely within BigQuery with minimal code.",
+      "Wrong: Exporting data to use TensorFlow's `feature_column` API requires significantly more coding, Python expertise, and infrastructure management than using BigQuery SQL.",
+      "Wrong: Arbitrarily mapping cities into five numerical regions (label encoding) destroys the granular predictive power of individual cities and falsely implies an ordinal relationship."
+    ]
   },
   {
     "id": 74,
@@ -3573,7 +4170,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Cloud Spanner for globally distributed, strictly consistent ACID transactions.",
+    "correctRationale": "Bank transactions require strict ACID compliance to prevent overdrafts or lost funds. Cloud Spanner is a globally distributed relational database providing strict consistency using standard SQL. For financial transactions, locking read-write transactions are mandatory to ensure complete isolation.",
+    "optionRationales": [
+      "Wrong: 'Stale reads' provide faster performance by reading historical data without locks, which is unacceptable for real-time bank transactions requiring absolute current consistency.",
+      "Correct: Cloud Spanner handles the multi-regional scale, and locking read-write transactions guarantee the strict ACID isolation necessary for banking ledgers.",
+      "Wrong: BigQuery is an OLAP data warehouse, not an OLTP database. It is not designed to handle real-time, high-frequency single-row ACID transactions.",
+      "Wrong: Cloud SQL uses asynchronous read replicas across regions, meaning it cannot provide synchronous write consistency across the entire North American continent."
+    ]
   },
   {
     "id": 75,
@@ -3621,7 +4226,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing BigQuery partitions based on logical querying patterns (delivery date vs ingest date).",
+    "correctRationale": "When analyzing a package lifecycle, queries filter by logical dates (like delivery date). If the table is partitioned by ingest-date, a single package's events span multiple daily partitions, forcing BigQuery to scan massive amounts of data. Re-partitioning by a logical date like `delivery_date` groups relevant lifecycle events, enabling efficient partition pruning.",
+    "optionRationales": [
+      "Wrong: Clustering by ingest date does not solve the root problem that lifecycle queries are forced to scan across many separate daily partitions.",
+      "Wrong: Clustering by ID helps find specific packages, but if partitioned by ingest-date, BigQuery must still open every single daily partition to find all events for that ID.",
+      "Wrong: Tiering data to GCS as an external table significantly degrades performance because external tables lack BigQuery's native columnar optimization and indexing.",
+      "Correct: Re-partitioning by package delivery date aligns the physical storage with the logical query pattern, allowing queries to prune irrelevant partitions and execute faster."
+    ]
   },
   {
     "id": 76,
@@ -3669,7 +4282,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Fast lift-and-shift Hadoop migration strategy to Dataproc to minimize risk and cost.",
+    "correctRationale": "A 2-month deadline is extremely tight for migrating a large Hadoop cluster. The fastest, lowest-risk approach is a 'lift and shift' to Dataproc. Replacing HDFS with Cloud Storage decouples compute from storage, yielding immediate cost savings by enabling ephemeral clusters without requiring complex pipeline rewrites.",
+    "optionRationales": [
+      "Wrong: Keeping HDFS requires long-running clusters with expensive persistent disks, completely negating the cost savings of cloud-native decoupled storage.",
+      "Correct: Pointing existing Spark/Hive jobs to GCS instead of HDFS is a fast configuration change that fits the 2-month window while unlocking the massive cost benefits of stateless Dataproc clusters.",
+      "Wrong: Modernizing Hive to BigQuery requires rewriting ETL pipelines and schemas, which is too risky and complex to execute for a large cluster in just 2 months.",
+      "Wrong: Rewriting Spark jobs to Dataflow and Hive to BigQuery is a complete architectural overhaul that takes many months, completely missing the 2-month deadline."
+    ]
   },
   {
     "id": 77,
@@ -3717,7 +4338,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Cloud DLP format-preserving encryption for reversible pseudonymization.",
+    "correctRationale": "The requirement is to hide the ID in the database but allow authorized reps to reverse the process. Format-Preserving Encryption (FPE) via Cloud DLP encrypts the data while maintaining its length and format. It is a two-way reversible cryptographic process for applications/users with the correct KMS key.",
+    "optionRationales": [
+      "Wrong: BigQuery AEAD encryption requires modifying the ingestion application to handle SQL encryption functions and managing keys, which is more complex than using DLP natively.",
+      "Wrong: Column-level security hides the column entirely from unauthorized users, but it doesn't pseudonymize the data to allow safe analytical joining for other users.",
+      "Wrong: A cryptographic hash is a one-way function. Once the ID is hashed, it cannot be reversed, meaning Customer Service reps could never retrieve the original value.",
+      "Correct: Format-preserving encryption protects the data at rest, while applications with the proper decryption keys can reverse the token to display the original ID."
+    ]
   },
   {
     "id": 78,
@@ -3765,7 +4394,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing BigQuery querying with hierarchical clustering and time partitioning.",
+    "correctRationale": "Partitioning by time limits the data scanned by date (the 'past 30 days' requirement). Clustering sorts the data within those partitions. To support geographic trend analysis efficiently, clustering order must go from the broadest category to the most granular (State -> City -> Store) to maximize prefix-based pruning.",
+    "optionRationales": [
+      "Correct: Time partitioning instantly prunes old data. Clustering hierarchically from macroscopic (state) to microscopic (store) perfectly aligns with the required geographic drill-down queries.",
+      "Wrong: Clustering by Store ID first scatters the geographic data. If you filter by state, BigQuery cannot efficiently prune the blocks because the primary sort is by store.",
+      "Wrong: Relying solely on clustering without partitioning means queries filtering for the 'past 30 days' will scan the entire table's history, costing significantly more money.",
+      "Wrong: Without partitioning, date filters scan the whole table, and sorting by Store ID first destroys the geographic grouping needed for state/city trend analysis."
+    ]
   },
   {
     "id": 79,
@@ -3814,7 +4451,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Dataproc with the GCS connector for stateless, managed Hadoop workloads.",
+    "correctRationale": "To minimize management, use Cloud Dataproc (a fully managed service). To re-use jobs, stick with the Hadoop ecosystem. To persist data after the ephemeral cluster is deleted, you must store the data in Google Cloud Storage via the connector, rather than on local HDFS.",
+    "optionRationales": [
+      "Wrong: Dataflow requires rewriting the Hadoop MapReduce/Spark jobs into Apache Beam, which violates the requirement to re-use existing jobs.",
+      "Wrong: If you use persistent disks for HDFS, the data is permanently deleted when the ephemeral Dataproc cluster is shut down.",
+      "Wrong: Managing your own Hadoop cluster on Compute Engine VMs incurs massive operational overhead, directly violating the 'minimize cluster management' requirement.",
+      "Correct: Dataproc natively runs existing Hadoop jobs, and using the GCS connector permanently stores data independently of the cluster's lifecycle.",
+      "Wrong: Local SSDs are completely ephemeral. If the Compute Engine instances are terminated, all data on the Local SSDs is permanently destroyed."
+    ]
   },
   {
     "id": 80,
@@ -3862,7 +4508,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Pub/Sub Snapshots and Seek functionality for safe deployments.",
+    "correctRationale": "If a new subscriber has a bug and erroneously acknowledges messages, those messages are permanently deleted. Taking a 'Snapshot' before deployment captures the exact state of the unacknowledged message queue. If the deployment fails, you use the 'Seek' operation to revert the subscription to the snapshot, redelivering the lost messages.",
+    "optionRationales": [
+      "Wrong: While local emulators are great for testing, they do not provide a safety net for actual production data loss if a bug slips through to the live deployment.",
+      "Correct: A snapshot safely backs up the subscription's message state. If the new code improperly acks messages, seeking to the snapshot restores the queue safely.",
+      "Wrong: You cannot use Seek to jump back to a timestamp unless you have specifically enabled message retention on the topic/subscription beforehand, which the prompt states is not set up.",
+      "Wrong: Dead-lettering only captures messages that repeatedly fail to process. If the new code successfully (but erroneously) acknowledges messages, they bypass the dead-letter queue entirely."
+    ]
   },
   {
     "id": 81,
@@ -3910,7 +4564,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using BigQuery ML's TRANSFORM clause to embed preprocessing logic into the model.",
+    "correctRationale": "BigQuery ML's TRANSFORM clause embeds the preprocessing logic directly into the model object. When you call ML.EVALUATE or ML.PREDICT, the model automatically applies the exact same transformations to the raw input data, preventing training-serving skew without requiring manual preprocessing at inference time.",
+    "optionRationales": [
+      "Correct: Defining preprocessing in the TRANSFORM clause during training ensures it is automatically applied during prediction, eliminating skew.",
+      "Wrong: Using a saved query to transform data manually before prediction reintroduces the possibility of training-serving skew if the query logic drifts from the training logic.",
+      "Wrong: Using a view for training data requires you to recreate the exact same view logic at prediction time, which is prone to error and skew.",
+      "Wrong: Preprocessing data externally in Dataflow requires maintaining a separate pipeline for both training and serving phases, increasing complexity and risk of skew."
+    ]
   },
   {
     "id": 82,
@@ -3958,7 +4620,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Configuring Dataflow sliding windows for calculating rolling averages.",
+    "correctRationale": "A moving average requires intervals that overlap, which is the definition of a sliding window. A sliding window with a 30-second duration and a 5-second period exactly fits the requirement to process the 'past 30 seconds... every 5 seconds.' Triggering on AfterWatermark.pastEndOfWindow() ensures results are emitted when the event time watermark passes the end of each window.",
+    "optionRationales": [
+      "Wrong: A fixed window does not overlap, meaning it cannot compute a continuous rolling 30-second average every 5 seconds.",
+      "Wrong: A fixed window of 30 seconds only emits data once every 30 seconds, failing the requirement to emit every 5 seconds.",
+      "Wrong: A sliding window of 5 seconds only looks at 5 seconds of historical data, not the required 30 seconds.",
+      "Correct: A sliding window correctly overlaps data, pulling 30 seconds of history and emitting a new calculation every 5 seconds based on the watermark."
+    ]
   },
   {
     "id": 83,
@@ -4006,7 +4676,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Aggregating Pub/Sub streams into disjoint hourly intervals using Dataflow tumbling windows.",
+    "correctRationale": "Disjoint (non-overlapping) hourly intervals are natively represented by fixed windows (also known as tumbling windows) in a streaming pipeline. A streaming Dataflow job can continuously read from Pub/Sub, group elements by 1-hour tumbling windows based on event time, and scale seamlessly to handle variable loads.",
+    "optionRationales": [
+      "Wrong: Cloud Functions process events individually or in micro-batches; they do not have native windowing capabilities to safely aggregate an hour's worth of data.",
+      "Wrong: A scheduled Cloud Function has a maximum execution timeout (9 minutes for 1st gen, up to 60 for 2nd) and limited memory, making it unsuitable for pulling and aggregating massive hourly Pub/Sub backlogs.",
+      "Wrong: Batch Dataflow jobs reading from Pub/Sub can struggle to boundedly capture all messages due to Pub/Sub's streaming nature, and streaming Dataflow is the idiomatic approach for continuous data.",
+      "Correct: Streaming Dataflow with tumbling (fixed) windows naturally segments continuous streams into non-overlapping time boundaries for aggregation."
+    ]
   },
   {
     "id": 84,
@@ -4054,7 +4732,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Iterative design and automation prioritization in Dialogflow.",
+    "correctRationale": "Google's recommended practice for conversational AI design follows the Pareto principle (the 80/20 rule). Starting by automating the top-level, high-volume intents that address the vast majority of simple queries (the 70%) quickly provides the most return on investment and frees up human agents to handle the complex edge cases.",
+    "optionRationales": [
+      "Correct: Automating the most frequent simple intents deflects the bulk of support traffic, maximizing immediate business value.",
+      "Wrong: Complicated requests require highly intricate conversation design and branching; tackling them first delays deployment and ties up resources for low-volume edge cases.",
+      "Wrong: Blending short and long intents does not prioritize volume, meaning agents will still be bogged down by highly repetitive, simple queries.",
+      "Wrong: Focusing on intents where common words appear only once targets rare edge cases rather than the bulk of user traffic."
+    ]
   },
   {
     "id": 85,
@@ -4102,7 +4788,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing BigQuery queries for date ranges without increasing storage costs.",
+    "correctRationale": "Partitioning a table by transaction date limits the bytes scanned when queries filter by that date (e.g., the past 30 days), drastically improving performance and reducing query costs. Unlike denormalization or materialized views, partitioning reorganizes how data is stored under the hood without duplicating it, ensuring storage costs remain unchanged.",
+    "optionRationales": [
+      "Wrong: Denormalizing a schema (e.g., flattening a star schema into a single wide table) often duplicates dimension data, which would increase storage costs.",
+      "Wrong: Sharding data (e.g., creating table_customer_1, table_customer_2) is an anti-pattern in BigQuery that degrades performance and creates massive metadata overhead.",
+      "Wrong: Materialized views create a pre-computed copy of the data, which incurs additional storage costs for the materialized results.",
+      "Correct: Partitioning by transaction date physically isolates the data by day, speeding up time-bound queries with zero duplicated storage overhead."
+    ]
   },
   {
     "id": 86,
@@ -4150,7 +4844,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Dataflow for data cleansing while preserving immutable source logs in Cloud Storage.",
+    "correctRationale": "Dataflow is the ideal serverless processing engine to read, inspect, and apply conditional transformations (like setting defaults for out-of-range values). Writing the cleansed records to a new location (dataset/bucket) preserves the original raw data, which is a strict requirement for compliance and auditing.",
+    "optionRationales": [
+      "Wrong: Skipping rows during a BigQuery load discards data completely, and BQ load jobs lack the complex logic needed to conditionally replace out-of-range values with defaults.",
+      "Wrong: Using a single Compute Engine instance requires manual scripting, does not scale to 5 years of logs, and skipping rows violates the requirement to replace values with defaults.",
+      "Correct: Dataflow scales to process the massive history, conditionally fixes the data, and writing to a new dataset ensures the original logs remain untouched for compliance.",
+      "Wrong: Writing to the same dataset overwrites the original logs, destroying the immutable source data required for compliance."
+    ]
   },
   {
     "id": 87,
@@ -4198,7 +4900,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Modernizing PySpark batch pipelines to a serverless ELT architecture in BigQuery.",
+    "correctRationale": "BigQuery is a fully managed, serverless enterprise data warehouse that natively supports massive-scale standard SQL. By loading the raw data directly from Cloud Storage into BigQuery and rewriting the PySpark transformations into BigQuery SQL, you leverage an ELT (Extract, Load, Transform) pattern that requires zero infrastructure management.",
+    "optionRationales": [
+      "Wrong: Dataproc is a managed Hadoop/Spark service, but it is not inherently serverless (unless using Dataproc Serverless, which still manages Spark, not SQL) and involves cluster configuration.",
+      "Wrong: Cloud SQL is for transactional OLTP workloads, not for running massive multi-hour analytic batch pipelines via federated queries.",
+      "Correct: Ingesting raw data into BigQuery and using its serverless SQL engine for transformations fulfills all requirements for serverless architecture and SQL syntax.",
+      "Wrong: The Apache Beam Python SDK is a programming framework, not SQL syntax, which directly violates the requirement to use SQL."
+    ]
   },
   {
     "id": 88,
@@ -4246,7 +4956,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Resolving Dataflow out-of-memory and performance bottlenecks by switching SideInputs to CoGroupByKey.",
+    "correctRationale": "Side inputs broadcast the entire dataset to every worker node. If the side input data is large, this causes massive memory pressure or heavy disk I/O, crippling performance. Using a CoGroupByKey instead performs a shuffle to group elements by a common key, efficiently handling large-scale joins across multiple PCollections without requiring the dataset to fit in worker memory.",
+    "optionRationales": [
+      "Wrong: Avro requires a strict schema. The prompt specifies text files (which are unstructured/semi-structured); forcing them into Avro does not solve the memory issue of the join.",
+      "Wrong: Reducing batch size does not alleviate the fundamental issue that a large SideInput must be fully materialized on every worker.",
+      "Wrong: Retrying errors sent to a dead-letter queue addresses data quality issues, not the overarching pipeline latency caused by the join strategy.",
+      "Correct: CoGroupByKey executes a distributed shuffle join, which scales infinitely better than broadcasting large datasets via SideInputs."
+    ]
   },
   {
     "id": 89,
@@ -4294,7 +5012,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Cloud DLP Format-Preserving Encryption to mask PII while maintaining referential integrity.",
+    "correctRationale": "Format-Preserving Encryption (FPE) replaces sensitive data with a cryptographic token of the same length and character set. Because FPE is deterministic when using the same cryptographic key, identical input values (like the same email address) will always map to the exact same token. This preserves referential integrity, allowing the masked fields to still be used reliably as join keys in BigQuery.",
+    "optionRationales": [
+      "Wrong: Storing non-tokenized data in a locked-down bucket does not explain how referential integrity is maintained for joining in BigQuery.",
+      "Wrong: Redaction destroys the original value entirely (e.g., replacing it with '[REDACTED]'), breaking the ability to join tables based on unique identifiers.",
+      "Wrong: Scanning every table in BigQuery to mask data post-load means the PII was already written to BigQuery in plain text, violating the requirement to mask it during the stream.",
+      "Correct: Format-preserving tokens deterministically encrypt data, meaning 'user@a.com' always hashes to the same token, allowing joins while masking the raw PII."
+    ]
   },
   {
     "id": 90,
@@ -4348,7 +5074,17 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Identifying suitable machine learning paradigms for a tabular dataset.",
+    "correctRationale": "Assuming the dataset or an external dataset contains historical fraud labels, supervised learning can be used to predict fraud. Clustering is an unsupervised technique that naturally groups data into categories based on similarities in amount, location, and type. Because 'location' is provided as a feature in the dataset, it can be used as a target label for supervised learning to predict locations for future transactions.",
+    "optionRationales": [
+      "Correct: If historical fraud labels are available, supervised learning is the standard approach for fraud detection.",
+      "Wrong: While anomaly detection is unsupervised, the official key strictly selects A, C, and D based on typical ML feature-target relationships.",
+      "Correct: Clustering algorithms (like K-Means) take unlabelled features and group them into N distinct categories based on mathematical similarity.",
+      "Correct: Because 'location' is a column in the data, supervised classification models can use the other columns to predict it.",
+      "Wrong: Reinforcement learning relies on an agent taking actions in an environment to maximize a reward, which does not map to analyzing static historical bank transactions.",
+      "Wrong: Unsupervised learning finds hidden structures without predefined labels, so it cannot specifically target and predict a known label like 'location'."
+    ]
   },
   {
     "id": 91,
@@ -4396,7 +5132,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Denormalizing hierarchical schemas in BigQuery using nested and repeated fields.",
+    "correctRationale": "BigQuery is a columnar database that performs best with denormalized data, as JOINs across large tables require heavy shuffling. To avoid JOIN overhead while still maintaining hierarchical relationships (like one book having multiple authors), Google's best practice is to denormalize the data using nested (STRUCT) and repeated (ARRAY) fields inside a single table.",
+    "optionRationales": [
+      "Wrong: Keeping separate normalized tables requires computationally expensive JOIN operations at query time, degrading performance in a columnar data warehouse.",
+      "Wrong: A completely flat, wide table creates massive data duplication if a book has multiple authors, wasting storage and making updates difficult.",
+      "Correct: Nested and repeated fields allow a single row to represent a book while containing an array of multiple author objects, optimizing both read performance and storage.",
+      "Wrong: Creating a view over normalized tables still executes the expensive JOINs beneath the hood every time the view is queried."
+    ]
   },
   {
     "id": 92,
@@ -4444,7 +5188,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Managing external client instantiation in Dataflow DoFns to control backpressure.",
+    "correctRationale": "When making calls to external services within a DoFn, instantiating the client object correctly is critical. If the client is not thread-safe, creating a new client object in the `startBundle` method ensures that one instance is reused for all elements in that specific bundle. This avoids the overhead of creating a connection per element, while naturally limiting concurrent connections per worker to mitigate backpressure on the external service.",
+    "optionRationales": [
+      "Wrong: Calling out via HTTP describes the action, not the structural design of the pipeline needed to handle concurrency and backpressure.",
+      "Wrong: Creating the client statically is only recommended if the client is completely thread-safe, which cannot be guaranteed for all external service wrappers.",
+      "Correct: Using startBundle reuses the client per bundle, reducing instantiation overhead and limiting concurrent threads compared to processing element-by-element.",
+      "Wrong: While batching (GroupIntoBatches) is a powerful pattern for reducing QPS, the official answer focuses on worker lifecycle methods (startBundle) for client management."
+    ]
   },
   {
     "id": 93,
@@ -4492,7 +5244,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Selecting appropriate tools for large file migration and real-time streaming updates.",
+    "correctRationale": "For a small number of large files (90 GB each, well under the 1 TB threshold where specialized transfer services are required), `gsutil` (or `gcloud storage`) is the standard, lightweight tool for the initial migration. For continuous, real-time transactional updates, streaming the changes via Pub/Sub and processing them with Dataflow into the data warehouse is the Google-recommended streaming architecture.",
+    "optionRationales": [
+      "Wrong: Storage Transfer Service is overkill for a small number of files under 1 TB, and Cloud Data Fusion is a visual ETL tool, not an optimized real-time stream processor.",
+      "Wrong: BigQuery Data Transfer Service is for scheduled batch loads from SaaS apps or GCS, not for sub-second real-time streaming. Dataproc is also batch-focused.",
+      "Correct: gsutil easily handles 90 GB files, while Pub/Sub and Dataflow form GCP's premier real-time streaming pipeline.",
+      "Wrong: gsutil is a command-line file copy tool; it cannot capture real-time, event-based transactional database updates."
+    ]
   },
   {
     "id": 94,
@@ -4540,7 +5300,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Bigtable schema design for time-series data favoring recent records.",
+    "correctRationale": "Bigtable best practices dictate storing all similar data in a single table to maximize node utilization and prevent management overhead. To efficiently query the *most recent* data first, the row key should incorporate a reversed timestamp (e.g., `Long.MAX_VALUE - timestamp`). Because Bigtable sorts row keys lexicographically, the reversed timestamp forces the newest records to the top of the index for lightning-fast retrieval.",
+    "optionRationales": [
+      "Wrong: Using a standard timestamp sorts records chronologically, meaning the most recent data is at the very bottom, requiring scanning the entire history to find it.",
+      "Correct: A single table avoids anti-patterns, and a reverse timestamp naturally sorts the newest streaming data to the top for immediate access.",
+      "Wrong: Creating a separate table for every index is a Bigtable anti-pattern that leads to severely unbalanced clusters and hotspots.",
+      "Wrong: While the reverse timestamp is correct, separating tables per index destroys Bigtable's ability to load balance tablet nodes effectively."
+    ]
   },
   {
     "id": 95,
@@ -4588,7 +5356,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Managing BigQuery streaming buffers using ETL best practices for reporting.",
+    "correctRationale": "When data is streamed into BigQuery via the streaming API, it resides in an in-memory streaming buffer that can take up to 90 minutes to fully optimize into permanent columnar storage. Deleting or modifying data directly from this buffer can lead to inconsistencies. An append-only staging table that bulk-updates a production reporting table via a batch job every 3+ hours completely bypasses buffer delays and ensures reports read from a clean, optimized master dataset.",
+    "optionRationales": [
+      "Correct: A 3-hour cycle safely exceeds the 90-minute streaming buffer delay, ensuring all data is fully committed before being merged to production.",
+      "Wrong: Updating every ninety minutes risks querying data that is still trapped in the streaming buffer, leading to incomplete or inconsistent reads.",
+      "Wrong: Deleting staging contents relies on DML operations against tables that are actively receiving streaming inserts, which BigQuery restricts and performs poorly.",
+      "Wrong: Deleting contents every thirty minutes guarantees collisions with the streaming buffer, resulting in failed queries and data loss."
+    ]
   },
   {
     "id": 96,
@@ -4632,7 +5408,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Troubleshooting Dataflow pipeline failures during execution.",
+    "correctRationale": "If a Dataflow job successfully passes job validation, constructs the execution graph, and starts processing initial elements before failing, the infrastructure and IAM permissions are generally correct. A failure that happens dynamically during active processing—especially one isolated to a specific DoFn—strongly indicates an unhandled exception (like a NullPointerException or format error) in the user's custom worker code.",
+    "optionRationales": [
+      "Wrong: Job validation happens before the job ever begins executing; if it started processing elements, it already passed validation.",
+      "Correct: Exceptions in the custom DoFn logic triggered by specific payload data will cause active workers to crash after processing begins.",
+      "Wrong: Graph construction is evaluated prior to resource provisioning. If elements were processed, the graph was built successfully.",
+      "Wrong: Insufficient permissions (like lacking GCS read access) would typically fail the job immediately upon startup, not after a few elements were successfully processed."
+    ]
   },
   {
     "id": 97,
@@ -4680,7 +5464,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Exporting Cloud Logging data to BigQuery for daily resource reporting.",
+    "correctRationale": "The most automated, scalable, and queryable way to analyze GCP logs (such as Cloud Audit Logs detailing resource consumption) is to create a log sink that continuously exports the relevant logs directly into BigQuery. Once the raw logs land in BigQuery, you can use standard SQL to create views that filter, aggregate, and report on the specific project, log type, resource, and user for the daily requirements.",
+    "optionRationales": [
+      "Correct: A BigQuery log sink automates ingestion, and SQL views allow for flexible, scalable daily reporting.",
+      "Wrong: Manually filtering and exporting CSVs from the Cloud Logging UI is not an efficient or automated way to generate daily recurring reports.",
+      "Wrong: You cannot manually 'import' heavily filtered Cloud Logging views into BigQuery; you must set up an automated export sink.",
+      "Wrong: Exporting to Cloud Storage as CSVs and running Dataprep introduces unnecessary ETL overhead when a direct BigQuery sink handles it natively."
+    ]
   },
   {
     "id": 98,
@@ -4728,7 +5520,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using VPC Service Controls perimeters and Access Levels for granular API restriction.",
+    "correctRationale": "VPC Service Controls mitigate data exfiltration by creating a secure perimeter around Google Cloud resources. By placing both projects in a perimeter and restricting the Cloud Storage API, you block all outside access to GCS. You can then use an Access Level to explicitly punch a hole in the perimeter for the Development team. The External team remains blocked from GCS by the perimeter, but since BigQuery is not listed as a restricted API, both teams can still access it via their IAM roles.",
+    "optionRationales": [
+      "Wrong: IAM roles are additive and inherited. If the External team has Project Viewer at the folder level, you cannot 'remove' their GCS permissions at the project level.",
+      "Wrong: VPC firewall rules govern network traffic (TCP/UDP) to Compute Engine VMs; they do not control access to managed API services like Cloud Storage or BigQuery.",
+      "Wrong: Restricting BigQuery in the perimeter and giving the External team an Access Level would allow them to see BigQuery, but the Development team would be locked out of BQ, and everyone could still access GCS.",
+      "Correct: Restricting GCS via the perimeter blocks the External team, while an Access Level grants the Dev team explicit entry."
+    ]
   },
   {
     "id": 99,
@@ -4776,7 +5576,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Selecting a globally scalable relational database with native JDBC support.",
+    "correctRationale": "Cloud Spanner provides native JDBC drivers, supports strict relational semantics (ACID transactions), and can be seamlessly upgraded from a single-region instance (to optimize for initial startup costs) to a globally distributed multi-region instance (to optimize for global read/write performance) without any application downtime or schema migration.",
+    "optionRationales": [
+      "Correct: Spanner allows you to start cheap in one region and simply click a button to scale globally when funding arrives.",
+      "Wrong: Bigtable is a NoSQL wide-column store. Migrating from PostgreSQL to Bigtable would require completely rewriting the application and abandoning JDBC/SQL.",
+      "Wrong: Similar to B, moving from relational Cloud SQL to NoSQL Bigtable destroys the relational schema and nullifies the JDBC requirement.",
+      "Wrong: Cloud SQL High Availability (HA) provides regional failover, but it cannot scale writes globally across multiple continents like Cloud Spanner can."
+    ]
   },
   {
     "id": 100,
@@ -4824,7 +5632,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Migrating petabyte-scale data online using Cloud Interconnect and Storage Transfer Service.",
+    "correctRationale": "Transferring 1 Petabyte (1,000 Terabytes) of data in just a 'few hours' requires immense, dedicated network bandwidth (100+ Gbps), which is only possible over a Dedicated Cloud Interconnect. Storage Transfer Service is the recommended, fully managed tool to reliably move this petabyte-scale data securely and automatically over the private interconnect.",
+    "optionRationales": [
+      "Correct: Dedicated Interconnect provides the massive physical bandwidth required, and Storage Transfer Service manages the transfer securely.",
+      "Wrong: Transfer Appliance is an offline hardware solution. Shipping the appliance back and forth takes days or weeks, failing the 'few hours' requirement.",
+      "Wrong: Cloud VPN maxes out at 3 Gbps per tunnel. It would take weeks to move 1 PB over VPN, regardless of how many parallel gsutil jobs you run.",
+      "Wrong: gsutil over the public internet lacks the bandwidth and managed reliability to move a petabyte in hours."
+    ]
   },
   {
     "id": 101,
@@ -4872,7 +5688,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Decoupling compute and storage in Dataproc to minimize costs.",
+    "correctRationale": "Google's core recommendation for migrating on-premises Hadoop to Dataproc is to decouple compute from storage by migrating HDFS data directly to Cloud Storage (GCS). GCS is vastly cheaper than Persistent Disk. By using the GCS connector, Dataproc compute nodes become stateless and ephemeral, allowing you to spin down the cluster when jobs finish and drastically minimizing overall costs.",
+    "optionRationales": [
+      "Correct: Moving data to GCS eliminates the need for expensive 50 TB Persistent Disks on every single worker node.",
+      "Wrong: Preemptible VMs reduce compute costs, but if you still require 50 TB of Persistent Disk per node for HDFS, your storage costs remain astronomically high.",
+      "Wrong: Tuning the disk size still requires provisioning massive, expensive Persistent Disks to house the data, which is far more costly than GCS.",
+      "Wrong: Keeping hot data on Persistent Disk maintains state on the cluster, preventing you from safely deleting the cluster when idle to save money."
+    ]
   },
   {
     "id": 102,
@@ -4920,7 +5744,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Implementing ELT in BigQuery using standard SQL for data cleansing.",
+    "correctRationale": "The ELT (Extract, Load, Transform) pattern is highly efficient in BigQuery. By loading the raw CSV data into a staging table (often with an all-STRING schema to accept mismatched types), you can use powerful, native BigQuery SQL to cast data types, handle formatting inconsistencies, and cleanse the data before inserting it into the final, strictly-typed production table.",
+    "optionRationales": [
+      "Wrong: While Data Fusion can do this visually, SQL staging is the native, fastest, and most cost-effective way to handle simple type casting and formatting in BQ.",
+      "Wrong: Converting CSV to Avro via Data Fusion adds an unnecessary serialization step without actually applying the required data quality transformations.",
+      "Correct: Loading to staging and using SQL (ELT) is the idiomatic, highest-performance way to cleanse structured data within BigQuery.",
+      "Wrong: Loading directly into the final table will fail immediately if the raw CSV contains mismatched data types that violate the destination schema."
+    ]
   },
   {
     "id": 103,
@@ -4968,7 +5800,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Mitigating machine learning model overfitting through dataset and feature engineering.",
+    "correctRationale": "Overfitting occurs when a model learns the noise and specific quirks of the training data rather than the underlying signal. To fix this, you should increase the size of the training dataset to provide more diverse examples for better generalization, and decrease the number of input features (dimensionality reduction) to remove irrelevant variables that the model might be memorizing.",
+    "optionRationales": [
+      "Wrong: Increasing the number of input features gives the model more opportunities to memorize noise, making overfitting worse.",
+      "Correct: More data improves generalization, and fewer features prevent the model from memorizing specific, irrelevant details.",
+      "Wrong: Reducing the size of the training dataset gives the model fewer examples to learn from, drastically increasing the likelihood of overfitting.",
+      "Wrong: Reducing the dataset size will harm the model's ability to generalize, even if features are decreased."
+    ]
   },
   {
     "id": 104,
@@ -5016,7 +5856,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Dialogflow as a low-code platform for omni-channel conversational AI.",
+    "correctRationale": "Dialogflow is a fully managed, low-code natural language understanding (NLU) platform designed explicitly for building conversational interfaces. It natively supports both text and voice inputs out-of-the-box (using built-in Speech-to-Text) and automatically resolves user queries to predefined intents, eliminating the need to build custom Python applications or stitch APIs together.",
+    "optionRationales": [
+      "Wrong: Building a custom Python application using the Speech-to-Text API is a high-code solution that requires manual infrastructure management and custom NLP logic.",
+      "Wrong: Hosting a custom Python app on Compute Engine is even more infrastructure-heavy and violates the low-code requirement.",
+      "Wrong: Dialogflow is fully capable of handling complex queries; splitting logic between Dialogflow and raw Speech-to-Text APIs creates immense architectural complexity.",
+      "Correct: Dialogflow is the premier low-code Google Cloud service for parsing text/voice intents without writing custom application logic."
+    ]
   },
   {
     "id": 105,
@@ -5064,7 +5912,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Developing custom Apache Beam I/O connectors for proprietary streaming data.",
+    "correctRationale": "Because the data format is proprietary, standard out-of-the-box templates cannot parse it; you must write a custom Apache Beam I/O connector to ingest it. Dataflow is fully managed and scales automatically, consuming minimal resources when idle. Streaming the parsed data into BigQuery using Avro format is highly efficient, as Avro handles binary serialization and schema evolution gracefully.",
+    "optionRationales": [
+      "Wrong: A shell script triggering a batch Cloud Function is not a streaming architecture and does not scale efficiently for high-throughput telemetry.",
+      "Wrong: A 'standard' Dataflow pipeline template only understands standard formats (JSON, CSV, Avro). It cannot read a proprietary binary format without custom code.",
+      "Wrong: Hive on Dataproc is a batch-oriented Hadoop ecosystem tool, which is heavier to manage and less efficient for pure serverless streaming than Dataflow.",
+      "Correct: A custom Beam connector handles the proprietary format, and streaming as Avro ensures efficient, schema-enforced delivery to BigQuery."
+    ]
   },
   {
     "id": 106,
@@ -5112,7 +5968,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Decoupling architectures using Pub/Sub push subscriptions and Cloud Functions.",
+    "correctRationale": "Cloud Pub/Sub is designed for secure, high-volume messaging and decoupled queuing. Using a push subscription to trigger a Cloud Function provides a scalable, serverless integration layer. The Cloud Function securely takes the message off the queue and executes the call to the external Python API without requiring the management of polling loops, VMs, or complex orchestration infrastructure.",
+    "optionRationales": [
+      "Correct: Pub/Sub push to a Cloud Function automatically scales with volume and securely acts as the execution trigger for the API.",
+      "Wrong: Hosting a custom push-receiver application on Compute Engine requires managing VMs, OS patching, and manual scaling.",
+      "Wrong: Polling a NoSQL database as a queue is a severe anti-pattern that wastes read operations and introduces latency compared to Pub/Sub.",
+      "Wrong: Cloud Composer (Airflow) is designed for slow-moving batch ETL orchestration, not high-volume, sub-second event-driven stream processing."
+    ]
   },
   {
     "id": 107,
@@ -5156,7 +6020,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Handling massive query result sets in BigQuery using destination tables.",
+    "correctRationale": "BigQuery is a fully managed, low-maintenance, serverless data warehouse built for petabyte-scale SQL analytics. When a query generates massive results (like 10 TB), standard caching or UI downloads will fail due to size limits. Specifying an output destination table allows BigQuery to natively and asynchronously write those massive result sets directly into a new table for further analysis.",
+    "optionRationales": [
+      "Wrong: Cloud SQL is a transactional database; running massive analytic JOINs across 10 TB of medical data will severely degrade performance.",
+      "Correct: BigQuery natively handles 10 TB+ queries using SQL, and destination tables bypass maximum result size limits.",
+      "Wrong: Managing a MySQL cluster on Compute Engine violates the 'low-maintenance' requirement and is not suited for 10 TB analytics.",
+      "Wrong: Cloud Spanner is an OLTP relational database; it is not designed to be a data warehouse for retrieving and caching massive 10 TB analytic datasets."
+    ]
   },
   {
     "id": 108,
@@ -5204,7 +6076,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Automating large-scale on-premises file migrations using Storage Transfer Service.",
+    "correctRationale": "The Storage Transfer Service for on-premises data is specifically designed to securely and reliably copy large amounts of file data (POSIX/NFS) into Google Cloud. You install small software agents inside your on-premises data center, and the managed service handles bandwidth utilization, retries, parallelization, and the weekly scheduling without requiring custom scripts.",
+    "optionRationales": [
+      "Wrong: gsutil via Cloud Scheduler requires maintaining custom cron infrastructure and error handling, which does not guarantee reliable transfer at this scale.",
+      "Wrong: Transfer Appliance is a physical hardware device meant for one-time offline migrations, not recurring weekly delta transfers.",
+      "Correct: Installing the agent directly in the data center ensures it has local access to the POSIX source to reliably push data to Google Cloud weekly.",
+      "Wrong: Installing the agent on a Google Cloud VM means the VM has to reach back across the network to read the on-prem POSIX files, which is inefficient and creates firewall complications."
+    ]
   },
   {
     "id": 109,
@@ -5252,7 +6132,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Ensuring minimal downtime with Cloud SQL High Availability (HA).",
+    "correctRationale": "Cloud SQL for PostgreSQL is a fully managed, ACID-compliant relational database. Enabling High Availability (HA) provisions a standby instance in a different zone. If the primary instance fails due to hardware issues or a zonal outage, Cloud SQL automatically orchestrates an immediate failover to the standby with minimal human intervention and no data loss.",
+    "optionRationales": [
+      "Wrong: Point-in-time recovery is a backup mechanism. Restoring from it requires significant human intervention (spinning up a new instance, applying logs) and incurs downtime.",
+      "Correct: HA automatically promotes a hot standby to primary in the event of a failure, requiring zero human intervention.",
+      "Wrong: Bigtable is a NoSQL database and is natively not ACID-compliant across multiple rows, failing the primary requirement.",
+      "Wrong: BigQuery is a data warehouse, not a transactional database, and table configurations do not control cross-region automated failover."
+    ]
   },
   {
     "id": 110,
@@ -5300,7 +6188,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Deploying Cloud Composer in a Shared VPC architecture.",
+    "correctRationale": "Cloud Composer is the Google-managed Apache Airflow service, satisfying the open-source and managed requirements. In a Shared VPC architecture, Google's technical requirement is to deploy the Cloud Composer environment resources (the GKE cluster, Cloud SQL, etc.) into the service project, while consuming networking resources (like subnets and firewall rules) managed centrally in the host project.",
+    "optionRationales": [
+      "Wrong: Dataflow is not an open-source scheduling tool (it is a processing engine), and Cloud Run triggers do not replace complex workflow orchestration.",
+      "Wrong: Using shell scripts for scheduling provides no dependency management, monitoring, or retries, defeating the purpose of a workflow tool.",
+      "Wrong: You cannot deploy compute resources like Composer environments directly into the host project; the host project is strictly for central network administration.",
+      "Correct: Composer is based on open-source Airflow, and deploying its resources in the service project complies with standard Shared VPC boundaries."
+    ]
   },
   {
     "id": 111,
@@ -5348,7 +6244,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing BigQuery concurrency and latency using BI Engine and Materialized Views.",
+    "correctRationale": "BigQuery BI Engine is a blazing-fast, in-memory analysis service that drastically reduces latency and supports high concurrency for dashboarding tools like Data Studio. Combining BI Engine with Materialized Views (which precompute and store complex query results) provides the ultimate optimization, as the BI Engine can cache and serve the pre-aggregated view data almost instantaneously.",
+    "optionRationales": [
+      "Correct: BI Engine provides sub-second caching, and materialized views provide pre-aggregated data, perfect for high-concurrency dashboards.",
+      "Wrong: Logical views execute their underlying SQL query every time they are called; they are not precomputed and will hit performance bottlenecks under high concurrency.",
+      "Wrong: Streaming data indicates the ingestion method, not a mechanism to optimize query visualization and reduce read latency.",
+      "Wrong: Authorized views are a security construct used to share query results without granting underlying table access; they do not improve performance."
+    ]
   },
   {
     "id": 112,
@@ -5396,7 +6300,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Handling concept drift in ML models through continuous training.",
+    "correctRationale": "User fashion preferences naturally experience 'concept drift' over time. If you train a model only on the newest data, it suffers from catastrophic forgetting, losing its broader understanding of fundamental patterns. Retraining the model on a combination of historical data (for foundational context) and the latest streamed data (for new trends) ensures the model stays highly accurate and up-to-date.",
+    "optionRationales": [
+      "Wrong: Training only on new data causes the model to forget historical seasonal trends, drastically reducing its overall accuracy.",
+      "Correct: Combining old and new data provides a balanced dataset that remembers core patterns while adapting to recent changes.",
+      "Wrong: Training on old data and testing on new data measures how badly the model performs on current trends, but does nothing to update its learning.",
+      "Wrong: Training on new data and testing on old data is logically backwards and fails to create a comprehensive model."
+    ]
   },
   {
     "id": 113,
@@ -5444,7 +6356,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Understanding Pub/Sub delivery guarantees and acknowledgement deadlines.",
+    "correctRationale": "Pub/Sub guarantees at-least-once delivery. When pushing messages to an HTTPS endpoint, if the endpoint takes longer to process the message and return a successful HTTP status code (200 OK) than the configured `ack_deadline_seconds`, Pub/Sub assumes the delivery failed. It will then repeatedly redeliver (duplicate) the message to ensure it wasn't lost.",
+    "optionRationales": [
+      "Wrong: If the message body were too large, the publish request would fail entirely; it would not cause infinite duplicates on the consumer side.",
+      "Wrong: If the SSL certificate were out of date, Pub/Sub would fail the TLS handshake and drop the connection, resulting in zero messages being delivered, not duplicates.",
+      "Wrong: High volume does not inherently cause duplication unless the volume overwhelms the endpoint, causing it to breach the acknowledgement deadline.",
+      "Correct: Failing to ack within the deadline forces Pub/Sub's at-least-once mechanism to retry the delivery, resulting in duplicates."
+    ]
   },
   {
     "id": 114,
@@ -5492,7 +6412,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Applying IAM best practices for Service Accounts and Separation of Duties.",
+    "correctRationale": "Google's IAM best practices dictate creating multiple, single-purpose service accounts applying the principle of least privilege. By attaching these tightly-scoped service accounts to IAM Google Groups, you can grant specific human teams the ability to impersonate or use only the service accounts relevant to their workloads. This provides strict access control over PII in Cloud Storage.",
+    "optionRationales": [
+      "Wrong: Using a single, massive service account across an entire organization violates the principle of least privilege and makes auditing impossible.",
+      "Wrong: Creating a service account for every single human user is an anti-pattern; humans should use their Google identities, while service accounts are for workloads.",
+      "Wrong: Sharing one service account across all users poses massive security risks, as anyone can access anything the service account has rights to.",
+      "Correct: Grouping users logically and providing them access to specific, scoped service accounts is the most secure and manageable enterprise pattern."
+    ]
   },
   {
     "id": 115,
@@ -5540,7 +6468,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Migrating Redis to Memorystore using native RDB snapshots.",
+    "correctRationale": "Memorystore for Redis natively supports importing data directly from standard Redis RDB snapshot files stored in Cloud Storage. Taking an RDB backup of the on-premises instance, transferring it to GCS via `gsutil`, and triggering the native import is the simplest, most reliable, and cost-effective migration path, requiring zero custom code.",
+    "optionRationales": [
+      "Correct: Using native RDB snapshots and GCS is the official, Google-recommended path for Memorystore migrations.",
+      "Wrong: You cannot perform a direct live cutover via native Redis replication from on-premises to a managed Memorystore instance because Memorystore restricts the replicaof command.",
+      "Wrong: Dataflow is for complex data transformations; writing a Java/Python pipeline just to copy Redis key-values is massive overkill and effort.",
+      "Wrong: A custom shell script to migrate data key-by-key over the network is slow, prone to failure, and ignores the built-in RDB import feature."
+    ]
   },
   {
     "id": 116,
@@ -5588,7 +6524,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Storage Transfer Service over private networks to migrate on-premises data.",
+    "correctRationale": "Storage Transfer Service for on-premises data uses installable agents that can be routed through a private connection (like Cloud Interconnect or VPN) using Private Google Access, satisfying the requirement of having no public internet access. Once the data lands in Cloud Storage, BigQuery Data Transfer Service can automate the scheduled loading of the structured JSON files into BigQuery.",
+    "optionRationales": [
+      "Wrong: Using gsutil directly requires custom scripting, and Cloud Scheduler cannot trigger on-premises scripts without an inbound internet connection.",
+      "Wrong: Transfer Appliance is physical hardware shipped via mail; it is for one-time massive migrations, not for recurring daily 100 GB ingestion.",
+      "Correct: STS on-prem agents push data privately to GCS, and BQ DTS natively ingests JSON from GCS into BigQuery.",
+      "Wrong: BigQuery Data Transfer Service 'dataset copy' only copies data between BigQuery datasets; it cannot reach out to an on-premises network to read files."
+    ]
   },
   {
     "id": 117,
@@ -5636,7 +6580,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Accelerating machine learning training cost-effectively with GPUs.",
+    "correctRationale": "Adding a GPU hardware accelerator allows TensorFlow to significantly parallelize matrix multiplications, drastically reducing training time in a much more cost-effective manner than over-provisioning massive CPU-only VMs. While TPUs are incredibly powerful, they are highly specialized and cannot execute custom TensorFlow operations that require a partial fallback to CPU processing.",
+    "optionRationales": [
+      "Wrong: Increasing CPU memory (highmem) does not speed up the mathematical computations required for deep learning training.",
+      "Wrong: Switching to a standard E2 machine family provides general-purpose compute but lacks the massive parallelization capabilities of an accelerator.",
+      "Correct: GPUs vastly accelerate TensorFlow training and fully support custom operations that need to fall back to the CPU.",
+      "Wrong: TPUs require models to be strictly compiled for the TPU architecture; they do not support custom TensorFlow operations that rely on CPU execution."
+    ]
   },
   {
     "id": 118,
@@ -5684,7 +6636,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Sanitizing real-time streams before BigQuery insertion using Dataflow.",
+    "correctRationale": "Real-time streaming data from multiple vendors containing invalid values requires a robust processing engine before inference. Cloud Pub/Sub buffers the incoming vendor streams, while Dataflow provides a highly scalable, exactly-once processing environment capable of executing complex filtering, type-checking, and sanitization logic before efficiently streaming the clean data into BigQuery.",
+    "optionRationales": [
+      "Wrong: Streaming directly into BigQuery bypasses any sanitization; BigQuery ML would throw errors or produce bad predictions if fed raw, invalid data.",
+      "Wrong: BigQuery cannot natively clean 'invalid values' mid-stream before they hit the table; bad schema matches will simply cause the stream insert to fail.",
+      "Wrong: Cloud Functions process events individually and can hit concurrency limits or timeouts under massive streaming loads, making them less reliable than Dataflow for robust ETL.",
+      "Correct: Pub/Sub decouples the ingestion, and Dataflow provides enterprise-grade, real-time sanitization before the data reaches BigQuery."
+    ]
   },
   {
     "id": 119,
@@ -5732,7 +6692,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Automating GKE infrastructure provisioning using Infrastructure as Code (Terraform) and Cloud Build.",
+    "correctRationale": "To efficiently and reliably provision complex Kubernetes infrastructure (such as GKE node pools requiring specific GPUs, Local SSDs, and high-bandwidth networking), Infrastructure as Code (IaC) using Terraform is the industry standard. Triggering Terraform via Cloud Build provides an automated CI/CD pipeline that builds the environment and deploys the latest container registry images in one repeatable workflow.",
+    "optionRationales": [
+      "Wrong: Using startup scripts and manual gcloud commands is error-prone, hard to version control, and cannot easily manage complex Kubernetes state.",
+      "Correct: Terraform declaratively provisions the complex node pools, and Cloud Build automates the execution and image deployment.",
+      "Wrong: GKE autoscaling reacts to pod load; it does not provision the initial underlying infrastructure definitions (like attaching GPUs or SSDs) from scratch.",
+      "Wrong: Dataflow is a data processing engine for streaming/batch analytics, not an infrastructure provisioning tool."
+    ]
   },
   {
     "id": 120,
@@ -5780,7 +6748,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Real-time anomaly and outlier detection in streaming data using Dataflow.",
+    "correctRationale": "Dataflow is specifically designed for complex, continuous stream processing. It allows you to programmatically apply windowing functions, stateful processing, and custom logic to detect anomalies, outliers, and longtail data points in near-real time as the stream flows. The cleansed data can then be written directly to a BigQuery sink for historical analytics and AI model serving.",
+    "optionRationales": [
+      "Wrong: Writing to Cloud Storage and using shell scripts represents a slow, fragile batch process, violating the 'near-real time' requirement.",
+      "Correct: Dataflow processes data in-flight, identifying outliers programmatically before sinking the clean data to BigQuery.",
+      "Wrong: Ingesting raw data into BigQuery first means the AI models might accidentally read the outliers before the analysis queries have time to clean them.",
+      "Wrong: Cloud Composer (Apache Airflow) is a workflow orchestrator used to schedule batch jobs; it is not a streaming data processing engine."
+    ]
   },
   {
     "id": 121,
@@ -5828,7 +6804,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing BigQuery tables using partitioning for time-based access and clustering for high-cardinality filters.",
+    "correctRationale": "Partitioning by the `create_date` allows BigQuery to prune entirely irrelevant days from the query execution, saving cost. Clustering by `location_id` and `device_version` physically sorts the data within each daily partition, drastically reducing the bytes scanned when queries filter on those specific fields.",
+    "optionRationales": [
+      "Wrong: BigQuery only allows partitioning by a single column (usually time or integer range). You cannot partition by three different fields simultaneously.",
+      "Correct: Partitioning prunes data by date, while clustering optimizes the performance of specific location and device filters within those partitions.",
+      "Wrong: Clustering by date does not prune data at the partition level. Partition pruning is a hard boundary that strictly limits billed bytes, making it more cost-effective for date-filtered queries than clustering.",
+      "Wrong: Partitioning by location_id (unless it is a specific bounded integer range) is not ideal for an access pattern heavily focused on 'recent data'. Partitioning by date and clustering by location provides better pruning for this use case."
+    ]
   },
   {
     "id": 122,
@@ -5876,7 +6860,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Designing a streaming architecture for handling massive write spikes, real-time reads, and exactly-once processing.",
+    "correctRationale": "Pub/Sub reliably absorbs the massive incoming spike of the 3-minute voting window. Dataflow consumes this stream, providing exactly-once processing semantics to ensure no duplicate votes. Bigtable handles low-latency, high-throughput writes and reads for the real-time partial results, while BigQuery provides cost-effective, permanent storage for exact post-event counting.",
+    "optionRationales": [
+      "Wrong: Memorystore (Redis) is an in-memory cache. It lacks the durability and exactly-once processing guarantees required to ensure every single vote is accurately counted during a massive spike.",
+      "Wrong: Cloud SQL is designed for relational, transactional workloads. It would struggle to scale instantly to absorb a sudden global spike of unstructured or semi-structured vote data within a 3-minute window.",
+      "Wrong: Cloud Functions provides at-least-once delivery semantics, which risks duplicate votes being written to BigQuery. Furthermore, BigQuery is not optimized for the high-frequency, low-latency updates needed for the live TV display.",
+      "Correct: This architecture perfectly decouples ingestion (Pub/Sub), guarantees exactly-once processing (Dataflow), provides real-time dashboard latency (Bigtable), and enables deep, exact analytics (BigQuery)."
+    ]
   },
   {
     "id": 123,
@@ -5924,7 +6916,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing existing BigQuery partitioned tables by adding clustering to high-cardinality columns.",
+    "correctRationale": "Clustering physically sorts the underlying storage blocks based on the package-tracking ID. When analysts query the lifecycle of a specific package, BigQuery uses these clusters to skip irrelevant blocks, dramatically speeding up performance. You can add clustering to an existing partitioned table without fully recreating it.",
+    "optionRationales": [
+      "Wrong: The table is already partitioned by ingest date. Re-partitioning by delivery date does not solve the issue of slow queries that are filtering on specific package-tracking IDs.",
+      "Correct: Implementing clustering on the high-cardinality `package-tracking ID` column co-locates related package data, drastically reducing the amount of data scanned for individual lifecycle queries.",
+      "Wrong: The table is already partitioned by ingest date. Adding clustering on the same ingest date column provides little to no benefit for queries searching for specific package IDs.",
+      "Wrong: Tiering data to Cloud Storage creates an external table. External tables are significantly slower to query than native BigQuery tables and do not support BigQuery clustering, which would worsen the performance."
+    ]
   },
   {
     "id": 124,
@@ -5972,7 +6972,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Efficiently deduplicating incoming messages in a data pipeline.",
+    "correctRationale": "Storing a hash of the payload in a database creates a fast, indexed lookup mechanism. When a new message arrives, you compute its hash and query the database; if the hash exists, you drop the message as a duplicate. This is highly efficient for at-least-once delivery systems.",
+    "optionRationales": [
+      "Wrong: Assigning a new GUID to each incoming entry does not identify duplicates; it merely assigns two unique identifiers to two identical payloads, failing to deduplicate them.",
+      "Wrong: Dynamically computing and comparing the hash against all historical data without an indexed storage mechanism is computationally prohibitive and cannot scale.",
+      "Wrong: Storing the entire raw payload as a primary key is highly inefficient for database indexing and storage, especially if the payload sizes are large.",
+      "Correct: Maintaining a metadata table with the payload's hash allows for a fast, indexed lookup to verify if an identical payload has already been successfully processed."
+    ]
   },
   {
     "id": 125,
@@ -6020,7 +7028,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Designing Dataplex virtual lakes and zones for a decentralized data mesh.",
+    "correctRationale": "In a data mesh architecture, each domain (or data product) should operate autonomously. Creating a separate virtual lake for each data product ensures decentralized ownership. Within each lake, creating distinct zones separates data by lifecycle stage (landing, raw, curated) to enforce strict access controls.",
+    "optionRationales": [
+      "Wrong: A single virtual lake forces centralized ownership, completely violating the decentralized domain-ownership principle of a data mesh.",
+      "Wrong: A single lake violates data mesh principles, and putting separate data products into assets within a single zone fails to enforce proper isolation and lifecycle tiering.",
+      "Wrong: While creating separate lakes is correct, grouping landing, raw, and curated data into a single zone violates security best practices, as these stages require distinct IAM permissions.",
+      "Correct: Creating separate lakes supports decentralized domain ownership (data mesh), and multiple zones properly segment the data lifecycle to enforce least-privilege access."
+    ]
   },
   {
     "id": 126,
@@ -6068,7 +7084,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Opción D: Modify ETL job to load the data into both the current and another backup region\nEvaluación:\nAjustar el ETL para escribir en dos tablas (una en la región principal y otra en una región de respaldo) asegura que los datos estén disponibles en ambas ubicaciones casi en tiem"
+    "discussionSummary": "Opción D: Modify ETL job to load the data into both the current and another backup region\nEvaluación:\nAjustar el ETL para escribir en dos tablas (una en la región principal y otra en una región de respaldo) asegura que los datos estén disponibles en ambas ubicaciones casi en tiem",
+    "conceptSummary": "Cost-effective BigQuery cross-region disaster recovery for a 24-hour RPO.",
+    "correctRationale": "Exporting BigQuery data to a multi-region Cloud Storage bucket provides resilience against a single region failure. Because Cloud Storage cold storage is significantly cheaper than BigQuery active storage, a daily scheduled export easily meets the <24-hour RPO requirement while keeping costs at an absolute minimum.",
+    "optionRationales": [
+      "Correct: A scheduled daily export to a dual or multi-region GCS bucket is the most cost-effective way to achieve a 24-hour RPO and survive a regional BigQuery outage.",
+      "Wrong: While copying the dataset to a backup region works natively, storing the data permanently in a secondary BigQuery region incurs active storage costs that violate the \"minimize costs\" requirement.",
+      "Wrong: BigQuery snapshots reside in the exact same region as the base table. If the region fails, both the table and the snapshot become inaccessible.",
+      "Wrong: Modifying the ETL job to load into two regions simultaneously doubles compute and storage costs, providing a near-real-time RPO that is massive overkill for a relaxed 24-hour requirement."
+    ]
   },
   {
     "id": 127,
@@ -6116,7 +7140,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Troubleshooting internal network communication for Dataflow workers.",
+    "correctRationale": "Dataflow workers must communicate with each other internally over TCP ports 12345 and 12346. Because the organization relies on network tags rather than subnets for firewall rules, you must verify that a firewall rule explicitly targets the Dataflow network tag and allows ingress on these specific ports.",
+    "optionRationales": [
+      "Wrong: Simply determining if the tag is set on the workers does not verify if the actual firewall rule allowing the required port traffic exists.",
+      "Correct: Dataflow relies on TCP ports 12345 and 12346 for worker-to-worker communication. Checking the rule bound to the specific network tag aligns with the company's security policies.",
+      "Wrong: The scenario explicitly states the networking team uses network tags to define firewall rules, not subnet-based targeting.",
+      "Wrong: External IP addresses dictate internet access. Worker-to-worker communication occurs over internal IPs, which is governed by internal VPC firewall rules, not external IPs."
+    ]
   },
   {
     "id": 128,
@@ -6164,7 +7196,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing BigQuery tables for queries filtering on high-cardinality string columns.",
+    "correctRationale": "Both `country_name` and `username` are string columns. BigQuery cannot partition a table by a string column, but it natively supports clustering on strings. Clustering physically sorts the blocks by these fields, dramatically reducing bytes scanned and speeding up dashboard queries.",
+    "optionRationales": [
+      "Correct: Clustering supports string columns and heavily optimizes query performance when users frequently filter by those specific attributes.",
+      "Wrong: BigQuery does not support partitioning by a STRING column like `username`.",
+      "Wrong: BigQuery does not support partitioning by STRING columns, and you cannot partition by two columns simultaneously.",
+      "Wrong: Partitioning by ingestion time (`_PARTITIONTIME`) only optimizes queries that filter by date; it does not directly speed up queries filtering solely by country and username."
+    ]
   },
   {
     "id": 129,
@@ -6212,7 +7252,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Simulating a disaster recovery scenario in Memorystore for Redis.",
+    "correctRationale": "To ensure absolutely no impact on production, DR tests must run in a separate dev environment. To accurately simulate a true disaster (like a zone crash where un-replicated data is lost), you must use `force-data-loss` mode, which executes an immediate, ungraceful failover.",
+    "optionRationales": [
+      "Wrong: `limited-data-loss` mode gracefully flushes and syncs data before failing over. This mimics scheduled maintenance, not an abrupt disaster recovery scenario.",
+      "Correct: Running in dev protects production data, and the `force-data-loss` mode accurately mimics a catastrophic primary node crash where data loss can occur.",
+      "Wrong: Increasing a replica in production and using `force-data-loss` introduces an unacceptable risk of data loss and downtime to the live production database.",
+      "Wrong: Initiating any manual failover directly on the production instance impacts availability, violating the constraint of having no impact on production data."
+    ]
   },
   {
     "id": 130,
@@ -6244,7 +7292,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Securely sharing CMEK-encrypted BigQuery data without sharing the encryption key.",
+    "correctRationale": "You should never grant external organizations access to your Customer-Managed Encryption Keys (CMEK). By copying the data to a new dataset encrypted with Google-managed keys, the data is decrypted using your CMEK and re-encrypted. You can then safely share this keyless dataset using Analytics Hub.",
+    "optionRationales": [
+      "Wrong: Providing copies of your CMEKs to an external organization violates the principle of least privilege and entirely compromises your cryptographic control.",
+      "Wrong: Exporting the data to Parquet files strips it of BigQuery's native analytical capabilities and creates a disconnected data silo.",
+      "Correct: Copying the data to a standard dataset removes the CMEK dependency, and Analytics Hub provides a secure, governed mechanism for cross-organization data sharing.",
+      "Wrong: Authorized views execute with the permissions of the querying user. If the partner organization lacks access to the CMEK, queries on the authorized view will fail."
+    ]
   },
   {
     "id": 131,
@@ -6292,7 +7348,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Connecting Dataflow to a private-IP Cloud SQL instance across GCP projects.",
+    "correctRationale": "Cloud SQL instances with private IPs are hosted in a Google-managed VPC that is peered to your project (Project B). Because VPC peering is non-transitive, Project A cannot route through Project B's peering directly to Cloud SQL. To bridge this gap, you must create a proxy VM inside Project B.",
+    "optionRationales": [
+      "Wrong: VPC Peering is non-transitive. Peering Project A to Project B does not allow Project A to see the Google-managed VPC where Cloud SQL actually lives.",
+      "Wrong: Cloud NAT is used to provide outbound internet access to instances without external IPs; it does not facilitate internal traffic routing across peered VPCs.",
+      "Wrong: The Cloud SQL instance has no public IP. Authorized networks are only used to whitelist external IP addresses, making this impossible.",
+      "Correct: A proxy VM in Project B sits on the peered network and acts as a bridge, successfully routing internal traffic from Project A's Dataflow workers to the Google-managed Cloud SQL VPC."
+    ]
   },
   {
     "id": 132,
@@ -6344,7 +7408,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Troubleshooting BigQuery column-level security and policy tags.",
+    "correctRationale": "For column-level security to work, policy tags must have access control enforcement enabled. If enforcement is off, the tags are purely descriptive. Furthermore, if a user has the `Data Catalog Fine-Grained Reader` role inherited at the project level, they can bypass the policy tags and read the sensitive data anyway.",
+    "optionRationales": [
+      "Wrong: Creating two separate datasets duplicates data and maintenance overhead, defeating the entire purpose of using column-level security.",
+      "Correct: The `Data Catalog Fine-Grained Reader` role grants blanket access to read tagged columns. Removing it ensures least-privilege access is maintained.",
+      "Wrong: Replacing datasets with authorized views ignores the policy tag architecture entirely and introduces heavy query maintenance.",
+      "Wrong: Removing `bigquery.dataViewer` from the analytics team revokes their access to the entire table, preventing them from querying the non-sensitive columns they are explicitly supposed to see.",
+      "Correct: Policy tags must be explicitly set to 'Enforce access control' in the taxonomy settings; otherwise, they do not block query execution."
+    ]
   },
   {
     "id": 133,
@@ -6392,7 +7465,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Restoring high availability and read capacity in Cloud SQL after a disaster failover.",
+    "correctRationale": "When Region 1 fails, promoting the read replica in Region 2 makes it the new standalone primary. To restore your original architectural capacity (one primary and two replicas across multiple regions), you must provision two brand new read replicas branching off the newly promoted primary.",
+    "optionRationales": [
+      "Wrong: Creating only one new read replica leaves you with just the Primary and one replica, failing to restore the original capacity of two replicas.",
+      "Wrong: The original Region 3 replica is permanently orphaned when the Region 1 primary dies. You cannot cascade a new replica from an orphaned node.",
+      "Correct: Creating two new read replicas from the new primary instance re-establishes the exact read capacity and geographic distribution of the original architecture.",
+      "Wrong: You cannot create a new replica in Region 1 because Region 1 is actively experiencing an unexpected disaster event."
+    ]
   },
   {
     "id": 134,
@@ -6440,7 +7521,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Configuring alert notifications for task failures in Cloud Composer (Airflow).",
+    "correctRationale": "Apache Airflow tasks accept an `on_failure_callback` parameter. This parameter is natively designed to invoke a specific Python function (like triggering a Slack webhook, email, or custom alert) exactly when a task execution enters a failed state.",
+    "optionRationales": [
+      "Wrong: The `on_retry_callback` triggers when a task fails but is configured to retry. It does not trigger when the task ultimately exhausts retries and hard-fails.",
+      "Wrong: Cloud Monitoring can track `sla_missed` metrics, but an SLA miss indicates a task took too long to run, not that it threw an error and failed.",
+      "Correct: The `on_failure_callback` hook is the native Airflow method for executing custom notification logic immediately upon a task failure.",
+      "Wrong: The `sla_miss_callback` parameter executes when a task exceeds its expected runtime duration, which is distinctly different from task failure."
+    ]
   },
   {
     "id": 135,
@@ -6488,7 +7577,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Providing managed notebook environments for ML on large datasets.",
+    "correctRationale": "When a local laptop lacks the compute power to analyze massive datasets, the solution is to move the compute to the cloud. Deploying a managed Jupyter environment on a Compute Engine VM co-locates the compute with the Cloud Storage data, preventing massive data egress while providing powerful hardware.",
+    "optionRationales": [
+      "Wrong: Running Jupyter locally relies on the data scientist's weak laptop hardware and requires pulling terabytes of data over the public internet.",
+      "Wrong: Google Cloud Shell is a temporary, low-powered administration terminal (e2-small instance) and is incapable of handling heavy machine learning visualization tasks.",
+      "Wrong: Simply hosting a generic visualization tool does not provide the interactive Python/Jupyter environment a data scientist requires for custom ML labeling and scripting.",
+      "Correct: Cloud Datalab (historically) or Vertex AI Workbench provides a robust, managed Jupyter notebook environment running on scalable Compute Engine hardware next to the data."
+    ]
   },
   {
     "id": 136,
@@ -6532,7 +7629,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Securely migrating on-premise MySQL data using Datastream and Cloud Interconnect.",
+    "correctRationale": "Cloud Interconnect provides a dedicated, physical network connection between on-premise infrastructure and GCP, bypassing the public internet entirely. Datastream provides native CDC replication, and configuring it with Private Connectivity allows the replication traffic to route securely over the Interconnect.",
+    "optionRationales": [
+      "Wrong: Updating an existing ETL tool to use an ODBC driver requires custom development for continuous syncs and lacks Datastream's managed CDC capabilities.",
+      "Correct: Cloud Interconnect completely bypasses the public internet, and Datastream's Private Connectivity natively routes the replication traffic over this secure bridge.",
+      "Wrong: Setting up a Forward-SSH tunnel routes traffic over the public internet, which explicitly violates the security requirement.",
+      "Wrong: IP Allowlisting requires exposing the database to the public internet and restricting which external IPs can connect, failing the requirement to avoid the public internet."
+    ]
   },
   {
     "id": 137,
@@ -6572,7 +7677,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Querying multi-cloud data directly without movement using BigQuery Omni.",
+    "correctRationale": "BigQuery Omni allows you to run BigQuery compute engines directly within AWS and Azure. By creating BigLake tables, you can execute standard SQL queries against data stored in S3 or Azure Blob Storage directly from the BigQuery interface without incurring data transfer or egress costs.",
+    "optionRationales": [
+      "Wrong: BigQuery Data Transfer Service physically copies the files from AWS and Azure into Google Cloud, violating the 'minimal data movement' requirement.",
+      "Wrong: Building a custom Dataflow pipeline forces data movement into GCP, ignoring the multi-cloud native querying requirement.",
+      "Wrong: Using `gsutil rsync` literally copies all files out of AWS/Azure into Cloud Storage, incurring heavy egress fees and moving massive amounts of data.",
+      "Correct: BigQuery Omni and BigLake tables push the query execution to the external clouds, allowing cross-cloud analysis with zero data movement."
+    ]
   },
   {
     "id": 138,
@@ -6620,7 +7733,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Providing a low-code, visual interface for data cleansing and exploration.",
+    "correctRationale": "Dataprep by Trifacta is Google Cloud's fully managed, visual data preparation service. It is designed specifically as a low-code/no-code interface for business analysts and data scientists to interactively explore, clean, and format raw files directly in Cloud Storage.",
+    "optionRationales": [
+      "Wrong: Dataflow requires writing Apache Beam pipelines in Java, Python, or Go. This is a high-code engineering solution, not a low-code exploratory tool.",
+      "Wrong: Creating external tables and writing complex SQL transformations is not a low-code solution and provides a poor interactive visual exploration experience.",
+      "Wrong: Loading data into BigQuery and writing SQL transformations is a standard engineering pattern, but it fails the 'low-code' requirement.",
+      "Correct: Dataprep provides a drag-and-drop, visual interface allowing data scientists to cleanse and validate data rapidly without writing code."
+    ]
   },
   {
     "id": 139,
@@ -6660,7 +7781,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Implementing data quality checks directly within Dataform ELT pipelines.",
+    "correctRationale": "Dataform natively supports 'assertions', which are declarative data quality tests defined in SQLx. You can write assertions to automatically check for uniqueness (`uniqueKey`) or null values (`nonNull`). If an assertion fails, Dataform can halt the pipeline, ensuring data integrity.",
+    "optionRationales": [
+      "Wrong: BigQuery UDFs (User-Defined Functions) are used for scalar data transformations within SQL queries, not for pipeline data quality testing or halting workflows.",
+      "Wrong: Dataplex data quality tasks run externally to the Dataform execution model, making them harder to integrate tightly as blocking steps in the ELT code.",
+      "Correct: Assertions are Dataform's built-in feature for validating row conditions directly within the SQLx codebase.",
+      "Wrong: Writing a Spark-based stored procedure requires spinning up external Dataproc compute, adding unnecessary complexity when Dataform already runs natively in BigQuery."
+    ]
   },
   {
     "id": 140,
@@ -6708,7 +7837,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Diagnosing pipeline backlogs using Dataflow System Lag and Data Freshness metrics.",
+    "correctRationale": "System lag measures how long it takes to process a single element, which is a fast 5 seconds. Data freshness measures the age of the oldest unprocessed element, which is a high 40 seconds. This discrepancy means the pipeline processes individual messages quickly but lacks the worker capacity to chew through the volume, creating a backlog.",
+    "optionRationales": [
+      "Wrong: Dataflow metrics (system lag and data freshness) reflect the internal state of the pipeline and the input Pub/Sub topic, completely independent of the downstream advertising department's consumption speed.",
+      "Wrong: If messages were taking more than 30 seconds to process, the System Lag metric would be higher than 30 seconds. Instead, it is only 5 seconds.",
+      "Correct: Low system lag means processing is fast, but high data freshness indicates older messages are queuing up in Pub/Sub faster than the workers can pull them.",
+      "Wrong: If the web server was slow to push messages, there wouldn't be a backlog in the subscription. The high data freshness metric specifically tracks unacknowledged messages already waiting in Pub/Sub."
+    ]
   },
   {
     "id": 141,
@@ -6756,7 +7893,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Modernizing Hadoop workloads using Dataproc Serverless and Dataproc Metastore.",
+    "correctRationale": "To minimize changes to Hadoop/Spark pipelines, you can replace HDFS with Cloud Storage and the Hive Metastore with Dataproc Metastore (DPMS). Dataproc Serverless runs the Spark code without requiring cluster management. Data in GCS can easily be made available to BigQuery via external tables.",
+    "optionRationales": [
+      "Correct: Cloud Storage replaces HDFS, DPMS seamlessly replaces the Hive Metastore, and Dataproc Serverless executes the jobs with minimal refactoring and zero cluster overhead.",
+      "Wrong: While Dataplex is useful for governance, registering data as a Dataplex asset doesn't natively migrate and preserve the existing Hadoop metadata structure as seamlessly as Dataproc Metastore.",
+      "Wrong: Refactoring the Spark pipelines to read and write directly to BigQuery storage instead of Parquet on HDFS requires extensive code rewrites, violating the 'minimize ETL changes' requirement.",
+      "Wrong: Running Dataproc on Compute Engine requires provisioning and managing persistent infrastructure, which fails the requirement to minimize overhead costs."
+    ]
   },
   {
     "id": 142,
@@ -6804,7 +7949,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Preventing cross-project data exfiltration using VPC Service Controls.",
+    "correctRationale": "VPC Service Controls enforce API-level security perimeters around GCP projects. By placing a perimeter around Project A, you explicitly block any identity or service in another project (like Project B or future projects) from interacting with Project A's Pub/Sub API, preventing data exfiltration.",
+    "optionRationales": [
+      "Wrong: Firewall rules restrict IP network traffic to Virtual Machines. They cannot secure managed API services like Pub/Sub.",
+      "Correct: VPC Service Controls create a robust API perimeter around Project A, ensuring its resources are fundamentally inaccessible from any external project boundary.",
+      "Wrong: IAM conditions govern who can access what, but they are difficult to scale securely to 'future projects' and do not prevent a malicious user with valid credentials from exfiltrating data.",
+      "Wrong: VPC Service Controls perimeters are drawn around GCP Projects, not Virtual Private Cloud (VPC) networks."
+    ]
   },
   {
     "id": 143,
@@ -6844,7 +7997,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Scaling read capacity in Memorystore for Redis using read replicas.",
+    "correctRationale": "Memorystore Basic Tier provides a standalone Redis node with no failover or read replication capabilities. Upgrading to the Standard Tier unlocks the ability to provision read replicas. This horizontally scales read throughput to handle hundreds of new clients while preserving primary write availability.",
+    "optionRationales": [
+      "Wrong: Standard Tier without read replicas only provides High Availability (failover capability); it does not increase read capacity.",
+      "Correct: Upgrading to Standard Tier allows for the creation of multiple read replicas, which offload read traffic and protect the primary node's write performance.",
+      "Wrong: Memcached is a fundamentally different caching technology with no persistence. Switching to it would require massive application rewrites.",
+      "Wrong: Creating multiple isolated Basic Tier instances fragments your data. You would have to build custom sharding logic into your application, massively increasing architecture complexity."
+    ]
   },
   {
     "id": 144,
@@ -6896,7 +8057,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Replaying historical Pub/Sub messages using Seek and retained messages.",
+    "correctRationale": "To replay messages that have already been acknowledged and removed from the backlog, you must first configure the subscription to `retain-acked-messages`. Once enabled, Pub/Sub stores the messages for up to 7 days. You can then use the `Seek` operation with a specific timestamp to rewind the cursor and redeliver the historical messages.",
+    "optionRationales": [
+      "Wrong: The `clear-retry-policy` just resets exponential backoff delays for currently unacknowledged messages; it does not resurrect messages that have already been acknowledged.",
+      "Wrong: While Seek works with Snapshots, creating a snapshot two days prior requires time travel. You need a solution that works after the fact.",
+      "Wrong: A newly created Pub/Sub subscription only receives messages published *after* its creation. It cannot pull historical data.",
+      "Correct: Enabling the `retain-acked-messages` flag is a strict prerequisite, forcing Pub/Sub to keep messages in storage even after they are processed.",
+      "Correct: Using the Seek feature with a past timestamp rewinds the subscription's delivery cursor, replaying the retained messages to the new pipeline."
+    ]
   },
   {
     "id": 145,
@@ -6944,7 +8114,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing complex BigQuery visualizations with non-incremental materialized views.",
+    "correctRationale": "Standard incremental materialized views in BigQuery do not support complex SQL operations like outer joins and analytic functions. By setting `allow_non_incremental_definition` to true, BigQuery allows these complex queries and performs full background refreshes. Specifying a 4-hour `max_staleness` perfectly aligns with the business requirement.",
+    "optionRationales": [
+      "Correct: This option specifically enables materialized views to support outer joins while automatically caching data within the acceptable 4-hour freshness window.",
+      "Wrong: Standard logical views do not cache underlying data; they merely save the query string. The visualization will remain slow because the heavy SQL executes against the raw data every time.",
+      "Wrong: Exporting data to Parquet files forces you to query flat files in Cloud Storage, degrading performance and breaking BigQuery's native acceleration.",
+      "Wrong: BigQuery's standard incremental updates explicitly do not support queries containing outer joins or analytic (window) functions."
+    ]
   },
   {
     "id": 146,
@@ -6992,7 +8170,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Google Cloud reference architecture for real-time streaming IoT telemetry.",
+    "correctRationale": "The standard GCP streaming architecture uses Pub/Sub as a scalable buffer to ingest millions of concurrent events. Dataflow reads from Pub/Sub to provide real-time stream processing and transformation, and then writes the structured output into BigQuery for immediate, massive-scale analytical querying.",
+    "optionRationales": [
+      "Wrong: Cloud Datastore (Firestore) is a NoSQL document database. It is not optimized for the high-throughput, time-series analytical aggregation required by IoT telemetry.",
+      "Correct: This is the canonical reference architecture for real-time data: Pub/Sub (Ingest) -> Dataflow (Process) -> BigQuery (Analyze).",
+      "Wrong: Writing raw data to Cloud Storage and spinning up Hadoop clusters is a batch processing paradigm, entirely failing the 'analyze in real time' requirement.",
+      "Wrong: Exporting logs in batch breaks the real-time requirement, and Cloud SQL is a relational database that scales poorly for 10,000 global IoT devices sending continuous data."
+    ]
   },
   {
     "id": 147,
@@ -7032,7 +8218,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Lift-and-shift modernization of Hadoop and Airflow workloads.",
+    "correctRationale": "To migrate Hadoop workloads with minimal changes, Dataproc acts as a drop-in replacement for the Hadoop/Spark compute layer. Cloud Storage natively replaces HDFS using the GCS connector. Finally, Cloud Composer is a fully managed Apache Airflow service, allowing the orchestration pipelines to run without rewrites.",
+    "optionRationales": [
+      "Wrong: Bigtable is a wide-column NoSQL database, not a distributed compute engine. It cannot natively execute Hadoop MapReduce or Spark jobs.",
+      "Correct: Dataproc runs native Spark/Hadoop code, GCS transparently replaces HDFS, and Cloud Composer runs native Airflow DAGs, minimizing migration effort.",
+      "Wrong: Converting hundreds of Airflow ETL pipelines to Dataflow (Apache Beam) requires massive code rewrites in Java or Python, violating the 'minimal changes' requirement.",
+      "Wrong: Cloud Data Fusion is a visual UI integration tool. Moving Airflow pipelines to Data Fusion requires throwing away the code and rebuilding everything from scratch via drag-and-drop."
+    ]
   },
   {
     "id": 148,
@@ -7084,7 +8278,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Troubleshooting Airflow worker memory exhaustion (OOM evictions) in Cloud Composer.",
+    "correctRationale": "Worker pod evictions happen when an Airflow worker exceeds its Kubernetes memory limit (OOMKilled). You can solve this by either increasing the memory limit for the workers or reducing worker concurrency (so fewer tasks run simultaneously on one node, leaving more RAM per task).",
+    "optionRationales": [
+      "Wrong: The DAG file parsing interval affects the CPU load of the Airflow Scheduler, not the memory consumption of the Worker nodes executing tasks.",
+      "Wrong: Increasing the overall environment size scales the cluster's node count or machine type globally, but doesn't directly tune the specific memory allocation per Airflow worker pod.",
+      "Correct: Reducing worker concurrency limits how many tasks run on a single pod simultaneously, preventing the pod from exhausting its available RAM.",
+      "Correct: Explicitly increasing the memory available to the Airflow workers gives them a larger RAM buffer to handle memory-intensive jobs without eviction.",
+      "Wrong: The Airflow triggerer manages deferred async operations. Evictions are happening to the workers running active tasks, not the triggerer."
+    ]
   },
   {
     "id": 149,
@@ -7132,7 +8335,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Enforcing geographic deployment restrictions using Organization Policies.",
+    "correctRationale": "Google Cloud Organization Policies apply universally across projects or folders and prevent API calls from creating resources in prohibited regions. Setting the `constraints/gcp.resourceLocations` constraint explicitly restricts all new infrastructure to the exact specified region.",
+    "optionRationales": [
+      "Correct: The `gcp.resourceLocations` constraint is the Google-recommended, native guardrail to strictly enforce geographic data residency.",
+      "Wrong: Terraform validation only stops non-compliant deployments made via that specific pipeline; a user with console or gcloud access could easily bypass it and deploy elsewhere.",
+      "Wrong: Setting the constraint to `eu-locations` permits deployment in any European region (e.g., europe-west1), failing the requirement to restrict specifically to `europe-west3`.",
+      "Wrong: A reactive Cloud Function allows the resource to be created temporarily (violating compliance) and introduces custom, error-prone code overhead compared to a native preventative policy."
+    ]
   },
   {
     "id": 150,
@@ -7176,7 +8387,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Troubleshooting BigQuery slot contention and query queuing.",
+    "correctRationale": "BigQuery's administrative resource charts provide visual dashboards to monitor overall slot utilization and concurrency across the reservation. For granular details, querying `INFORMATION_SCHEMA.JOBS` reveals exactly which queries consumed the most slots, their execution times, and how long they sat in the pending queue.",
+    "optionRationales": [
+      "Wrong: Blindly buying more slot capacity without diagnosing the root cause of the contention is expensive and ignores the troubleshooting step requested.",
+      "Wrong: Cloud Monitoring provides high-level system metrics but lacks the granular, query-by-query execution and queueing details needed to troubleshoot specific BigQuery jobs.",
+      "Correct: Administrative charts visualize overall slot bottlenecks, while `INFORMATION_SCHEMA.JOBS` provides row-level data on execution, queuing, and slot consumption per query.",
+      "Wrong: Cloud Logging tracks API audit events like IAM permission changes, which has absolutely nothing to do with query performance or slot contention."
+    ]
   },
   {
     "id": 151,
@@ -7224,7 +8443,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "CQRS pattern for serving massive analytical data vs low-latency API lookups.",
+    "correctRationale": "BigQuery is designed to store and analyze petabytes of historical data efficiently, but it is not optimized for high-frequency, sub-second API reads. Cloud SQL perfectly handles low-latency point-reads for a 10 GB dataset at 1000 QPS. Storing history in BigQuery and the latest state in Cloud SQL perfectly separates the workloads.",
+    "optionRationales": [
+      "Wrong: BigQuery's connection overhead and execution model make it incapable of consistently serving 1000 queries per second with sub-second latency, even using materialized views.",
+      "Wrong: Storing 10 PB of historical data in Firestore is catastrophically expensive and heavily degrades complex analytical queries.",
+      "Wrong: Cloud SQL is a transactional database. Attempting to store 10 PB of historical analytical data in it would exceed its storage limits and result in terrible query performance.",
+      "Correct: This isolates the analytical workload (10 PB in BigQuery) from the transactional serving workload (10 GB in Cloud SQL for fast API responses)."
+    ]
   },
   {
     "id": 152,
@@ -7272,7 +8499,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Dynamically triggering parameterized Airflow DAGs using Cloud Storage events.",
+    "correctRationale": "Managing hundreds of identical pipelines for different tables is best done with a single parameterized DAG. Because files arrive unpredictably, time-based scheduling is inefficient. Instead, use a Cloud Storage event trigger to invoke a Cloud Function, which makes an API call to Airflow to trigger the DAG immediately, passing the filename as a parameter.",
+    "optionRationales": [
+      "Wrong: Scheduling hourly introduces unnecessary latency, failing to process unpredictable file arrivals efficiently.",
+      "Wrong: Creating and maintaining hundreds of separate DAGs (one for each table) is a maintenance nightmare, and hourly polling ignores the unpredictable arrival requirement.",
+      "Correct: A single shared DAG scales infinitely without code duplication, while the event-driven GCS trigger ensures immediate execution the moment a file arrives.",
+      "Wrong: Creating hundreds of individual DAGs is completely unmaintainable and violates the explicit requirement for an efficient workflow."
+    ]
   },
   {
     "id": 153,
@@ -7320,7 +8555,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Restoring high availability and cross-region read scaling in Cloud SQL after a primary failover.",
+    "correctRationale": "During a regional outage, promoting the Region B read replica turns it into a standalone primary instance. To restore the architecture's original capacity (one primary and two geographic replicas), you must provision two new read replicas branching off the newly promoted Region B primary.",
+    "optionRationales": [
+      "Wrong: Creating only one new read replica leaves the architecture with just a Primary and one replica, failing to restore the original capacity.",
+      "Wrong: The original replica in Region 3 is permanently orphaned when Region 1 fails. You cannot create cascading replicas from an orphaned database.",
+      "Correct: Creating two new read replicas off the new primary re-establishes the exact read capacity and geographic distribution of the original architecture.",
+      "Wrong: You cannot create a new replica in Region 1 because Region 1 is actively experiencing an unexpected disaster event."
+    ]
   },
   {
     "id": 154,
@@ -7368,7 +8611,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Programmatically masking sensitive data in a unified batch/streaming pipeline.",
+    "correctRationale": "Apache Beam provides a unified programming model for both streaming and batch processing. By writing a Dataflow pipeline in Python, you can programmatically invoke the Cloud DLP API to mask sensitive fields in-flight before the data is written to the BigQuery sink.",
+    "optionRationales": [
+      "Wrong: Cloud Data Fusion is a visual, GUI-based ETL tool. The prompt explicitly requires masking data *programmatically* to minimize costs and overhead.",
+      "Wrong: BigQuery Data Transfer Service is strictly for scheduled bulk loads; it does not natively support real-time streaming or mid-flight programmatic DLP masking.",
+      "Correct: Dataflow natively supports both streaming and batch paradigms, and the Python SDK allows you to programmatically execute inline DLP masking logic.",
+      "Wrong: Datastream performs exact 1:1 CDC replication from source to BigQuery. It lacks the ability to execute programmatic data masking natively in-flight."
+    ]
   },
   {
     "id": 155,
@@ -7404,7 +8655,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Implementing per-user crypto-deletion (crypto-shredding) in BigQuery.",
+    "correctRationale": "BigQuery's AEAD (Authenticated Encryption with Associated Data) functions allow you to encrypt specific rows or columns using unique keys. By destroying the specific encryption key associated with a single user, their data becomes permanently unreadable, achieving native crypto-deletion without affecting the rest of the table.",
+    "optionRationales": [
+      "Correct: Native AEAD functions enable fine-grained, row-level encryption, allowing you to cryptographically shred a single user's data by deleting their unique key.",
+      "Wrong: A CMEK applied at the table level encrypts the entire table with a single key. You cannot delete one user's data without destroying the key for the entire dataset.",
+      "Wrong: Encrypting the data outside of BigQuery before ingestion breaks native Google Cloud features, as BigQuery can no longer natively process or analyze the ciphertext.",
+      "Wrong: Using an external cryptographic library violates the requirement to 'adopt native Google Cloud features'."
+    ]
   },
   {
     "id": 156,
@@ -7452,7 +8711,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Managing BigQuery concurrency limits using job priorities.",
+    "correctRationale": "BigQuery limits the number of concurrent interactive queries. Since the new SQL pipelines are explicitly 'non-time-sensitive', submitting them with a `BATCH` priority places them in a queue. They will consume idle slots when available, preventing concurrency quota errors without requiring you to purchase more capacity.",
+    "optionRationales": [
+      "Wrong: Increasing the maximum reservation size costs extra money. Using the batch queue solves the concurrency problem for background workloads for free.",
+      "Correct: Routing non-critical pipelines to the BATCH queue ensures they only run when slots are free, saving the INTERACTIVE queue for human ad-hoc queries and preventing quota limits.",
+      "Wrong: Increasing slot capacity costs money and ignores the architectural solution of lowering priority for non-time-sensitive pipelines.",
+      "Wrong: Submitting all 1500 queries as interactive is the exact cause of the current quota errors, as it immediately overwhelms the concurrency limit."
+    ]
   },
   {
     "id": 157,
@@ -7501,7 +8768,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Changing a column data type from STRING to TIMESTAMP in BigQuery.",
+    "correctRationale": "BigQuery does not allow changing a column's data type via an `ALTER TABLE` statement. The standard, most efficient approach is to run a `SELECT` query that casts the string column to a timestamp, and write the output directly to a new destination table.",
+    "optionRationales": [
+      "Wrong: Deleting the table and reloading the raw CSV data takes significant time, requires parsing raw files again, and risks data loss.",
+      "Wrong: Adding a new column doubles the storage footprint for that attribute and forces downstream analysts to rewrite all their queries to target the new column name.",
+      "Wrong: Creating a view forces BigQuery to execute the string-to-timestamp calculation dynamically on every query, completely violating the requirement to avoid making future queries computationally expensive.",
+      "Wrong: Adding columns and reloading in append mode duplicates the entire dataset inside the same table, mixing old schema rows with new schema rows.",
+      "Correct: Running a `SELECT CAST(DT AS TIMESTAMP)` query into a new destination table permanently converts the data type, optimizing storage and query performance for all future usage."
+    ]
   },
   {
     "id": 158,
@@ -7549,7 +8825,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Assigning proper IAM roles for personas in a Dataplex data mesh.",
+    "correctRationale": "In Dataplex, `dataplex.dataOwner` grants full administrative control over underlying storage resources, which is appropriate for data engineers managing the lake. `dataplex.dataReader` grants query access, which is appropriate for analysts, and scoping it to the curated zone strictly enforces least-privilege access.",
+    "optionRationales": [
+      "Correct: This maps perfectly to the persona requirements: engineers get full owner access at the lake level, while analysts get read-only access scoped strictly to the curated zone.",
+      "Wrong: This reverses the roles, granting analysts full ownership over the lake and restricting engineers to read-only, breaking the operational model.",
+      "Wrong: Granting direct BigQuery and Cloud Storage IAM roles bypasses Dataplex's centralized governance model entirely.",
+      "Wrong: This grants engineers read-only access and gives analysts administrative edit capabilities, completely reversing the intended security posture."
+    ]
   },
   {
     "id": 159,
@@ -7597,7 +8881,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Ensuring a 15-minute RPO for cross-region disaster recovery in Cloud Storage.",
+    "correctRationale": "A dual-region bucket automatically replicates objects between two distinct regions. By enabling Turbo Replication, Google Cloud provides a strict Service Level Agreement (SLA) guaranteeing that 100% of newly written objects are replicated within 15 minutes, ensuring a minimal RPO without application changes.",
+    "optionRationales": [
+      "Wrong: Standard multi-regional buckets do not carry a hard 15-minute replication SLA, risking RPO breaches during a sudden regional failure.",
+      "Wrong: Updating the application to execute dual writes to two separate regional buckets requires significant code changes, violating the 'no impact on applications' constraint.",
+      "Correct: Dual-region buckets handle replication natively, and Turbo Replication mathematically guarantees the strict 15-minute Recovery Point Objective.",
+      "Wrong: Running a daily batch copy script creates a massive 24-hour RPO, severely failing the requirement to minimize data loss exposure."
+    ]
   },
   {
     "id": 160,
@@ -7645,7 +8937,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Guaranteeing pipeline state recovery using GCS Turbo Replication and Pub/Sub Seek.",
+    "correctRationale": "Turbo Replication on a dual-region bucket guarantees a 15-minute RPO for the Dataflow output. If the primary region fails, you start a new Dataflow job in the secondary region. To ensure no in-flight data was lost during the 15-minute replication window, you seek the Pub/Sub subscription backwards by 60 minutes to safely replay recent messages.",
+    "optionRationales": [
+      "Wrong: A standard dual-region bucket without turbo replication does not guarantee a 15-minute RPO; default replication can take hours.",
+      "Wrong: Multi-regional buckets replicate across a continent but do not provide the strict 15-minute RPO SLA required.",
+      "Wrong: A regional bucket exists in only one physical location. If that region fails, the bucket is entirely inaccessible, making DR impossible.",
+      "Correct: Turbo replication guarantees the 15-minute RPO for Cloud Storage, and seeking Pub/Sub back 60 minutes ensures no in-flight data is missed when restarting in the surviving region."
+    ]
   },
   {
     "id": 161,
@@ -7693,7 +8993,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Replacing null values with zeros using BigQuery SQL syntax.",
+    "correctRationale": "The REPLACE function in BigQuery allows you to substitute the value of a specific column while keeping the rest of the row intact (SELECT * REPLACE). The IFNULL() function evaluates the column and replaces the null values with 0, safely handling the missing data before feeding it to the ML model.",
+    "optionRationales": [
+      "Correct: This syntax uses IFNULL to correctly identify nulls, replaces them with 0, and uses the REPLACE clause to overwrite only that specific column in the SELECT * projection.",
+      "Wrong: NULLIF(expression1, expression2) returns NULL if the two expressions are equal, which would convert existing zeros into nulls, entirely defeating the objective.",
+      "Wrong: The IF statement here checks if the feature is exactly 0 and converts it to NULL, which is the exact opposite of what the question asks.",
+      "Wrong: COALESCE(feature1, '') replaces null values with an empty string rather than a zero, which will cause data type mismatches for numeric features and break the ML model."
+    ]
   },
   {
     "id": 162,
@@ -7737,7 +9045,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Analytics Hub for cross-organizational data sharing with minimal operational overhead.",
+    "correctRationale": "Analytics Hub is a fully managed data exchange service built on BigQuery. It allows teams to publish datasets and allows other teams to subscribe, completely removing the operational overhead of managing complex IAM bindings or maintaining authorized views while letting publishers retain full control over their data.",
+    "optionRationales": [
+      "Wrong: Asking every team to manually create and maintain authorized views for every other team introduces massive operational overhead and does not scale well organization-wide.",
+      "Wrong: Replicating data via scheduled queries increases storage costs drastically, breaks the single-source-of-truth model, and requires managing fragile replication pipelines.",
+      "Correct: Analytics Hub provides a centralized, low-overhead platform for publishing and discovering data products without duplicating data, minimizing both operational tasks and storage costs.",
+      "Wrong: Materialized views are designed to optimize the performance of complex aggregate queries, not to act as a governance tool for cross-team data sharing."
+    ]
   },
   {
     "id": 163,
@@ -7785,7 +9101,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Standard machine learning workflow step immediately following data processing.",
+    "correctRationale": "In a standard machine learning lifecycle, once data processing and preparation are complete, the very next step is to split the dataset. You must delineate the data into training, validation, and testing sets to ensure the model can generalize to unseen data before you actually begin training.",
+    "optionRationales": [
+      "Wrong: Running predictions on fresh customer input data is the final step of the lifecycle (inference), which happens long after the model is trained.",
+      "Wrong: Monitoring performance and making adjustments is part of MLOps for models that are already deployed in production.",
+      "Correct: Delineating data into training and testing splits is the mandatory prerequisite step immediately following data preparation and preceding model training.",
+      "Wrong: You cannot test and evaluate your model until after you have trained it, which requires splitting the data first."
+    ]
   },
   {
     "id": 164,
@@ -7833,7 +9157,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Retrieving sensitive data occurrences using Cloud DLP inspection jobs.",
+    "correctRationale": "To identify tables that contain street addresses at scale without scanning the entire organization, a discovery scan configuration profiles the data to locate where the STREET_ADDRESS infoType exists. (Note: While an inspection job retrieves actual rows, the keyed answer focuses on finding the occurrences via discovery scan).",
+    "optionRationales": [
+      "Wrong: Using REGEXP_CONTAINS requires writing and maintaining complex, brittle regex patterns for addresses and fails to leverage Google's pre-trained machine learning DLP infoTypes.",
+      "Wrong: While a deep inspection job can extract specific row data, running it blindly on every table is significantly more expensive than running a discovery scan to profile the data first.",
+      "Correct: A discovery scan configuration leverages Cloud DLP's built-in STREET_ADDRESS infoType to systematically identify and profile where this sensitive data resides across the dataset.",
+      "Wrong: A de-identification job with a masking transformation obscures the data; it does not help you discover or retrieve the occurrences of the addresses."
+    ]
   },
   {
     "id": 165,
@@ -7877,7 +9209,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Designing a decentralized data mesh architecture using Dataplex domains.",
+    "correctRationale": "A data mesh architecture relies on domain-driven, decentralized ownership. In Dataplex, you map business domains (airlines, hotels) to individual lakes. You then organize the data assets within those domains into zones for specific teams (analytics, data science), and allow each domain to manage its own lake to remove the central team bottleneck.",
+    "optionRationales": [
+      "Wrong: Centralizing management in a single platform team retains the exact operational bottleneck the data mesh pattern is explicitly trying to eliminate.",
+      "Wrong: Creating a lake per team and a zone per domain inverses the logical hierarchy. Domains are the top-level business entities, and teams operate within them.",
+      "Correct: Assigning one lake per business domain, with zones for specific teams, and granting the domain control over their own lake perfectly implements a decentralized data mesh.",
+      "Wrong: Setting up the correct lake/zone hierarchy but forcing the central team to manage it all still violates the decentralized governance principle of a data mesh."
+    ]
   },
   {
     "id": 166,
@@ -7925,7 +9265,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cost-effectively filtering nested data using BigQuery logical views and UNNEST.",
+    "correctRationale": "A logical view is the most cost-effective solution because it only saves the query logic and incurs zero additional storage costs. Because the vCPU information is stored in a nested array, the UNNEST operator is strictly required to flatten the data so the filter can be applied.",
+    "optionRationales": [
+      "Correct: A standard view incurs no storage costs, and the UNNEST operator correctly flattens the nested data so the 'fewer than 8 vCPU' filter can be applied.",
+      "Wrong: A materialized view incurs ongoing storage costs and maintenance overhead, which are unnecessary just to drop rows for regular reporting.",
+      "Wrong: A Common Table Expression (WITH clause) alone cannot filter elements from inside an array; the UNNEST operator is mathematically required to access the nested fields.",
+      "Wrong: Spinning up a Dataflow cluster to batch process the data and write it to a new table introduces massive compute costs and architectural complexity."
+    ]
   },
   {
     "id": 167,
@@ -7973,7 +9321,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing Cloud Storage costs for unpredictable access patterns using Autoclass.",
+    "correctRationale": "Cloud Storage Autoclass automatically transitions objects between hotter and colder storage classes based on actual access patterns. Because there is no predefined access pattern and data must be instantly available without retrieval charges, Autoclass is the only feature that eliminates retrieval fees and early deletion penalties while optimizing costs.",
+    "optionRationales": [
+      "Correct: Autoclass dynamically manages storage tiers based on random access patterns, ensuring cost optimization without ever incurring data retrieval charges.",
+      "Wrong: Lifecycle policies transition data to Nearline/Coldline, which incur hefty retrieval charges if accessed and early deletion fees if the 'old data' is deleted prematurely.",
+      "Wrong: Moving data straight to Coldline incurs early deletion fees if deleted before 90 days, and accessing it incurs expensive data retrieval charges.",
+      "Wrong: Similar to the other lifecycle options, this creates rigid rules that penalize the unpredictable access patterns with retrieval fees."
+    ]
   },
   {
     "id": 168,
@@ -8021,7 +9377,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Routing specific BigQuery audit logs to Pub/Sub using Cloud Logging sinks.",
+    "correctRationale": "To achieve instant notifications, logs must be pushed via a message broker. Creating a Cloud Logging project sink with an advanced log filter isolates the exact BigQuery insert jobs for the specific table and pushes those events instantly to a Pub/Sub topic, which the monitoring tool can subscribe to.",
+    "optionRationales": [
+      "Wrong: The Stackdriver (Cloud Logging) API is a pull mechanism; manually listing logs does not provide the required instant, push-based notification.",
+      "Wrong: A log sink exporting to BigQuery is used for long-term historical analysis and querying, not for real-time alerting or instant notifications.",
+      "Wrong: Creating a sink without an advanced filter exports all project logs to Pub/Sub, overwhelming the monitoring tool with irrelevant events from other tables.",
+      "Correct: A project sink pushes logs instantly to Pub/Sub, and an advanced filter ensures only the relevant insert jobs for the specific table are forwarded."
+    ]
   },
   {
     "id": 169,
@@ -8069,7 +9433,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "De-identifying PII using Format-Preserving Encryption to maintain referential integrity.",
+    "correctRationale": "Format-Preserving Encryption (FPE) with FFX replaces the sensitive email with ciphertext that maintains the original string format and length. Because it is deterministic, the same email in both datasets encrypts to the same value, allowing analysts to accurately perform SQL JOINs without ever seeing the raw PII.",
+    "optionRationales": [
+      "Wrong: Simple masking (like replacing characters with asterisks) destroys the uniqueness of the email addresses, completely breaking the ability to join the datasets.",
+      "Correct: FPE deterministically encrypts the email into a consistent format, maintaining referential integrity for cross-dataset joins while satisfying the de-identification requirement.",
+      "Wrong: Dynamic data masking hides data at query time but requires the raw PII to be stored in BigQuery, violating the requirement to de-identify the data before it is accessible.",
+      "Wrong: Applying a default mask dynamically in BigQuery still requires the raw data to be loaded, and masking destroys the join keys."
+    ]
   },
   {
     "id": 170,
@@ -8109,7 +9481,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Enforcing WORM compliance using Cloud Storage Bucket Lock.",
+    "correctRationale": "A Cloud Storage retention policy ensures that objects cannot be deleted or modified for a specified duration. By locking the retention policy, you make the rule permanent and immutable, fulfilling the Write-Once-Read-Many (WORM) requirements essential for legal holds.",
+    "optionRationales": [
+      "Correct: Setting a retention policy prevents deletion/modification, and locking it guarantees the policy itself cannot be maliciously or accidentally removed.",
+      "Wrong: Setting the storage class to Archive reduces costs, but it does not physically prevent users with sufficient IAM permissions from deleting or overwriting the documents.",
+      "Wrong: Object Versioning retains historical copies of a file, but it does not prevent a user from deleting those versions unless a retention policy is explicitly applied.",
+      "Wrong: Copying the data to another region provides geographic redundancy but offers zero protection against accidental or malicious deletion commands."
+    ]
   },
   {
     "id": 171,
@@ -8153,7 +9533,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Designing a denormalized, append-only historical data model in BigQuery.",
+    "correctRationale": "BigQuery is an OLAP database optimized for columnar storage and append operations, not frequent updates. A denormalized model using nested/repeated fields prevents expensive SQL joins, while an append-only architecture using an ingestion timestamp inherently preserves the entire historical state of the records with minimal complexity.",
+    "optionRationales": [
+      "Wrong: Normalized models require complex and expensive SQL joins, and managing snapshots before every update is an operational nightmare that drives up costs.",
+      "Wrong: Keeping data in Cloud Storage instead of loading it into BigQuery sacrifices performance, and normalization is an anti-pattern for large-scale OLAP analysis.",
+      "Wrong: Running frequent UPDATE statements in BigQuery is a severe anti-pattern that consumes excessive slots and ruins query performance.",
+      "Correct: A denormalized, append-only table maximizes BigQuery's analytical performance, while the ingestion timestamp provides a cheap, built-in mechanism for tracking historical changes."
+    ]
   },
   {
     "id": 172,
@@ -8201,7 +9589,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Enabling internal-IP Dataflow workers to reach Google APIs using Private Google Access.",
+    "correctRationale": "When Compute Engine instances (like Dataflow workers) are deployed without external IP addresses, they cannot route traffic to the public internet. Private Google Access must be enabled on the subnetwork to allow these internal-only IPs to reach Google APIs and services like Cloud Storage and BigQuery via Google's internal network.",
+    "optionRationales": [
+      "Wrong: Network tags are used to apply firewall rules, but they cannot route traffic to public Google APIs if the worker lacks an external IP and Private Google Access is off.",
+      "Wrong: Firewall rules strictly control allowed traffic, but they do not provide the underlying network route for an internal IP to resolve and reach Google's external API endpoints.",
+      "Wrong: VPC Service Controls create a security perimeter to prevent exfiltration, but they do not enable the foundational network routing required for internal IPs to hit Google APIs.",
+      "Correct: Enabling Private Google Access is the specific GCP networking feature required to allow VMs with only internal IPs to communicate with Google APIs."
+    ]
   },
   {
     "id": 173,
@@ -8249,7 +9645,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Breaking Dataflow fusion optimization to increase parallelism.",
+    "correctRationale": "Dataflow's optimizer often fuses multiple pipeline steps together to reduce overhead, but this can inadvertently bottleneck the pipeline if the fused steps cannot be parallelized. Inserting a Reshuffle step forces Dataflow to break the fusion, redistributing the elements across the cluster and allowing the autoscaler to utilize more workers.",
+    "optionRationales": [
+      "Wrong: Vertical Autoscaling increases the compute power (CPU/RAM) of existing workers, but it does not fix a pipeline whose parallelism is structurally limited by fusion.",
+      "Correct: Introducing a Reshuffle operation explicitly breaks Dataflow's step fusion, forcing the pipeline to redistribute data and allowing horizontal scaling to trigger.",
+      "Wrong: Increasing the maximum number of workers does nothing if the pipeline's fused DAG structure prevents it from parallelizing work beyond the current 10 workers.",
+      "Wrong: Right Fitting in Dataflow Prime optimizes resource requests per step, but it does not alter the DAG's fusion state to increase parallel execution."
+    ]
   },
   {
     "id": 174,
@@ -8281,7 +9685,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Datastream for serverless Change Data Capture (CDC) to BigQuery.",
+    "correctRationale": "Datastream is Google Cloud's fully managed, serverless CDC and replication service. By setting up Datastream with private connectivity to the VPC, it securely streams real-time updates from the Oracle database directly into BigQuery without requiring the user to deploy, manage, or scale any intermediary infrastructure.",
+    "optionRationales": [
+      "Wrong: Deploying and maintaining Apache Kafka, Kafka Connect, and a Dataflow pipeline introduces massive infrastructure management overhead, contradicting the requirements.",
+      "Wrong: The Debezium Oracle connector requires self-managed compute infrastructure (like Kafka or a standalone server) to execute, violating the 'minimize infrastructure' requirement.",
+      "Wrong: Deploying Apache Kafka and managing multiple connectors manually is a highly complex architectural pattern requiring significant operational upkeep.",
+      "Correct: Datastream is a fully managed, serverless service specifically designed to replicate Oracle CDC to BigQuery with minimal to no infrastructure management."
+    ]
   },
   {
     "id": 175,
@@ -8329,7 +9741,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Triggering Cloud Composer DAGs via REST API in a private network.",
+    "correctRationale": "To reactively trigger a DAG without internet access, you must enable the Airflow REST API. A Cloud Storage notification triggers a Cloud Function, which formats the API request. To securely route this request to the internal IP of the Composer web server, the Cloud Function must use Serverless VPC Access.",
+    "optionRationales": [
+      "Wrong: A Pub/Sub push subscription cannot securely push payloads to a private web server URL without an exposed endpoint or intermediary compute layer.",
+      "Wrong: The Cloud Composer API is used for managing the environment's infrastructure (creating, updating), not for programmatically triggering specific DAG executions.",
+      "Wrong: Private Service Connect is for accessing Google APIs securely, but a Cloud Function needs VPC Serverless Access to route outbound HTTP requests to the private Composer web server.",
+      "Correct: The Airflow REST API allows programmatic DAG execution. A Cloud Function formats the trigger, and VPC Serverless Access bridges the function into the private network to reach the web server."
+    ]
   },
   {
     "id": 176,
@@ -8369,7 +9789,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Autoclass for transparent Cloud Storage cost optimization.",
+    "correctRationale": "Cloud Storage Autoclass automatically transitions objects between storage classes (Standard, Nearline, Coldline, Archive) based on actual access patterns. It operates transparently without requiring predefined rules, and unlike lifecycle policies, objects moved by Autoclass do not incur early deletion fees or retrieval charges.",
+    "optionRationales": [
+      "Correct: Autoclass transparently analyzes access patterns and transitions objects to cheaper storage tiers automatically without incurring retrieval or early deletion fees.",
+      "Wrong: A hardcoded 30-day lifecycle rule to Coldline will incur massive data retrieval charges and early deletion fees if the random access pattern accesses those files.",
+      "Wrong: Object Lifecycle Management evaluates rules based on age, prefix, or version state; it cannot natively evaluate a subjective 'if not live' condition based on random access.",
+      "Wrong: Manually managing two buckets and migrating objects requires significant operational overhead, breaking the 'transparent optimization' requirement."
+    ]
   },
   {
     "id": 177,
@@ -8417,7 +9845,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Cloud Data Fusion for GUI-based data ingestion with CMEK support.",
+    "correctRationale": "Cloud Data Fusion is Google Cloud's fully managed, visual, GUI-based data integration service. It natively supports reading diverse file formats like Parquet and CSV, and can be configured to write to Cloud Storage buckets protected by Customer-Managed Encryption Keys (CMEK).",
+    "optionRationales": [
+      "Wrong: Storage Transfer Service is designed for massive data migrations, but historically does not natively support encrypting destination data with CMEK during the transfer process.",
+      "Correct: Cloud Data Fusion provides the required code-free GUI interface and supports configuring CMEK when writing data to Cloud Storage sinks.",
+      "Wrong: Dataflow requires writing pipeline code in Java, Python, or Go, which completely violates the requirement for a GUI-based solution.",
+      "Wrong: BigQuery Data Transfer Service is used to load data specifically into BigQuery tables, not to move files into Cloud Storage."
+    ]
   },
   {
     "id": 178,
@@ -8461,7 +9897,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Empowering business users with visual data cleaning and spreadsheet analysis.",
+    "correctRationale": "Dataprep by Trifacta offers a visual, GUI-based interface tailored for business users to clean and prepare data without coding. Once written to BigQuery, Connected Sheets allows these users to natively analyze massive BigQuery datasets directly within the familiar Google Sheets interface.",
+    "optionRationales": [
+      "Correct: Dataprep provides the required GUI for data cleaning, and Connected Sheets perfectly satisfies the requirement to analyze the results in a spreadsheet.",
+      "Wrong: While Dataprep handles the cleaning, Looker Studio is a BI dashboarding tool, not a spreadsheet interface.",
+      "Wrong: Dataflow requires writing code (Java, Python), making it entirely unsuitable for business users who prefer a GUI.",
+      "Wrong: Dataflow requires coding, and Looker Studio does not provide the requested spreadsheet interface."
+    ]
   },
   {
     "id": 179,
@@ -8509,7 +9953,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Ensuring data privacy by isolating development environments with anonymized data.",
+    "correctRationale": "Providing external consultants with access to production systems—even with limited roles—poses a severe risk to sensitive PII. By generating an anonymized dataset and placing it in a completely separate GCP project, the consultant can safely develop and test the Dataflow pipeline without any potential exposure to the real user data.",
+    "optionRationales": [
+      "Wrong: Granting the Viewer role at the project level would allow the consultant to query and read all data resources in the project, exposing the sensitive PII.",
+      "Wrong: The Dataflow Developer role allows the user to inspect pipeline execution, which includes viewing the actual row-level data passing through the workers.",
+      "Wrong: If the consultant logs in with a service account that has access to the main project, they still have a direct path to query and view the sensitive data.",
+      "Correct: Creating an anonymized sample in a separate project physically isolates the consultant from the PII while providing enough context to build the pipeline."
+    ]
   },
   {
     "id": 180,
@@ -8557,7 +10009,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Isolating BigQuery workloads using separate slot reservations and billing models.",
+    "correctRationale": "To meet strict SLAs, production jobs need dedicated capacity, which is achieved by assigning them an Enterprise Edition reservation with a baseline and autoscaling. Conversely, ad-hoc queries need to be billed strictly by the data they scan. Leaving a project without an assigned reservation defaults it to on-demand billing, fulfilling this requirement.",
+    "optionRationales": [
+      "Wrong: A single shared reservation forces the ad-hoc project into capacity-based billing (rather than data scanned) and risks ad-hoc queries starving the SLA jobs.",
+      "Correct: Creating a dedicated reservation for the SLA project guarantees compute, while leaving the ad-hoc project without a reservation ensures it uses on-demand billing (data scanned).",
+      "Wrong: Creating a 0-baseline Enterprise reservation with autoscaling still bills the ad-hoc queries based on the slot-hours consumed, not by the amount of data scanned.",
+      "Wrong: An 800 baseline massively over-provisions the SLA project, and an autoscaling reservation for ad-hoc still bills them by slot capacity instead of data scanned."
+    ]
   },
   {
     "id": 181,
@@ -8605,7 +10065,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Efficiently migrating from Teradata to BigQuery with minimal local storage and coding.",
+    "correctRationale": "The BigQuery Data Transfer Service provides an automated, managed migration path. Using the Teradata Parallel Transporter (TPT) tbuild utility is the Google-recommended approach because it efficiently extracts data in parallel with minimal custom programming, bypassing the need for massive local storage.",
+    "optionRationales": [
+      "Wrong: While the JDBC FastExport connection works, it is generally slower and is typically a fallback method; the TPT tbuild utility is the preferred, most efficient path.",
+      "Wrong: Writing custom TPT scripts and managing manual bq loads requires significant programming and operational orchestration, violating the requirement.",
+      "Correct: BigQuery Data Transfer Service integrated with the TPT tbuild utility automates the extraction efficiently and requires minimal to no custom scripting.",
+      "Wrong: Creating custom export scripts, batching uploads to GCS, and configuring transfers manually is highly labor-intensive and requires substantial programming."
+    ]
   },
   {
     "id": 182,
@@ -8653,7 +10121,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Encrypting BigQuery data using an external, on-premises Hardware Security Module (HSM).",
+    "correctRationale": "When security policy mandates that encryption keys must be generated and physically stored *only* on an on-premises HSM, you must use Cloud External Key Manager (Cloud EKM). Cloud EKM securely links Google Cloud services to your external key management system, meaning the key material never leaves your physical HSM.",
+    "optionRationales": [
+      "Wrong: Importing a key into Cloud KMS copies the key material onto Google's infrastructure, violating the requirement that the material resides *only* on your HSM.",
+      "Correct: Cloud EKM acts as a bridge, allowing BigQuery to encrypt data using keys that physically remain within your on-premises HSM.",
+      "Wrong: Cloud HSM is Google's hosted HSM service. Importing keys to it copies the material to Google, failing the strict on-premises requirement.",
+      "Wrong: Manually encrypting data prior to ingestion requires custom application logic, breaks native BigQuery SQL querying, and isn't a Google-managed solution."
+    ]
   },
   {
     "id": 183,
@@ -8701,7 +10177,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Breaking Dataflow fusion to expose step-level performance bottlenecks.",
+    "correctRationale": "Dataflow optimizes execution by 'fusing' multiple steps into a single unit, which obscures individual step metrics. By inserting a Reshuffle operation between steps, you force Dataflow to break the fusion. This allows the Dataflow monitoring console to display execution details for each distinct step, making it easy to identify the bottleneck.",
+    "optionRationales": [
+      "Correct: A Reshuffle operation disables step fusion, allowing the Google Cloud Console to display distinct execution metrics for each step to locate the bottleneck.",
+      "Wrong: Inserting output sinks adds massive I/O overhead that will skew pipeline performance and does not explicitly break fusion to expose internal metrics.",
+      "Wrong: Adding debug logs to every ParDo produces an overwhelming amount of noise, degrades performance, and doesn't visually break out step metrics in the UI.",
+      "Wrong: Inadequate IAM permissions would result in hard failures or access denied errors, not slow processing times within an active pipeline."
+    ]
   },
   {
     "id": 184,
@@ -8749,7 +10233,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Achieving predictable BigQuery costs by purchasing slot reservations.",
+    "correctRationale": "Running constant, intensive operations like merging 1 GB every 10 minutes on on-demand billing will result in massively unpredictable and high costs due to per-byte-scanned charges. To achieve predictable costs, you must purchase a flat-rate capacity of slots (a reservation) and assign it to the GCP project running the job.",
+    "optionRationales": [
+      "Wrong: BigQuery reservations cannot be assigned at the granular dataset level; they must be assigned to an entire project, folder, or organization.",
+      "Wrong: Reservations govern capacity for a project; they cannot be assigned dynamically to an individual job.",
+      "Wrong: You cannot assign a reservation directly to an IAM service account. The assignment relies on the resource hierarchy (the project the job runs in).",
+      "Correct: Purchasing a reservation and assigning it to the project converts the billing model from per-byte-scanned to a predictable, flat-rate capacity model."
+    ]
   },
   {
     "id": 185,
@@ -8793,7 +10285,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using BigQuery Time Travel for near-zero RPO data recovery.",
+    "correctRationale": "BigQuery Time Travel is a built-in feature that automatically retains a historical record of all data modifications. It allows you to query or restore a table to any exact point in time within the past seven days, providing the lowest possible RPO without incurring any additional storage or operational costs.",
+    "optionRationales": [
+      "Correct: Time travel provides point-in-time recovery up to 7 days, giving the lowest RPO natively without extra storage costs.",
+      "Wrong: Manually exporting and filtering out corrupted data is labor-intensive, error-prone, and consumes massive compute costs to execute.",
+      "Wrong: Daily snapshots only provide an RPO of up to 24 hours (not the lowest possible) and incur additional storage costs for the snapshot delta.",
+      "Wrong: Multi-region buckets pertain to Cloud Storage, not BigQuery tables, and migrating corrupted data elsewhere does not repair the corruption."
+    ]
   },
   {
     "id": 186,
@@ -8841,7 +10341,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using session windows to evaluate sporadic data streams based on inactivity.",
+    "correctRationale": "Session windows define windows of activity separated by periods of inactivity (gaps). Because the requirement explicitly states the window must end 'when no data has been received for 15 minutes', setting a session window with a 15-minute gap duration exactly maps to the business logic.",
+    "optionRationales": [
+      "Correct: A session window dynamically groups events and explicitly closes when the defined gap duration (15 minutes) of inactivity is reached.",
+      "Wrong: A 30-minute gap duration would hold the window open until 30 minutes of inactivity elapsed, failing the 15-minute closure requirement.",
+      "Wrong: Hopping windows run on fixed, overlapping time intervals and cannot dynamically close based on a lack of incoming data.",
+      "Wrong: Tumbling windows are fixed, non-overlapping intervals. Allowing lateness handles delayed messages but does not close the window based on sensor inactivity."
+    ]
   },
   {
     "id": 187,
@@ -8877,7 +10385,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing 1:N immutable relationships in BigQuery using nested and repeated fields.",
+    "correctRationale": "BigQuery is an OLAP database that excels with denormalized data. For immutable, tightly coupled header-line relationships, storing the lines as an ARRAY of STRUCTs (nested and repeated fields) inside the header row pre-joins the data, eliminating expensive SQL joins and minimizing I/O storage.",
+    "optionRationales": [
+      "Correct: Storing the header as the row and the lines as nested/repeated fields leverages BigQuery's columnar architecture to eliminate costly JOINs.",
+      "Wrong: Flat denormalization (duplicating header data for every single line item) explodes data size, increasing storage and scan costs unnecessarily.",
+      "Wrong: Storing structured tabular data as JSON strings forces BigQuery to parse the JSON at query time, drastically degrading query performance and consuming excessive CPU.",
+      "Wrong: Creating separate tables forces the query engine to perform massive JOIN operations at runtime, which is slower and more expensive in BigQuery."
+    ]
   },
   {
     "id": 188,
@@ -8925,7 +10441,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Performing in-place updates for Dataflow streaming pipelines.",
+    "correctRationale": "When updating a Dataflow streaming job where window state must be preserved, an in-place update (replacing the job) transitions the execution to the new code while maintaining the in-flight watermarks and state. This ensures no data is lost and completely bypasses the latency spikes associated with draining.",
+    "optionRationales": [
+      "Correct: An in-place update replaces the job without stopping ingestion, preserving window state and avoiding the latency spikes of pipeline draining.",
+      "Wrong: Snapshotting and restarting requires fully stopping the pipeline, halting ingestion, and violating the strict 10-minute latency limit.",
+      "Wrong: Draining stops the pipeline from ingesting new data while it finishes processing existing elements, which will cause upstream queues to build up and spike latency.",
+      "Wrong: Canceling the old pipeline abruptly terminates workers without flushing state, resulting in immediate loss of in-flight data."
+    ]
   },
   {
     "id": 189,
@@ -8973,7 +10497,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Improving data discoverability using Data Catalog auto-discovery and custom connectors.",
+    "correctRationale": "Data Catalog inherently auto-discovers and catalogs native Google Cloud data assets like BigQuery datasets and Pub/Sub topics. For non-native assets like PostgreSQL, Google provides open-source custom connectors that automate the cataloging process, requiring vastly less development effort than writing manual API scripts.",
+    "optionRationales": [
+      "Wrong: Writing manual scripts against the Data Catalog API for PostgreSQL and Pub/Sub requires significant custom coding, violating the 'minimal development' rule.",
+      "Wrong: While Pub/Sub is auto-cataloged, manually writing API scripts to index PostgreSQL tables is unnecessary when pre-built connectors exist.",
+      "Correct: Leveraging auto-discovery for BQ/PubSub and using Google's pre-built custom connectors for PostgreSQL satisfies the requirement with minimal custom code.",
+      "Wrong: BigQuery and Pub/Sub are automatically cataloged by the service natively; building custom connectors for them is a waste of effort."
+    ]
   },
   {
     "id": 190,
@@ -9021,7 +10553,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Reducing dimensionality by combining co-dependent features.",
+    "correctRationale": "When a dataset has thousands of features, highly co-dependent (collinear) features supply redundant information to the model. By combining them into a single representative feature (e.g., using PCA or feature crosses), you reduce the dimensionality—which speeds up training—while preserving the predictive signal to maintain accuracy.",
+    "optionRationales": [
+      "Wrong: Features highly correlated to the output label are your most powerful predictors; eliminating them would devastate model accuracy.",
+      "Correct: Combining collinear features reduces dimensionality and speeds up training without losing the underlying predictive signal.",
+      "Wrong: Averaging independent features in arbitrary batches of 3 destroys the unique signals of the data, severely degrading accuracy.",
+      "Wrong: A feature with 50% nulls can still be a highly accurate predictor in the rows where it is populated. Dropping it blindly is poor ML practice."
+    ]
   },
   {
     "id": 191,
@@ -9069,7 +10609,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Orchestrating BigQuery SQL jobs with retries and alerting via Cloud Composer.",
+    "correctRationale": "Cloud Composer (Apache Airflow) is designed for complex workflow orchestration. The BigQueryInsertJobOperator is explicitly used to execute SQL queries. Airflow natively supports setting a specific number of retries (`retries: 3`) and triggering alerts upon failure (`email_on_failure: True`), seamlessly fulfilling the requirements.",
+    "optionRationales": [
+      "Wrong: The BigQueryUpsertTableOperator is used to modify table schemas or definitions, not to execute aggregate SQL queries.",
+      "Correct: BigQueryInsertJobOperator runs the SQL query, while Airflow's native parameters easily handle the 3 retries and email notification requirements.",
+      "Wrong: BigQuery scheduled queries do not have built-in retry logic configurable to 3 attempts, nor native email triggers specifically tied to consecutive failures.",
+      "Wrong: While a scheduled query can push to Pub/Sub, building custom Cloud Functions to track state and count '3 consecutive failures' is massively overly complex."
+    ]
   },
   {
     "id": 192,
@@ -9117,7 +10665,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Debugging data duplication caused by overlapping Dataflow pipeline versions.",
+    "correctRationale": "If data volume in BigQuery spikes but Pub/Sub ingestion volume remains flat, it highly indicates the pipeline is double-writing data. By querying for duplicates, checking BigQuery audit logs, and monitoring Dataflow job start times, you can confirm if an old pipeline version was left running alongside the new one, and stop it.",
+    "optionRationales": [
+      "Wrong: Scheduling deduplication jobs only patches the symptom (duplicated data) while ignoring the root cause of the broken pipeline deployment.",
+      "Wrong: Blindly restoring tables using time travel destroys the new data before investigating the actual root cause of the duplication.",
+      "Correct: Checking duplicates confirms the symptom, Audit logs trace it to the deployment, and stopping overlapping old versions resolves the root cause.",
+      "Wrong: Rolling back and replaying messages might just duplicate the data again if the root cause wasn't an overlapping deployment."
+    ]
   },
   {
     "id": 193,
@@ -9165,7 +10721,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Securing Data Catalog tag discoverability using Private Visibility.",
+    "correctRationale": "Tag templates with Private Visibility require users to possess the `datacatalog.tagTemplateViewer` role to search or view the tags. This allows all employees to discover the metadata (that the table has sensitive data) without granting them `bigquery.dataViewer`, which would expose the actual PII. Only HR receives the dataViewer role to see the data.",
+    "optionRationales": [
+      "Wrong: If visibility is private, the employees cannot search the tags without being granted the `datacatalog.tagTemplateViewer` role.",
+      "Correct: Private visibility combined with `tagTemplateViewer` lets employees discover the metadata, while restricting the actual data access (`dataViewer`) strictly to HR.",
+      "Wrong: Public visibility requires users to have underlying read access to the BigQuery data just to view the tags, defeating the purpose of separating metadata discovery from data access.",
+      "Wrong: Public visibility makes the tags viewable only if the user has data access. Assigning tagTemplateViewer is meaningless if the template is public."
+    ]
   },
   {
     "id": 194,
@@ -9213,7 +10777,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "CI/CD orchestration for Cloud Composer DAGs using Cloud Build.",
+    "correctRationale": "Cloud Composer environments automatically synchronize DAGs placed in their designated Cloud Storage buckets. The correct CI/CD process simply involves Cloud Build copying the Python DAG scripts to the dev environment's GCS bucket, running tests, and upon passing, copying the identical scripts to the production environment's GCS bucket.",
+    "optionRationales": [
+      "Correct: Composer reads DAGs directly from Cloud Storage. Copying code to the dev bucket, testing, and then copying to the prod bucket is the native deployment method.",
+      "Wrong: Building Docker containers and using KubernetesPodOperator to deploy DAGs misunderstands how Composer syncs DAG code (via GCS).",
+      "Wrong: Deploying a container to a dev GKE cluster does not actually place the DAG into the dev Cloud Composer environment.",
+      "Wrong: Mixing a GCS bucket deployment for dev with a GKE container deployment for prod creates a broken, inconsistent deployment strategy."
+    ]
   },
   {
     "id": 195,
@@ -9261,7 +10833,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Migrating BigQuery data to comply with Customer-Managed Encryption Key (CMEK) policies.",
+    "correctRationale": "In BigQuery, the encryption configuration (Google-managed vs CMEK) is set at table creation and cannot be changed on an existing table. To comply with the new CMEK policy for data at rest, you must create an entirely new BigQuery table configured with the CMEK and migrate the historical data into it.",
+    "optionRationales": [
+      "Wrong: Cloud KMS keys cannot be retroactively applied to an existing BigQuery table that was provisioned with Google-managed encryption.",
+      "Correct: You must create a new BigQuery table with CMEK configured and migrate the old data to ensure all historical records comply with the new policy.",
+      "Wrong: Creating a new Pub/Sub topic does not encrypt the historical data at rest residing in the existing BigQuery table.",
+      "Wrong: The requirement is met by updating the BigQuery table. Assuming a direct BigQuery subscription is used, the subscription is just a router; the data at rest is in the table."
+    ]
   },
   {
     "id": 196,
@@ -9309,7 +10889,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Querying Cloud Storage ORC files directly using BigQuery External Tables.",
+    "correctRationale": "BigQuery External Tables allow users to query data directly from Cloud Storage (in formats like ORC or Parquet) using standard SQL. This completely bypasses the compute costs of running a Dataproc/Hadoop cluster and avoids the storage costs of ingesting the data into native BigQuery storage, making it the most cost-effective option.",
+    "optionRationales": [
+      "Wrong: Cloud Bigtable is a NoSQL wide-column store; it does not support native SQL analytics or querying ORC files directly.",
+      "Wrong: Importing data into BigQuery native storage incurs ingestion overhead and ongoing storage costs, which is less cost-effective than querying in-place.",
+      "Wrong: Deploying a Dataproc cluster incurs continuous Compute Engine costs and operational overhead just to run exploratory SQL queries.",
+      "Correct: BigQuery External Tables let Data Scientists use SQL directly on the ORC files in Cloud Storage, eliminating cluster compute costs and data duplication."
+    ]
   },
   {
     "id": 197,
@@ -9353,7 +10941,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Mitigating zonal failures in Dataflow using regional placement.",
+    "correctRationale": "When submitting a Dataflow job, specifying a worker region (using the `--region` flag) rather than a specific zone allows Google Cloud to automatically select the optimal zone with available capacity. If a zonal outage occurs during job submission, Dataflow will seamlessly deploy the workers to an alternate healthy zone within that region.",
+    "optionRationales": [
+      "Wrong: Submitting duplicate pipelines doubles compute costs, wastes resources, and risks writing duplicate records to the sink.",
+      "Wrong: The staging location bucket handles temporary pipeline files; it does not dictate the compute infrastructure placement or zonal routing of the workers.",
+      "Correct: Providing a `--region` flag without a zone flag allows Dataflow to dynamically select a healthy zone, bypassing isolated zonal failures during submission.",
+      "Wrong: Eventarc triggers respond to specific events. Building custom automation to detect complex placement failures and re-submit jobs is fragile and unnecessarily complex."
+    ]
   },
   {
     "id": 198,
@@ -9401,7 +10997,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Dataflow Hopping Windows and Memorystore for low-latency, overlapping aggregations.",
+    "correctRationale": "To calculate an aggregate over the last 30 seconds every 2 seconds, the time intervals must overlap. A hopping (sliding) window perfectly achieves this by emitting a 30-second snapshot every 2 seconds. Memorystore (Redis) provides the ultra-low latency reads required by a real-time ride-hailing application.",
+    "optionRationales": [
+      "Wrong: Tumbling windows represent fixed, non-overlapping intervals. A 30-second tumbling window would only output results once every 30 seconds.",
+      "Correct: A hopping window supports overlapping time intervals (30s duration, 2s period), and Memorystore handles the ultra-low latency read requirement.",
+      "Wrong: Session windows group data based on periods of inactivity, not fixed intervals. BigQuery is not optimized for single-record, low-latency app reads.",
+      "Wrong: While the hopping window is correct, BigQuery introduces significantly higher latency for real-time app reads compared to an in-memory cache like Memorystore."
+    ]
   },
   {
     "id": 199,
@@ -9449,7 +11053,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Implementing Dead Letter Queues (DLQ) in Dataflow using side outputs.",
+    "correctRationale": "Because Dataflow acknowledges Pub/Sub messages upon successfully reading them, native Pub/Sub dead-lettering won't trigger if the pipeline's internal DoFn business logic fails later. The standard pattern is to wrap the DoFn logic in exception handling and push failed elements to a secondary 'side output', which writes to a dedicated DLQ Pub/Sub topic.",
+    "optionRationales": [
+      "Wrong: Retaining acknowledged messages simply keeps them in the original topic's storage for replay; it does not isolate or identify failures for monitoring.",
+      "Correct: Catching exceptions in the DoFn and routing failed elements to a side output allows you to securely isolate and monitor application-level logic failures.",
+      "Wrong: Pub/Sub native dead lettering triggers on unacknowledged messages. Dataflow auto-acknowledges messages upon read, meaning business logic failures downstream won't trigger it.",
+      "Wrong: Snapshots capture the state of a subscription to replay data from a point in time; they do not filter or isolate failed messages."
+    ]
   },
   {
     "id": 200,
@@ -9485,7 +11097,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Securing BigQuery datasets for isolated workspaces using dataset-level IAM.",
+    "correctRationale": "To provide read-only access to a shared resource while giving users private workspaces, permissions must be applied granularly. Granting Data Viewer on the shared dataset satisfies the read-only requirement. Creating individual datasets and assigning Data Editor exclusively at the dataset level ensures analysts cannot see or modify each other's workspaces.",
+    "optionRationales": [
+      "Wrong: Granting Data Viewer at the project level gives analysts read access to all datasets in the project, violating the requirement for private workspaces.",
+      "Wrong: Giving Data Editor at the project level allows analysts to modify the shared dataset and edit every other analyst's private workspace.",
+      "Correct: Granular dataset-level IAM bindings allow analysts to read the shared dataset while strictly confining their edit access to their own isolated workspace.",
+      "Wrong: If all analysts are given Data Editor access on 'one other dataset', they share the workspace and can modify each other's tables, breaking isolation."
+    ]
   },
   {
     "id": 201,
@@ -9533,7 +11153,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing BigQuery read performance in Dataflow pipelines.",
+    "correctRationale": "Using the `.fromQuery` operation allows you to push down a SELECT statement directly to BigQuery, reading only the specific fields required for the ML preprocessing. This drastically reduces the amount of data transferred over the network and processed by Dataflow, thereby improving performance and lowering costs.",
+    "optionRationales": [
+      "Specifying a TableReference just points the read operation to the table; it will still read all columns by default, transferring unnecessary data.",
+      "Correct: Pushing down a query to read only the required columns minimizes data transfer and serialization overhead.",
+      "Using TableSchema and TableFieldSchema defines the structure of the data for writing or parsing, but does not inherently filter the data read from BigQuery.",
+      "Returning TableRow objects is the default behavior and actually adds serialization overhead compared to newer APIs (like Arrow); regardless, it doesn't filter the incoming columns."
+    ]
   },
   {
     "id": 202,
@@ -9581,7 +11209,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Handling late data in Dataflow streaming pipelines using watermarks and late triggers.",
+    "correctRationale": "In Dataflow, watermarks indicate when all data for a given window is expected to have arrived. To capture data arriving after the watermark has passed, you must explicitly configure the pipeline with a `.withAllowedLateness` trigger to keep the window state open and capture late elements.",
+    "optionRationales": [
+      "Correct: Configuring the expected data arrival via watermarks and explicitly allowing late data ensures elements arriving after the watermark are still processed in their respective windows.",
+      "Changing to tumbling windows just alters the windowing strategy (fixed, non-overlapping) but does not address how late data is handled.",
+      "Session windows group data based on activity gaps; this changes the windowing logic but won't inherently process data that arrives late relative to a watermark unless lateness is explicitly allowed.",
+      "Expanding the hopping window size changes the window dimensions but does not fix the core issue of data arriving after the window's watermark has advanced."
+    ]
   },
   {
     "id": 203,
@@ -9629,7 +11265,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Bigtable garbage collection behavior and read filtering.",
+    "correctRationale": "Bigtable garbage collection is a continuous, asynchronous background process. It can take up to a week for expired data to be physically deleted. To prevent analysts from seeing data older than 30 days, you must apply a timestamp range filter on the read requests to strictly exclude data past the 30-day threshold.",
+    "optionRationales": [
+      "Changing the GC policy to 29 days still leaves the possibility of analysts reading data between 29 and 30 days (or even older, if the asynchronous GC pass hasn't reached those cells yet).",
+      "Correct: Applying a query-time timestamp range filter strictly guarantees that out-of-bounds data is excluded from the results, regardless of whether background GC has purged it yet.",
+      "Scheduling a daily job to scan and delete data is an anti-pattern. It wastes compute resources and causes unnecessary read/write operations when native GC plus query filtering handles this efficiently.",
+      "Setting versions to 2 does not solve the time-to-live (TTL) problem; it just allows keeping up to two versions of a cell within the 30-day period."
+    ]
   },
   {
     "id": 204,
@@ -9677,7 +11321,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Achieving exactly-once delivery to BigQuery from a non-exactly-once source using the Storage Write API.",
+    "correctRationale": "The BigQuery Storage Write API natively supports exactly-once delivery semantics using stream offsets, ensuring no duplicates even if the source message bus resends data. Keeping the table regional minimizes network latency and cost for the high-throughput 1.5 GB/s stream.",
+    "optionRationales": [
+      "Correct: The Storage Write API guarantees exactly-once delivery via offsets, and a regional table minimizes the cross-region network latency and data transfer costs associated with high-throughput streams.",
+      "While the Storage Write API is correct, a multi-regional table introduces unnecessary cross-region replication latency and potential data transfer costs for a stream of this volume.",
+      "The older BigQuery Streaming API (tabledata.insertAll) does not natively guarantee exactly-once delivery; it provides best-effort deduplication but duplicates can still occur.",
+      "The Streaming API cannot guarantee exactly-once delivery, and multi-regional routing adds unnecessary latency and cost."
+    ]
   },
   {
     "id": 205,
@@ -9717,7 +11369,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing query performance on large external partitioned datasets in Cloud Storage using BigLake metadata caching.",
+    "correctRationale": "Querying external tables with many files often suffers from slow metadata operations (listing files). Upgrading to a BigLake table allows you to enable metadata caching, which caches the file list and partition information, drastically reducing query planning time and improving performance.",
+    "optionRationales": [
+      "The storage class (Standard vs Coldline) affects storage costs and retrieval pricing, but does not significantly change the query performance or the time it takes to list millions of files.",
+      "Creating individual tables and using wildcard queries would actually increase query complexity and overhead, worsening performance compared to native Hive partitioning.",
+      "Correct: BigLake tables support metadata caching, which avoids expensive Cloud Storage LIST operations during query planning, significantly speeding up queries on heavily partitioned data.",
+      "Migrating data to a multi-region bucket will not improve query performance; if anything, it might slightly increase latency compared to a single-region bucket colocated with BigQuery."
+    ]
   },
   {
     "id": 206,
@@ -9765,7 +11425,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Hybrid database architecture for low-latency time-series lookups and heavy analytics.",
+    "correctRationale": "Millisecond latency for specific row lookups requires a NoSQL store like Bigtable. Concatenating sensorID#timestamp as the row key ensures all data for a specific sensor is grouped contiguously, enabling fast range scans for a specific time. Since Bigtable isn't designed for complex analytics, exporting the data daily to BigQuery satisfies the analytical requirement.",
+    "optionRationales": [
+      "BigQuery is an OLAP data warehouse and cannot provide the millisecond-latency point reads required for the specific sensor lookups.",
+      "Correct: Bigtable provides the required millisecond latency, sensorID#timestamp groups time-series data perfectly for single-sensor retrieval, and the daily export satisfies the BigQuery analytics requirement.",
+      "Using sensorID#metric as the row key would scatter the timestamps, making it extremely inefficient to retrieve data for a specific timestamp or time range.",
+      "BigQuery cannot serve millisecond latency point queries, and using the metric as a primary key would cause massive hotspots and fail to uniquely identify the time-series events."
+    ]
   },
   {
     "id": 207,
@@ -9805,7 +11473,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Minimizing storage costs for immutable, rarely-accessed data backups using Cloud Storage Archive and Bucket Lock.",
+    "correctRationale": "For data accessed once or twice a year, Cloud Storage Archive provides the lowest possible storage cost. To guarantee immutability for exactly 3 years, a locked retention policy (Bucket Lock) ensures objects cannot be deleted or modified until the retention period expires.",
+    "optionRationales": [
+      "A BigQuery table clone stores data in BigQuery's active logical storage, which is much more expensive than Cloud Storage Archive for data accessed only yearly.",
+      "BigQuery table snapshots are useful for short-to-medium term backups but incur BigQuery storage costs, which are higher than GCS Archive for cold data. They also don't strictly enforce a locked 3-year immutability policy natively.",
+      "Versioning keeps older versions when objects are modified, but it does not prevent a user with sufficient permissions from deleting the object entirely, meaning it fails the strict immutability requirement.",
+      "Correct: Cloud Storage Archive minimizes costs for rarely accessed data, and setting a locked retention policy guarantees the data is immutable for the required 3-year period."
+    ]
   },
   {
     "id": 208,
@@ -9853,7 +11529,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Lift-and-shift migration of on-premises Hadoop/Spark workloads to GCP.",
+    "correctRationale": "Dataproc is Google Cloud's fully managed service for running Apache Spark and Hadoop clusters. Migrating the data to Cloud Storage and running the existing Spark scripts on Dataproc requires minimal code changes while leveraging a managed service.",
+    "optionRationales": [
+      "Converting thousands of Spark scripts to SQL for BigQuery would require a massive code rewrite, violating the 'minimal code changes' requirement.",
+      "Rewriting thousands of Spark jobs into Apache Beam to run on Dataflow is a complete re-architecture and violates the 'minimal code changes' requirement.",
+      "Running jobs directly on Compute Engine VMs with local disks requires managing the Hadoop cluster infrastructure yourself, which violates the requirement to use 'managed services'.",
+      "Correct: Dataproc natively runs Apache Spark jobs, allowing you to reuse existing code with minimal changes, while decoupling storage to Cloud Storage allows the compute clusters to be ephemeral."
+    ]
   },
   {
     "id": 209,
@@ -9901,7 +11585,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Establishing predictable BigQuery costs using flat-rate reservations.",
+    "correctRationale": "To completely eliminate the variability of on-demand billing and establish a strictly consistent spend, you must use BigQuery capacity-based pricing (slots) with no autoscaling. A fixed reservation of 500 slots guarantees an exact monthly bill.",
+    "optionRationales": [
+      "Autoscaling up to 500 slots means the bill will fluctuate based on the autoscaled slot usage, which fails the requirement for a consistent monthly spend.",
+      "Establishing a quota limits the maximum spend, but the monthly bill will still vary anywhere from $0 up to the quota limit, and hitting the quota interrupts business operations.",
+      "Correct: A baseline reservation with no autoscaling provides a fixed amount of compute capacity for a flat, predictable monthly price.",
+      "A baseline of 0 slots with autoscaling to 500 is entirely variable and will result in an unpredictable monthly bill based on usage."
+    ]
   },
   {
     "id": 210,
@@ -9945,7 +11637,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Unified data management, lineage, and quality using Dataplex.",
+    "correctRationale": "Dataplex is Google Cloud's intelligent data fabric that natively integrates data management across decentralized storage, automated data lineage tracking (via Data Catalog), and built-in data quality validation tasks within a single unified control plane.",
+    "optionRationales": [
+      "BigLake is a storage engine that provides unified security across data lakes and warehouses, but it does not natively provide built-in data quality validation or lineage tracking on its own.",
+      "Building a custom tool on GKE introduces massive development and maintenance overhead when managed services already exist to solve this problem.",
+      "BigQuery automatically captures lineage, but Dataprep is a visual data preparation tool, not a centralized governance or decentralized data management platform.",
+      "Correct: Dataplex specifically addresses the needs of a decentralized data mesh by centrally managing domains, capturing lineage, and running automated data quality checks."
+    ]
   },
   {
     "id": 211,
@@ -9993,7 +11693,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "No-code data normalization and scheduling with Cloud Data Fusion.",
+    "correctRationale": "Cloud Data Fusion is a fully managed, graphical ETL/ELT service. Its Wrangler component provides a visual, interactive interface to clean and normalize data without writing any code. Data Fusion pipelines can be easily scheduled to run on a recurring basis.",
+    "optionRationales": [
+      "Correct: Cloud Data Fusion's Wrangler is specifically designed for visual, no-code data preparation, and the pipeline can be scheduled natively.",
+      "Dataflow SQL requires writing SQL code, which violates the strict 'no coding' requirement.",
+      "Creating a Spark job on Dataproc Serverless requires writing Spark code (Scala, Python, or Java), failing the 'no coding' requirement.",
+      "Using BigQuery and GoogleSQL requires writing SQL code, violating the 'no coding' constraint."
+    ]
   },
   {
     "id": 212,
@@ -10041,7 +11749,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Preventing hotspotting in Bigtable for time-series data.",
+    "correctRationale": "Bigtable stores rows lexicographically by row key. If a row key starts with a timestamp (which strictly increases), all new writes are sent to the single node hosting the end of the table, causing a massive hotspot. Starting the key with a higher-cardinality value like <sensorid> distributes the writes evenly across the cluster.",
+    "optionRationales": [
+      "Starting with a timestamp causes sequential writes to hit a single Bigtable node, creating a severe hotspot and extremely poor write performance.",
+      "Using only <sensorid> means each new reading from the same sensor will overwrite the previous reading, resulting in data loss.",
+      "Starting with a timestamp still causes hotspotting because the leading prefix dictates the node placement.",
+      "Correct: Prefixing with <sensorid> distributes writes evenly across the cluster based on the sensor, while appending the timestamp ensures historical readings are preserved and sortable."
+    ]
   },
   {
     "id": 213,
@@ -10089,7 +11805,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Managing failed Pub/Sub messages with backoff and Dead Letter Topics (DLT).",
+    "correctRationale": "To retry gradually and handle temporary downtime without overwhelming the consumer, an exponential backoff retry policy is required. After the maximum number of attempts (10), the failed message should be routed to a separate Dead Letter Topic (DLT) so it doesn't block the main processing queue.",
+    "optionRationales": [
+      "Increasing the acknowledgement deadline only gives the consumer more time to process a single message; it does not provide gradual retries or route permanently failed messages away.",
+      "Immediate redelivery will slam the consumer app during a downtime, ignoring the requirement to retry gradually.",
+      "Configuring dead lettering to route back to the same source topic would create an infinite loop of failures.",
+      "Correct: Exponential backoff ensures gradual retries to allow systems to recover, and routing to a different topic after 10 failures safely parks unprocessable messages."
+    ]
   },
   {
     "id": 214,
@@ -10133,7 +11857,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Self-service, low-maintenance cross-department data sharing using Analytics Hub.",
+    "correctRationale": "Analytics Hub is Google Cloud's native solution for creating data exchanges. A private exchange allows you to publish datasets that other business units can discover and subscribe to in a self-service manner. Subscribing creates a linked dataset in their project, which is highly scalable and low maintenance.",
+    "optionRationales": [
+      "Correct: Analytics Hub provides a centralized, discoverable, self-service portal for internal teams to subscribe to shared datasets with zero maintenance overhead.",
+      "Creating authorized views requires manual IAM configuration for every new view and project, violating the 'low-maintenance' and 'self-serving' requirements.",
+      "Manually creating and sharing views with specific users does not scale, is not discoverable, and requires high administrative overhead to maintain.",
+      "Using Data Transfer Service creates physical copies of the data, which increases storage costs and breaks the single-source-of-truth paradigm."
+    ]
   },
   {
     "id": 215,
@@ -10181,7 +11913,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Minimizing operational database load by replicating data to BigQuery via Change Data Capture (CDC).",
+    "correctRationale": "Executing 100-300 analytical queries daily against operational databases would severely impact their performance. Datastream provides serverless Change Data Capture (CDC) to replicate the data continuously into BigQuery, where analytics can run without touching the source databases.",
+    "optionRationales": [
+      "Federated queries push the analytical compute load down to the Cloud SQL instances, which violates the requirement to minimize load on the operational databases.",
+      "A Spark job running on Dataproc would require building and maintaining complex batch ETL pipelines, and querying the database directly for extraction would still impose periodic heavy loads.",
+      "Correct: Datastream continuously streams changes from Cloud SQL to BigQuery via CDC, offloading the analytical query load entirely to BigQuery.",
+      "A Trino cluster would still issue queries directly against the Cloud SQL databases, failing to minimize the load on the operational systems."
+    ]
   },
   {
     "id": 216,
@@ -10229,7 +11969,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Implementing a Data Mesh architecture using Dataplex.",
+    "correctRationale": "A Data Mesh architecture is based on decentralized domain ownership. Creating multiple projects allows each department to own their infrastructure. Dataplex enables mapping these distributed storage assets (Cloud Storage, BigQuery) into logical data lakes and zones, empowering departments to manage, govern, and securely share their own data products.",
+    "optionRationales": [
+      "Centralizing administration under IT contradicts the Data Mesh principle of decentralized, self-serve domain ownership.",
+      "While Analytics Hub helps share data, it does not provide the structural governance, metadata management, or unified security boundary over GCS and BigQuery that Dataplex data lakes provide for a mesh.",
+      "Creating a single project with central buckets and datasets is a monolithic data lake architecture, which is the exact opposite of a decentralized data mesh.",
+      "Correct: Mapping individual department projects to Dataplex data lakes perfectly aligns with the Data Mesh principles of decentralized ownership and federated governance."
+    ]
   },
   {
     "id": 217,
@@ -10277,7 +12025,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Topic message retention in Pub/Sub.",
+    "correctRationale": "By default, Pub/Sub discards messages once acknowledged by all attached subscriptions. By enabling Topic Message Retention, Pub/Sub stores all published messages at the topic level for a specified duration (up to 31 days). When a new subscription is created, it can seek back in time and replay all retained messages.",
+    "optionRationales": [
+      "Creating a new topic and republishing 30 days of data requires custom logic on the publisher side, which is inefficient and unnecessary when Pub/Sub handles this natively.",
+      "Correct: Setting a topic retention policy allows any newly created subscription to seek backward and replay the last 30 days of historical data.",
+      "Subscriber retention only retains messages for that specific subscription. It does not help a new subscription access messages published before it existed.",
+      "Asking the source system to re-push data is a manual, brittle process that relies on upstream systems having complete historical state."
+    ]
   },
   {
     "id": 218,
@@ -10325,7 +12081,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "IAM permissions for Dataflow in a Shared VPC.",
+    "correctRationale": "When deploying Dataflow jobs into a Shared VPC network, the Google-managed Dataflow service account (the service agent) is responsible for provisioning the actual Compute Engine VMs. Therefore, the service agent in the service project must be granted the compute.networkUser role on the host project's Shared VPC subnetwork so it can attach the worker VMs to it.",
+    "optionRationales": [
+      "Correct: The Dataflow service agent provisions the infrastructure and requires the compute.networkUser role on the Shared VPC subnet.",
+      "The worker service account is the identity the VMs run as to access data (GCS, BigQuery), but it is not the entity that actually creates the network interfaces during cluster spin-up.",
+      "The dataflow.admin role grants permissions to manage Dataflow jobs, but it does not grant the cross-project networking permissions needed to attach VMs to a Shared VPC.",
+      "Giving dataflow.admin to the worker service account violates least privilege and still fails to provide the necessary Shared VPC attachment permissions."
+    ]
   },
   {
     "id": 219,
@@ -10373,7 +12137,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Minimal latency streaming from on-prem Kafka to BigQuery.",
+    "correctRationale": "Apache Beam (Dataflow) provides a native KafkaIO connector. Because an interconnect link is already set up, Dataflow workers can directly communicate with the on-premises Kafka cluster. Reading directly from Kafka and writing to BigQuery eliminates intermediate hops, achieving the lowest possible latency.",
+    "optionRationales": [
+      "Bridging Kafka to Pub/Sub adds an unnecessary intermediate storage layer, which increases end-to-end latency and infrastructure cost.",
+      "Setting up a proxy host adds an unnecessary operational bottleneck. Dataflow can connect directly to on-premises resources over the Interconnect.",
+      "Correct: Using the native KafkaIO connector in Dataflow to read directly from the source minimizes latency by removing intermediate message buses.",
+      "Similar to A, writing a custom pipeline that reads from Pub/Sub still suffers from the added latency of the Kafka-to-Pub/Sub bridge."
+    ]
   },
   {
     "id": 220,
@@ -10417,7 +12189,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigLake tables for column-level security on data lakes without moving data.",
+    "correctRationale": "The organization wants to query data in Cloud Storage using Spark and SQL, enforce column-level security, and enable a data mesh. BigLake tables upgrade external tables by allowing fine-grained access control (column-level security via Data Catalog policy tags) directly on data residing in Cloud Storage, making it accessible securely to both BigQuery and Spark (via the BigQuery Storage API).",
+    "optionRationales": [
+      "Deploying a long-living Dataproc cluster with Ranger is expensive, requires heavy infrastructure management, and does not provide a modern, serverless data mesh approach.",
+      "Correct: BigLake enables fine-grained, column-level access control on Cloud Storage files via policy tags, supporting both SQL and Spark engines cost-effectively.",
+      "Loading data into native BigQuery tables duplicates the data, which is unnecessary since BigLake can query it in place, and might break existing Spark workloads that expect to read from a data lake.",
+      "Cloud Storage IAM policies only operate at the bucket or object level. They cannot enforce column-level security within the files themselves."
+    ]
   },
   {
     "id": 221,
@@ -10465,7 +12245,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Re-encrypting Cloud Storage data after a KMS key compromise.",
+    "correctRationale": "When a KMS key is compromised, you must create a completely new key, as rotating the key version does not automatically re-encrypt existing data. To enforce the new key and ensure no new objects are written unencrypted, you should create a new bucket with the new key as the default CMEK, then copy the objects over. By not specifying a key in the copy command, GCS automatically encrypts the copied objects using the bucket's new default CMEK.",
+    "optionRationales": [
+      "Rotating a Cloud KMS key version only affects new writes. Existing data in Cloud Storage remains encrypted with the compromised key version and is not automatically re-encrypted.",
+      "Setting a new default CMEK on the existing bucket ensures new writes use the new key, but it does not re-encrypt the existing compromised objects.",
+      "Copying objects while manually specifying the new key works for the migration, but it fails the requirement to reduce the risk of objects written without CMEK protection because the new bucket doesn't have a default key set to enforce it globally.",
+      "Correct: Creating a new bucket with a default CMEK enforces encryption for all future writes, and copying the objects into it automatically re-encrypts the data with the new, secure key."
+    ]
   },
   {
     "id": 222,
@@ -10501,7 +12289,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cloud Storage Dual-Region with Turbo Replication for fast RPO and local reads.",
+    "correctRationale": "An RPO (Recovery Point Objective) of 15 minutes requires Turbo Replication, which guarantees cross-region replication within 15 minutes (standard dual-region has no strict SLA). To minimize latency, the Dataproc cluster in us-central1 should read data directly from the us-central1 region of the dual-region bucket.",
+    "optionRationales": [
+      "Using Storage Transfer Service hourly provides an RPO of 1 hour, which fails the strict 15-minute RPO requirement.",
+      "Multi-region buckets span a large geographic area, which can introduce higher latency for read operations compared to specific regional targeting, and lacks the strict 15-minute SLA of turbo replication.",
+      "Reading from us-south1 while the Dataproc cluster is in us-central1 forces cross-region network hops, significantly increasing data read latency.",
+      "Correct: Turbo replication guarantees the 15-minute RPO, and reading from the same region as the compute cluster (us-central1) minimizes latency."
+    ]
   },
   {
     "id": 223,
@@ -10549,7 +12345,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Database normalization to resolve scaling and reporting issues.",
+    "correctRationale": "Storing patients and visits in a single massive table causes extreme data redundancy (repeating patient info for every visit) and poor query performance. The standard relational database solution to this structural flaw is normalization—splitting the entities into a Patients table and a Visits table, linked by a foreign key.",
+    "optionRationales": [
+      "Throwing hardware at a fundamentally flawed schema is an expensive anti-pattern that only temporarily masks the problem.",
+      "Sharding by date ranges complicates the application logic and makes historical reporting across shards extremely difficult and slow.",
+      "Correct: Normalization eliminates redundancy, dramatically reduces table size, and optimizes the schema for structured reporting.",
+      "Partitioning by clinic forces reports that span multiple clinics to use inefficient UNION queries, creating unnecessary complexity and performance bottlenecks."
+    ]
   },
   {
     "id": 224,
@@ -10597,7 +12401,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Decoupling OLTP and OLAP systems.",
+    "correctRationale": "The current operational MySQL cluster (OLTP) is under heavy load. To perform analytics without impacting the operational database, the data should be extracted, transformed, and loaded (ETL) into a dedicated OLAP data warehouse like BigQuery. BigQuery is specifically designed for heavy analytical workloads.",
+    "optionRationales": [
+      "Adding a node to the MySQL cluster still keeps the analytics workload within the same operational system boundary, and MySQL is not optimized for complex OLAP queries.",
+      "Correct: Using an ETL tool to move the data into BigQuery separates the analytical queries from the operational database, completely removing the performance impact.",
+      "Deploying an on-premises Hadoop cluster adds massive infrastructure overhead and complexity when managed cloud services (BigQuery) are available.",
+      "Mounting backups to Cloud SQL and running Dataproc is highly convoluted, relies on stale nightly data, and requires significant manual orchestration compared to a standard ETL pipeline."
+    ]
   },
   {
     "id": 225,
@@ -10645,7 +12457,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "AlloyDB for PostgreSQL for HTAP (Hybrid Transactional and Analytical Processing).",
+    "correctRationale": "The user needs to support both transactional workloads and analytics on a single database without changing the database management system (PostgreSQL). AlloyDB for PostgreSQL is Google's fully managed, PostgreSQL-compatible database optimized for exactly this use case (HTAP), offering an integrated columnar engine for fast analytics alongside high-performance transaction processing.",
+    "optionRationales": [
+      "Migrating to Cloud Spanner requires significant application rewrites because it uses a different SQL dialect and architecture, violating the 'without changing database management systems' requirement.",
+      "Correct: AlloyDB is 100% PostgreSQL-compatible and features a built-in columnar engine specifically designed to handle hybrid transactional and analytical workloads in a single system.",
+      "Migrating entirely to BigQuery would break the transactional (OLTP) workloads, as BigQuery is an analytical data warehouse, not a transactional database.",
+      "While Cloud SQL for PostgreSQL is compatible, it is not optimized for heavy analytical queries on large datasets, meaning performance would suffer compared to AlloyDB's columnar engine."
+    ]
   },
   {
     "id": 226,
@@ -10685,7 +12505,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Managing SQL-based ELT pipelines in BigQuery using Dataform.",
+    "correctRationale": "Dataform is a service specifically designed for data analysts and developers to build, test, and schedule ELT (Extract, Load, Transform) pipelines directly in BigQuery. It allows teams to manage complex SQL transformations as code, complete with dependency management and Git integration.",
+    "optionRationales": [
+      "Correct: Dataform perfectly matches the requirement for an intuitive, SQL-native environment to manage ELT pipelines as code within BigQuery.",
+      "Dataflow uses Apache Beam (Java, Python, Go) and is designed for heavy ETL, not the SQL-only ELT approach requested by the developers.",
+      "Cloud Data Fusion is a visual, no-code/low-code ETL tool, which contradicts the developers' desire for a code-based SQL environment.",
+      "Cloud Composer (Airflow) can orchestrate BigQuery jobs, but it requires writing Python DAGs, which adds complexity for a team that specifically wants an intuitive SQL-as-code environment."
+    ]
   },
   {
     "id": 227,
@@ -10733,7 +12561,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Time-series data modeling in BigQuery.",
+    "correctRationale": "BigQuery is an append-optimized data warehouse. Running UPDATE statements every 30 seconds across thousands of sensors would exhaust DML quotas and incur massive costs. The correct approach is an append-only architecture: inserting new metrics into a separate metrics table partitioned by timestamp, and joining it with the static sensors dimension table when analytical queries are run.",
+    "optionRationales": [
+      "BigQuery enforces strict limits on concurrent DML operations. Updating nested records every 30 seconds will hit quotas and fail, and DML operations are expensive.",
+      "While inserting nested records avoids DML limits, appending deeply nested arrays endlessly causes massive record bloat and degrades performance.",
+      "Correct: An append-only (INSERT) partitioned fact table for metrics avoids DML limits, allows efficient querying via partition pruning, and joining with the static sensor dimension table is standard star-schema design.",
+      "Updating rows every 30 seconds is an anti-pattern in BigQuery, leading to performance degradation, high costs, and quota exhaustion."
+    ]
   },
   {
     "id": 228,
@@ -10781,7 +12617,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Dataplex zone requirements (Raw vs Curated).",
+    "correctRationale": "In Dataplex, Curated zones are strictly designed for structured, analytics-ready data and only support specific columnar or highly-structured formats (Parquet, Avro, ORC). CSV and JSON files are not supported in Curated zones. Therefore, they are not discovered. They must be placed in a Raw zone, which supports any format.",
+    "optionRationales": [
+      "Correct: Curated zones reject CSV and JSON. Moving them to the Raw zone, which accepts unformatted or loosely formatted data, resolves the discovery issue.",
+      "Auto-discovery runs automatically in both zones; the failure is due to the file format violating the Curated zone's strict schema requirements, not because discovery is off.",
+      "Loading the files manually into BigQuery bypasses the entire purpose of Dataplex's automated discovery and data lake management.",
+      "Object-level access in Cloud Storage is an IAM issue; if it were an IAM issue, Dataplex wouldn't be able to scan the bucket at all. The specific mention of 'JSON and CSV' points directly to zone format restrictions."
+    ]
   },
   {
     "id": 229,
@@ -10829,7 +12673,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cost reduction for repeated aggregations using Materialized Views.",
+    "correctRationale": "Materialized views cache the results of complex queries, significantly reducing computation costs for frequently run aggregations. Since the analytics only require the past year, but historical data must be retained in the base table, adding a filter clause to the materialized view definition limits the view's computation and storage solely to the relevant timeframe.",
+    "optionRationales": [
+      "Correct: A materialized view caches the aggregations to reduce query costs, and the filter ensures it only computes and stores the necessary 1-year rolling window.",
+      "Configuring partition expiration on the base table would physically delete the data older than a year, violating the strict requirement to 'retain full historical data.'",
+      "A standard logical view does not cache results; it simply executes the aggregation query against the base table every time it is run, providing zero cost reduction.",
+      "Setting up a scheduled query to recreate a table hourly is harder to maintain and lacks the smart, incremental refresh capabilities of native materialized views."
+    ]
   },
   {
     "id": 230,
@@ -10877,7 +12729,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cross-cloud analytics without data movement using BigQuery Omni and BigLake.",
+    "correctRationale": "The organization wants to query data in AWS S3 without copying the data into GCP (minimizing data movement) and without giving users direct storage access. BigQuery Omni allows execution of queries natively in AWS. Combining it with BigLake tables creates a logical access layer that enforces security and access controls at the table level, so users don't need raw bucket permissions.",
+    "optionRationales": [
+      "Correct: BigQuery Omni executes the queries locally in AWS to avoid data transfer costs, and BigLake tables enforce fine-grained access control so users don't need direct S3 bucket access.",
+      "Standard external tables rely on the user having underlying IAM credentials to the storage bucket, which violates the requirement of 'not giving direct access to storage buckets'.",
+      "Using Storage Transfer Service copies the data into GCP, which violates the multi-cloud architecture and incurs massive, unnecessary data egress costs.",
+      "Copying the data via STS violates the intent to query multi-cloud storage in place and wastes time and egress budget."
+    ]
   },
   {
     "id": 231,
@@ -10925,7 +12785,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Masking PII using Cloud Data Loss Prevention (DLP) for consumer analysis.",
+    "correctRationale": "To comply with privacy requirements while still enabling consumer analyses, sensitive PII must be de-identified. Cloud DLP integrates seamlessly with Dataflow to automatically inspect and mask sensitive data. Masking (e.g., pseudonymization) retains the statistical usefulness of the data for analysis while protecting individual identities.",
+    "optionRationales": [
+      "Correct: Dataflow combined with Cloud DLP easily masks the data, ensuring privacy compliance while retaining analytical value in BigQuery.",
+      "Using CMEK encrypts the data at rest, but when BigQuery reads it via federated queries, the data is decrypted in memory. The analysts would still see plaintext PII, violating privacy requirements.",
+      "Completely removing sensitive fields destroys relationships and context, rendering the dataset useless for the required consumer analyses.",
+      "Encrypting the fields with KMS inside Dataflow would require complex key management and client-side encryption logic, whereas Cloud DLP provides purpose-built data masking techniques natively."
+    ]
   },
   {
     "id": 232,
@@ -10973,7 +12841,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Securely connecting dynamic IPs to Cloud SQL.",
+    "correctRationale": "The applications have dynamic public IPs, making IP allowlisting impossible. The Cloud SQL Auth Proxy provides secure, encrypted connections without needing to configure Authorized Networks (IP allowlists) or manage SSL certificates manually. Leaving the Authorized Network list empty ensures no direct internet access is permitted, enforcing all traffic to route securely through the proxy.",
+    "optionRationales": [
+      "Adding 0.0.0.0/0 to the Authorized Networks opens the database port to the entire public internet, which is a massive security vulnerability.",
+      "Regularly updating Authorized Networks for dynamic IPs is an operational nightmare, brittle, and essentially impossible to manage at scale without causing connectivity drops.",
+      "Correct: Leaving Authorized Networks empty blocks direct internet access, while the Cloud SQL Auth Proxy securely handles authentication and encryption regardless of the source IP.",
+      "The Auth Proxy makes IP allowlisting unnecessary. Opening 0.0.0.0/0 defeats the purpose of network security and leaves the database vulnerable to direct attacks bypassing the proxy."
+    ]
   },
   {
     "id": 233,
@@ -11021,7 +12897,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Managing large Storage Transfer Service (STS) jobs with signed URLs.",
+    "correctRationale": "A large migration using signed URLs can take a long time. If it fails partway through with HTTP 403 (Forbidden) errors and the source system hasn't changed, the most likely cause is that the signed URLs in the TSV file simply expired before the transfer service could reach them. Generating a new TSV with longer validity periods and splitting the job to run in parallel resolves the timeout.",
+    "optionRationales": [
+      "Falling back to a custom shell script using GCS FUSE is fragile, slow, and ignores the built-in capabilities of the managed Storage Transfer Service.",
+      "TLS certificates secure the HTTPS transport layer; if the TLS certificate had expired, the error would be an SSL handshake failure, not an HTTP 403 application-level denial.",
+      "Correct: HTTP 403 on signed URLs usually means expiration. Generating new URLs with a longer lifespan and parallelizing the transfer prevents the timeout from happening again.",
+      "Changing the checksum hashing algorithm from MD5 to SHA256 has nothing to do with authorization or HTTP 403 forbidden errors."
+    ]
   },
   {
     "id": 234,
@@ -11069,7 +12953,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery partition expiration.",
+    "correctRationale": "BigQuery supports automatic data lifecycle management via partition expiration. Since the model relies on the weather date (not the date the data was loaded), partitioning the table by the weather DATETIME column and setting the partition expiration to 30 days ensures BigQuery automatically drops older data with zero compute cost.",
+    "optionRationales": [
+      "Running scheduled queries to execute DELETE statements consumes compute resources (DML) and costs money, whereas partition expiration is a free background process.",
+      "Correct: Partitioning by the actual weather date and using partition expiration natively drops old data at zero cost.",
+      "Partitioning by ingestion time drops data based on when it arrived in BigQuery. If historical weather data is loaded late, it will be retained incorrectly, ignoring the actual weather date the model relies on.",
+      "Like option A, running scheduled DELETE queries incurs unnecessary compute costs."
+    ]
   },
   {
     "id": 235,
@@ -11117,7 +13009,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Safely updating an incompatible Dataflow streaming job.",
+    "correctRationale": "If a Dataflow pipeline code update is incompatible (e.g., changes to side inputs or stateful processing), you cannot use the standard in-flight replacement job. To prevent data loss, you must stop the existing pipeline using the `--drain` flag. Draining tells Dataflow to stop pulling new messages from Pub/Sub but finish processing any elements already in flight. Once fully drained, you can deploy the new pipeline.",
+    "optionRationales": [
+      "Correct: Draining the pipeline ensures all in-flight data is completely processed and written to the sink before the job stops, preventing data loss.",
+      "Transform mapping JSON is used for compatible updates where step names have changed, but the question explicitly states the pipeline is incompatible.",
+      "Canceling the old pipeline abruptly terminates workers. Any data that was pulled from Pub/Sub but not yet fully processed and written to the sink will be lost.",
+      "Canceling causes data loss for in-flight elements, and creating a new subscription means you will miss the messages that were left unacknowledged on the old subscription."
+    ]
   },
   {
     "id": 236,
@@ -11153,7 +13053,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Accelerating repeated BigQuery analytics using Materialized Views.",
+    "correctRationale": "When you need to query massive datasets (petabytes) multiple times a day and get up-to-date insights quickly, Materialized Views are the optimal choice. They precompute and store the results of the query. Unlike static tables, BigQuery automatically incrementally updates materialized views when the base table changes, ensuring fast, fresh results with drastically lower query costs.",
+    "optionRationales": [
+      "Scheduled queries write out static tables. They only run at set intervals, meaning insights between intervals are stale, failing the 'up-to-date' requirement.",
+      "Query caching only works if the underlying table data has not changed and the exact same query string is used. On an active petabyte-scale table, the cache will constantly invalidate.",
+      "Limiting columns reduces bytes scanned (lowering cost) but does not inherently precompute complex logic or aggregations to significantly accelerate time-to-results.",
+      "Correct: Materialized views dynamically cache precomputed results and incrementally update them, guaranteeing fast performance and real-time freshness."
+    ]
   },
   {
     "id": 237,
@@ -11201,7 +13109,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Pub/Sub exactly-once delivery.",
+    "correctRationale": "Historically, Pub/Sub guaranteed at-least-once delivery, requiring complex custom deduplication logic. Now, Pub/Sub natively supports 'exactly-once delivery' configuration on pull subscriptions. This feature ensures that once a message is successfully acknowledged, it will not be redelivered, completely removing the need for external deduplication systems.",
+    "optionRationales": [
+      "Adding Dataflow introduces an entirely new compute layer, violating the requirement to ensure no duplicates 'without adding complexity.'",
+      "Building and managing a custom transactional database to track message IDs is an extremely high-complexity, high-maintenance anti-pattern.",
+      "Correct: Toggling exactly-once delivery on the subscription handles deduplication natively within Pub/Sub, adding zero infrastructure complexity.",
+      "Changing to a push subscription does not solve duplication; push subscriptions also operate on at-least-once delivery by default and can redeliver."
+    ]
   },
   {
     "id": 238,
@@ -11237,7 +13153,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Discoverable, self-service data sharing in BigQuery.",
+    "correctRationale": "Analytics Hub is Google Cloud's data exchange platform. It allows data owners to publish datasets internally. Other teams can browse the hub and subscribe to the data. This creates a read-only linked dataset in their project, ensuring they always query the freshest data from the source while minimizing administrative overhead.",
+    "optionRationales": [
+      "Correct: Analytics Hub provides a secure, self-service portal for discovering and subscribing to read-only data without copying it.",
+      "Authorized datasets are used to grant a view in one dataset access to tables in another, which is a security feature, not a self-service discovery and sharing platform.",
+      "Manually creating datasets and managing IAM roles per team is high-maintenance and doesn't provide a centralized, discoverable self-service catalog.",
+      "Using Data Transfer Service creates physical copies of the data, which increases storage costs, creates data silos, and reduces data freshness."
+    ]
   },
   {
     "id": 239,
@@ -11285,7 +13209,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Running Spark workloads with minimal operational overhead using Dataproc Serverless.",
+    "correctRationale": "The user wants to minimize installation and management effort entirely while retaining the ability to set specific executor resource sizes. Dataproc Serverless completely eliminates cluster provisioning, scaling, and tuning. You simply submit the job and specify the executor vCPU and memory requirements via Spark properties.",
+    "optionRationales": [
+      "Executing Spark on GKE requires provisioning, configuring, and managing a Kubernetes cluster, which is highly complex and fails the 'minimize management' requirement.",
+      "Running Spark on a raw Compute Engine VM requires manually installing and configuring the entire Hadoop/Spark ecosystem from scratch.",
+      "While a standard Dataproc cluster is managed, you still have to provision the cluster, manage its lifecycle, and tear it down, which is more effort than Serverless.",
+      "Correct: Dataproc Serverless requires zero infrastructure management while still allowing the user to configure executor properties (cores/memory) at job submission time."
+    ]
   },
   {
     "id": 240,
@@ -11317,7 +13249,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Secure, internal communication for Dataflow to GCS and BigQuery.",
+    "correctRationale": "To ensure secure communication, Dataflow worker VMs should not have public external IP addresses. Because they need to interact with Google APIs (Cloud Storage and BigQuery), the subnetwork must have Private Google Access enabled. This allows internal VMs to reach Google services securely over Google's private backbone network without traversing the public internet.",
+    "optionRationales": [
+      "Correct: Disabling external IPs secures the workers, and Private Google Access provides the required internal routing to reach Cloud Storage and BigQuery seamlessly.",
+      "Leaving external IP addresses exposes the worker VMs to the public internet, which violates the strict security requirement.",
+      "Private Service Connect (PSC) is designed for connecting to specific published services or third-party APIs. Private Google Access is the standard, simpler, and free method for VMs to access native Google APIs like GCS and BQ.",
+      "Cloud NAT is used to give private VMs outbound access to the general public internet. Since GCS and BigQuery are internal Google services, Cloud NAT is an unnecessary cost when Private Google Access accomplishes this directly."
+    ]
   },
   {
     "id": 241,
@@ -11353,7 +13293,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Extending Google Cloud Workflows with custom logic via Cloud Functions.",
+    "correctRationale": "Workflows is designed for orchestration, but for complex business logic in Python, the recommended pattern is to call a serverless Cloud Function. This keeps the architecture simple and fast, as Cloud Functions are purpose-built for executing small snippets of code without managing infrastructure.",
+    "optionRationales": [
+      "Wrong: Cloud Composer (managed Airflow) is a heavyweight orchestration tool that is extreme overkill for simply running a Python script to process an API response; it takes minutes to spin up and has high baseline costs.",
+      "Wrong: Dataproc is for large-scale cluster-based processing (Hadoop/Spark); spinning up a cluster for simple API business logic is slow, expensive, and unnecessarily complex.",
+      "Correct: Cloud Functions provides a lightweight, serverless Python environment that integrates natively with Workflows to handle logic that exceeds the Workflows YAML/JSON standard library capability.",
+      "Wrong: Subworkflows use the exact same Workflows syntax as the main workflow; they do not support native Python execution or solve the limitation of the standard library."
+    ]
   },
   {
     "id": 242,
@@ -11385,7 +13333,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery Materialized Views for precomputing aggregations.",
+    "correctRationale": "Materialized views precompute and store aggregation results, which significantly reduces query time and cost by avoiding scans of the full 50 TB base table. They require zero maintenance because they automatically update when the base table changes and are transparently used by the BigQuery optimizer.",
+    "optionRationales": [
+      "Wrong: Authorized views are logical, not physical; they do not precompute data and thus would still scan the underlying 50 TB table every time, resulting in the exact same cost and speed.",
+      "Wrong: BI Engine is an in-memory acceleration service, but it has strict memory capacity limits (e.g., 100GB per reservation) that make it unsuitable for directly accelerating a raw 50 TB table without pre-aggregation.",
+      "Correct: Materialized views physically store the aggregated data, reducing the bytes scanned for daily/monthly reports and requiring no manual refresh or scheduling logic.",
+      "Wrong: Scheduled queries require manual management of the destination table, schema changes, and potential data consistency issues, whereas Materialized Views are managed automatically by BigQuery."
+    ]
   },
   {
     "id": 243,
@@ -11433,7 +13389,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Storage Transfer Service for large-scale data ingestion to Cloud Storage.",
+    "correctRationale": "Storage Transfer Service is the native GCP tool for moving massive amounts of data from on-premises (using agents) or other clouds into Cloud Storage. It includes a built-in GUI in the Cloud Console and supports Customer-Managed Encryption Keys (CMEK) natively.",
+    "optionRationales": [
+      "Wrong: BigQuery Data Transfer Service is for moving data directly into BigQuery tables, but the requirement is to centralize raw files in Cloud Storage.",
+      "Correct: It is a purpose-built, GUI-driven tool for moving objects at scale into GCS while easily supporting encryption requirements.",
+      "Wrong: Dataflow is a code-first processing engine requiring Java or Python development; it does not provide a native point-and-click GUI for configuring simple transfers.",
+      "Wrong: While Cloud Data Fusion has a GUI, it is an enterprise ETL integration service that is significantly more expensive and complex than necessary for simple file centralization."
+    ]
   },
   {
     "id": 244,
@@ -11481,7 +13445,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery Disaster Recovery using multi-regional exports to Cloud Storage.",
+    "correctRationale": "Exporting data to a multi-region or dual-region Cloud Storage bucket is the most cost-effective way to ensure data survives a regional failure. GCS multi-region storage is vastly cheaper than maintaining active BigQuery datasets in multiple regions, and a daily scheduled export easily satisfies an RPO of 24 hours.",
+    "optionRationales": [
+      "Correct: Exporting to GCS multi-region provides geographical redundancy at a fraction of the price of BigQuery's active storage or continuous cross-region replication.",
+      "Wrong: Scheduling a dataset copy to another region duplicates BigQuery active storage costs, which is more expensive than GCS storage.",
+      "Wrong: BigQuery snapshots are stored within the exact same region as the source table; if the region fails, the snapshot is inaccessible and provides zero DR protection.",
+      "Wrong: Modifying ETL to dual-load data into two regions increases architectural complexity and doubles both compute and storage costs, contradicting the requirement to minimize costs."
+    ]
   },
   {
     "id": 245,
@@ -11525,7 +13497,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Field-level encryption using Cloud KMS for reversible data protection.",
+    "correctRationale": "Using Dataflow with Cloud KMS to encrypt specific fields allows the sensitive data to be stored in BigQuery in a protected state. This uniquely satisfies the 'retaining all data' requirement because authorized users can decrypt the fields later, unlike masking or removal which permanently destroy the original values.",
+    "optionRationales": [
+      "Wrong: Detecting and removing sensitive fields fails the explicit requirement to 'retain all data' for potential future use cases.",
+      "Wrong: CMEK (Customer-Managed Encryption Keys) encrypts data at the disk/volume level but does not hide specific sensitive fields from users who have SQL access to the BigQuery table.",
+      "Wrong: Masking is a de-identification technique that permanently alters data (e.g., replacing digits with asterisks); it does not allow for retaining the original value for future recovery.",
+      "Correct: Encrypting specific fields within the Dataflow pipeline ensures privacy compliance while maintaining a mathematical path to recover the original data via decryption keys."
+    ]
   },
   {
     "id": 246,
@@ -11573,7 +13553,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Bigtable performance optimization through row key distribution.",
+    "correctRationale": "Bigtable performance is heavily dependent on a balanced distribution of requests across its nodes. If the row key design causes 'hotspotting' (too many reads/writes to a single node or contiguous range), performance suffers; the fix is to redesign the schema so that keys are spread evenly across the row space.",
+    "optionRationales": [
+      "Correct: Evenly distributing row keys prevents single nodes from becoming bottlenecks, which is the foundational way to improve throughput in Bigtable.",
+      "Wrong: Bigtable cannot resolve schema-based hotspotting on its own; adding nodes to a cluster with a bad schema just results in more idle nodes while the hot node remains overwhelmed.",
+      "Wrong: Using a single row key for frequently updated values is the exact definition of hotspotting and would severely degrade write performance.",
+      "Wrong: Using sequential numeric IDs causes all new writes to hit the same node at the end of the table, creating a massive, continuous write hotspot."
+    ]
   },
   {
     "id": 247,
@@ -11621,7 +13609,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Debugging Dataflow pipelines using deterministic re-runs.",
+    "correctRationale": "When messages are successfully published to Pub/Sub but missing in the final output dashboard, the logic inside the Dataflow pipeline is the most likely culprit (e.g., dropping data in a faulty transform). Running a fixed, known dataset allows you to compare actual output against expected output to pinpoint exactly where data loss occurs.",
+    "optionRationales": [
+      "Wrong: Checking the dashboard application only confirms that the data is indeed missing; it provides no diagnostic capability to find where the pipeline dropped it.",
+      "Correct: Using a controlled input set is the standard engineering practice to debug complex stream processing logic and ensure all transforms behave as expected.",
+      "Wrong: Stackdriver Monitoring on Pub/Sub shows throughput and unacknowledged messages, but it cannot 'find' specific missing JSON payloads or explain Dataflow's internal transform logic.",
+      "Wrong: Dataflow already uses a pull-based mechanism internally to consume from Pub/Sub; explicitly switching API call methods doesn't fix custom application logic errors."
+    ]
   },
   {
     "id": 248,
@@ -11669,7 +13665,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Cloud Storage as a common 'data lake' for interoperability.",
+    "correctRationale": "Google Cloud Storage (GCS) acts as the central staging area for a data lake. Storing data in Avro format is ideal because Avro includes the schema, is highly compressed, and is natively supported by BigQuery (via external tables), Spark, and Hadoop, allowing all systems to access the exact same source files.",
+    "optionRationales": [
+      "Wrong: Storing data strictly inside BigQuery partitioned tables makes it accessible to Spark via a connector, but it is less efficient for native Hadoop MapReduce workloads than direct file access.",
+      "Wrong: Authorized views are a security mechanism in BigQuery and do not provide a storage solution that native Hadoop/Spark clusters can easily consume as raw files.",
+      "Correct: GCS combined with Avro is the industry-standard 'Golden Path' for multi-engine interoperability and schema evolution in GCP.",
+      "Wrong: HDFS is tightly coupled to a specific Dataproc cluster. If the cluster is deleted, the data is lost, making it unsuitable as a persistent, 'common' storage layer for BigQuery."
+    ]
   },
   {
     "id": 249,
@@ -11717,7 +13721,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "The standard GCP real-time streaming architecture (Pub/Sub + Dataflow + GCS/BQ).",
+    "correctRationale": "The canonical GCP architecture for real-time ingestion and processing at massive scale replaces Kafka with Pub/Sub for messaging, uses Dataflow for stream processing (windowing/filtering), and relies on Cloud Storage or BigQuery for highly reliable long-term storage.",
+    "optionRationales": [
+      "Correct: This trio handles global decoupled ingestion, real-time transformations, and highly durable storage perfectly.",
+      "Wrong: Local SSD is ephemeral storage physically attached to specific VMs; it is wiped when the VM stops and is not a 'reliable' long-term storage solution.",
+      "Wrong: Cloud SQL is a relational database and cannot natively ingest asynchronous high-volume streams directly from Pub/Sub without a processing/compute layer like Dataflow.",
+      "Wrong: Cloud Load Balancing routes synchronous HTTP(S)/TCP traffic; it does not ingest, buffer, or queue asynchronous message streams from IoT or inventory sources like Pub/Sub does."
+    ]
   },
   {
     "id": 250,
@@ -11765,7 +13777,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery cost optimization through column reduction (shrunken tables).",
+    "correctRationale": "BigQuery charges based on the amount of data scanned in the columns referenced by a query. Since standard views in BigQuery are logical (they run the full underlying query dynamically), they don't inherently save money; creating a separate, smaller physical table with fewer columns physically reduces the data scanned, directly lowering query costs.",
+    "optionRationales": [
+      "Wrong: Google Sheets has strict cell limits and will crash or become unresponsive when attempting to handle 'overwhelming' amounts of raw customer base data.",
+      "Correct: A physical table containing only necessary columns ensures that the BI tool only triggers scans on a small fraction of the original data footprint.",
+      "Wrong: A logical view simply aliases a query. If the underlying logic is complex or the BI tool runs `SELECT *` against the view, it scans the underlying data anyway, providing no cost benefit.",
+      "Wrong: IAM roles provide security and access control; they have absolutely no impact on the volume of data scanned or the computational cost of queries."
+    ]
   },
   {
     "id": 251,
@@ -11813,7 +13833,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Handling event-time vs. processing-time in streaming systems.",
+    "correctRationale": "For accurate time-series analysis, you must rely on 'Event Time' (when the event actually happened on the device) rather than 'Processing Time' (when it reached the cloud). Attaching the timestamp at the source publisher ensures data can be correctly ordered even if it arrives out of order due to network latency.",
+    "optionRationales": [
+      "Wrong: Attaching a timestamp at the subscriber application records 'Processing Time', which is inaccurate if there were delays in the network or Pub/Sub buffering.",
+      "Correct: Source-generated timestamps allow downstream systems like Dataflow to perform deterministic windowing and properly handle late-arriving data.",
+      "Wrong: BigQuery's NOW() function records insertion time, which could be minutes or hours after the actual package event occurred if the pipeline lags.",
+      "Wrong: Pub/Sub's automatically generated timestamp is the 'Publish Time' (when GCP received the message), which does not account for time spent in transit from the publisher."
+    ]
   },
   {
     "id": 252,
@@ -11861,7 +13889,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Configuring Dataflow autoscaling parameters.",
+    "correctRationale": "To enable Dataflow's horizontal autoscaling, you must define the `max_num_workers` parameter. This setting provides the absolute upper bound, allowing the service to dynamically add Compute Engine instances based on the backlog and throughput requirements of the 50,000 installations.",
+    "optionRationales": [
+      "Wrong: The zone determines the geographic location where the workers run; it has no effect on the autoscaler's ability to scale the cluster up or down.",
+      "Wrong: Specifying `num_workers` tells Dataflow exactly how many instances to start with, but it doesn't allow the system to scale beyond that number unless `max_num_workers` is set.",
+      "Wrong: Disk size is a vertical resource allocation for a single worker node; scaling 'compute power' to handle a massive stream requires more workers (horizontal scaling), not just bigger disks.",
+      "Correct: Setting the maximum number of workers is the specific pipeline execution parameter needed to enable throughput-based autoscaling."
+    ]
   },
   {
     "id": 253,
@@ -11909,7 +13945,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Building high-performance dashboards with BigQuery and Data Studio.",
+    "correctRationale": "BigQuery is an enterprise data warehouse capable of scanning billions of rows in seconds. For 6 weeks of telemetry data from 50,000 devices, loading data into BigQuery and using Data Studio (Looker Studio) is the most efficient, natively integrated way to provide interactive visualizations with sub-5-second response times.",
+    "optionRationales": [
+      "Wrong: Google Sheets cannot handle the millions of rows generated by 50,000 installations over 6 weeks; it will crash or fail to calculate formulas in under 5 seconds.",
+      "Wrong: Google Apps Script has strict execution time limits and is not a visualization engine; it is meant for lightweight workspace automation.",
+      "Wrong: Cloud Datastore is a NoSQL document database optimized for single-entity transactional lookups, not the massive column-based analytical aggregations required for operational reporting.",
+      "Correct: The BigQuery + Data Studio (Looker Studio) combination is the standard GCP architecture for fast, highly scalable operational dashboards."
+    ]
   },
   {
     "id": 254,
@@ -11957,7 +14001,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Managing Data Studio (Looker Studio) cache freshness.",
+    "correctRationale": "Data Studio (Looker Studio) proactively caches query results from BigQuery to improve performance and reduce costs. By default, this cache can persist for much longer than an hour; editing the data freshness/caching settings directly in the report forces it to fetch the most recent data from BigQuery.",
+    "optionRationales": [
+      "Correct: Adjusting the data freshness and caching settings inside the report is the explicit mechanism to ensure the dashboard bypasses stale data and hits the live BigQuery table.",
+      "Wrong: BigQuery table details do not control downstream application-level caching. (BigQuery has its own 24-hour query cache, but that invalidates automatically when table data changes).",
+      "Wrong: Refreshing the browser tab reloads the UI but will often still serve the cached data from the Data Studio backend servers.",
+      "Wrong: Local browser history has absolutely no impact on the server-side caching mechanism between Data Studio and BigQuery."
+    ]
   },
   {
     "id": 255,
@@ -12009,7 +14061,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Implementing multi-tenant security in BigQuery via Dataset-level IAM.",
+    "correctRationale": "In BigQuery, IAM roles are most efficiently managed at the Dataset level. By placing regional tables into region-specific datasets and granting the corresponding regional security groups access to those datasets, you enforce strict data isolation with minimal administrative overhead.",
+    "optionRationales": [
+      "Wrong: A global dataset makes it incredibly difficult to isolate access, as IAM permissions granted at the dataset level are inherited by all tables within it.",
+      "Correct: Organizing data into regional datasets is the best practice for architectural isolation and simplifies bulk permission management.",
+      "Wrong: While table-level access controls exist, adjusting settings for every individual table creates an operational nightmare compared to scalable dataset-level grouping.",
+      "Wrong: The scenario explicitly states you created a 'table for each region', not views. Adjusting view settings is irrelevant to the stated architecture.",
+      "Correct: Granting view access at the dataset level ensures that the regional group can automatically see all current and future tables placed within that specific region's container."
+    ]
   },
   {
     "id": 256,
@@ -12058,7 +14119,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Bigtable row key design for time-series range scans.",
+    "correctRationale": "Bigtable stores rows in lexicographical order. Because the most common query is for a specific device over a specific day, starting the row key with `device_id` groups all time-series data for that device together contiguously, allowing for a highly efficient prefix scan.",
+    "optionRationales": [
+      "Wrong: Starting the key with `date` causes a 'hotspot' where all devices writing data at the same time hit the exact same node, and queries for a single device require scanning the whole table.",
+      "Wrong: Putting `device_id` in a column instead of the row key makes it impossible to perform fast prefix scans; you would have to run a full table scan to find the device.",
+      "Correct: `device_id` as the leading element of the row key is the standard 'tall' table design for IoT/telemetry data in Bigtable.",
+      "Wrong: Data points are the metric values being measured; using them as a row key scatters a device's chronological records randomly across the entire cluster.",
+      "Wrong: Combining date and data_point as a row key causes the same severe write hotspotting as option A and completely breaks device-level querying."
+    ]
   },
   {
     "id": 257,
@@ -12106,7 +14176,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Performance advantages of Apache Spark over MapReduce.",
+    "correctRationale": "Apache Spark drastically improves processing responsiveness because it performs operations in-memory using a Directed Acyclic Graph (DAG) execution engine. In contrast, Hadoop MapReduce natively persists data to disk between every map and reduce stage, creating massive I/O bottlenecks. Switching to Spark often reduces execution time significantly on the exact same cluster.",
+    "optionRationales": [
+      "Wrong: Pig is simply a high-level scripting abstraction over MapReduce; it compiles down to the same disk-heavy MapReduce jobs and offers no performance boost.",
+      "Correct: Spark is generally 10x-100x faster than MapReduce for batch processing due to its in-memory caching and optimized DAG execution.",
+      "Wrong: Increasing the cluster size directly increases compute costs, which explicitly violates the requirement to 'not increase costs'.",
+      "Wrong: Hive is a data warehousing layer that historically translates SQL to MapReduce; additionally, decreasing the cluster size will drastically slow the job down."
+    ]
   },
   {
     "id": 258,
@@ -12154,21 +14232,35 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using BigQuery logical views for on-the-fly transformations.",
+    "correctRationale": "A BigQuery view is a virtual table defined by a SQL query. Creating a view that concatenates the names is the most cost-effective solution because it requires no duplicate storage, no background ETL pipelines, and the simple string computation only happens on-the-fly when queried.",
+    "optionRationales": [
+      "Correct: Logical views provide a transformed schema for downstream applications instantly, without the cost or complexity of duplicating data or running external processing jobs.",
+      "Wrong: Running UPDATE statements incurs DML query costs and physically adds permanent storage costs by writing a new column across the entire table.",
+      "Wrong: Spinning up a Dataflow cluster is massive overkill for a simple SQL string concatenation and incurs high, unnecessary compute costs.",
+      "Wrong: Exporting to CSV and processing with Dataproc is the most expensive, complex, and slowest possible way to perform a basic SQL transformation."
+    ]
   },
   {
     "id": 259,
     "topic": "Storage",
     "difficulty": 2,
-    "question": "You are deploying a new storage system on Cloud Datastore. You have entities with multiple properties, some with multiple values. You want to avoid a combinatorial explosion in indexes. Which entity options should you set?",
-    "options": [
-      "A. Manually configure the index in your index config as shown (A).",
-      "B. Manually configure the index in your index config as shown (B).",
-      "C. Set exclude_from_indexes = 'actors, tags'",
-      "D. Set exclude_from_indexes = 'date_published'"
+    "question": "You are deploying a new storage system for your mobile application, which is a media streaming service. You decide the best fit is Google Cloud Datastore. You have entities with multiple properties, some of which can take on multiple values. For example, in the entity 'Movie' the property 'actors' and the property 'tags' have multiple values but the property 'date released' does not. A typical query would ask for all movies with actor=<actorname> ordered by date_released or all movies with tag=Comedy ordered by date_released. How should you avoid a combinatorial explosion in the number of indexes?",
+    "images": [
+      {
+        "url": "/question-images/q259-datastore-indexes.png",
+        "alt": "Datastore index config diagrams referenced by options A and B"
+      }
     ],
-    "correct": 2,
-    "explanation": "Combinatorial explosion in Datastore is caused by indexing multiple array properties. Exclude the array properties (like actors, tags), not single-value fields like date_published.",
+    "options": [
+      "A. Manually configure the index in your index config as shown in diagram A above.",
+      "B. Manually configure the index in your index config as shown in diagram B above.",
+      "C. Set the following in your entity options: exclude_from_indexes = 'actors, tags'",
+      "D. Set the following in your entity options: exclude_from_indexes = 'date_published'"
+    ],
+    "correct": 0,
+    "explanation": "Datastore exploding indexes are caused by the cartesian product of multiple multi-valued (array) properties in a single composite index. The fix is to manually configure separate composite indexes — one per query pattern (actors+date_released and tags+date_released) — so each index covers only one array property at a time. Excluding actors/tags from indexes (C) would break the queries entirely, and excluding date_published (D) targets a property that does not exist in the schema.",
     "discussion": [
       {
         "user": "Wasss123",
@@ -12202,7 +14294,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Avoiding Datastore exploding indexes with multi-valued properties.",
+    "correctRationale": "A single composite index containing multiple multi-valued (array) properties creates an entry for every possible combination (Cartesian product) of those values, leading to an index explosion. The fix is to manually configure separate composite indexes that each contain only *one* multi-valued property.",
+    "optionRationales": [
+      "Correct: Defining separate indexes for (actors + date_released) and (tags + date_released) perfectly satisfies the query patterns while keeping the index size linear rather than exponential.",
+      "Wrong: A combined index over both array properties (actors AND tags) is exactly what causes the cartesian explosion the question wants you to avoid.",
+      "Wrong: Excluding these properties from indexes completely breaks the application's ability to filter queries by actor or tag.",
+      "Wrong: 'date_published' is a typo (the schema property is date_released). Furthermore, excluding the sort key breaks the 'ordered by' requirement."
+    ]
   },
   {
     "id": 260,
@@ -12250,7 +14350,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Scheduling Dataflow jobs using Cron/Cloud Scheduler.",
+    "correctRationale": "For a simple daily batch job at 2:00 AM, you need an orchestration layer to trigger the execution. Cloud Scheduler (formerly tightly integrated with App Engine Cron) is a serverless, virtually free, and highly reliable way to trigger a Dataflow batch job at an exact schedule.",
+    "optionRationales": [
+      "Wrong: Dataproc is for Hadoop/Spark, not Dataflow; migrating to it doesn't solve the scheduling requirement and is more complex/expensive.",
+      "Wrong: Manual execution is highly error-prone, violates the automation requirement, and is not a scalable operational practice.",
+      "Correct: A cron service is the native, inexpensive, and reliable way to trigger recurring batch pipelines on GCP.",
+      "Wrong: Configuring the pipeline as a streaming job means it will run 24/7, incurring constant compute costs for a workload that only processes data once a day."
+    ]
   },
   {
     "id": 261,
@@ -12298,7 +14406,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using BigQuery federated queries (external tables) over Cloud Storage.",
+    "correctRationale": "Federated queries allow BigQuery to query data residing directly in Cloud Storage without importing it. For small datasets updated frequently (every 30 mins), this is the cheapest option because you pay zero BigQuery storage costs, incur no ETL compute costs, and the data is instantly live upon file overwrite.",
+    "optionRationales": [
+      "Wrong: Loading the data every 30 minutes incurs BQ load job overhead, increases BQ storage costs, and risks hitting partition limits over time.",
+      "Correct: A federated external table over a regional GCS bucket eliminates ETL costs and BQ storage costs while keeping the data perfectly up to date.",
+      "Wrong: Datastore is a transactional NoSQL database, and spinning up a Dataflow job every 30 minutes to combine data is excessively expensive and complex.",
+      "Wrong: Using Dataflow to query and combine data adds unnecessary compute overhead and cost compared to native BQ federated queries."
+    ]
   },
   {
     "id": 262,
@@ -12346,7 +14462,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Selecting a relational database for transactional (OLTP) workloads.",
+    "correctRationale": "A food ordering service requires strong relational integrity between user profiles, accounts, and order records, along with strict ACID transactional guarantees for checkout. Cloud SQL is Google's fully managed relational database and is natively optimized for this exact type of transactional data schema.",
+    "optionRationales": [
+      "Wrong: BigQuery is an OLAP data warehouse, optimized for massive analytical aggregations, not high-frequency row-level OLTP transactions.",
+      "Correct: Cloud SQL provides the relational structure and ACID guarantees required for critical transactional data like orders and accounts.",
+      "Wrong: Bigtable is a NoSQL wide-column store; it is excellent for heavy telemetry reads/writes but lacks multi-row ACID transactions and relational schemas.",
+      "Wrong: Datastore is a NoSQL document database; while it supports transactions, Cloud SQL is vastly better suited for optimizing traditional relational schemas."
+    ]
   },
   {
     "id": 263,
@@ -12394,7 +14518,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Character encoding behavior during BigQuery CSV imports.",
+    "correctRationale": "BigQuery strictly expects UTF-8 encoding for CSV imports. If a file is encoded differently (e.g., ISO-8859-1), BigQuery will attempt to convert the data to UTF-8. This often results in a 'successful' import without skipping rows, but special characters will be mangled, leading to a byte-for-byte mismatch.",
+    "optionRationales": [
+      "Wrong: If the format was not flagged as CSV (e.g., flagged as JSON), the schema parsing would likely fail entirely, preventing a successful import.",
+      "Wrong: If invalid rows were skipped, there would be a row count mismatch, but the question implies the data payload itself was mutated despite being 'imported successfully'.",
+      "Correct: Encoding mismatches cause BigQuery to silently convert non-UTF-8 characters, resulting in a successful load that doesn't perfectly match the source bytes.",
+      "Wrong: A lack of prior ETL transformation does not natively change file encodings; the import process text interpretation is what causes the mismatch."
+    ]
   },
   {
     "id": 264,
@@ -12446,7 +14578,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing Cloud Storage ingestion for massive numbers of small files.",
+    "correctRationale": "When transferring many tiny files, the limiting factor is TCP connection handshake latency (200ms per file), not bandwidth. Using `gsutil -m` parallelizes the uploads across multiple threads, and bundling files into a TAR archive massively reduces the number of connections required, maximizing the 50 Mbps throughput.",
+    "optionRationales": [
+      "Wrong: Compressing 4KB files yields negligible size benefits, adds CPU overhead, and completely fails to address the network latency bottleneck per file.",
+      "Wrong: Bandwidth (50 Mbps) is not the bottleneck; 20,000 files at 4KB is only 80MB per hour (~0.17 Mbps). Increasing bandwidth to 100 Mbps achieves nothing.",
+      "Correct: Running `gsutil` in parallel (`-m`) initiates multiple concurrent streams to overcome the high latency per connection.",
+      "Correct: Assembling small files into a TAR archive drastically reduces the number of network requests and TCP handshakes required, fully utilizing the pipe.",
+      "Wrong: Storage Transfer Service is optimized for large datasets and files, not efficiently streaming tens of thousands of tiny on-premises files."
+    ]
   },
   {
     "id": 265,
@@ -12494,7 +14635,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Handling malformed data in Dataflow using Dead Letter Queues (DLQ).",
+    "correctRationale": "When ingesting messy data, pipelines should gracefully handle errors without failing the entire job. Running a Dataflow batch pipeline that writes valid rows to the destination BigQuery table and routes corrupted rows to a secondary 'dead-letter' table ensures data integrity and allows for later inspection of the bad rows.",
+    "optionRationales": [
+      "Wrong: Federated queries fail or skip bad rows unpredictably, and SQL isn't ideal for complex, programmatic row-by-row error quarantine handling.",
+      "Wrong: Stackdriver monitoring alerts you that the pipeline failed, but it doesn't gracefully process the good data while quarantining the bad.",
+      "Wrong: Setting `max_bad_records` in the CLI will silently drop the corrupted data, preventing you from reviewing, auditing, or fixing it.",
+      "Correct: The Dead Letter Queue (DLQ) pattern in Dataflow is the enterprise standard for isolating corrupt records without halting the ingestion of valid data."
+    ]
   },
   {
     "id": 266,
@@ -12548,7 +14697,17 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Identifying scalable NoSQL wide-column and document stores.",
+    "correctRationale": "For a massive, 100 TB/year workload requiring high availability, low latency, and no strict ACID constraints, NoSQL systems like HBase (wide-column), MongoDB (document), and Cassandra (wide-column) are standard industry choices. They distribute data globally and tolerate hardware failures seamlessly.",
+    "optionRationales": [
+      "Wrong: Redis is an in-memory key-value cache; storing 100TB of accumulating telemetry data per year in RAM is prohibitively expensive and architecturally flawed.",
+      "Correct: HBase is a highly scalable, distributed NoSQL database heavily used for massive time-series/telemetry workloads (similar to Bigtable).",
+      "Wrong: MySQL is a relational database designed precisely for ACID transactions and struggles significantly to scale to 100TB per year.",
+      "Correct: MongoDB is a highly available, distributed document database capable of sharding horizontally for large telemetry ingestion.",
+      "Correct: Cassandra is a masterless, highly available wide-column NoSQL store built specifically to handle massive write throughput and scale linearly.",
+      "Wrong: HDFS with Hive is a data warehousing ecosystem built for batch analytics; it is fundamentally not designed for low-latency database lookups."
+    ]
   },
   {
     "id": 267,
@@ -12602,7 +14761,17 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Machine learning techniques to reduce variance (overfitting).",
+    "correctRationale": "Overfitting occurs when a model memorizes the training data's noise rather than generalizable patterns. To fix this, you can provide more varied examples, remove noisy/complex features, or increase regularization (which penalizes complex weights from growing too large).",
+    "optionRationales": [
+      "Correct: Supplying more training examples forces the model to generalize better across a wider variety of data points.",
+      "Wrong: Reducing training examples causes the model to memorize the smaller dataset even faster, worsening overfitting.",
+      "Correct: Using a smaller set of features (dimensionality reduction) prevents the model from learning irrelevant noise.",
+      "Wrong: Adding more features increases model complexity, giving it more variables to memorize the training data.",
+      "Correct: Increasing regularization mathematically penalizes the model for relying too heavily on any single feature, forcing a smoother, more general fit.",
+      "Wrong: Decreasing regularization allows weights to grow unchecked, directly increasing the model's tendency to overfit."
+    ]
   },
   {
     "id": 268,
@@ -12650,7 +14819,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Securing automated pipelines using Service Accounts with limited scopes.",
+    "correctRationale": "Automated system-to-system workloads should never run as human users. They must use a dedicated Service Account configured with the Principle of Least Privilege—granting only the exact permissions needed (e.g., read from GCS, write to BigQuery) and nothing more.",
+    "optionRationales": [
+      "Wrong: Restricting the bucket so only your personal user account can see it prevents any automated pipeline or service account from accessing the data.",
+      "Wrong: Granting the 'Project Owner' role to a service account is a massive security risk, as it allows the account to delete the project or modify billing.",
+      "Correct: This adheres perfectly to the principle of least privilege, providing exactly the scopes needed for the batch job to function securely.",
+      "Wrong: 'Project Viewer' is far too broad for a specific bucket read, and user accounts should never be used to authenticate automated system batch jobs."
+    ]
   },
   {
     "id": 269,
@@ -12698,7 +14875,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Diagnosing data skew in BigQuery execution plans.",
+    "correctRationale": "BigQuery distributes data processing across many compute slots. If a specific column used for grouping/partitioning has a highly skewed distribution (e.g., 90% of rows have 'US' as the country), the slot assigned to process that partition gets overloaded while others sit idle. This manifests as a severe bottleneck in the Read section of the query plan.",
+    "optionRationales": [
+      "Wrong: Too many concurrent queries would show up as wait time in the queue phase, not as high compute time explicitly in the Read section of Stage 1.",
+      "Wrong: Having too many partitions typically causes high metadata overhead before execution begins, rather than causing execution skew during the read stage.",
+      "Wrong: NULL values are highly compressible in columnar formats and usually speed up reads; they do not inherently cause massive performance slowdowns.",
+      "Correct: Data skew creates an imbalance in slot utilization, causing a single massive partition to slow down the entire query's read stage."
+    ]
   },
   {
     "id": 270,
@@ -12746,7 +14931,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Real-time event deduplication and ordering using Dataflow.",
+    "correctRationale": "To collate globally distributed, real-time events and determine exact ordering, you must process the stream as it arrives. Pub/Sub ingests the global events, and Cloud Dataflow natively handles unbounded streams, event-time windowing, and watermarks to correctly sequence the bids in real time.",
+    "optionRationales": [
+      "Wrong: Hadoop MapReduce is a legacy batch-processing framework; it cannot natively process unbounded streams in real time.",
+      "Wrong: Pub/Sub cannot 'push' directly to Cloud SQL; it requires an intermediary compute layer (like Functions or Dataflow) to process and insert the data.",
+      "Wrong: Querying a master MySQL database periodically is a polling (batch) architecture, not real-time event processing, and it scales very poorly globally.",
+      "Correct: Dataflow natively integrates with Pub/Sub and provides advanced stream processing capabilities like event-time windowing to handle out-of-order bids."
+    ]
   },
   {
     "id": 271,
@@ -12798,7 +14991,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery legacy vs. standard SQL compatibility and ODBC connectivity.",
+    "correctRationale": "Standard SQL cannot reference views defined in Legacy SQL; therefore, a new view must be created using Standard SQL to support the new ODBC drivers. Additionally, automated applications connecting via ODBC must authenticate securely, which requires generating a Service Account key.",
+    "optionRationales": [
+      "Wrong: The requirement is standard SQL, but option C specifically mentions 'events_partitioned' which is the best practice target for new architecture, though option C & D are the explicit correct keys.",
+      "Wrong: Creating a new partitioned table is a data engineering task, but creating a standard SQL view over it ensures legacy reporting compatibility.",
+      "Correct: Standard SQL connections cannot query legacy SQL views; creating a standard SQL view over partitioned data bridges this gap.",
+      "Correct: Third-party applications connecting via ODBC require a Service Account to authenticate programmatically to Google Cloud.",
+      "Wrong: You do not create an IAM role *for* a connection; you create a Service Account and assign an existing IAM role to it."
+    ]
   },
   {
     "id": 272,
@@ -12846,7 +15048,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery table wildcard functions in Legacy SQL.",
+    "correctRationale": "In BigQuery's Legacy SQL dialect, `TABLE_DATE_RANGE` is the explicit, built-in function designed to query across multiple daily sharded tables (e.g., `app_events_20231001`, `app_events_20231002`). It dynamically expands the wildcard to match tables within the specified date boundaries.",
+    "optionRationales": [
+      "Correct: `TABLE_DATE_RANGE` is the specific Legacy SQL syntax for querying multiple date-sharded tables.",
+      "Wrong: `_PARTITIONTIME` is a pseudo-column exclusively used in Standard SQL for native ingestion-time partitioned tables, not Legacy SQL sharded tables.",
+      "Wrong: `WHERE date BETWEEN` filters rows based on a column value named 'date', but it doesn't dynamically target multiple sharded table names.",
+      "Wrong: `SELECT IF` is invalid syntax for cross-table wildcard querying in any SQL dialect."
+    ]
   },
   {
     "id": 273,
@@ -12894,7 +15104,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Handling unbounded data collections in Apache Beam / Dataflow.",
+    "correctRationale": "By default, Apache Beam assigns all elements to a single, global window. For unbounded (streaming) data, aggregation transforms like `GroupByKey` will wait infinitely for the global window to close (which never happens in a stream). To process streams, you must explicitly apply a non-global windowing function (e.g., fixed, sliding) so the pipeline knows when to emit results.",
+    "optionRationales": [
+      "Wrong: Pub/Sub messages automatically have timestamps assigned upon publish; missing timestamps are not the primary cause of stream aggregation failures.",
+      "Wrong: Late data triggers are an optional mechanism for refining results; omitting them won't cause the entire pipeline to fail to execute.",
+      "Wrong: A global window is the default behavior; applying one is exactly what causes an unbounded stream aggregation to wait infinitely and fail.",
+      "Correct: Streaming data requires a non-global windowing function to divide the infinite stream into finite, processable chunks."
+    ]
   },
   {
     "id": 274,
@@ -12942,7 +15160,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing Hadoop MapReduce pipelines by minimizing disk I/O.",
+    "correctRationale": "Hadoop MapReduce is notoriously bottlenecked by disk I/O because it reads and writes to disk between every stage. Modifying the existing Map job to include the math for the calibration step performs the calculation in-memory during the current read pass, adding virtually zero execution time to the days-long pipeline.",
+    "optionRationales": [
+      "Correct: Integrating the calculation into the existing transform applies the math in-memory, avoiding the massive disk I/O penalty of creating a new job.",
+      "Wrong: Chaining a new MapReduce job forces the entire multi-terabyte dataset to be read from and written to disk an extra time, significantly increasing the days-long execution.",
+      "Wrong: Shifting the burden to downstream users is an architectural anti-pattern that creates massive redundant computation across the organization.",
+      "Wrong: Predicting variance via algorithms introduces inaccurate synthetic data instead of simply applying the mathematically known calibration correction."
+    ]
   },
   {
     "id": 275,
@@ -12990,7 +15216,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Selecting a database for mixed OLTP and light OLAP using standard SQL.",
+    "correctRationale": "An online shopping cart application requires strong relational integrity and strict ACID transactional guarantees for checkout processing. Cloud SQL is Google's fully managed relational database, natively supporting standard SQL, making it the perfect fit for managing transactional orders while still allowing for basic combined data analysis.",
+    "optionRationales": [
+      "Wrong: BigQuery is an OLAP data warehouse optimized for massive analytical aggregations; it is not designed for high-frequency, single-row transactional inserts (shopping carts).",
+      "Correct: Cloud SQL provides the relational structure, standard SQL interface, and ACID guarantees required for critical transactional data.",
+      "Wrong: Bigtable is a NoSQL wide-column store; it is excellent for heavy reads/writes but lacks multi-row ACID transactions and does not support SQL.",
+      "Wrong: Datastore is a NoSQL document database; it doesn't use standard SQL (it uses GQL) and isn't optimal for complex combined data analysis queries."
+    ]
   },
   {
     "id": 276,
@@ -13038,7 +15272,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Application reliability and exponential backoff strategies.",
+    "correctRationale": "When a backend database fails or restarts, many clients simultaneously retrying to connect will create a 'thundering herd' DDoS effect, crashing the database again. Truncated exponential backoff introduces progressively longer delays between retries, allowing the database time to recover gracefully.",
+    "optionRationales": [
+      "Wrong: Frontend applications should never possess administrative privileges to restart backend databases; this is a massive security and architecture flaw.",
+      "Correct: Exponential backoff is the industry-standard error-handling strategy for network applications to prevent overwhelming recovering services.",
+      "Wrong: Retrying the query every second creates a DDoS effect, ensuring the database stays overwhelmed and crashes immediately upon restart.",
+      "Wrong: Permanently reducing the query frequency to once an hour degrades the app's functionality even when the database is perfectly healthy."
+    ]
   },
   {
     "id": 277,
@@ -13086,7 +15328,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery table sharding limits vs. partitioned tables.",
+    "correctRationale": "Table sharding (creating tables named `LOGS_yyyymmdd`) is an older pattern that hits a strict limit of 1,000 tables when queried via wildcards. Native partitioned tables support up to 4,000 partitions, perform far better, and completely bypass the wildcard query limit because BigQuery treats them as a single table entity.",
+    "optionRationales": [
+      "Wrong: Converting to date-partitioned tables doesn't help if you keep them as separate individual tables; they must be unified into one table.",
+      "Correct: Consolidating sharded tables into a single native partitioned table instantly solves the 1,000 wildcard limit and improves query performance.",
+      "Wrong: Query caching does not circumvent metadata limits on wildcard expansion; the query must still execute successfully once to be cached.",
+      "Wrong: Views merely encapsulate the underlying SQL query; a view attempting to query 1,000+ wildcard tables will hit the exact same limit error."
+    ]
   },
   {
     "id": 278,
@@ -13134,7 +15384,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cost optimization using GCP Preemptible VMs.",
+    "correctRationale": "Since the Dataproc job only takes 30 minutes and runs as a weekly batch process, it is highly fault-tolerant and can easily handle interruptions. Provisioning the cluster's worker nodes with Preemptible VMs offers up to an 80% discount on compute costs, drastically optimizing the weekly bill.",
+    "optionRationales": [
+      "Wrong: Migrating a Spark ML workload to Dataflow requires a complete codebase rewrite from Spark to Apache Beam, which is wildly expensive in developer time.",
+      "Correct: Preemptible VMs are the ideal cost-optimization strategy for short-lived, fault-tolerant batch workloads like a weekly 30-minute Spark job.",
+      "Wrong: Using higher-memory nodes increases the specific cost per node and does not inherently lower the overall cluster bill.",
+      "Wrong: SSDs increase storage IOPS performance but are significantly more expensive than standard persistent disks, directly increasing the cost."
+    ]
   },
   {
     "id": 279,
@@ -13182,7 +15440,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Handling late data in Dataflow using watermarks and windowing.",
+    "correctRationale": "In stream processing, data often arrives late. Dataflow uses 'watermarks' (a system's notion of when all data in a certain window has likely arrived) combined with 'timestamps' (when the event actually occurred). This allows the pipeline to emit results over a predictable time period while explicitly defining how to handle lagged data.",
+    "optionRationales": [
+      "Wrong: A single global window will wait forever in an unbounded streaming pipeline, preventing the emission of results over a 'predictable time period'.",
+      "Wrong: Sliding windows are used to calculate moving averages over overlapping time periods, not as the primary mechanism for handling lagged/late data.",
+      "Correct: Watermarks provide the critical logic Dataflow needs to understand event time progression and correctly capture or discard late-arriving data.",
+      "Wrong: Ensuring timestamps exist is required, but without explicitly using watermarks and triggers, Dataflow does not know how long to wait for the late data."
+    ]
   },
   {
     "id": 280,
@@ -13230,7 +15496,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Feature engineering for linear classifiers on non-linear boundaries.",
+    "correctRationale": "A linear algorithm can only draw straight lines (or flat planes) to separate data. If the X and Y data is distributed in concentric circles (radially), a straight line cannot separate it. Adding the synthetic feature $X^2 + Y^2$ (the equation of a circle) projects the data into 3D space, where a simple linear plane can slice it perfectly.",
+    "optionRationales": [
+      "Correct: $X^2 + Y^2$ captures radial distance from the origin, allowing a linear model to easily classify circular, non-linear data distributions.",
+      "Wrong: $X^2$ only captures non-linearity along the X-axis, failing to separate radially distributed data cleanly.",
+      "Wrong: $Y^2$ only captures non-linearity along the Y-axis, failing to separate radially distributed data cleanly.",
+      "Wrong: $cos(X)$ introduces periodicity, which would create repeating stripe boundaries, not a unified enclosed classification area."
+    ]
   },
   {
     "id": 281,
@@ -13278,7 +15552,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Service accounts for secure, non-interactive application authentication to BigQuery.",
+    "correctRationale": "Service accounts are designed for server-to-server interactions where individual user credentials should not be used or stored. By granting the service account access to the dataset and using its private key within the application, you maintain security and fulfill the requirement of avoiding individual user authentication.",
+    "optionRationales": [
+      "Wrong: Using groups simplifies permission management but still requires every individual user within that group to authenticate with their own credentials to BigQuery.",
+      "Wrong: Passing user credentials via SSO still involves individual user authentication and violates the requirement to avoid individual logins.",
+      "Correct: Service accounts provide a secure way for applications to authenticate without user intervention, utilizing IAM roles for granular access control.",
+      "Wrong: Using a 'dummy' user account and storing passwords in plain text on a filesystem is a significant security risk and violates GCP best practices regarding IAM and secret management."
+    ]
   },
   {
     "id": 282,
@@ -13326,7 +15608,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Data wrangling for ML using Cloud Dataprep to handle null values in numeric features.",
+    "correctRationale": "Logistic regression is a mathematical model that requires numerical input features; it cannot process 'null' or string values like 'none'. Cloud Dataprep provides a visual, user-friendly interface to easily identify missing data and apply 'recipes' to impute values, such as replacing nulls with 0, keeping the data real-valued.",
+    "optionRationales": [
+      "Wrong: Converting nulls to a string like 'none' makes the column categorical, which would break a logistic regression model expecting real-valued numbers.",
+      "Correct: Dataprep is the ideal tool for 'casual' or rapid data preparation, and 0 is a valid real-valued replacement for missing numeric data.",
+      "Wrong: Using Dataflow to find nulls followed by Dataprep is redundant and inefficient; furthermore, 'none' is a string, not a real value.",
+      "Wrong: While Dataflow and custom scripts can perform this task, it requires significantly more development effort than using Dataprep's built-in transformation UI."
+    ]
   },
   {
     "id": 283,
@@ -13374,7 +15664,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Customer-Managed Encryption Keys (CMEK) for Compute Engine using Cloud KMS.",
+    "correctRationale": "Cloud KMS allows you to manage the lifecycle (create, rotate, destroy) of encryption keys while integrating directly with GCP services like Compute Engine. By using Cloud KMS keys for persistent disks, you satisfy the requirement for user-controlled encryption of data at rest on VM instances.",
+    "optionRationales": [
+      "Wrong: Service accounts handle identity and access, but they do not provide the mechanism to create, rotate, or destroy cryptographic encryption keys.",
+      "Correct: Cloud KMS is the native GCP service for managing cryptographic keys that can be used to encrypt Compute Engine persistent disks (CMEK).",
+      "Wrong: You do not 'upload' keys to Cloud KMS in this manner; while you can import keys, generating them directly in KMS is the standard way to securely manage rotation and destruction in the cloud.",
+      "Wrong: Referencing keys in API calls is used for manual data encryption (Envelope Encryption) within applications, whereas the question asks for encrypting the data at rest on the Compute Engine instances themselves."
+    ]
   },
   {
     "id": 284,
@@ -13422,7 +15720,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using pre-trained AI APIs for feature extraction and Bigtable for high-throughput filtering.",
+    "correctRationale": "The Cloud Video Intelligence API provides pre-trained models to identify entities and labels in video without the need to build a custom ML model. Cloud Bigtable is the preferred storage for multi-terabyte datasets requiring millisecond-latency filtering, as it scales horizontally and handles large-scale key-value lookups efficiently.",
+    "optionRationales": [
+      "Wrong: Building a complex custom classification model in Spark MLlib is time-consuming and unnecessary when a pre-trained Google API can provide labels.",
+      "Wrong: Training two models adds even more complexity and maintenance overhead compared to using a managed API service.",
+      "Correct: Video Intelligence API handles the label generation instantly, and Bigtable provides the required scale and fast filtering performance for TBs of data.",
+      "Wrong: Cloud SQL is a regional relational database that is not optimized for filtering across several terabytes with the same performance and scale as Bigtable."
+    ]
   },
   {
     "id": 285,
@@ -13470,7 +15776,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Serverless streaming ETL using Dataflow autoscaling and Cloud Monitoring.",
+    "correctRationale": "Cloud Dataflow is a fully managed, serverless service that natively supports autoscaling for both batch and streaming (Pub/Sub) pipelines. By using default autoscaling and monitoring system lag via Stackdriver (Cloud Monitoring), you minimize manual intervention and optimize costs by only utilizing resources needed for the current streaming volume.",
+    "optionRationales": [
+      "Wrong: Dataproc requires more manual management (manually resizing clusters) and is generally less responsive to rapid fluctuations in streaming data volume than Dataflow.",
+      "Wrong: The 'diagnose' command is a troubleshooting tool for cluster health, not an automated mechanism for cost-optimization or volume adjustment.",
+      "Correct: Dataflow's ability to autoscale based on 'system lag' makes it the most efficient choice for Pub/Sub to BigQuery pipelines with minimal management.",
+      "Wrong: Monitoring 'total execution time' is relevant for batch jobs, but for streaming, system lag is the primary scaling metric. Configuring non-default machine types also increases manual management."
+    ]
   },
   {
     "id": 286,
@@ -13518,7 +15832,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery Data Transfer Service for automated ingestion of Google SaaS data.",
+    "correctRationale": "The BigQuery Data Transfer Service (BQ DTS) has a built-in connector for YouTube Channel reports, making it the most direct way to ingest this data for ANSI SQL analysis. Specifying a Multi-Regional location ensures the data is available for analysis worldwide while maintaining high availability.",
+    "optionRationales": [
+      "Wrong: Storage Transfer Service is used for moving files between cloud storage providers or buckets, not for extracting structured reporting data via YouTube APIs.",
+      "Wrong: Storage Transfer Service does not connect to YouTube APIs.",
+      "Correct: BQ DTS automates the move of YouTube data directly into BigQuery (the engine for ANSI SQL analysis), and a multi-regional location satisfies the worldwide requirement.",
+      "Wrong: While BQ DTS is correct, a Regional location is less suited for worldwide access and high-scale SQL analysis compared to Multi-Regional deployments."
+    ]
   },
   {
     "id": 287,
@@ -13566,7 +15888,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Selecting lightweight ML algorithms for resource-constrained environments.",
+    "correctRationale": "Linear regression is used to predict continuous numerical values (like housing prices). Because it solves a simple mathematical equation, it is computationally inexpensive to train and run, making it perfect for a single resource-constrained VM.",
+    "optionRationales": [
+      "Correct: Linear regression predicts continuous values (prices) and requires minimal compute overhead.",
+      "Wrong: Logistic classification is used to predict discrete categories (e.g., will the house sell or not?), not continuous prices.",
+      "Wrong: Recurrent Neural Networks (RNNs) are designed for sequential data (text, time-series) and are highly resource-intensive, requiring GPUs or TPUs.",
+      "Wrong: Feedforward neural networks require significantly more compute and memory resources to train than a simple linear regression model."
+    ]
   },
   {
     "id": 288,
@@ -13614,7 +15944,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Using Avro formats for parallel loading into BigQuery.",
+    "correctRationale": "Avro is a row-oriented format that supports block compression, meaning large compressed Avro files can be split and loaded into BigQuery in parallel. Transforming raw text into Avro using Dataflow, and then using BigQuery's native storage, provides the best performance for massive datasets and ANSI SQL queries.",
+    "optionRationales": [
+      "Correct: Dataflow converts text to Avro, and BigQuery natively stores Avro data allowing for parallel ingestion and highly optimized SQL queries.",
+      "Wrong: While BQ can query external data in GCS, native BigQuery storage is significantly faster and more optimized than querying permanent linked tables.",
+      "Wrong: Standard gzip compressed text files (CSV/JSON) cannot be split. BigQuery must use a single slot to decompress the entire file, preventing parallel loads.",
+      "Wrong: Bigtable is a NoSQL wide-column store and does not natively support ANSI SQL queries."
+    ]
   },
   {
     "id": 289,
@@ -13662,7 +16000,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Utilizing pre-trained ML APIs (Cloud Natural Language API) for immediate NLP tasks.",
+    "correctRationale": "The Cloud Natural Language API provides pre-trained machine learning models that require no ML expertise to use. The Entity Analysis feature extracts known entities (people, places, things, topics) from text, making it the perfect tool to rapidly generate subject labels for blog posts.",
+    "optionRationales": [
+      "Correct: Entity Analysis identifies specific subjects in the text, and using the pre-trained API requires no ML experience or training time.",
+      "Wrong: Sentiment Analysis returns the emotional tone (positive/negative) of the text, not subject labels.",
+      "Wrong: Building a custom TensorFlow model requires significant ML experience, time, and data, violating the 'no ML experience' and 'competitive pressure' constraints.",
+      "Wrong: Training and deploying a custom TensorFlow model on GKE requires both ML and Kubernetes expertise."
+    ]
   },
   {
     "id": 290,
@@ -13710,7 +16056,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cost-optimization using Cloud Storage and BigQuery federated queries.",
+    "correctRationale": "Storing 20 TB of CSV data in Cloud Storage is exceptionally cheap compared to database storage. By linking the GCS bucket as a permanent external (federated) table in BigQuery, multiple users can run ANSI SQL aggregate queries directly against the files without incurring BigQuery native storage costs.",
+    "optionRationales": [
+      "Wrong: Cloud Bigtable is a high-performance NoSQL database that is very expensive for 20TB of cold data, and it is poorly suited for aggregate analytics.",
+      "Wrong: Cloud Bigtable is expensive, and using it as a backing store for BigQuery federated queries will result in poor aggregation performance and high costs.",
+      "Correct: GCS provides the lowest storage cost, and permanent BQ tables allow you to apply dataset-level access controls for multiple users.",
+      "Wrong: Temporary tables only exist for the duration of a specific session/query, making it impossible to share dataset-level access controls with multiple users."
+    ]
   },
   {
     "id": 291,
@@ -13758,7 +16112,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cloud Spanner for horizontally scalable, strongly consistent relational databases.",
+    "correctRationale": "Cloud Spanner is Google's fully managed, horizontally scalable relational database that provides strong consistency. To optimize range queries on non-primary-key columns, Spanner allows you to create secondary indexes, preventing full table scans.",
+    "optionRationales": [
+      "Wrong: Cloud SQL is a traditional relational database (MySQL/PostgreSQL) that scales vertically, not horizontally.",
+      "Wrong: Cloud SQL does not scale horizontally, and Dataflow is an ETL pipeline tool, not a mechanism for real-time database query optimization.",
+      "Correct: Spanner provides native horizontal scalability for relational data, and secondary indexes optimize the required non-key range queries.",
+      "Wrong: Dataflow is used for batch/streaming data processing, not for optimizing real-time range queries on a live transactional database."
+    ]
   },
   {
     "id": 292,
@@ -13806,7 +16168,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cloud Bigtable for massive time-series data and Hadoop integration.",
+    "correctRationale": "Cloud Bigtable is a NoSQL wide-column store explicitly designed for massive (petabyte-scale) operational workloads, including high-throughput time-series data and frequent streaming updates. It also offers a native HBase API, making it the standard migration target for on-prem Hadoop/HBase workloads.",
+    "optionRationales": [
+      "Correct: Bigtable handles 50TB effortlessly, supports massive write/update throughput, and integrates directly with Hadoop via the HBase API.",
+      "Wrong: BigQuery is an analytical data warehouse. It is not optimized for frequent row-level updates or serving as the backing database for operational Hadoop jobs.",
+      "Wrong: Cloud Storage is an object store, lacking the low-latency database capabilities required for frequent point updates and streaming time-series operations.",
+      "Wrong: Cloud Datastore (Firestore) is a document database that has a strict limit of 1 write per second per entity group, making it totally unsuitable for high-throughput streaming."
+    ]
   },
   {
     "id": 293,
@@ -13854,7 +16224,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery Authorized Views for secure data sharing and cross-project billing.",
+    "correctRationale": "An authorized view allows you to share query results with users without granting them access to the underlying tables. When users in other projects query the authorized view, the compute costs (bytes scanned) are billed to their project, satisfying both the security and cost-assignment requirements.",
+    "optionRationales": [
+      "Correct: Authorized views restrict access to raw data while allowing other projects to query aggregates, and BigQuery inherently bills the execution cost to the project running the query.",
+      "Wrong: Creating a new dataset and view without making it an *authorized* view requires granting the users access to the underlying raw dataset, violating security.",
+      "Wrong: Creating a new table duplicates the data, increasing storage costs and maintenance overhead.",
+      "Wrong: Granting dataViewer roles on the dataset gives users full access to the raw, user-level data, violating the security requirement."
+    ]
   },
   {
     "id": 294,
@@ -13902,7 +16280,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cloud Audit Logs for BigQuery Data Access.",
+    "correctRationale": "BigQuery natively integrates with Cloud Audit Logs. By enabling Data Access logs, GCP automatically creates an immutable, auditable record of every user who reads data from the BigQuery dataset. Access to these logs can be strictly restricted to authorized compliance personnel.",
+    "optionRationales": [
+      "Wrong: Cloud Storage encrypts data, but does not natively log object-level read access in a highly structured, easily queryable format unless explicitly configured, and BQ is better suited for structured auditing.",
+      "Correct: BigQuery combined with native Data Access logs fulfills the strict requirement for an immutable, queryable audit trail of data access.",
+      "Wrong: Cloud SQL Admin activity logs only record administrative changes (like changing passwords or restarting instances), not read access to the data itself.",
+      "Wrong: Building a custom AppEngine application to proxy and log access is an expensive, custom workaround when native GCP audit logging exists."
+    ]
   },
   {
     "id": 295,
@@ -13950,7 +16336,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Reducing ML training time via training dataset subsampling.",
+    "correctRationale": "If a model takes too long to train, reducing the volume of data it learns from per epoch will directly decrease the training time. Subsampling the training dataset allows you to iterate faster, albeit potentially at the cost of some model accuracy.",
+    "optionRationales": [
+      "Wrong: The test dataset is only used for evaluation after training. Subsampling it speeds up the evaluation phase, but has no impact on the days spent training.",
+      "Correct: Reducing the size of the training dataset reduces the number of batches processed per epoch, proportionally decreasing training time.",
+      "Wrong: Increasing the number of input features adds mathematical complexity to the model, which will increase the time it takes to train.",
+      "Wrong: Increasing the number of layers deepens the neural network, adding more parameters to optimize, which significantly increases training time."
+    ]
   },
   {
     "id": 296,
@@ -13998,7 +16392,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Low-level Hadoop API control via Java MapReduce.",
+    "correctRationale": "When writing ETL pipelines on Apache Hadoop that require complex, low-level operational control like custom checkpointing and explicit data splitting (InputSplits), you must use the native Java MapReduce API. Higher-level abstractions hide these controls.",
+    "optionRationales": [
+      "Wrong: PigLatin is a high-level scripting language that abstracts away MapReduce execution, removing the ability to define custom low-level splits and checkpoints.",
+      "Wrong: HiveQL is a SQL-like abstraction layer that does not provide fine-grained API control over MapReduce checkpoints.",
+      "Correct: Java MapReduce provides direct access to the Hadoop API, allowing developers to implement custom InputFormat splits and explicit checkpointing logic.",
+      "Wrong: Python via Hadoop Streaming wraps the MapReduce framework, but lacks the deep, native API access required for complex custom splitting compared to Java."
+    ]
   },
   {
     "id": 297,
@@ -14046,7 +16448,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing hybrid data transfer speeds.",
+    "correctRationale": "In a hybrid cloud architecture (on-prem to GCP), the physical network connection (VPN, Direct Peering, or Dedicated Interconnect) is almost always the primary bottleneck for data transfers. Increasing this bandwidth is the most direct way to maximize transfer speeds.",
+    "optionRationales": [
+      "Wrong: CPU size rarely bottlenecks pure data transfers unless heavy encryption/compression is happening, which is secondary to raw network pipe size.",
+      "Wrong: Disk IOPS might be a factor, but in a hybrid cloud scenario, the WAN network bandwidth is the primary constraint.",
+      "Correct: Upgrading the Interconnect or VPN bandwidth widens the pipe, directly solving the daily transfer bottleneck.",
+      "Wrong: The internal GCP network (Compute Engine to Cloud Storage) operates at massive Google-scale speeds and is extremely unlikely to be the bottleneck compared to the on-prem uplink."
+    ]
   },
   {
     "id": 298,
@@ -14094,7 +16504,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "De-duplicating streaming inserts in BigQuery using window functions.",
+    "correctRationale": "BigQuery streaming inserts (`tabledata.insertAll`) provide at-least-once delivery semantics, which can result in duplicate rows. To query this data interactively without duplicates, you use the `ROW_NUMBER()` window function partitioned by the unique ID and ordered by timestamp, then filter the outer query to only select row 1.",
+    "optionRationales": [
+      "Wrong: `ORDER BY timestamp DESC LIMIT 1` applied to the whole query will return exactly one row for the entire table, not one unique row per ID.",
+      "Wrong: `GROUP BY` with `SUM` will add the numeric values of the duplicates together, corrupting the data rather than filtering out the duplicate events.",
+      "Wrong: The `LAG` function looks at the previous row's value but does not provide an easy mechanism to filter out all duplicates across a partition.",
+      "Correct: `ROW_NUMBER() OVER(PARTITION BY unique_ID ORDER BY timestamp DESC)` assigns 1 to the most recent event for each ID, allowing you to easily filter out duplicates in a wrapper query."
+    ]
   },
   {
     "id": 299,
@@ -14142,7 +16560,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery for petabyte aggregations and Bigtable for millisecond time-range scans.",
+    "correctRationale": "This architecture requires two specialized tools. BigQuery is a serverless data warehouse designed specifically to run aggregations over petabyte-scale datasets. Cloud Bigtable is a wide-column NoSQL database optimized for single-digit millisecond latency when scanning specific contiguous row keys (like time ranges).",
+    "optionRationales": [
+      "Wrong: Cloud Datastore cannot efficiently aggregate petabytes of data, nor is it optimized for massive time-series range scans.",
+      "Wrong: Cloud SQL is a traditional relational database that cannot scale to petabytes of data.",
+      "Correct: BigQuery handles the petabyte aggregations, while Bigtable handles the low-latency time-range scans.",
+      "Wrong: Cloud Storage cannot perform millisecond-latency row scans; it is an object store, not a fast operational database."
+    ]
   },
   {
     "id": 300,
@@ -14190,7 +16616,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Building dynamic BI dashboards with generalized filters.",
+    "correctRationale": "To avoid rebuilding visualizations every month when new data arrives, you should use a BI tool (like Looker Studio) to create a single dashboard with generalized charts. By binding these charts to interactive filters (date, region, type), users can dynamically explore the latest data without developer intervention.",
+    "optionRationales": [
+      "Wrong: Creating a chart for every possible combination is visually overwhelming, unmaintainable, and scales poorly as new dimensions are added.",
+      "Correct: Generalized charts with dynamic filters provide a self-service, low-maintenance visualization layer that automatically reflects the latest data.",
+      "Wrong: Exporting to spreadsheets is a manual process that defeats the purpose of an automated, real-time visualization platform.",
+      "Wrong: Loading data into a relational database and writing a custom App Engine application is an extreme over-engineering of basic BI dashboard requirements."
+    ]
   },
   {
     "id": 301,
@@ -14238,7 +16672,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Minimizing BigQuery query costs using Partitioned Tables.",
+    "correctRationale": "BigQuery charges based on the amount of data scanned. By creating a partitioned table based on a TIMESTAMP or DATE column, BigQuery physically divides the data by day. When users query for a specific day, BigQuery only scans that partition, drastically reducing daily query costs.",
+    "optionRationales": [
+      "Wrong: Simply adding a DATE column does not physically partition the table. Queries will still perform full table scans and incur maximum costs.",
+      "Correct: Partitioned tables allow BigQuery to prune data based on time filters, minimizing bytes scanned and reducing costs.",
+      "Wrong: Sharding tables (e.g., `table_YYYYMMDD`) is a legacy approach. It degrades performance, makes schema updates difficult, and increases query complexity compared to native partitioning.",
+      "Wrong: Having a TIMESTAMP column represents the day, but unless the table is explicitly defined as partitioned upon creation, BigQuery will still perform a full scan."
+    ]
   },
   {
     "id": 302,
@@ -14287,7 +16729,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "GCP native alternatives for streaming ingestion, processing, and storage.",
+    "correctRationale": "To replace a struggling Kafka cluster, Cloud Pub/Sub provides a fully managed, globally scalable message ingestion queue. Cloud Dataflow reads from Pub/Sub to process and query the data in real-time. Finally, Cloud Storage provides a highly durable, low-cost sink for reliable long-term data storage.",
+    "optionRationales": [
+      "Correct: Pub/Sub handles global ingestion, Dataflow handles real-time processing, and Cloud Storage provides reliable persistence.",
+      "Wrong: Local SSDs are ephemeral (they are erased when the VM stops) and do not provide reliable long-term storage.",
+      "Wrong: Cloud SQL is a relational database, not a real-time stream processing engine like Dataflow.",
+      "Wrong: Cloud Load Balancing routes HTTP/TCP traffic to backend services; it is not a message queue or streaming ingestion system like Pub/Sub or Kafka.",
+      "Wrong: This option lacks an ingestion buffer (Pub/Sub), meaning Dataflow would have to connect directly to global sources, which is not highly available or scalable."
+    ]
   },
   {
     "id": 303,
@@ -14335,7 +16786,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Data validation without primary keys using cryptographic hashing.",
+    "correctRationale": "When tables lack primary keys, you cannot simply join and compare rows one-to-one. To ensure total data fidelity, you must sort the entire dataset to ensure consistent order, and then calculate a cryptographic hash across all non-timestamp columns. If the hashes match, the datasets are identical.",
+    "optionRationales": [
+      "Wrong: Random sampling only checks a subset of the data, meaning data corruption or missing rows outside the sample will go undetected.",
+      "Wrong: Using HASH() on random samples suffers from the same flaw; it does not validate the entirety of the dataset.",
+      "Correct: Sorting the data and computing a full hash via a Dataproc Hadoop job ensures every single row and column is evaluated for a 100% accurate comparison.",
+      "Wrong: Stratified random sampling ensures proportional representation, but it still leaves unsampled rows unvalidated."
+    ]
   },
   {
     "id": 304,
@@ -14383,7 +16842,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery capacity planning with Reservations (Flat-rate pricing).",
+    "correctRationale": "BigQuery on-demand pricing has a hard cap of 2,000 concurrent slots per project. To bypass this limit without creating new projects, you must switch to BigQuery Reservations (flat-rate pricing), which allows you to purchase dedicated slot capacity and establish a hierarchical model to prioritize critical workloads over others.",
+    "optionRationales": [
+      "Wrong: Interactive queries actually preempt batch queries and execute immediately. Converting batch to interactive would increase concurrency contention, not solve it.",
+      "Wrong: The prompt explicitly states the requirement is to 'avoid introducing new projects'.",
+      "Correct: Flat-rate (Reservations) removes the on-demand 2K limit by letting you buy dedicated capacity and assign priority rules to different workloads.",
+      "Wrong: The 2,000 slot limit for on-demand pricing is a strict hard limit per project; you cannot simply increase it via the Quotas page."
+    ]
   },
   {
     "id": 305,
@@ -14431,7 +16898,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Migrating Kafka to GCP using native MirrorMaker.",
+    "correctRationale": "Kafka includes a native tool called MirrorMaker designed exactly for this: replicating data between clusters without needing third-party Kafka Connect plugins. By deploying a Kafka cluster on GCE, you can configure the on-prem cluster to mirror to it natively, and then use GCP tools (Dataflow) to ingest that data into BigQuery/GCS.",
+    "optionRationales": [
+      "Correct: This satisfies all constraints: it avoids Kafka Connect plugins by using native mirroring, and utilizes Dataflow to push to the final sinks.",
+      "Wrong: Using the Pub/Sub Kafka connector requires deploying Kafka Connect, which the scenario explicitly wants to avoid.",
+      "Wrong: Deploying the Pub/Sub connector to the on-prem cluster violates the requirement to avoid Kafka Connect plugins.",
+      "Wrong: Deploying the Pub/Sub connector to the on-prem cluster violates the requirement to avoid Kafka Connect plugins."
+    ]
   },
   {
     "id": 306,
@@ -14479,7 +16954,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing Dataproc Spark shuffles using SSDs and HDFS.",
+    "correctRationale": "Spark shuffling operations are heavily disk I/O bound. Relying on GCS for intermediate shuffle data is slow. By upgrading worker nodes to use SSDs and copying the initial data to the cluster's local HDFS, the Spark job performs its heavy shuffling on fast local SSDs before writing the final output back to GCS.",
+    "optionRationales": [
+      "Wrong: Increasing parquet file sizes reduces file metadata overhead but does not solve the disk I/O bottleneck caused by intermediate Spark shuffles.",
+      "Wrong: TFRecords is a data format optimized for TensorFlow machine learning, not for optimizing Spark ETL shuffles.",
+      "Correct: Utilizing local HDFS backed by SSDs provides the high IOPS required for heavy Spark shuffling operations.",
+      "Wrong: While SSDs help, overriding preemptible VM boot disks is risky; preemptible nodes can be terminated mid-shuffle, causing job failures. HDFS on standard workers is the safer architectural pattern here."
+    ]
   },
   {
     "id": 307,
@@ -14527,7 +17010,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Handling pipeline errors using the Dead Letter Queue pattern in Dataflow.",
+    "correctRationale": "The standard Apache Beam pattern for handling bad data without failing the entire pipeline is the 'Dead Letter Queue'. You wrap your processing logic in a try-catch block within the DoFn. If an error occurs, you catch the exception and emit the bad row to a sideOutput (a secondary PCollection) so it can be routed to storage (like Pub/Sub) for later reprocessing.",
+    "optionRationales": [
+      "Wrong: Simply filtering and skipping errors means the data is lost, violating the requirement to 'reprocess all failing data'.",
+      "Wrong: Extracting rows from logs is a manual, brittle process that is extremely difficult to automate for reprocessing.",
+      "Wrong: Writing directly to Pub/Sub from within a DoFn creates synchronous I/O bottlenecks and violates Beam's distributed parallel processing design.",
+      "Correct: A sideOutput cleanly separates bad records into an independent PCollection that can be safely written to Pub/Sub using standard sinks without blocking the main pipeline."
+    ]
   },
   {
     "id": 308,
@@ -14575,7 +17066,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Feature crosses and L1 regularization for sparse geographical data.",
+    "correctRationale": "Latitude and longitude represent geometric space. By crossing them and bucketizing them (e.g., at the minute level), you create a grid of localized 'neighborhoods'. This creates a massive, sparse feature set. L1 regularization is specifically used for sparse data because it drives the weights of irrelevant features exactly to zero, acting as an automated feature selector.",
+    "optionRationales": [
+      "Wrong: Providing raw lat/long vectors assumes a linear relationship across the globe, failing to capture localized neighborhood dependencies.",
+      "Wrong: Creating a numeric feature cross of lat/long without bucketization produces arbitrary numbers that have no meaningful physical or geometric dependency.",
+      "Correct: Bucketizing the cross creates a neighborhood grid, and L1 regularization efficiently handles the resulting massive, sparse matrix.",
+      "Wrong: L2 regularization distributes weights across all features and rarely drives them to exactly zero, making it inefficient for sparse, high-dimensional data like a coordinate grid."
+    ]
   },
   {
     "id": 309,
@@ -14623,7 +17122,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "BigQuery WILDCARD table syntax using backticks.",
+    "correctRationale": "In BigQuery Standard SQL, table names that contain special characters (like hyphens) or are used in wildcard queries (containing an asterisk) must be entirely enclosed in backticks (`).",
+    "optionRationales": [
+      "Wrong: Single quotes define a string literal, not a table identifier, and this option lacks the wildcard asterisk entirely.",
+      "Wrong: Because the project name contains hyphens and the table name ends in a wildcard, backticks are strictly required by the SQL parser.",
+      "Wrong: Placing single quotes inside the wildcard syntax is invalid SQL and will result in a syntax error.",
+      "Correct: Backticks correctly quote the entire identifier path, allowing the asterisk to act as a wildcard suffix for multiple tables."
+    ]
   },
   {
     "id": 310,
@@ -14671,7 +17178,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Monitoring MariaDB using Cloud Monitoring's native MySQL plugin.",
+    "correctRationale": "MariaDB is a fork of MySQL. The Stackdriver (Cloud Monitoring) agent includes a native, out-of-the-box plugin for MySQL that requires zero custom code. Installing the agent and configuring this plugin is the fastest way to get deep database metrics with minimal development effort.",
+    "optionRationales": [
+      "Wrong: OpenCensus requires writing a custom metrics collection application, which violates the requirement for 'minimal development effort'.",
+      "Wrong: A Health Check only verifies if the VM/port is responding; it does not collect deep database monitoring metrics (like connections or replication lag).",
+      "Wrong: The Stackdriver Logging Agent (fluentd) only collects text logs. It does not collect the performance monitoring metrics required.",
+      "Correct: The native MySQL plugin effortlessly captures database metrics for MariaDB without requiring custom application development."
+    ]
   },
   {
     "id": 311,
@@ -14719,7 +17234,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Eliminating survivorship bias in ML training data.",
+    "correctRationale": "If a bank only trains a model on applications that were *granted*, the model suffers from severe selection (survivorship) bias; it has never seen what a 'bad' application looks like. To accurately predict default risk across all applicants, the model must be trained on a representative sample that includes declined applications.",
+    "optionRationales": [
+      "Wrong: Collecting more of the same biased data (only granted applications) just reinforces the existing bias; it doesn't fix it.",
+      "Wrong: Linear regression is an algorithm, not a data strategy. Applying an algorithm to fundamentally biased data will result in a biased model.",
+      "Correct: Collecting declined applications introduces the necessary negative examples, removing the selection bias and allowing the model to learn true risk factors.",
+      "Wrong: Matching loan applicants to social profiles introduces massive ethical, regulatory, and privacy risks without solving the fundamental statistical bias in the loan data."
+    ]
   },
   {
     "id": 312,
@@ -14767,7 +17290,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Migrating standard relational databases to Cloud SQL.",
+    "correctRationale": "Cloud SQL is a fully managed relational database service (MySQL, PostgreSQL, SQL Server) that natively supports storage up to 64TB. It allows for a 'lift-and-shift' migration without the need for significant application refactoring, and is vastly cheaper to operate than highly distributed systems like Spanner.",
+    "optionRationales": [
+      "Wrong: Cloud Spanner requires significant schema design changes (refactoring) and is much more expensive to operate than Cloud SQL.",
+      "Wrong: Cloud Bigtable is a NoSQL database. Migrating a relational database to Bigtable requires a total rewrite of the schema and application.",
+      "Wrong: Cloud Firestore is a NoSQL document database, which would also require significant application and schema refactoring.",
+      "Correct: Cloud SQL supports 2TB easily, requires minimal to zero refactoring, and is the most cost-effective managed relational database on GCP."
+    ]
   },
   {
     "id": 313,
@@ -14815,7 +17346,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Workload isolation in Cloud Bigtable using replication and App Profiles.",
+    "correctRationale": "Cloud Bigtable allows you to replicate your data across multiple clusters. By using 'single-cluster routing' via App Profiles, you can achieve true workload isolation: the live transactional application reads/writes to Cluster A, while the heavy hourly analytical batch job routes exclusively to Cluster B, ensuring the batch job doesn't cause latency spikes for real-time users.",
+    "optionRationales": [
+      "Wrong: Exporting a dump to GCS is slow and means the analytical job operates on stale data, defeating the purpose of a real-time database.",
+      "Wrong: Multi-cluster routing automatically routes traffic to the nearest available cluster for High Availability. It cannot guarantee workload isolation, as batch reads might hit the transactional cluster.",
+      "Correct: Single-cluster routing explicitly forces the batch workload to an isolated cluster, protecting the primary cluster's latency.",
+      "Wrong: Simply increasing the size of one cluster increases overall throughput, but an aggressive batch scan can still saturate CPU and cause tail latency for real-time reads."
+    ]
   },
   {
     "id": 314,
@@ -14863,7 +17402,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Enriching streaming pipelines using Side Inputs in Dataflow.",
+    "correctRationale": "Since the source data arrives via Pub/Sub, the pipeline must be a Streaming job. To enrich this streaming data with a small, static dataset from BigQuery, you load the BigQuery data into memory as a 'side-input'. This makes the reference data globally available to the `DoFn` workers for instantaneous lookups.",
+    "optionRationales": [
+      "Wrong: Pub/Sub is an unbounded streaming source, so this cannot be run as a Batch job.",
+      "Wrong: Side-outputs are used to emit data out of the main pipeline (like dead-letter queues), not to bring reference data into the pipeline.",
+      "Correct: Streaming job for Pub/Sub, side-inputs to pull the static BQ data into memory, and BigQueryIO to write the results.",
+      "Wrong: Side-outputs branch data outward; side-inputs are required to bring the static enrichment data inward."
+    ]
   },
   {
     "id": 315,
@@ -14915,7 +17462,16 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Capacity planning metrics for Cloud Bigtable.",
+    "correctRationale": "Google explicitly recommends scaling up a Bigtable cluster based on two primary physical limits: when storage utilization exceeds 70% of maximum capacity, or when there is a sustained increase in latency for operations (which indicates CPU saturation). Since this is a write pipeline, monitoring write latency is key.",
+    "optionRationales": [
+      "Wrong: Key Visualizer is a diagnostic tool for finding hot spots and unbalanced row keys, not a metric for overall cluster capacity planning.",
+      "Wrong: Key Visualizer is used for schema debugging, not for deciding when to add nodes to a cluster.",
+      "Correct: A sustained increase in write latency indicates the cluster's CPU resources are saturated and more nodes are needed.",
+      "Correct: Google best practices dictate adding nodes when storage utilization exceeds 70% to ensure performance and prevent outages.",
+      "Wrong: The prompt explicitly states this is a pipeline that *writes* to Bigtable. Monitoring read latency is irrelevant to an ingestion-only pipeline."
+    ]
   },
   {
     "id": 316,
@@ -14963,7 +17519,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Cost-effective archiving in Cloud Storage and analytics in BigQuery.",
+    "correctRationale": "To achieve the lowest cost for storing massive amounts of raw, unstructured social media posts, Cloud Storage is the ideal archival service. After batch-processing the posts through the Natural Language API, the resulting structured data (entities, sentiment) should be written to BigQuery, which is purpose-built for querying and creating dashboards.",
+    "optionRationales": [
+      "Wrong: Storing raw, unstructured social media text inside BigQuery is significantly more expensive than storing it in Cloud Storage.",
+      "Wrong: Cloud SQL is a transactional database; it is expensive for raw archiving and not optimized for analytical dashboarding across hundreds of thousands of daily records.",
+      "Correct: GCS provides the lowest cost for raw archival, and BigQuery provides the best performance for analytical dashboards.",
+      "Wrong: Feeding posts directly into the API bypasses the storage step, violating the requirement to store raw posts for archiving."
+    ]
   },
   {
     "id": 317,
@@ -15011,7 +17575,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "No-code data transformation using Cloud Dataprep.",
+    "correctRationale": "Cloud Dataprep is a visual data exploration and preparation tool built by Trifacta. It is explicitly designed for data analysts to clean, detect invalid entries, and transform data using an intuitive graphical interface (recipes) without requiring any programming (Java/Python) or SQL knowledge.",
+    "optionRationales": [
+      "Wrong: Cloud Dataflow with Apache Beam requires writing code in Java, Python, or Go.",
+      "Correct: Dataprep provides a UI-driven, recipe-based approach to data transformation that requires absolutely no coding or SQL.",
+      "Wrong: Dataproc runs Hadoop/Spark jobs, which require programming in Java, Scala, or Python.",
+      "Wrong: Creating federated tables and writing queries requires SQL knowledge, violating the prompt's constraints."
+    ]
   },
   {
     "id": 318,
@@ -15059,7 +17631,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Securely uploading on-prem data to GCS using gsutil rsync.",
+    "correctRationale": "The security rule strictly forbids external IPs from accessing the on-premises network. Running `gsutil rsync` from a server *inside* the on-prem network initiates an outbound connection to GCP, bypassing the inbound IP restriction. `rsync` ensures only new or changed daily data is uploaded after the initial sync.",
+    "optionRationales": [
+      "Correct: `gsutil rsync` runs locally on-prem, initiating outbound traffic to GCS, fully complying with the strict external IP blocking rules.",
+      "Wrong: Cloud Dataflow runs on GCP compute instances (external IPs). It cannot reach into the on-prem network to pull data due to the security rules.",
+      "Wrong: Dataproc runs on GCP (external IPs) and would be blocked from pulling data from the on-prem environment.",
+      "Wrong: Installing an FTP server on GCP is insecure, complex, and unnecessary when the native `gsutil` tool is designed exactly for this kind of file synchronization."
+    ]
   },
   {
     "id": 319,
@@ -15107,7 +17687,15 @@ export const QUESTIONS = [
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": ""
+    "discussionSummary": "",
+    "conceptSummary": "Optimizing BigQuery scans using partitioned and clustered tables.",
+    "correctRationale": "BigQuery charges based on bytes scanned. By recreating the table partitioned by the timestamp and clustered by the ID, BigQuery organizes the data physically on disk. The existing SQL queries (which use `WHERE timestamp AND ID`) will automatically leverage this structure to prune partitions and scan less data, requiring zero SQL changes.",
+    "optionRationales": [
+      "Wrong: Creating a separate table for each ID (sharding) would require completely rewriting the existing SQL queries to use wildcard tables or UNIONs.",
+      "Wrong: The `LIMIT` keyword only restricts the number of rows displayed in the output; it does not stop BigQuery from scanning the entire table and billing you for it.",
+      "Correct: Partitioning and clustering drastically reduce the bytes scanned without requiring a single change to the existing SQL syntax.",
+      "Wrong: The `--maximum_bytes_billed` flag acts as a safety kill-switch that cancels the query if it costs too much; it does not actually optimize the query or reduce the data scanned."
+    ]
   },
   {
     "id": 320,
@@ -15135,7 +17723,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "low",
     "conflict": true,
-    "discussionSummary": "It is D"
+    "discussionSummary": "It is D",
+    "conceptSummary": "Accelerating Looker Studio dashboards with BigQuery BI Engine.",
+    "correctRationale": "BigQuery BI Engine is a fast, in-memory analysis service that natively integrates with Looker Studio. When enabled, it caches frequently accessed data and intelligently computes complex aggregations in memory, drastically reducing dashboard load times and query latency.",
+    "optionRationales": [
+      "Wrong: Configuring a shorter refresh interval just bombards BigQuery with more slow queries, increasing costs without actually speeding up the execution time.",
+      "Wrong: While materialized views can help, BI Engine is the purpose-built, native memory-caching layer designed specifically to accelerate BI dashboards like Looker Studio.",
+      "Wrong: Row-level security restricts access to data; it actually adds computational overhead and does not optimize query performance or aggregations.",
+      "Correct: BI Engine caches data in-memory, accelerating Looker Studio dashboards transparently with sub-second response times."
+    ]
   },
   {
     "id": 323,
@@ -15158,7 +17754,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "low",
     "conflict": false,
-    "discussionSummary": "Respuesta sugerida: D."
+    "discussionSummary": "Respuesta sugerida: D.",
+    "conceptSummary": "Managing environment-based IAM access across Google Cloud projects at scale.",
+    "correctRationale": "Google's recommended practice for managing IAM at scale is to use Google Groups. By assigning users to logical groups (e.g., developers, viewers) and granting IAM roles to those groups at the project level, you decouple identity management from access management, making it much easier to onboard, offboard, and audit permissions securely.",
+    "optionRationales": [
+      "Wrong: VPC Service Controls are designed to mitigate data exfiltration by creating network security perimeters around Google APIs, not for managing user IAM authorization across different environments.",
+      "Wrong: Granting roles directly to individual users (user-level IAM) is an anti-pattern at scale; it creates significant operational overhead, makes auditing difficult, and leaves orphaned permissions when employees change roles.",
+      "Wrong: VPC firewall rules control network traffic between IP addresses and instances, not IAM authorization for interacting with GCP resources.",
+      "Correct: Group-based IAM assignment is the Google-recommended best practice for scalable, manageable, and secure permissions across isolated project environments."
+    ]
   },
   {
     "id": 326,
@@ -15181,7 +17785,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "low",
     "conflict": false,
-    "discussionSummary": "Respuesta sugerida: A."
+    "discussionSummary": "Respuesta sugerida: A.",
+    "conceptSummary": "Resolving 'Resources exceeded' errors for complex, high-volume BigQuery queries.",
+    "correctRationale": "BigQuery on-demand pricing uses a shared pool of slots with a soft cap (typically 2,000 concurrent slots per project). If a complex terabyte-scale query hits the 'Resources exceeded' error, it means the shared pool cannot allocate enough compute to shuffle the data. Moving to slot reservations (capacity pricing) allows you to guarantee a dedicated, larger number of slots for the heavy query.",
+    "optionRationales": [
+      "Correct: Purchasing dedicated slot reservations provides guaranteed compute capacity that can prevent resource exhaustion on massively complex analytical queries.",
+      "Wrong: A 'Resources exceeded' error after 20 minutes indicates a scale or data skew issue during query execution, not a syntax error, which would fail immediately during the initial query validation phase.",
+      "Wrong: BigQuery does not have a 'maximum table size limit' that causes resource exhaustion during query execution; the error stems from compute and shuffle memory limits, not storage capacity.",
+      "Wrong: API request quotas govern the number of concurrent API calls made to BigQuery per second/minute, not the compute resources (slots/memory) consumed by a single running SQL query."
+    ]
   },
   {
     "id": 327,
@@ -15204,7 +17816,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "low",
     "conflict": false,
-    "discussionSummary": "Respuesta sugerida: C."
+    "discussionSummary": "Respuesta sugerida: C.",
+    "conceptSummary": "Preparing unstructured text data for Retrieval-Augmented Generation (RAG) systems using embeddings.",
+    "correctRationale": "RAG systems rely on vector databases to perform semantic search, which requires unstructured text to be transformed into numerical embeddings (high-dimensional vectors). These embeddings capture the contextual and semantic meaning of the text, allowing the system to retrieve documents that are conceptually relevant to a user's prompt.",
+    "optionRationales": [
+      "Wrong: While Cloud DLP is useful for compliance, redacting sensitive information does not make the unstructured text searchable or retrievable by a semantic RAG system.",
+      "Wrong: Traditional relational databases (SQL) and compressed files are completely unsuitable for similarity-based semantic search; RAG architectures require vector stores.",
+      "Correct: Creating text embeddings (high-dimensional numerical vectors) is the fundamental prerequisite for enabling semantic similarity search in any RAG architecture.",
+      "Wrong: Keyword indexing (lexical search) only matches exact words, whereas modern RAG systems must utilize semantic search via embeddings to understand contextual intent."
+    ]
   },
   {
     "id": 328,
@@ -15236,7 +17856,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "why option A is correct\nLow-cost\nScalable\nProgrammatic"
+    "discussionSummary": "why option A is correct\nLow-cost\nScalable\nProgrammatic",
+    "conceptSummary": "Loading multi-terabyte JSON data from Cloud Storage to BigQuery cost-effectively.",
+    "correctRationale": "BigQuery Data Transfer Service (DTS) automates loading data from Cloud Storage to BigQuery. Crucially, DTS triggers standard BigQuery load jobs, which are completely free; you only pay for the resulting storage. This makes it the most cost-effective and scalable programmatic solution for daily multi-terabyte ingestion.",
+    "optionRationales": [
+      "Wrong: Querying an external table via 'INSERT INTO ... SELECT *' triggers an analysis job that charges per byte scanned. For multi-terabyte daily loads, this will incur massive query costs compared to a free load job.",
+      "Correct: BigQuery Data Transfer Service orchestrates automated, free load jobs from Cloud Storage, perfectly satisfying the low-cost, scalable, and programmatic requirements.",
+      "Wrong: Using Cloud Run with a Python script and the streaming insert API is highly complex to scale for terabytes of data and incurs streaming insert charges, making it neither low-cost nor optimal.",
+      "Wrong: Cloud Data Fusion is a managed ETL service that charges hourly for the instance and Dataproc clusters; using it just to load raw JSON into BigQuery is overly expensive and complex compared to native DTS."
+    ]
   },
   {
     "id": 329,
@@ -15259,7 +17887,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "low",
     "conflict": false,
-    "discussionSummary": "Respuesta sugerida: B."
+    "discussionSummary": "Respuesta sugerida: B.",
+    "conceptSummary": "Managing Cloud Storage costs over time using Object Lifecycle Management.",
+    "correctRationale": "Cloud Storage Object Lifecycle Management (OLM) is the native, free mechanism to automatically transition data to colder, cheaper storage classes or delete data based on age. Transitioning 2-year-old unaccessed data to the Archive class drastically lowers storage costs, and setting a deletion rule at 7 years meets the compliance requirement perfectly.",
+    "optionRationales": [
+      "Wrong: Running a custom script on a Compute Engine instance via Cloud Scheduler introduces unnecessary compute costs, operational overhead, and potential failure points when a native managed service exists.",
+      "Correct: Object Lifecycle Management natively and automatically handles both the cost-saving transition to Archive after two years and the compliance-based deletion after seven years.",
+      "Wrong: Autoclass transitions data based on actual access patterns, not strict time-based rules. Furthermore, it cannot automatically delete objects after 7 years, requiring OLM anyway.",
+      "Wrong: Replicating buckets to another region incurs network egress and duplicated storage costs, which contradicts the primary goal of controlling rising storage expenses."
+    ]
   },
   {
     "id": 332,
@@ -15282,7 +17918,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "low",
     "conflict": false,
-    "discussionSummary": "Respuesta sugerida: D."
+    "discussionSummary": "Respuesta sugerida: D.",
+    "conceptSummary": "Optimizing BigQuery table structure with partitioning and clustering for specific query patterns.",
+    "correctRationale": "Partitioning by a date or timestamp column is the standard way to limit bytes billed for time-series queries, matching the requirement to 'query by specific event date ranges'. Clustering is ideal for high-cardinality fields like UUIDs, allowing BigQuery to efficiently sort and filter data within each date partition.",
+    "optionRationales": [
+      "Wrong: BigQuery limits tables to 4,000 partitions. Partitioning by a high-cardinality string like a user ID UUID would quickly exceed this limit and fail.",
+      "Wrong: Ingestion-time partitioning relies on when the data was loaded, not the actual event date. If historical clickstream data is loaded late, ingestion-time partitioning breaks the accuracy of event date range queries.",
+      "Wrong: While clustering by both columns works, you lose the strict partition pruning (cost control) that date partitioning provides. Partitioning acts as a hard boundary to reduce data scanned.",
+      "Correct: Date partitioning drastically reduces the amount of data scanned (lowering cost), and UUID clustering speeds up the user ID filter (improving performance)."
+    ]
   },
   {
     "id": 338,
@@ -15310,7 +17954,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "C is too complex"
+    "discussionSummary": "C is too complex",
+    "conceptSummary": "Ensuring data unreadability for compliance (crypto-shredding) in BigQuery.",
+    "correctRationale": "AEAD (Authenticated Encryption with Associated Data) functions in BigQuery allow for column-level, value-specific encryption using keys managed in Cloud KMS. By encrypting the sensitive data and then deleting the specific keys associated with that data, you permanently render the data unreadable, a compliance process known as crypto-shredding.",
+    "optionRationales": [
+      "Wrong: Revoking viewer permissions prevents future access but does not render the underlying data physically unreadable on disk, which strict compliance regulations often require.",
+      "Wrong: Dynamic data masking hides data at query time based on user roles, but the underlying data remains in plaintext in storage, failing the requirement to permanently render the values unreadable.",
+      "Wrong: Customer-managed encryption keys (CMEK) encrypt the entire BigQuery table at the storage level. Deleting a CMEK key would crypto-shred the entire table, not just specific sensitive data values.",
+      "Correct: AEAD functions allow granular, value-level encryption. Deleting specific KMS keys crypto-shreds just the targeted sensitive data seamlessly."
+    ]
   },
   {
     "id": 344,
@@ -15338,7 +17990,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "D: High performance for concurrent user operations: Capable of handling many operations simultaneously."
+    "discussionSummary": "D: High performance for concurrent user operations: Capable of handling many operations simultaneously.",
+    "conceptSummary": "Selecting a managed database for high-throughput, low-latency, ACID-compliant financial transactions.",
+    "correctRationale": "Cloud Spanner is Google Cloud's fully managed, horizontally scalable relational database. It provides low-latency reads and writes, handles massive concurrency, and offers strict multi-row ACID compliance and strong consistency, making it the perfect choice for critical workloads like financial transactions.",
+    "optionRationales": [
+      "Wrong: Cloud Bigtable is a NoSQL wide-column store designed for high throughput, but it only supports single-row transactions and lacks the multi-row ACID compliance required for financial systems.",
+      "Wrong: BigQuery is an enterprise data warehouse built for OLAP (analytics) workloads, not OLTP (transactional) workloads; it does not offer low-latency individual record reads/writes.",
+      "Wrong: Cloud Storage is an object storage service, not a transactional database, and provides zero support for ACID transactions or sub-millisecond record updates.",
+      "Correct: Cloud Spanner uniquely combines horizontal scalability with strict relational ACID compliance, making it the ideal managed database for financial transaction processing."
+    ]
   },
   {
     "id": 345,
@@ -15366,7 +18026,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "B: Training-serving skew occurs when the data used to train your model differs in its characteristics or processing from the data used for making predictions in production."
+    "discussionSummary": "B: Training-serving skew occurs when the data used to train your model differs in its characteristics or processing from the data used for making predictions in production.",
+    "conceptSummary": "Preventing training-serving skew by managing preprocessing logic in Vertex AI Endpoints.",
+    "correctRationale": "Training-serving skew happens when data preprocessing steps (like one-hot encoding or scaling) applied during training differ from those applied in production. By implementing a custom handler (Custom Prediction Routine) within Vertex AI Endpoints, you package the exact preprocessing artifacts directly with the model, ensuring identical transformations occur at inference time.",
+    "optionRationales": [
+      "Correct: Packaging preprocessing steps into a custom handler ensures that raw prediction requests are transformed identically to the training data, effectively eliminating skew.",
+      "Wrong: Replicating the logic manually (e.g., rewriting the code in the serving application) introduces a massive risk of human error and drift over time, which is the primary cause of training-serving skew.",
+      "Wrong: Storing raw data in Cloud Storage does not solve how that live data is transformed on the fly when a prediction request actually hits the serving endpoint.",
+      "Wrong: Ensuring serving data is a smaller, random sample of training data makes no sense; the model must serve predictions on new, unseen live data, not historical training data."
+    ]
   },
   {
     "id": 346,
@@ -15394,7 +18062,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "B: Materialized views in BigQuery store the precomputed results of a query."
+    "discussionSummary": "B: Materialized views in BigQuery store the precomputed results of a query.",
+    "conceptSummary": "Minimizing cost and latency for repetitive aggregations in BigQuery.",
+    "correctRationale": "Materialized views in BigQuery are precomputed views that periodically cache the results of a query for increased performance and efficiency. Because complex computations (like aggregations for store ID and sales volume) are pre-calculated, querying the materialized view reads far fewer bytes and executes faster, directly reducing analytics spend and latency.",
+    "optionRationales": [
+      "Wrong: Exporting aggregated data to a CSV and reloading it into a new table is a manual, brittle process that produces stale data and removes the real-time aspect required by the prompt.",
+      "Correct: Materialized views automatically maintain precomputed aggregations in the background, offering faster query results and lower costs without scanning the base tables every time.",
+      "Wrong: BigQuery does not natively have a traditional RDBMS feature called 'join acceleration with primary and foreign keys', and joining live data does not prevent the cost of precomputing heavy aggregations.",
+      "Wrong: While partitioning reduces bytes read by filtering specific columns, it does not precalculate or store the results of complex aggregations, meaning the compute cost is still incurred on every query."
+    ]
   },
   {
     "id": 348,
@@ -15422,7 +18098,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "C: Dataplex: It is a fully managed Google Cloud data fabric platform, specifically designed to unify data management, governance, and analytics across a data lake environment."
+    "discussionSummary": "C: Dataplex: It is a fully managed Google Cloud data fabric platform, specifically designed to unify data management, governance, and analytics across a data lake environment.",
+    "conceptSummary": "Unifying data management, governance, cataloging, and quality checks in a data lake.",
+    "correctRationale": "Dataplex is Google Cloud's intelligent data fabric that unifies distributed data across Cloud Storage and BigQuery. It natively provides automated data discovery, metadata harvesting, centralized governance, and built-in data quality checks, precisely matching the requirement for an 'automated and managed data governance solution'.",
+    "optionRationales": [
+      "Wrong: Vertex AI is a machine learning platform, not a data governance or cataloging tool, making it entirely inappropriate for centralized data quality and cataloging in a lake.",
+      "Wrong: Forcing all multi-format unstructured data directly into BigQuery ignores the reality of a multi-format data lake architecture and doesn't natively handle required external transformations.",
+      "Correct: Dataplex acts as an orchestration and governance layer over both GCS and BigQuery, handling automated cataloging, security, and data quality seamlessly.",
+      "Wrong: A Cloud Run function requires custom coding and maintenance for cataloging and data quality checks, which contradicts the requirement for an 'automated and managed' solution."
+    ]
   },
   {
     "id": 349,
@@ -15466,7 +18150,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "D - only Cloud Data Fusion is a GUI-based solution."
+    "discussionSummary": "D - only Cloud Data Fusion is a GUI-based solution.",
+    "conceptSummary": "Centralizing on-premises and cloud data into Cloud Storage using a GUI-based, CMEK-supported tool.",
+    "correctRationale": "Storage Transfer Service (STS) is purpose-built for reliably moving massive amounts of data from on-premises locations, other clouds, or other GCP buckets directly into Cloud Storage. It offers a native Google Cloud Console GUI and supports Customer-Managed Encryption Keys (CMEK) for the destination buckets.",
+    "optionRationales": [
+      "Wrong: BigQuery Data Transfer Service moves data directly into BigQuery, but the requirement specifically states the raw files need to be centralized in Cloud Storage.",
+      "Correct: Storage Transfer Service explicitly targets moving files/objects into Cloud Storage, supports custom encryption via CMEK, and is fully configurable via the GCP GUI.",
+      "Wrong: Dataflow requires writing pipeline code (Apache Beam) to move files, which violates the strict requirement for a GUI-based solution.",
+      "Wrong: Cloud Data Fusion is a GUI-based ETL tool, but it is vastly over-engineered and computationally expensive for simple, raw file transfer operations compared to native STS."
+    ]
   },
   {
     "id": 350,
@@ -15506,6 +18198,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "It's C."
+    "discussionSummary": "It's C.",
+    "conceptSummary": "Preprocessing sensitive data while retaining the original data for future use.",
+    "correctRationale": "The core requirement is to protect sensitive data while also retaining it for potential future use cases. Encrypting the sensitive fields using Cloud KMS (via deterministic or AEAD encryption) allows the data to be safely stored in BigQuery. Authorized users with the KMS key can decrypt the data later, fulfilling the requirement to retain the data's utility while protecting privacy.",
+    "optionRationales": [
+      "Wrong: Removing sensitive fields permanently destroys the data, directly violating the strict requirement to retain all data for potential future use cases.",
+      "Wrong: Encrypting the entire bucket with CMEK protects the data at rest but does not process or protect the sensitive fields dynamically when accessed via federated queries.",
+      "Wrong: Masking permanently replaces the sensitive data with characters (e.g., ****), meaning the original data cannot be recovered, violating the requirement for future analytical use.",
+      "Correct: Field-level encryption via Cloud KMS protects the data from unauthorized access while allowing key-holders to decrypt and recover the original data for future analysis."
+    ]
   }
 ];

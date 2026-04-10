@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "import:examtopics:recent": "node scripts/import-examtopics-recent.js"
+    "import:examtopics:recent": "node scripts/import-examtopics-recent.js",
+    "export:gemini": "node scripts/export-questions-for-gemini.js",
+    "merge:gemini": "node scripts/merge-gemini-rationales.js"
   },
   "dependencies": {
     "react": "^18.3.1",

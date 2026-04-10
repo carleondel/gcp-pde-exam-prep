@@ -24,6 +24,7 @@ import {
   buildMockHistory,
   buildMockQuestions,
   buildMockSummary,
+  computeMockDistribution,
   buildPracticeQuestions,
   calculatePracticeXp,
   canSubmitAnswer,
@@ -228,6 +229,7 @@ function App() {
   const [progress, setProgress] = useState(EMPTY_PROGRESS);
   const [session, setSession] = useState(null);
   const [savedMockSession, setSavedMockSession] = useState(null);
+  const [mockPreferRecent, setMockPreferRecent] = useState(false);
   const [savedBlockSession, setSavedBlockSession] = useState(null);
   const [resultPayload, setResultPayload] = useState(null);
   const [selectedTopics, setSelectedTopics] = useState(() => new Set(sanitizePracticeTopics(storedPracticePrefs.topics)));
@@ -245,6 +247,7 @@ function App() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [showDiscussion, setShowDiscussion] = useState(false);
+  const [showAllRationales, setShowAllRationales] = useState(false);
   const [hiddenOptions, setHiddenOptions] = useState(new Set());
   const [showHint, setShowHint] = useState(false);
   const [showWheel, setShowWheel] = useState(false);
@@ -380,6 +383,7 @@ function App() {
     setSelectedAnswer(null);
     setShowResult(false);
     setShowDiscussion(false);
+    setShowAllRationales(false);
     setHiddenOptions(new Set());
     setShowHint(false);
     if (qRef.current) qRef.current.scrollTop = 0;
@@ -984,7 +988,7 @@ function App() {
   }, [effectivePracticeLimit, practiceOrder, practiceSource, progress.bookmarks, progress.wrongQuestionIds, questionMap, recentQuestions, resetQuestionUi, selectedTopics, weakTopicSet]);
 
   const startMock = useCallback(() => {
-    const questions = buildMockQuestions(QUESTIONS, MOCK_QUESTION_COUNT);
+    const questions = buildMockQuestions(QUESTIONS, MOCK_QUESTION_COUNT, { preferRecent: mockPreferRecent });
     const nextSession = createMockSession(questions.map((question) => question.id), {
       status: "active",
       durationSec: MOCK_DURATION_SEC,
@@ -994,7 +998,7 @@ function App() {
     setResultPayload(null);
     setScreen("quiz");
     resetQuestionUi();
-  }, [resetQuestionUi]);
+  }, [mockPreferRecent, resetQuestionUi]);
 
   const startDailyChallenge = useCallback(() => {
     if (isDailyChallengeCompleted(progress)) return;
@@ -2073,8 +2077,25 @@ function App() {
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--accent-medium)", borderRadius: "var(--radius-2xl)", padding: 24, boxShadow: "var(--shadow-card)" }}>
               <div style={{ fontSize: 12, color: "var(--accent-300)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Simulacro</div>
-              <div style={{ fontSize: 24, fontWeight: 800, margin: "6px 0 8px", fontFamily: "var(--font-heading)" }}>50 preguntas · 90 min</div>
-              <p style={{ margin: "0 0 16px", color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.6 }}>Sin ayudas. Sin recompensas. {PASS_PERCENT}% para aprobar.</p>
+              <div style={{ fontSize: 24, fontWeight: 800, margin: "6px 0 8px", fontFamily: "var(--font-heading)" }}>{MOCK_QUESTION_COUNT} preguntas · {Math.round(MOCK_DURATION_SEC / 60)} min</div>
+              <p style={{ margin: "0 0 12px", color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.6 }}>Sin ayudas. Sin recompensas. {PASS_PERCENT}% para aprobar.</p>
+              <div style={{ marginBottom: 12, padding: "10px 12px", borderRadius: "var(--radius-md)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
+                <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6, fontFamily: "var(--font-mono)" }}>Distribución oficial PDE</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, fontSize: 11, fontFamily: "var(--font-mono)" }}>
+                  {computeMockDistribution(MOCK_QUESTION_COUNT).map((entry) => (
+                    <span key={entry.id} style={{ padding: "3px 8px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontWeight: 700 }}>
+                      {entry.short.replace(/^D\d /, "D" + entry.id + " ")} {entry.target}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <label style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 14, padding: "10px 12px", borderRadius: "var(--radius-md)", background: mockPreferRecent ? "var(--accent-soft)" : "var(--surface-panel-muted)", border: `1px solid ${mockPreferRecent ? "var(--accent-medium)" : "var(--surface-line)"}`, cursor: "pointer", transition: "all 0.18s ease" }}>
+                <input type="checkbox" checked={mockPreferRecent} onChange={(event) => setMockPreferRecent(event.target.checked)} style={{ marginTop: 2, accentColor: "var(--accent-300)", cursor: "pointer" }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: mockPreferRecent ? "var(--accent-300)" : "var(--text-primary)" }}>Priorizar preguntas más recientes</div>
+                  <div style={{ fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.5, marginTop: 2 }}>Mismas proporciones, pero seleccionando los índices más altos en cada dominio.</div>
+                </div>
+              </label>
               <button onClick={startMock} style={{ width: "100%", padding: "16px 18px", border: "none", borderRadius: "var(--radius-lg)", background: "var(--gradient-mock)", color: "white", fontSize: 15, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
                 Iniciar simulacro
               </button>
@@ -2355,6 +2376,14 @@ function App() {
       <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-2xl)", border: "1px solid var(--surface-line)", padding: 24, boxShadow: "var(--shadow-elevated)" }}>
         <div style={{ marginBottom: 18, fontSize: 19, fontWeight: 700, lineHeight: 1.6, color: "var(--text-primary)" }}>{currentQuestion.question}</div>
 
+        {currentQuestion.images?.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
+            {currentQuestion.images.map((img, i) => (
+              <img key={i} src={img.url} alt={img.alt || ""} loading="lazy" style={{ maxWidth: "100%", borderRadius: "var(--radius-md)", border: "1px solid var(--surface-line)" }} />
+            ))}
+          </div>
+        )}
+
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
           {currentQuestion.options.map((option, index) => {
             if (hiddenOptions.has(index)) {
@@ -2416,8 +2445,50 @@ function App() {
                 <div style={{ fontSize: 14, fontWeight: 800, color: currentEvaluation?.isCorrect ? "var(--signal-correct)" : "var(--signal-wrong)" }}>{currentEvaluation?.isCorrect ? "Correcto" : "Incorrecto"}</div>
                 <div style={{ fontSize: 12, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>+{session.history[session.history.length - 1]?.xp || 0} XP</div>
               </div>
-              <div style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.6 }}>{currentQuestion.explanation}</div>
+              {currentQuestion.conceptSummary && (
+                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>{currentQuestion.conceptSummary}</div>
+              )}
+              <div style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.6 }}>{currentQuestion.correctRationale || currentQuestion.explanation}</div>
             </div>
+            {!currentEvaluation?.isCorrect && currentQuestion.optionRationales && (() => {
+              const wrongPicks = (currentEvaluation?.extraIndexes || []);
+              const missed = (currentEvaluation?.missingIndexes || []);
+              const highlights = [...wrongPicks, ...missed].filter((value, i, arr) => arr.indexOf(value) === i);
+              return highlights.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {wrongPicks.map((optIdx) => currentQuestion.optionRationales[optIdx] ? (
+                    <div key={`w-${optIdx}`} style={{ background: "var(--wrong-soft)", border: "1px solid var(--signal-wrong)", borderRadius: "var(--radius-md)", padding: "10px 14px" }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "var(--signal-wrong)", marginBottom: 4 }}>{currentQuestion.options[optIdx]?.split(".")[0]}: tu respuesta</div>
+                      <div style={{ fontSize: 12, color: "var(--text-primary)", lineHeight: 1.55 }}>{currentQuestion.optionRationales[optIdx]}</div>
+                    </div>
+                  ) : null)}
+                  {missed.map((optIdx) => currentQuestion.optionRationales[optIdx] ? (
+                    <div key={`m-${optIdx}`} style={{ background: "var(--correct-soft)", border: "1px solid var(--signal-correct)", borderRadius: "var(--radius-md)", padding: "10px 14px" }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "var(--signal-correct)", marginBottom: 4 }}>{currentQuestion.options[optIdx]?.split(".")[0]}: respuesta correcta</div>
+                      <div style={{ fontSize: 12, color: "var(--text-primary)", lineHeight: 1.55 }}>{currentQuestion.optionRationales[optIdx]}</div>
+                    </div>
+                  ) : null)}
+                </div>
+              ) : null;
+            })()}
+            {currentQuestion.optionRationales && (
+              <button onClick={() => setShowAllRationales((value) => !value)} style={{ border: "1px solid var(--surface-line-strong)", background: "var(--surface-panel-muted)", color: "var(--text-secondary)", borderRadius: "var(--radius-md)", padding: "10px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                {showAllRationales ? "Ocultar" : "Ver"} todas las justificaciones
+              </button>
+            )}
+            {showAllRationales && currentQuestion.optionRationales && (
+              <div style={{ background: "var(--surface-panel)", borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+                {currentQuestion.optionRationales.map((rationale, optIdx) => {
+                  const isCorrectOpt = getCorrectOptionIndexes(currentQuestion).includes(optIdx);
+                  return (
+                    <div key={optIdx} style={{ padding: "8px 12px", borderRadius: "var(--radius-md)", background: isCorrectOpt ? "var(--correct-soft)" : "var(--surface-panel-muted)", border: `1px solid ${isCorrectOpt ? "var(--signal-correct)" : "var(--surface-line)"}` }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: isCorrectOpt ? "var(--signal-correct)" : "var(--text-tertiary)", marginBottom: 3 }}>{currentQuestion.options[optIdx]?.split(".")[0]}</div>
+                      <div style={{ fontSize: 12, color: "var(--text-primary)", lineHeight: 1.55 }}>{rationale}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             <button onClick={() => setShowDiscussion((value) => !value)} style={{ border: "1px solid var(--primary-medium)", background: "var(--primary-soft)", color: "var(--primary-400)", borderRadius: "var(--radius-md)", padding: "10px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
               {showDiscussion ? "Ocultar" : "Ver"} discusión ({currentQuestion.discussion.length})
             </button>

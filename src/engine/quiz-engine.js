@@ -1,4 +1,6 @@
 import { xpDiminishingFactor } from "../data/gamification.js";
+import { EXAM_DOMAINS, getCanonicalTopic, getDomainForTopic } from "../data/pde-topics.js";
+import { getQuestionOrderNumber } from "./block-study.js";
 
 export const MOCK_DURATION_SEC = 90 * 60;
 export const MOCK_QUESTION_COUNT = 50;
@@ -115,8 +117,61 @@ export function buildPracticeQuestions(allQuestions, options = {}) {
   return ordered;
 }
 
-export function buildMockQuestions(allQuestions, count = MOCK_QUESTION_COUNT) {
-  return shuffle(allQuestions).slice(0, count);
+function allocateDomainTargets(count) {
+  const raw = EXAM_DOMAINS.map((domain) => {
+    const exact = (count * domain.weight) / 100;
+    const floor = Math.floor(exact);
+    return { id: domain.id, short: domain.short, exact, floor, frac: exact - floor };
+  });
+  let remainder = count - raw.reduce((sum, entry) => sum + entry.floor, 0);
+  const sortedByFrac = [...raw].sort((a, b) => b.frac - a.frac);
+  for (let i = 0; i < remainder && i < sortedByFrac.length; i += 1) {
+    sortedByFrac[i].floor += 1;
+  }
+  return raw;
+}
+
+export function computeMockDistribution(count = MOCK_QUESTION_COUNT) {
+  return allocateDomainTargets(count).map((entry) => ({
+    id: entry.id,
+    short: entry.short,
+    target: entry.floor,
+  }));
+}
+
+export function buildMockQuestions(allQuestions, count = MOCK_QUESTION_COUNT, options = {}) {
+  const { preferRecent = false } = options;
+
+  const buckets = new Map(EXAM_DOMAINS.map((domain) => [domain.id, []]));
+  const unmatched = [];
+  for (const question of allQuestions) {
+    const domain = getDomainForTopic(getCanonicalTopic(question.topic));
+    if (domain && buckets.has(domain.id)) buckets.get(domain.id).push(question);
+    else unmatched.push(question);
+  }
+
+  const targets = new Map(allocateDomainTargets(count).map((entry) => [entry.id, entry.floor]));
+  const orderPool = (pool) =>
+    preferRecent
+      ? [...pool].sort((a, b) => getQuestionOrderNumber(b) - getQuestionOrderNumber(a))
+      : shuffle(pool);
+
+  const picked = [];
+  const leftover = [...unmatched];
+  for (const [domainId, pool] of buckets.entries()) {
+    const ordered = orderPool(pool);
+    const target = targets.get(domainId) || 0;
+    picked.push(...ordered.slice(0, target));
+    leftover.push(...ordered.slice(target));
+  }
+
+  const deficit = count - picked.length;
+  if (deficit > 0) {
+    const filler = orderPool(leftover);
+    picked.push(...filler.slice(0, deficit));
+  }
+
+  return shuffle(picked);
 }
 
 export function buildQuestionsFromIds(questionIds, questionMap) {
