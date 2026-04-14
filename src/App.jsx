@@ -377,6 +377,7 @@ function App() {
   const isMulti = currentQuestion ? Array.isArray(currentQuestion.correct) : false;
   const canSubmitCurrent = currentQuestion ? canSubmitAnswer(currentQuestion, selectedAnswer) : false;
   const mockRemainingSec = session?.mode === "mock" ? getRemainingTime(session, now) : 0;
+  const blockElapsedSec = session?.mode === "blocks" ? Math.floor((now - session.startedAt) / 1000) : 0;
   const pendingRewardCount = practiceMode ? session.rewardQueue.length : 0;
 
   const resetQuestionUi = useCallback(() => {
@@ -830,7 +831,7 @@ function App() {
   }, [canSubmitCurrent, currentQuestion, hiddenOptions, isMulti, screen, session?.mode, showResult]);
 
   useEffect(() => {
-    if (screen !== "quiz" || session?.mode !== "mock") return;
+    if (screen !== "quiz" || (session?.mode !== "mock" && session?.mode !== "blocks")) return;
     const interval = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(interval);
   }, [screen, session]);
@@ -2303,6 +2304,7 @@ function App() {
             {practiceMode && session.streak >= 2 && <span style={{ fontSize: 12, color: session.streak >= 5 ? "var(--accent-300)" : "var(--primary-400)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>x{session.streak}</span>}
             {practiceMode && progress.inventory.mult > 1 && <span style={{ fontSize: 12, color: "var(--signal-correct)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>mult x{progress.inventory.mult} ({progress.inventory.multDur})</span>}
             {session?.mode === "mock" && <span style={{ padding: "6px 10px", borderRadius: "var(--radius-md)", background: mockRemainingSec < 300 ? "var(--wrong-soft)" : "var(--surface-line)", color: mockRemainingSec < 300 ? "var(--signal-wrong)" : "var(--text-primary)", fontSize: 13, fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(mockRemainingSec)}</span>}
+            {session?.mode === "blocks" && <span style={{ padding: "6px 10px", borderRadius: "var(--radius-md)", background: "var(--surface-line)", color: "var(--text-secondary)", fontSize: 13, fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(blockElapsedSec)}</span>}
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>

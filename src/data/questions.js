@@ -8725,13 +8725,13 @@ export const QUESTIONS = [
     "id": 157,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "You have been loading data from CSV files into BigQuery table CLICK_STREAM. The column DT stores the epoch time as STRING type. Now you want to change DT to TIMESTAMP with minimal migration effort without making future queries expensive. What should you do?",
+    "question": "You have spent a few days loading data from comma-separated values (CSV) files into the Google BigQuery table CLICK_STREAM. The column DT stores the epoch time of click events. For convenience, you chose a simple schema where every field is treated as the STRING type. Now, you want to compute web session durations of users who visit your site, and you want to change its data type to the TIMESTAMP. You want to minimize the migration effort without making future queries computationally expensive. What should you do?",
     "options": [
-      "A. Delete the table and re-create it with DT as TIMESTAMP. Reload the data.",
-      "B. Add a column TS of TIMESTAMP type and populate from DT.",
-      "C. Create a view where strings from DT are cast into TIMESTAMP values.",
-      "D. Add two columns TS and IS_NEW. Reload all data in append mode.",
-      "E. Construct a query to return every row, cast DT into TIMESTAMP. Run into a destination table NEW_CLICK_STREAM."
+      "A. Delete the table CLICK_STREAM, and then re-create it such that the column DT is of the TIMESTAMP type. Reload the data.",
+      "B. Add a column TS of the TIMESTAMP type to the table CLICK_STREAM, and populate the numeric values from the column TS for each row. Reference the column TS instead of the column DT from now on.",
+      "C. Create a view CLICK_STREAM_V, where strings from the column DT are cast into TIMESTAMP values. Reference the view CLICK_STREAM_V instead of the table CLICK_STREAM from now on.",
+      "D. Add two columns to the table CLICK STREAM: TS of the TIMESTAMP type and IS_NEW of the BOOLEAN type. Reload all data in append mode. For each appended row, set the value of IS_NEW to true. For future queries, reference the column TS instead of the column DT, with the WHERE clause ensuring that the value of IS_NEW must be true.",
+      "E. Construct a query to return every row of the table CLICK_STREAM, while using the built-in function to cast strings from the column DT into TIMESTAMP values. Run the query into a destination table NEW_CLICK_STREAM, in which the column TS is the TIMESTAMP type. Reference the table NEW_CLICK_STREAM instead of the table CLICK_STREAM from now on. In the future, new data is loaded into the table NEW_CLICK_STREAM."
     ],
     "correct": 4,
     "explanation": "Construct a query to return every row, cast DT into TIMESTAMP This optimizes query performance through data organization and indexing.",
@@ -11286,7 +11286,7 @@ export const QUESTIONS = [
       "C. Use the BigQuery Streaming API and ensure table is regional.",
       "D. Use the BigQuery Streaming API and ensure table is multiregional."
     ],
-    "correct": 0,
+    "correct": 1,
     "explanation": "Use the BigQuery Storage Write API and ensure table is regional This Google's fully managed streaming and batch data processing service that provides exactly-once semantics with auto-scaling and low latency.",
     "discussion": [
       {
@@ -11323,12 +11323,12 @@ export const QUESTIONS = [
     "conflict": false,
     "discussionSummary": "",
     "conceptSummary": "Achieving exactly-once delivery to BigQuery from a non-exactly-once source using the Storage Write API.",
-    "correctRationale": "The BigQuery Storage Write API natively supports exactly-once delivery semantics using stream offsets, ensuring no duplicates even if the source message bus resends data. Keeping the table regional minimizes network latency and cost for the high-throughput 1.5 GB/s stream.",
+    "correctRationale": "The BigQuery Storage Write API natively supports exactly-once delivery semantics using stream offsets, ensuring no duplicates even if the source message bus resends data. The table must be multi-regional: regional tables have a default quota of only 300 MB/s, far below the required 1.5 GB/s. Multi-regional tables support up to 3 GB/s by default, comfortably handling the load.",
     "optionRationales": [
-      "Correct: The Storage Write API guarantees exactly-once delivery via offsets, and a regional table minimizes the cross-region network latency and data transfer costs associated with high-throughput streams.",
-      "While the Storage Write API is correct, a multi-regional table introduces unnecessary cross-region replication latency and potential data transfer costs for a stream of this volume.",
-      "The older BigQuery Streaming API (tabledata.insertAll) does not natively guarantee exactly-once delivery; it provides best-effort deduplication but duplicates can still occur.",
-      "The Streaming API cannot guarantee exactly-once delivery, and multi-regional routing adds unnecessary latency and cost."
+      "The Storage Write API is correct for exactly-once delivery, but regional tables have a default quota of only 300 MB/s. Pushing 1.5 GB/s would immediately trigger Quota Exceeded errors.",
+      "Correct: The Storage Write API guarantees exactly-once delivery via stream offsets. Multi-regional tables have a default 3 GB/s quota, easily handling the 1.5 GB/s throughput requirement.",
+      "The legacy Streaming API (tabledata.insertAll) does not natively support exactly-once delivery — it uses at-least-once semantics, so duplicate records can appear in BigQuery.",
+      "The legacy Streaming API cannot guarantee duplicate-free delivery regardless of table location, and offers no quota advantage over the Storage Write API."
     ]
   },
   {
@@ -12743,14 +12743,14 @@ export const QUESTIONS = [
     "id": 231,
     "topic": "Security/DLP",
     "difficulty": 2,
-    "question": "You need to preprocess customer data stored in a restricted Cloud Storage bucket. You need to comply with data privacy requirements. What should you do?",
+    "question": "You are preparing an organization-wide dataset. You need to preprocess customer data stored in a restricted bucket in Cloud Storage. The data will be used to create consumer analyses. You need to follow data privacy requirements, including protecting certain sensitive data elements, while also retaining all of the data for potential future use cases. What should you do?",
     "options": [
-      "A. Use Dataflow and Cloud DLP API to mask sensitive data. Write to BigQuery.",
-      "B. Use CMEK to encrypt data in Cloud Storage. Use federated queries from BigQuery.",
-      "C. Use Cloud DLP API and Dataflow to detect and remove sensitive fields. Write to BigQuery.",
-      "D. Use Dataflow and Cloud KMS to encrypt sensitive fields and write to BigQuery."
+      "A. Use the Cloud Data Loss Prevention API and Dataflow to detect and remove sensitive fields from the data in Cloud Storage. Write the filtered data in BigQuery.",
+      "B. Use customer-managed encryption keys (CMEK) to directly encrypt the data in Cloud Storage. Use federated queries from BigQuery. Share the encryption key by following the principle of least privilege.",
+      "C. Use Dataflow and the Cloud Data Loss Prevention API to mask sensitive data. Write the processed data in BigQuery.",
+      "D. Use Dataflow and Cloud KMS to encrypt sensitive fields and write the encrypted data in BigQuery. Share the encryption key by following the principle of least privilege."
     ],
-    "correct": 0,
+    "correct": 2,
     "explanation": "Use Dataflow and Cloud DLP API to mask sensitive data. Write to BigQuery This Google Cloud Storage provides object storage with strong consistency, lifecycle policies, and versioning; regional buckets optimize for single-region performance.",
     "discussion": [
       {
@@ -12789,9 +12789,9 @@ export const QUESTIONS = [
     "conceptSummary": "Masking PII using Cloud Data Loss Prevention (DLP) for consumer analysis.",
     "correctRationale": "To comply with privacy requirements while still enabling consumer analyses, sensitive PII must be de-identified. Cloud DLP integrates seamlessly with Dataflow to automatically inspect and mask sensitive data. Masking (e.g., pseudonymization) retains the statistical usefulness of the data for analysis while protecting individual identities.",
     "optionRationales": [
-      "Correct: Dataflow combined with Cloud DLP easily masks the data, ensuring privacy compliance while retaining analytical value in BigQuery.",
+      "Completely removing sensitive fields destroys relationships and context, and violates the requirement to retain all data for potential future use cases.",
       "Using CMEK encrypts the data at rest, but when BigQuery reads it via federated queries, the data is decrypted in memory. The analysts would still see plaintext PII, violating privacy requirements.",
-      "Completely removing sensitive fields destroys relationships and context, rendering the dataset useless for the required consumer analyses.",
+      "Correct: Dataflow combined with Cloud DLP masks sensitive data, ensuring privacy compliance while retaining all data and its analytical value in BigQuery.",
       "Encrypting the fields with KMS inside Dataflow would require complex key management and client-side encryption logic, whereas Cloud DLP provides purpose-built data masking techniques natively."
     ]
   },
