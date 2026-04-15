@@ -152,6 +152,101 @@ function formatDuration(totalSeconds) {
   return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
+function clampPercent(percent) {
+  const numeric = Number(percent);
+  if (!Number.isFinite(numeric)) return null;
+  return Math.max(0, Math.min(100, Math.round(numeric)));
+}
+
+function getPercentTone(percent) {
+  const value = clampPercent(percent);
+  if (value === null) {
+    return {
+      value: null,
+      text: "var(--text-tertiary)",
+      border: "var(--surface-line)",
+      gradient: "linear-gradient(180deg, rgba(26, 36, 56, 0.9), rgba(15, 21, 32, 0.82))",
+      gradientStrong: "linear-gradient(180deg, rgba(26, 36, 56, 0.98), rgba(15, 21, 32, 0.9))",
+      shadow: "none",
+    };
+  }
+
+  if (value >= 90) {
+    return {
+      value,
+      text: "var(--highlight)",
+      border: "rgba(143, 255, 106, 0.28)",
+      gradient: "linear-gradient(180deg, rgba(143, 255, 106, 0.12), rgba(15, 21, 32, 0.84))",
+      gradientStrong: "linear-gradient(180deg, rgba(143, 255, 106, 0.18), rgba(15, 21, 32, 0.9))",
+      shadow: "0 12px 28px rgba(143, 255, 106, 0.14)",
+    };
+  }
+
+  if (value >= 70) {
+    return {
+      value,
+      text: "var(--signal-correct)",
+      border: "rgba(45, 212, 160, 0.28)",
+      gradient: "linear-gradient(180deg, var(--correct-soft), rgba(15, 21, 32, 0.84))",
+      gradientStrong: "linear-gradient(180deg, rgba(45, 212, 160, 0.2), rgba(15, 21, 32, 0.9))",
+      shadow: "0 12px 28px rgba(45, 212, 160, 0.14)",
+    };
+  }
+
+  if (value >= 50) {
+    return {
+      value,
+      text: "var(--signal-warning)",
+      border: "rgba(230, 168, 23, 0.28)",
+      gradient: "linear-gradient(180deg, var(--warning-soft), rgba(15, 21, 32, 0.84))",
+      gradientStrong: "linear-gradient(180deg, rgba(230, 168, 23, 0.2), rgba(15, 21, 32, 0.9))",
+      shadow: "0 12px 28px rgba(230, 168, 23, 0.14)",
+    };
+  }
+
+  return {
+    value,
+    text: "var(--signal-wrong)",
+    border: "rgba(240, 96, 90, 0.28)",
+    gradient: "linear-gradient(180deg, var(--wrong-soft), rgba(15, 21, 32, 0.84))",
+    gradientStrong: "linear-gradient(180deg, rgba(240, 96, 90, 0.2), rgba(15, 21, 32, 0.9))",
+    shadow: "0 12px 28px rgba(240, 96, 90, 0.14)",
+  };
+}
+
+function buildTrackRoundStats(progress, trackId) {
+  const blocks = progress.blockStudy?.tracks?.[trackId]?.blocks || {};
+  const roundsByNumber = new Map();
+
+  Object.values(blocks).forEach((blockRecord) => {
+    (blockRecord?.rounds || []).forEach((round) => {
+      const roundNumber = Number(round?.roundNumber);
+      if (!Number.isFinite(roundNumber)) return;
+
+      const current = roundsByNumber.get(roundNumber) || {
+        roundNumber,
+        correctCount: 0,
+        questionCount: 0,
+        completedBlocks: 0,
+        finishedAt: 0,
+      };
+
+      current.correctCount += Number(round.correctCount) || 0;
+      current.questionCount += Number(round.questionCount) || 0;
+      current.completedBlocks += 1;
+      current.finishedAt = Math.max(current.finishedAt, Number(round.finishedAt) || 0);
+      roundsByNumber.set(roundNumber, current);
+    });
+  });
+
+  return [...roundsByNumber.values()]
+    .sort((left, right) => left.roundNumber - right.roundNumber)
+    .map((round) => ({
+      ...round,
+      percent: round.questionCount > 0 ? Math.round((round.correctCount / round.questionCount) * 100) : 0,
+    }));
+}
+
 function normalizeSessionUi(session) {
   return {
     selectedAnswer: session?.ui?.selectedAnswer ?? null,
@@ -318,6 +413,10 @@ function App() {
   const selectedBlockProgress = useMemo(
     () => selectedBlock ? getBlockProgressRecord(progress, selectedBlock.trackId, selectedBlock.blockIndex) : null,
     [progress, selectedBlock]
+  );
+  const trackRoundStats = useMemo(
+    () => buildTrackRoundStats(progress, blockCatalog.trackId),
+    [progress, blockCatalog.trackId]
   );
   const maxPracticeCount = practiceSourceQuestions.length;
   const effectivePracticeLimit = maxPracticeCount > 0 ? Math.min(Math.max(1, practiceLimit), maxPracticeCount) : 0;
@@ -1595,6 +1694,8 @@ function App() {
     const selectedBlockRounds = selectedBlockProgress?.rounds || [];
     const selectedBlockChanged = selectedBlock ? hasBlockChanged(selectedBlock, selectedBlockProgress) : false;
     const selectedBlockMastered = isBlockMastered(selectedBlockProgress);
+    const selectedBlockLastTone = getPercentTone(selectedBlockProgress?.lastPercent);
+    const selectedBlockBestTone = getPercentTone(selectedBlockProgress?.bestPercent);
     const selectedBlockStatus = activeBlockIndex === selectedBlock?.blockIndex
       ? "In progress"
       : selectedBlockChanged
@@ -1736,11 +1837,11 @@ function App() {
                   </div>
                   <div>
                     <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Último %</div>
-                    <div style={{ marginTop: 4, fontSize: 18, fontWeight: 800, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{selectedBlockProgress ? `${selectedBlockProgress.lastPercent}%` : "-"}</div>
+                    <div style={{ marginTop: 4, fontSize: 18, fontWeight: 800, color: selectedBlockLastTone.text, fontFamily: "var(--font-mono)" }}>{selectedBlockProgress ? `${selectedBlockProgress.lastPercent}%` : "-"}</div>
                   </div>
                   <div>
                     <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Mejor %</div>
-                    <div style={{ marginTop: 4, fontSize: 18, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{selectedBlockProgress ? `${selectedBlockProgress.bestPercent}%` : "-"}</div>
+                    <div style={{ marginTop: 4, fontSize: 18, fontWeight: 800, color: selectedBlockBestTone.text, fontFamily: "var(--font-mono)" }}>{selectedBlockProgress ? `${selectedBlockProgress.bestPercent}%` : "-"}</div>
                   </div>
                 </div>
 
@@ -1768,18 +1869,45 @@ function App() {
               </div>
 
               <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 20 }}>
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)", marginBottom: 10 }}>Global por vuelta</div>
+                  {trackRoundStats.length ? (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: 8 }}>
+                      {trackRoundStats.map((roundStat) => {
+                        const tone = getPercentTone(roundStat.percent);
+                        return (
+                          <div key={roundStat.roundNumber} style={{ padding: "10px 12px", borderRadius: "var(--radius-md)", border: `1px solid ${tone.border}`, background: tone.gradient }}>
+                            <div style={{ fontSize: 10, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 0.8, fontFamily: "var(--font-mono)" }}>Vuelta {roundStat.roundNumber}</div>
+                            <div style={{ marginTop: 4, fontSize: 18, fontWeight: 900, color: tone.text, fontFamily: "var(--font-mono)" }}>{roundStat.percent}%</div>
+                            <div style={{ marginTop: 4, fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{roundStat.completedBlocks}/{blockCatalog.blocks.length} bloques</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5 }}>
+                      El % global por vuelta aparecerá en cuanto completes bloques de este track.
+                    </div>
+                  )}
+                </div>
+
                 <div style={{ fontSize: 12, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)", marginBottom: 12 }}>Últimas vueltas</div>
                 {selectedBlockRounds.length ? selectedBlockRounds.slice(-3).reverse().map((round, index, rounds) => (
-                  <div key={round.roundNumber} style={{ display: "flex", justifyContent: "space-between", gap: 10, padding: "10px 0", borderBottom: index < rounds.length - 1 ? "1px solid var(--surface-line)" : "none" }}>
-                    <div>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>Vuelta {round.roundNumber}</div>
-                      <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)" }}>{new Date(round.finishedAt).toLocaleString("es-ES")}</div>
-                    </div>
-                    <div style={{ textAlign: "right" }}>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: round.percent >= BLOCK_MASTERY_PERCENT ? "var(--signal-correct)" : "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{round.percent}%</div>
-                      <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{round.correctCount}/{round.questionCount} · {round.elapsedSec ? formatDuration(round.elapsedSec) : "-"}</div>
-                    </div>
-                  </div>
+                  (() => {
+                    const roundTone = getPercentTone(round.percent);
+                    return (
+                      <div key={round.roundNumber} style={{ display: "flex", justifyContent: "space-between", gap: 10, padding: "10px 0", borderBottom: index < rounds.length - 1 ? "1px solid var(--surface-line)" : "none" }}>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>Vuelta {round.roundNumber}</div>
+                          <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)" }}>{new Date(round.finishedAt).toLocaleString("es-ES")}</div>
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontSize: 18, fontWeight: 900, color: roundTone.text, fontFamily: "var(--font-mono)" }}>{round.percent}%</div>
+                          <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{round.correctCount}/{round.questionCount} · {round.elapsedSec ? formatDuration(round.elapsedSec) : "-"}</div>
+                        </div>
+                      </div>
+                    );
+                  })()
                 )) : (
                   <div style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6 }}>
                     Todavía no hay vueltas registradas para este bloque.
@@ -1793,6 +1921,7 @@ function App() {
             {visibleBlocks.map((block) => {
               const blockProgress = getBlockProgressRecord(progress, block.trackId, block.blockIndex);
               const blockRounds = blockProgress?.rounds || [];
+              const blockTone = getPercentTone(blockProgress?.lastPercent);
               const isActive = activeBlockIndex === block.blockIndex;
               const isSelected = selectedBlock?.blockIndex === block.blockIndex;
               const isUpdated = hasBlockChanged(block, blockProgress);
@@ -1816,19 +1945,27 @@ function App() {
                   style={{
                     padding: 14,
                     borderRadius: "var(--radius-lg)",
-                    border: isSelected ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
-                    background: isSelected ? "linear-gradient(180deg, var(--primary-soft), var(--surface-panel-muted))" : "var(--surface-panel-muted)",
+                    border: isActive
+                      ? "1px solid var(--signal-info)"
+                      : isSelected
+                        ? `1px solid ${blockTone.value === null ? "var(--primary-medium)" : blockTone.border}`
+                        : `1px solid ${blockTone.border}`,
+                    background: blockTone.value === null
+                      ? (isSelected ? "linear-gradient(180deg, var(--primary-soft), var(--surface-panel-muted))" : "var(--surface-panel-muted)")
+                      : (isSelected ? blockTone.gradientStrong : blockTone.gradient),
                     textAlign: "left",
                     cursor: "pointer",
                     color: "var(--text-primary)",
+                    boxShadow: isSelected ? blockTone.shadow : "none",
+                    transition: "transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out)",
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "center", marginBottom: 8 }}>
                     <span style={{ fontSize: 13, fontWeight: 800, fontFamily: "var(--font-heading)" }}>Bloque {block.blockIndex + 1}</span>
-                    <span style={{ fontSize: 11, color: isActive ? "var(--signal-info)" : isMastered ? "var(--signal-correct)" : "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>{blockProgress ? `${blockProgress.lastPercent}%` : "-"}</span>
+                    <span style={{ fontSize: 11, color: isActive ? "var(--signal-info)" : blockTone.text, fontFamily: "var(--font-mono)" }}>{blockProgress ? `${blockProgress.lastPercent}%` : "-"}</span>
                   </div>
                   <div style={{ fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)", marginBottom: 6 }}>{block.label}</div>
-                  <div style={{ fontSize: 11, color: isUpdated ? "var(--accent-300)" : "var(--text-tertiary)" }}>{label}</div>
+                  <div style={{ fontSize: 11, color: isUpdated ? "var(--accent-300)" : blockTone.value === null ? "var(--text-tertiary)" : blockTone.text }}>{label}</div>
                 </button>
               );
             })}
