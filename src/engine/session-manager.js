@@ -103,7 +103,7 @@ export function hydrateMockSession(stored, questionMap) {
 
 export function toStoredBlockSession(session) {
   if (!session || session.mode !== "practice" || session.meta?.source !== "blocks") return null;
-  return {
+  const stored = {
     id: session.id,
     questionIds: session.questionIds,
     currentIndex: session.currentIndex,
@@ -126,13 +126,15 @@ export function toStoredBlockSession(session) {
     meta: session.meta,
     ui: session.ui || {},
   };
+  if (session.pausedElapsedSec != null) stored.pausedElapsedSec = session.pausedElapsedSec;
+  return stored;
 }
 
 export function hydrateBlockSession(stored, questionMap) {
   if (!stored?.questionIds?.length) return null;
   const questions = stored.questionIds.map((id) => questionMap.get(id)).filter(Boolean);
   if (!questions.length) return null;
-  return createPracticeSession(questions, stored.meta || {}, {
+  const session = createPracticeSession(questions, stored.meta || {}, {
     id: stored.id,
     currentIndex: Math.min(stored.currentIndex || 0, questions.length - 1),
     startedAt: stored.startedAt,
@@ -149,4 +151,6 @@ export function hydrateBlockSession(stored, questionMap) {
     rewardQueue: Array.isArray(stored.rewardQueue) ? stored.rewardQueue : [],
     ui: stored.ui || {},
   });
+  if (stored.pausedElapsedSec != null) session.pausedElapsedSec = stored.pausedElapsedSec;
+  return session;
 }

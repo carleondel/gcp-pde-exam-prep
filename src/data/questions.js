@@ -1477,19 +1477,19 @@ export const QUESTIONS = [
     "id": 27,
     "topic": "Storage/Backup",
     "difficulty": 2,
-    "question": "You decided to use Cloud Datastore to ingest vehicle telemetry data in real time. You want to build a storage system that accounts for long-term data growth while keeping costs low. You also want to create snapshots periodically for PIT recovery. You want to archive these snapshots for a long time. Which two methods can accomplish this? (Choose two.)",
+    "question": "You decided to use Cloud Datastore to ingest vehicle telemetry data in real time. You want to build a storage system that will account for the long-term data growth, while keeping the costs low. You also want to create snapshots of the data periodically, so that you can make a point-in-time (PIT) recovery, or clone a copy of the data for Cloud Datastore in a different environment. You want to archive these snapshots for a long time. Which two methods can accomplish this? (Choose two.)",
     "options": [
       "A. Use managed export, and store the data in a Cloud Storage bucket using Nearline or Coldline class.",
-      "B. Use managed export, and then import to Cloud Datastore in a separate project under a unique namespace.",
-      "C. Use managed export, and then import the data into a BigQuery table created just for that export.",
-      "D. Write an application that uses Cloud Datastore client libraries to read all the entities and stream to BigQuery.",
-      "E. Write an application that uses Cloud Datastore client libraries to read all entities, format to JSON, compress, and store in Cloud Source Repositories."
+      "B. Use managed export, and then import to Cloud Datastore in a separate project under a unique namespace reserved for that export.",
+      "C. Use managed export, and then import the data into a BigQuery table created just for that export, and delete temporary export files.",
+      "D. Write an application that uses Cloud Datastore client libraries to read all the entities. Treat each entity as a BigQuery table row via BigQuery streaming insert. Assign an export timestamp for each export, and attach it as an extra column for each row. Make sure that the BigQuery table is partitioned using the export timestamp column.",
+      "E. Write an application that uses Cloud Datastore client libraries to read all the entities. Format the exported data into a JSON file. Apply compression before storing the data in Cloud Source Repositories."
     ],
     "correct": [
       0,
-      2
+      1
     ],
-    "explanation": "Importing backups into Datastore (B) incurs high storage costs. Cloud Storage (A) and BigQuery (C) are cheaper for long-term archival of Datastore exports.",
+    "explanation": "Managed export to Cloud Storage is the official low-cost archival path for Datastore snapshots, and importing that export into a separate Datastore project and namespace is the native way to clone the data into another environment for recovery testing or PIT-style restoration workflows.",
     "discussion": [
       {
         "user": "Ganshank",
@@ -1518,20 +1518,20 @@ export const QUESTIONS = [
     ],
     "source": "examprepper",
     "sourceExam": "professional-data-engineer",
-    "sourceQuestionNumber": null,
+    "sourceQuestionNumber": 122,
     "isRecent": false,
     "importBatch": null,
     "confidence": "medium",
     "conflict": false,
     "discussionSummary": "",
-    "conceptSummary": "Cost-effective archival of Datastore data.",
-    "correctRationale": "Cloud Datastore allows you to create managed exports of your entities. To archive these snapshots for a long time at the lowest possible cost, you can store the export files in Cloud Storage (using Nearline/Coldline/Archive classes) or import them into BigQuery, which offers cheap long-term storage and analytical capabilities.",
+    "conceptSummary": "Managed Datastore exports for low-cost archival, PIT recovery, and environment cloning.",
+    "correctRationale": "Managed export is the native snapshot mechanism for Cloud Datastore. Storing those exports in low-cost Cloud Storage classes satisfies long-term archival requirements, and importing the export into a separate Datastore project under a dedicated namespace satisfies the requirement to clone the dataset into a different environment for recovery or validation.",
     "optionRationales": [
-      "Correct: Exporting Datastore entities directly to Cloud Storage Coldline/Archive provides the absolute lowest cost for long-term snapshot retention.",
-      "Wrong: Importing historical backups into a live Datastore namespace incurs active database storage pricing, which is vastly more expensive than GCS and violates the 'keep costs low' requirement.",
-      "Correct: Managed exports can be loaded into BigQuery. BigQuery storage becomes extremely cheap (long-term pricing) after 90 days, and it provides the added benefit of making the historical data queryable.",
-      "Wrong: Writing a custom application to read all entities and stream them to BigQuery incurs massive Datastore read operations costs and compute costs, defeating the purpose of managed exports.",
-      "Wrong: Cloud Source Repositories is a Git version control system for source code. Storing massive JSON databases there violates its use case, size quotas, and best practices."
+      "Correct: Managed export to Cloud Storage using Nearline or Coldline is the official and most cost-effective way to archive Datastore snapshots for long-term retention and future PIT recovery.",
+      "Correct: Importing a managed export into a separate Datastore project under a unique namespace directly supports cloning the data into a different environment, which is explicitly required.",
+      "Wrong: Deleting the temporary export files removes the original restore artifact, and loading Datastore exports into BigQuery also requires an entity filter, so this does not cleanly satisfy the recovery and archival requirements.",
+      "Wrong: Reading all entities through client libraries is slower and more operationally expensive than managed export, does not produce a clean native snapshot as efficiently, and BigQuery streaming inserts violate the low-cost requirement.",
+      "Wrong: Cloud Source Repositories is a source control service for code, not a durable archival system for large Datastore snapshot files."
     ]
   },
   {
@@ -4191,8 +4191,8 @@ export const QUESTIONS = [
       "C. Tier older data onto Cloud Storage files and create a BigQuery table using Cloud Storage as an external data source.",
       "D. Re-create the table using data partitioning on the package delivery date."
     ],
-    "correct": 3,
-    "explanation": "Re-create the table using data partitioning on the package delivery date This optimizes query performance through data organization and indexing.",
+    "correct": 1,
+    "explanation": "Implement clustering in BigQuery on the package-tracking ID column. Clustering physically sorts storage blocks by the tracking ID, allowing BigQuery to skip irrelevant blocks when querying a specific package's lifecycle.",
     "discussion": [
       {
         "user": "zellck",
@@ -4227,13 +4227,13 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": false,
     "discussionSummary": "",
-    "conceptSummary": "Optimizing BigQuery partitions based on logical querying patterns (delivery date vs ingest date).",
-    "correctRationale": "When analyzing a package lifecycle, queries filter by logical dates (like delivery date). If the table is partitioned by ingest-date, a single package's events span multiple daily partitions, forcing BigQuery to scan massive amounts of data. Re-partitioning by a logical date like `delivery_date` groups relevant lifecycle events, enabling efficient partition pruning.",
+    "conceptSummary": "Optimizing existing BigQuery partitioned tables by adding clustering to high-cardinality columns.",
+    "correctRationale": "Clustering on the package-tracking ID physically sorts storage blocks by that column within each partition. When analysts query a specific package's lifecycle, BigQuery skips irrelevant blocks, drastically reducing scanned data and improving performance.",
     "optionRationales": [
-      "Wrong: Clustering by ingest date does not solve the root problem that lifecycle queries are forced to scan across many separate daily partitions.",
-      "Wrong: Clustering by ID helps find specific packages, but if partitioned by ingest-date, BigQuery must still open every single daily partition to find all events for that ID.",
-      "Wrong: Tiering data to GCS as an external table significantly degrades performance because external tables lack BigQuery's native columnar optimization and indexing.",
-      "Correct: Re-partitioning by package delivery date aligns the physical storage with the logical query pattern, allowing queries to prune irrelevant partitions and execute faster."
+      "Wrong: The table is already partitioned by ingest date. Clustering on the same column is redundant and provides no benefit for finding specific packages.",
+      "Correct: Clustering on the package-tracking ID lets BigQuery go straight to the storage blocks containing that specific ID within each daily partition, ignoring the rest of the data.",
+      "Wrong: Moving data to Cloud Storage as an external table severely degrades query performance because external tables lack BigQuery's native columnar optimization.",
+      "Wrong: Partitioning by delivery date is an anti-pattern for live tracking. Packages in transit have no delivery date yet, so all live events would land in a massive NULL partition, destroying performance."
     ]
   },
   {
@@ -5982,12 +5982,12 @@ export const QUESTIONS = [
     "id": 107,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "Your company wants to retrieve large result sets of medical information (over 10 TBs) and store the data in new tables for further query. The database must have a low-maintenance architecture and be accessible via SQL. What should you do?",
+    "question": "Your company wants to be able to retrieve large result sets of medical information from your current system, which has over 10 TBs in the database, and store the data in new tables for further query. The database must have a low-maintenance architecture and be accessible via SQL. You need to implement a cost-effective solution that can support data analytics for large result sets. What should you do?",
     "options": [
-      "A. Use Cloud SQL, organize the data into tables. Use JOIN in queries.",
+      "A. Use Cloud SQL, but first organize the data into tables. Use JOIN in queries to retrieve data.",
       "B. Use BigQuery as a data warehouse. Set output destinations for caching large queries.",
-      "C. Use a MySQL cluster on a Compute Engine managed instance group.",
-      "D. Use Cloud Spanner to replicate data across regions. Normalize the data."
+      "C. Use a MySQL cluster installed on a Compute Engine managed instance group for scalability.",
+      "D. Use Cloud Spanner to replicate the data across regions. Normalize the data in a series of tables."
     ],
     "correct": 1,
     "explanation": "Use BigQuery as a data warehouse. Set output destinations for caching large queries This optimizes query performance through data organization and indexing.",
@@ -6874,12 +6874,12 @@ export const QUESTIONS = [
     "id": 123,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "A shipping company has live package-tracking data sent to Kafka in real time loaded into BigQuery. The table was created with ingest-date partitioning. You need to copy all the data to a new clustered table. What should you do?",
+    "question": "A shipping company has live package-tracking data that is sent to an Apache Kafka stream in real time. This is then loaded into BigQuery. Analysts in your company want to query the tracking data in BigQuery to analyze geospatial trends in the lifecycle of a package. The table was originally created with ingest-date partitioning. Over time, the query processing time has increased. You need to implement a change that would improve query performance in BigQuery. What should you do?",
     "options": [
-      "A. Re-create the table using data partitioning on the package delivery date.",
+      "A. Implement clustering in BigQuery on the ingest date column.",
       "B. Implement clustering in BigQuery on the package-tracking ID column.",
-      "C. Implement clustering in BigQuery on the ingest date column.",
-      "D. Tier older data onto Cloud Storage files and create an external BigQuery table."
+      "C. Tier older data onto Cloud Storage files and create a BigQuery table using Cloud Storage as an external data source.",
+      "D. Re-create the table using data partitioning on the package delivery date."
     ],
     "correct": 1,
     "explanation": "Option A changes partitioning but doesn't create a clustered table. Option B correctly clusters on the high-cardinality package-tracking ID column.",
@@ -6920,10 +6920,10 @@ export const QUESTIONS = [
     "conceptSummary": "Optimizing existing BigQuery partitioned tables by adding clustering to high-cardinality columns.",
     "correctRationale": "Clustering physically sorts the underlying storage blocks based on the package-tracking ID. When analysts query the lifecycle of a specific package, BigQuery uses these clusters to skip irrelevant blocks, dramatically speeding up performance. You can add clustering to an existing partitioned table without fully recreating it.",
     "optionRationales": [
-      "Wrong: The table is already partitioned by ingest date. Re-partitioning by delivery date does not solve the issue of slow queries that are filtering on specific package-tracking IDs.",
-      "Correct: Implementing clustering on the high-cardinality `package-tracking ID` column co-locates related package data, drastically reducing the amount of data scanned for individual lifecycle queries.",
       "Wrong: The table is already partitioned by ingest date. Adding clustering on the same ingest date column provides little to no benefit for queries searching for specific package IDs.",
-      "Wrong: Tiering data to Cloud Storage creates an external table. External tables are significantly slower to query than native BigQuery tables and do not support BigQuery clustering, which would worsen the performance."
+      "Correct: Implementing clustering on the high-cardinality `package-tracking ID` column co-locates related package data, drastically reducing the amount of data scanned for individual lifecycle queries.",
+      "Wrong: Tiering data to Cloud Storage creates an external table. External tables are significantly slower to query than native BigQuery tables and do not support BigQuery clustering, which would worsen the performance.",
+      "Wrong: The table is already partitioned by ingest date. Re-partitioning by delivery date does not solve the issue of slow queries that are filtering on specific package-tracking IDs."
     ]
   },
   {
@@ -8895,12 +8895,12 @@ export const QUESTIONS = [
     "id": 160,
     "topic": "Dataflow/DR",
     "difficulty": 2,
-    "question": "You have designed an Apache Beam pipeline that reads from a Pub/Sub topic (message retention 1 day) and writes to Cloud Storage. You need to prevent data loss with RPO of 15 minutes. What should you do?",
+    "question": "You have designed an Apache Beam processing pipeline that reads from a Pub/Sub topic. The topic has a message retention duration of one day, and writes to a Cloud Storage bucket. You need to select a bucket location and processing strategy to prevent data loss in case of a regional outage with an RPO of 15 minutes. What should you do?",
     "options": [
-      "A. Use a dual-region bucket. Seek subscription back 15 minutes. Start Dataflow in secondary region.",
-      "B. Use a multi-regional bucket. Seek back 60 minutes. Start Dataflow in secondary region.",
-      "C. Use a regional bucket. Seek back one day. Start Dataflow in secondary region.",
-      "D. Use a dual-region bucket with turbo replication. Seek back 60 minutes. Start Dataflow in secondary region."
+      "A. 1. Use a dual-region Cloud Storage bucket. 2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs. 3. Seek the subscription back in time by 15 minutes to recover the acknowledged messages. 4. Start the Dataflow job in a secondary region.",
+      "B. 1. Use a multi-regional Cloud Storage bucket. 2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs. 3. Seek the subscription back in time by 60 minutes to recover the acknowledged messages. 4. Start the Dataflow job in a secondary region.",
+      "C. 1. Use a regional Cloud Storage bucket. 2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs. 3. Seek the subscription back in time by one day to recover the acknowledged messages. 4. Start the Dataflow job in a secondary region and write in a bucket in the same region.",
+      "D. 1. Use a dual-region Cloud Storage bucket with turbo replication enabled. 2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs. 3. Seek the subscription back in time by 60 minutes to recover the acknowledged messages. 4. Start the Dataflow job in a secondary region."
     ],
     "correct": 3,
     "explanation": "Use a dual-region bucket with turbo replication This Google's fully managed streaming and batch data processing service that provides exactly-once semantics with auto-scaling and low latency.",

@@ -2,8 +2,8 @@ import { xpDiminishingFactor } from "../data/gamification.js";
 import { EXAM_DOMAINS, getCanonicalTopic, getDomainForTopic } from "../data/pde-topics.js";
 import { getQuestionOrderNumber } from "./block-study.js";
 
-export const MOCK_DURATION_SEC = 90 * 60;
-export const MOCK_QUESTION_COUNT = 50;
+export const MOCK_DURATION_SEC = 120 * 60;
+export const MOCK_QUESTION_COUNT = 60;
 export const PASS_PERCENT = 70;
 export const WEAK_TOPIC_WINDOW = 10;
 export const WEAK_TOPIC_MIN = 5;
