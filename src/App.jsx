@@ -1113,6 +1113,17 @@ function App() {
     resetQuestionUi();
   }, [mockPreferRecent, resetQuestionUi]);
 
+  const cancelMock = useCallback(() => {
+    if (session?.mode !== "mock") return;
+    if (!window.confirm("¿Cancelar simulacro? Se descartará el progreso y no se registrará en el historial.")) return;
+    clearActiveMock();
+    setSavedMockSession(null);
+    setSession(null);
+    setResultPayload(null);
+    setScreen("menu");
+    resetQuestionUi();
+  }, [resetQuestionUi, session]);
+
   const startDailyChallenge = useCallback(() => {
     if (isDailyChallengeCompleted(progress)) return;
     const questions = buildDailyChallengeQuestions(QUESTIONS);
@@ -2506,7 +2517,10 @@ function App() {
           <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 }}>Sin ayudas ni feedback inmediato. Las no respondidas al acabar el tiempo cuentan como incorrectas.</div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-sm)", flexWrap: "wrap" }}>
             <span style={{ fontSize: 13, color: "var(--text-primary)", fontWeight: 700 }}>Objetivo mínimo: {PASS_PERCENT}% • Apto/No apto</span>
-            <span style={{ fontSize: 13, color: mockRemainingSec < 300 ? "var(--signal-wrong)" : "var(--accent-300)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(mockRemainingSec)} restantes</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)" }}>
+              <span style={{ fontSize: 13, color: mockRemainingSec < 300 ? "var(--signal-wrong)" : "var(--accent-300)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(mockRemainingSec)} restantes</span>
+              <button onClick={cancelMock} style={{ padding: "6px 10px", borderRadius: "var(--radius-md)", border: "1px solid var(--wrong-soft)", background: "transparent", color: "var(--signal-wrong)", fontSize: 11, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: 0.5 }}>Cancelar</button>
+            </div>
           </div>
         </div>
       )}

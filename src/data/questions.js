@@ -13307,12 +13307,12 @@ export const QUESTIONS = [
     "id": 242,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "You are administering BigQuery on-demand. Your BI tool submits hundreds of queries daily aggregating a 50 TB table. You want to decrease response time, lower costs, and minimize maintenance. What should you do?",
+    "question": "You are administering a BigQuery on-demand environment. Your business intelligence tool is submitting hundreds of queries each day that aggregate a large (50 TB) sales history fact table at the day and month levels. These queries have a slow response time and are exceeding cost expectations. You need to decrease response time, lower query costs, and minimize maintenance. What should you do?",
     "options": [
-      "A. Build authorized views to aggregate data.",
-      "B. Enable BI Engine and add sales table as preferred table.",
-      "C. Build materialized views to aggregate data at day and month level.",
-      "D. Create a scheduled query to build aggregate tables hourly."
+      "A. Build authorized views on top of the sales table to aggregate data at the day and month level.",
+      "B. Enable BI Engine and add your sales table as a preferred table.",
+      "C. Build materialized views on top of the sales table to aggregate data at the day and month level.",
+      "D. Create a scheduled query to build sales day and sales month aggregate tables on an hourly basis."
     ],
     "correct": 2,
     "explanation": "Build materialized views to aggregate data at day and month level This reducing GCP spend through resource right-sizing, committed use discounts, and preemptible instances.",
