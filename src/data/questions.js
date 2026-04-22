@@ -5090,10 +5090,10 @@ export const QUESTIONS = [
     "id": 91,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "You are migrating an application that tracks library books from an on-premises data warehouse to BigQuery. In your current relational database, the author information is kept in a separate table. Based on Google's recommended practice for schema design, how would you structure the data?",
+    "question": "You are migrating an application that tracks library books and information about each book, such as author or year published, from an on-premises data warehouse to BigQuery. In your current relational database, the author information is kept in a separate table and joined to the book information on a common key. Based on Google's recommended practice for schema design, how would you structure the data to ensure optimal speed of queries about the author of each book that has been borrowed?",
     "options": [
-      "A. Keep the schema the same, maintain the different tables for the book and each attribute.",
-      "B. Create a table that is wide and includes a column for each attribute.",
+      "A. Keep the schema the same, maintain the different tables for the book and each of the attributes, and query as you are doing today.",
+      "B. Create a table that is wide and includes a column for each attribute, including the author's first name, last name, date of birth, etc.",
       "C. Create a table that includes information about the books and authors, but nest the author fields inside the author column.",
       "D. Keep the schema the same, create a view that joins all of the tables, and always query the view."
     ],
@@ -16182,12 +16182,12 @@ export const QUESTIONS = [
     "id": 293,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "An organization maintains a BigQuery dataset with user-level data. They want to expose aggregates to other projects while controlling access and ensuring analysis cost is assigned to those projects. What should they do?",
+    "question": "An organization maintains a Google BigQuery dataset that contains tables with user-level data. They want to expose aggregates of this data to other Google Cloud projects, while still controlling access to the user-level data. Additionally, they need to minimize their overall storage cost and ensure the analysis cost for other projects is assigned to those projects. What should they do?",
     "options": [
-      "A. Create and share an authorized view that provides aggregate results.",
-      "B. Create and share a new dataset and view.",
-      "C. Create and share a new dataset and table with aggregate results.",
-      "D. Create dataViewer IAM roles on the dataset."
+      "A. Create and share an authorized view that provides the aggregate results.",
+      "B. Create and share a new dataset and view that provides the aggregate results.",
+      "C. Create and share a new dataset and table that contains the aggregate results.",
+      "D. Create dataViewer Identity and Access Management (IAM) roles on the dataset to enable sharing."
     ],
     "correct": 0,
     "explanation": "Create and share an authorized view that provides aggregate results This reducing GCP spend through resource right-sizing, committed use discounts, and preemptible instances.",
@@ -16238,12 +16238,12 @@ export const QUESTIONS = [
     "id": 294,
     "topic": "Security",
     "difficulty": 3,
-    "question": "Government regulations mandate you maintain an auditable record of access to certain data. Where should you store this mandated data?",
+    "question": "Government regulations in your industry mandate that you have to maintain an auditable record of access to certain types of data. Assuming that all expiring logs will be archived correctly, where should you store data that is subject to that mandate?",
     "options": [
-      "A. Encrypted on Cloud Storage with user-supplied keys.",
-      "B. In a BigQuery dataset viewable only by authorized personnel, with Data Access log for auditability.",
-      "C. In Cloud SQL with separate database users. Admin activity logs for auditability.",
-      "D. In a Cloud Storage bucket accessible only by an AppEngine service that logs access."
+      "A. Encrypted on Cloud Storage with user-supplied encryption keys. A separate decryption key will be given to each authorized user.",
+      "B. In a BigQuery dataset that is viewable only by authorized personnel, with the Data Access log used to provide the auditability.",
+      "C. In Cloud SQL, with separate database user names to each user. The Cloud SQL Admin activity logs will be used to provide the auditability.",
+      "D. In a bucket on Cloud Storage that is accessible only by an AppEngine service that collects user information and logs the access before providing a link to the bucket."
     ],
     "correct": 1,
     "explanation": "In a BigQuery dataset viewable only by authorized personnel, with Data Access log for This meeting regulatory requirements like HIPAA, GDPR, PCI-DSS through security controls, audit logging, and data residency.",
@@ -16856,12 +16856,12 @@ export const QUESTIONS = [
     "id": 305,
     "topic": "Data Ingestion",
     "difficulty": 2,
-    "question": "You have an Apache Kafka cluster on-prem with web application logs. You need to replicate to Google Cloud for BigQuery and Cloud Storage. Preferred method is mirroring to avoid deploying Kafka Connect plugins. What should you do?",
+    "question": "You have an Apache Kafka cluster on-prem with topics containing web application logs. You need to replicate the data to Google Cloud for analysis in BigQuery and Cloud Storage. The preferred replication method is mirroring to avoid deployment of Kafka Connect plugins. What should you do?",
     "options": [
-      "A. Deploy a Kafka cluster on GCE. Configure on-prem to mirror topics. Use Dataproc or Dataflow to read from Kafka and write to GCS.",
-      "B. Deploy a Kafka cluster on GCE with Pub/Sub Kafka connector as Sink. Use Dataproc or Dataflow.",
-      "C. Deploy Pub/Sub Kafka connector to on-prem cluster. Configure Pub/Sub as Source connector. Use Dataflow.",
-      "D. Deploy Pub/Sub Kafka connector to on-prem cluster. Configure Pub/Sub as Sink connector. Use Dataflow."
+      "A. Deploy a Kafka cluster on GCE VM Instances. Configure your on-prem cluster to mirror your topics to the cluster running in GCE. Use a Dataproc cluster or Dataflow job to read from Kafka and write to GCS.",
+      "B. Deploy a Kafka cluster on GCE VM Instances with the Pub/Sub Kafka connector configured as a Sink connector. Use a Dataproc cluster or Dataflow job to read from Kafka and write to GCS.",
+      "C. Deploy the Pub/Sub Kafka connector to your on-prem Kafka cluster and configure Pub/Sub as a Source connector. Use a Dataflow job to read from Pub/Sub and write to GCS.",
+      "D. Deploy the Pub/Sub Kafka connector to your on-prem Kafka cluster and configure Pub/Sub as a Sink connector. Use a Dataflow job to read from Pub/Sub and write to GCS."
     ],
     "correct": 0,
     "explanation": "Deploy a Kafka cluster on GCE This Google Cloud Storage provides object storage with strong consistency, lifecycle policies, and versioning; regional buckets optimize for single-region performance.",
@@ -17304,12 +17304,12 @@ export const QUESTIONS = [
     "id": 313,
     "topic": "Bigtable",
     "difficulty": 2,
-    "question": "You're using Bigtable for a real-time application with a heavy mix of reads and writes. You also need to perform hourly analytical jobs. You need to ensure both reliability of production and analytical workload. What should you do?",
+    "question": "You're using Bigtable for a real-time application, and you have a heavy load that is a mix of read and writes. You've recently identified an additional use case and need to perform hourly an analytical job to calculate certain statistics across the whole database. You need to ensure both the reliability of your production application as well as the analytical workload. What should you do?",
     "options": [
-      "A. Export Bigtable dump to GCS and run analytical job on top of exported files.",
-      "B. Add a second cluster with multi-cluster routing, use live-traffic app profile for regular workload and batch-analytics profile for analytics.",
-      "C. Add a second cluster with single-cluster routing.",
-      "D. Increase the size of existing cluster twice and execute analytics workload."
+      "A. Export Bigtable dump to GCS and run your analytical job on top of the exported files.",
+      "B. Add a second cluster to an existing instance with a multi-cluster routing, use live-traffic app profile for your regular workload and batch-analytics profile for the analytics workload.",
+      "C. Add a second cluster to an existing instance with a single-cluster routing, use live-traffic app profile for your regular workload and batch-analytics profile for the analytics workload.",
+      "D. Increase the size of your existing cluster twice and execute your analytics workload on your new resized cluster."
     ],
     "correct": 2,
     "explanation": "Multi-cluster routing routes to the nearest cluster and cannot guarantee workload isolation. Single-cluster routing on App Profiles directs each workload to a specific cluster.",
