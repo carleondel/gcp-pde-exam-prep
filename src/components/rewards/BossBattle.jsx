@@ -156,7 +156,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
           {isMulti && <span style={{ padding: "4px 8px", borderRadius: "var(--radius-pill)", background: "var(--info-soft)", color: "var(--signal-info)", fontSize: 10, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{neededAnswers} respuestas</span>}
         </div>
         <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-md)", padding: 18, border: enraged ? "1px solid rgba(240,96,90,0.4)" : "1px solid rgba(240,96,90,0.2)", marginBottom: 12 }}>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "var(--text-primary)" }}>{question.question}</p>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "var(--text-primary)", whiteSpace: "pre-line" }}>{question.question}</p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-sm)", marginBottom: 12 }}>
           {question.options.map((o, i) => (

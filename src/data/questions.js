@@ -14420,7 +14420,7 @@ export const QUESTIONS = [
     "id": 262,
     "topic": "Storage",
     "difficulty": 2,
-    "question": "You are designing a database schema for an ML-based food ordering service. You need to store user profile, account information, and order information. You want to optimize the data schema for transactional data. Which product should you use?",
+    "question": "You are designing the database schema for a machine learning-based food ordering service that will predict what users want to eat. Here is some of the information you need to store:\n\n- The user profile: what the user likes and doesn't like to eat\n- The user account information: name, address, preferred meal times\n- The order information: when orders are made, from where, to whom\n\nThe database will be used to store all the transactional data of the product. You want to optimize the data schema. Which Google Cloud Platform product should you use?",
     "options": [
       "A. BigQuery",
       "B. Cloud SQL",
@@ -14532,13 +14532,13 @@ export const QUESTIONS = [
     "id": 264,
     "topic": "Data Migration",
     "difficulty": 1,
-    "question": "Your company produces 20,000 files every hour, each less than 4 KB. You have 200ms latency to Google Cloud and 50 Mbps bandwidth. The system is barely keeping up and files will double next three months. Which two actions should you take? (Choose two.)",
+    "question": "Your company produces 20,000 CSV files per hour, each less than 4 KB, and all files must be ingested into Google Cloud before processing. Your site has 200 ms latency to Google Cloud and a 50 Mbps internet connection. Today, a local SFTP client sends the CSV files as-is to an SFTP server running on a Compute Engine VM. Reports using the previous day's data must be available to executives by 10:00 a.m. each day. The current design barely keeps up even though bandwidth utilization is low.\nDue to seasonality, the number of files is expected to double for the next three months. Which two actions should you take? (Choose two.)",
     "options": [
-      "A. Introduce data compression for each file.",
-      "B. Increase maximum bandwidth to at least 100 Mbps.",
-      "C. Redesign the data ingestion process to use gsutil in parallel.",
-      "D. Assemble 1,000 files into a TAR file.",
-      "E. Create an S3-compatible endpoint and use Cloud Storage Transfer Service."
+      "A. Introduce data compression for each file to increase the rate file of file transfer.",
+      "B. Contact your internet service provider (ISP) to increase your maximum bandwidth to at least 100 Mbps.",
+      "C. Redesign the data ingestion process to use gsutil tool to send the CSV files to a storage bucket in parallel.",
+      "D. Assemble 1,000 files into a tape archive (TAR) file. Transmit the TAR files instead, and disassemble the CSV files in the cloud upon receiving them.",
+      "E. Create an S3-compatible storage endpoint in your network, and use Google Cloud Storage Transfer Service to transfer on-premises data to the designated storage bucket."
     ],
     "correct": [
       2,
@@ -14833,12 +14833,12 @@ export const QUESTIONS = [
     "id": 269,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "A simple BigQuery query on country, state, city columns is running very slowly. The Read section of Stage:1 in the query plan shows the issue. What is the most likely cause?",
+    "question": "You are using Google BigQuery as your data warehouse. Your users report that the following simple query is running very slowly, no matter when they run the query:\nSELECT country, state, city FROM [myproject:mydataset.mytable] GROUP BY country\nYou check the query plan for the query and see the following output in the Read section of Stage:1:\n\nWhat is the most likely cause of the delay for this query?",
     "options": [
-      "A. Users are running too many concurrent queries.",
-      "B. The table has too many partitions.",
-      "C. State or city columns have too many NULL values.",
-      "D. Most rows have the same value in the country column, causing data skew."
+      "A. Users are running too many concurrent queries in the system",
+      "B. The [myproject:mydataset.mytable] table has too many partitions",
+      "C. Either the state or the city columns in the [myproject:mydataset.mytable] table have too many NULL values",
+      "D. Most rows in the [myproject:mydataset.mytable] table have the same value in the country column, causing data skew"
     ],
     "correct": 3,
     "explanation": "Most rows have the same value in the country column, causing data skew This optimizes query performance through data organization and indexing.",
@@ -14945,13 +14945,13 @@ export const QUESTIONS = [
     "id": 271,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "Your organization has been collecting BigQuery data for 6 months. The view events queries only the last 14 days in legacy SQL. Next month, applications will connect via ODBC. You need to ensure they can connect. Which two actions? (Choose two.)",
+    "question": "Your organization has been collecting and analyzing data in Google BigQuery for 6 months. The majority of the data analyzed is placed in a time-partitioned table named events_partitioned. To reduce the cost of queries, your organization created a view called events, which queries only the last 14 days of data. The view is described in legacy SQL. Next month, existing applications will be connecting to BigQuery to read the events data via an ODBC connection. You need to ensure the applications can connect. Which two actions should you take? (Choose two.)",
     "options": [
       "A. Create a new view over events using standard SQL",
       "B. Create a new partitioned table using a standard SQL query",
       "C. Create a new view over events_partitioned using standard SQL",
-      "D. Create a service account for the ODBC connection for authentication",
-      "E. Create an IAM role for the ODBC connection"
+      "D. Create a service account for the ODBC connection to use for authentication",
+      "E. Create a Google Cloud Identity and Access Management (Cloud IAM) role for the ODBC connection and shared events"
     ],
     "correct": [
       2,

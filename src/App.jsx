@@ -2416,7 +2416,7 @@ function App() {
                   {entry.correct ? "✓" : "✗"}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: "var(--text-primary)", fontSize: 12, lineHeight: 1.45 }}>{entry.question.question}</div>
+                  <div style={{ color: "var(--text-primary)", fontSize: 12, lineHeight: 1.45, whiteSpace: "pre-line" }}>{entry.question.question}</div>
                   <div style={{ color: "var(--text-tertiary)", fontSize: 11, marginTop: 4 }}>
                     {entry.question.topic}
                     {!entry.correct && <span style={{ color: "var(--signal-correct)", marginLeft: 8 }}>Resp: {correctLabels}</span>}
@@ -2541,7 +2541,7 @@ function App() {
       )}
 
       <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-2xl)", border: "1px solid var(--surface-line)", padding: 24, boxShadow: "var(--shadow-elevated)" }}>
-        <div style={{ marginBottom: 18, fontSize: 19, fontWeight: 700, lineHeight: 1.6, color: "var(--text-primary)" }}>{currentQuestion.question}</div>
+        <div style={{ marginBottom: 18, fontSize: 19, fontWeight: 700, lineHeight: 1.6, color: "var(--text-primary)", whiteSpace: "pre-line" }}>{currentQuestion.question}</div>
 
         {currentQuestion.images?.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
