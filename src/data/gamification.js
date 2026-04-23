@@ -120,19 +120,19 @@ const DRAGON_TIER_WEIGHTS = [40, 30, 20, 8, 2];
 
 export const DRAGONS = [
   // Tier 1
-  { id:"slime_dragon", name:"Slime Dragon", emoji:"\uD83D\uDC09", tier:1, minXp:0, hp:80, playerHp:100, dmgRange:[8,15], counterRange:[8,14], wrongDmgRange:[25,40], xpReward:400, topicFilter:null, difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.5 },
+  { id:"slime_dragon", name:"Slime Dragon", emoji:"\uD83D\uDC09", tier:1, minXp:0, hp:80, playerHp:100, dmgRange:[10,16], counterRange:[6,10], wrongDmgRange:[24,36], xpReward:400, topicFilter:null, difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.4 },
   // Tier 2
-  { id:"bigquery_wyrm", name:"BigQuery Wyrm", emoji:"\uD83D\uDC32", tier:2, minXp:1000, hp:120, playerHp:100, dmgRange:[10,18], counterRange:[10,18], wrongDmgRange:[28,44], xpReward:600, topicFilter:"BigQuery", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.5 },
-  { id:"dataflow_serpent", name:"Dataflow Serpent", emoji:"\uD83D\uDC0D", tier:2, minXp:1000, hp:120, playerHp:100, dmgRange:[10,18], counterRange:[10,18], wrongDmgRange:[28,44], xpReward:600, topicFilter:"Dataflow", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.5 },
+  { id:"bigquery_wyrm", name:"BigQuery Wyrm", emoji:"\uD83D\uDC32", tier:2, minXp:1000, hp:120, playerHp:115, dmgRange:[14,22], counterRange:[7,12], wrongDmgRange:[28,42], xpReward:600, topicFilter:"BigQuery", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.4 },
+  { id:"dataflow_serpent", name:"Dataflow Serpent", emoji:"\uD83D\uDC0D", tier:2, minXp:1000, hp:120, playerHp:115, dmgRange:[14,22], counterRange:[7,12], wrongDmgRange:[28,42], xpReward:600, topicFilter:"Dataflow", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.4 },
   // Tier 3
-  { id:"ml_hydra", name:"ML Hydra", emoji:"\uD83E\uDDE0", tier:3, minXp:5000, hp:180, playerHp:120, dmgRange:[12,20], counterRange:[12,22], wrongDmgRange:[30,48], xpReward:900, topicFilter:"ML", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.5 },
-  { id:"storage_golem", name:"Storage Golem", emoji:"\uD83D\uDDFF", tier:3, minXp:5000, hp:180, playerHp:120, dmgRange:[12,20], counterRange:[12,22], wrongDmgRange:[30,48], xpReward:900, topicFilter:"Storage", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.5 },
-  { id:"security_basilisk", name:"Security Basilisk", emoji:"\uD83D\uDC0D", tier:3, minXp:5000, hp:180, playerHp:120, dmgRange:[12,20], counterRange:[12,22], wrongDmgRange:[30,48], xpReward:900, topicFilter:"Security", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.5 },
+  { id:"ml_hydra", name:"ML Hydra", emoji:"\uD83E\uDDE0", tier:3, minXp:5000, hp:180, playerHp:150, dmgRange:[18,28], counterRange:[8,14], wrongDmgRange:[32,48], xpReward:900, topicFilter:"ML", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.4 },
+  { id:"storage_golem", name:"Storage Golem", emoji:"\uD83D\uDDFF", tier:3, minXp:5000, hp:180, playerHp:150, dmgRange:[18,28], counterRange:[8,14], wrongDmgRange:[32,48], xpReward:900, topicFilter:"Storage", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.4 },
+  { id:"security_basilisk", name:"Security Basilisk", emoji:"\uD83D\uDC0D", tier:3, minXp:5000, hp:180, playerHp:150, dmgRange:[18,28], counterRange:[8,14], wrongDmgRange:[32,48], xpReward:900, topicFilter:"Security", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.4 },
   // Tier 4
-  { id:"pipeline_leviathan", name:"Pipeline Leviathan", emoji:"\uD83D\uDC33", tier:4, minXp:20000, hp:260, playerHp:150, dmgRange:[14,22], counterRange:[15,25], wrongDmgRange:[32,50], xpReward:1400, topicFilter:"Data", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.5 },
-  { id:"architect_phoenix", name:"Architect Phoenix", emoji:"\uD83D\uDD25", tier:4, minXp:20000, hp:260, playerHp:150, dmgRange:[14,22], counterRange:[15,25], wrongDmgRange:[32,50], xpReward:1400, topicFilter:"Architecture", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.5 },
+  { id:"pipeline_leviathan", name:"Pipeline Leviathan", emoji:"\uD83D\uDC33", tier:4, minXp:20000, hp:260, playerHp:180, dmgRange:[24,34], counterRange:[10,16], wrongDmgRange:[36,52], xpReward:1400, topicFilter:"Data", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.4 },
+  { id:"architect_phoenix", name:"Architect Phoenix", emoji:"\uD83D\uDD25", tier:4, minXp:20000, hp:260, playerHp:180, dmgRange:[24,34], counterRange:[10,16], wrongDmgRange:[36,52], xpReward:1400, topicFilter:"Architecture", difficultyFilter:null, enrageThreshold:0.25, enrageMultiplier:1.4 },
   // Tier 5
-  { id:"certified_colossus", name:"Certified Colossus", emoji:"\uD83C\uDF0B", tier:5, minXp:50000, hp:400, playerHp:150, dmgRange:[15,24], counterRange:[18,30], wrongDmgRange:[35,55], xpReward:2200, topicFilter:null, difficultyFilter:3, enrageThreshold:0.25, enrageMultiplier:1.5 },
+  { id:"certified_colossus", name:"Certified Colossus", emoji:"\uD83C\uDF0B", tier:5, minXp:50000, hp:400, playerHp:220, dmgRange:[34,46], counterRange:[12,20], wrongDmgRange:[42,60], xpReward:2200, topicFilter:null, difficultyFilter:3, enrageThreshold:0.25, enrageMultiplier:1.4 },
 ];
 
 export function selectDragon(playerXp) {

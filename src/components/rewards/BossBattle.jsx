@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
+import { canSubmitAnswer, evaluateAnswer, getCorrectOptionIndexes, normalizeSelection } from "../../engine/quiz-engine.js";
 import { Confetti } from "./Confetti.jsx";
 
 function randomInRange([min, max]) {
@@ -8,7 +9,7 @@ function randomInRange([min, max]) {
 export function BossBattle({ questions, dragon, onComplete, onClose }) {
   const [hp, setHp] = useState(dragon.playerHp);
   const [bossHp, setBossHp] = useState(dragon.hp);
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState([]);
   const [phase, setPhase] = useState("intro");
   const [shaking, setShaking] = useState(false);
   const [turn, setTurn] = useState(0);
@@ -16,13 +17,31 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
   const [wrongCount, setWrongCount] = useState(0);
   const [totalDmgDealt, setTotalDmgDealt] = useState(0);
   const [totalDmgTaken, setTotalDmgTaken] = useState(0);
+  const [lastEvent, setLastEvent] = useState("Acierta para golpear. Si el jefe sobrevive, contraataca.");
 
   const enraged = bossHp > 0 && bossHp / dragon.hp < dragon.enrageThreshold;
   const question = questions[qIndex % questions.length];
+  const isMulti = Array.isArray(question.correct);
+  const selectedIndexes = normalizeSelection(selected);
+  const canAttack = canSubmitAnswer(question, selectedIndexes);
+  const neededAnswers = getCorrectOptionIndexes(question).length;
+
+  const toggleSelected = (index) => {
+    if (!isMulti) {
+      setSelected([index]);
+      return;
+    }
+    setSelected((current) => {
+      const currentSet = new Set(normalizeSelection(current));
+      if (currentSet.has(index)) currentSet.delete(index);
+      else currentSet.add(index);
+      return [...currentSet].sort((a, b) => a - b);
+    });
+  };
 
   const attack = () => {
-    if (selected === null) return;
-    const correct = selected === question.correct;
+    if (!canAttack) return;
+    const { isCorrect: correct } = evaluateAnswer(question, selectedIndexes);
     setShaking(true);
     setTimeout(() => setShaking(false), 500);
 
@@ -34,6 +53,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
       if (newBossHp <= 0) {
         const finalDmg = totalDmgDealt + dmg;
         const finalTaken = totalDmgTaken;
+        setLastEvent(`Acierto: ${dmg} dano. Victoria.`);
         setTimeout(() => {
           setPhase("result");
           onComplete({ won: true, dragon, turns: turn + 1, dmgDealt: finalDmg, dmgTaken: finalTaken, flawless: wrongCount === 0 });
@@ -41,6 +61,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
       } else {
         const counterMult = enraged ? dragon.enrageMultiplier : 1;
         const counterDmg = Math.round(randomInRange(dragon.counterRange) * counterMult);
+        setLastEvent(`Acierto: ${dmg} dano. ${dragon.name} contraataca por ${counterDmg}.`);
         setTimeout(() => {
           setHp((h) => {
             const newHp = Math.max(0, h - counterDmg);
@@ -62,6 +83,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
       const newHp = Math.max(0, hp - bossDmg);
       setHp(newHp);
       setTotalDmgTaken((d) => d + bossDmg);
+      setLastEvent(`Fallo: ${dragon.name} golpea por ${bossDmg}.`);
       if (newHp <= 0) {
         setTimeout(() => {
           setPhase("result");
@@ -69,7 +91,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
         }, 600);
       }
     }
-    setSelected(null);
+    setSelected([]);
     setTurn((t) => t + 1);
     setQIndex((i) => i + 1);
   };
@@ -88,7 +110,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
           {dragon.topicFilter && <span style={{ padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{dragon.topicFilter}</span>}
           <span style={{ padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "var(--surface-panel-muted)", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{dragon.hp} HP</span>
         </div>
-        <p style={{ color: "var(--text-secondary)", fontSize: 13, margin: "0 0 24px" }}>Responde bien para atacar. Fallar castiga fuerte.</p>
+        <p style={{ color: "var(--text-secondary)", fontSize: 13, margin: "0 0 24px" }}>Acierto: {dragon.dmgRange[0]}-{dragon.dmgRange[1]} dano. Contraataque: {dragon.counterRange[0]}-{dragon.counterRange[1]}. Fallo: {dragon.wrongDmgRange[0]}-{dragon.wrongDmgRange[1]}.</p>
         <button onClick={() => setPhase("fight")} style={{ padding: "14px 48px", background: "var(--gradient-danger)", border: "none", borderRadius: "var(--radius-md)", color: "white", fontSize: 16, fontWeight: 700, cursor: "pointer", animation: "pulse 1s infinite", fontFamily: "var(--font-mono)" }}>LUCHAR</button>
       </div>
     </div>
@@ -131,25 +153,27 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
           <span style={{ padding: "4px 8px", borderRadius: "var(--radius-pill)", background: "var(--surface-panel-muted)", color: "var(--text-tertiary)", fontSize: 10, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Turno {turn + 1}</span>
           <span style={{ padding: "4px 8px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 10, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{question.topic}</span>
+          {isMulti && <span style={{ padding: "4px 8px", borderRadius: "var(--radius-pill)", background: "var(--info-soft)", color: "var(--signal-info)", fontSize: 10, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{neededAnswers} respuestas</span>}
         </div>
         <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-md)", padding: 18, border: enraged ? "1px solid rgba(240,96,90,0.4)" : "1px solid rgba(240,96,90,0.2)", marginBottom: 12 }}>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "var(--text-primary)" }}>{question.question}</p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-sm)", marginBottom: 12 }}>
           {question.options.map((o, i) => (
-            <button key={i} onClick={() => setSelected(i)} style={{
+            <button key={i} onClick={() => toggleSelected(i)} style={{
               padding: "12px 16px", borderRadius: "var(--radius-sm)", fontSize: 13, textAlign: "left", cursor: "pointer", fontFamily: "inherit", lineHeight: 1.4,
-              background: selected === i ? "var(--info-soft)" : "var(--surface-panel-muted)",
-              border: selected === i ? "2px solid var(--signal-info)" : "1px solid var(--surface-line)",
-              color: selected === i ? "var(--signal-info)" : "var(--text-primary)"
+              background: selectedIndexes.includes(i) ? "var(--info-soft)" : "var(--surface-panel-muted)",
+              border: selectedIndexes.includes(i) ? "2px solid var(--signal-info)" : "1px solid var(--surface-line)",
+              color: selectedIndexes.includes(i) ? "var(--signal-info)" : "var(--text-primary)"
             }}>{o}</button>
           ))}
         </div>
-        <button onClick={attack} disabled={selected === null} style={{
-          width: "100%", padding: "13px", background: selected !== null ? "var(--gradient-danger)" : "var(--text-muted)",
+        <div role="status" style={{ minHeight: 34, marginBottom: 10, padding: "8px 10px", borderRadius: "var(--radius-sm)", background: "rgba(15, 21, 32, 0.55)", color: "var(--text-secondary)", fontSize: 12, fontWeight: 700, fontFamily: "var(--font-mono)", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center" }}>{lastEvent}</div>
+        <button onClick={attack} disabled={!canAttack} style={{
+          width: "100%", padding: "13px", background: canAttack ? "var(--gradient-danger)" : "var(--text-muted)",
           border: "none", borderRadius: "var(--radius-md)", color: "white", fontSize: 15, fontWeight: 700,
-          cursor: selected !== null ? "pointer" : "not-allowed", opacity: selected !== null ? 1 : 0.5, fontFamily: "var(--font-mono)"
-        }}>{"\u2694\uFE0F"} ATACAR</button>
+          cursor: canAttack ? "pointer" : "not-allowed", opacity: canAttack ? 1 : 0.5, fontFamily: "var(--font-mono)"
+        }}>{"\u2694\uFE0F"} {canAttack ? "ATACAR" : isMulti ? `ELIGE ${neededAnswers}` : "ATACAR"}</button>
       </div>
       <div style={{ maxWidth: 300, margin: "16px auto 0" }}>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 3 }}>
