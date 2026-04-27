@@ -9803,11 +9803,11 @@ export const QUESTIONS = [
     "id": 177,
     "topic": "Data Processing",
     "difficulty": 2,
-    "question": "You have several different file type data sources (Parquet and CSV). You want to store data in Cloud Storage with your own encryption keys. You want a GUI-based solution. What should you do?",
+    "question": "You have several different file type data sources, such as Apache Parquet and CSV. You want to store the data in Cloud Storage. You need to set up an object sink for your data that allows you to use your own encryption keys. You want to use a GUI-based solution. What should you do?",
     "options": [
-      "A. Use Storage Transfer Service to move files.",
+      "A. Use Storage Transfer Service to move files into Cloud Storage.",
       "B. Use Cloud Data Fusion to move files into Cloud Storage.",
-      "C. Use Dataflow to move files.",
+      "C. Use Dataflow to move files into Cloud Storage.",
       "D. Use BigQuery Data Transfer Service to move files into BigQuery."
     ],
     "correct": 1,
@@ -12911,12 +12911,12 @@ export const QUESTIONS = [
     "id": 234,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "You work for an airline and need to store weather data for ML in BigQuery. The model only uses the last 30 days. You want to avoid storing unnecessary data and minimize costs. What should you do?",
+    "question": "You work for an airline and you need to store weather data in a BigQuery table. Weather data will be used as input to a machine learning model. The model only uses the last 30 days of weather data. You want to avoid storing unnecessary data and minimize costs. What should you do?",
     "options": [
-      "A. Create a table with ingestion timestamp. Run a scheduled query to delete rows older than 30 days.",
+      "A. Create a BigQuery table where each record has an ingestion timestamp. Run a scheduled query to delete all the rows with an ingestion timestamp older than 30 days.",
       "B. Create a table partitioned by datetime value of the weather date. Set up partition expiration to 30 days.",
       "C. Create a table partitioned by ingestion time. Set up partition expiration to 30 days.",
-      "D. Create a table with a datetime column. Run a scheduled query to delete rows older than 30 days."
+      "D. Create a BigQuery table with a datetime column for the day the weather data refers to. Run a scheduled query to delete rows with a datetime value older than 30 days."
     ],
     "correct": 1,
     "explanation": "Create a table partitioned by datetime value of the weather date This reducing GCP spend through resource right-sizing, committed use discounts, and preemptible instances.",
@@ -13023,11 +13023,11 @@ export const QUESTIONS = [
     "id": 236,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "You need to look at BigQuery data from a specific table multiple times a day. The underlying table is several petabytes. You want to run queries faster and get up-to-date insights quicker. What should you do?",
+    "question": "You need to look at BigQuery data from a specific table multiple times a day. The underlying table you are querying is several petabytes in size, but you want to filter your data and provide simple aggregations to downstream users. You want to run queries faster and get up-to-date insights quicker. What should you do?",
     "options": [
-      "A. Run a scheduled query to pull necessary data at specific intervals.",
+      "A. Run a scheduled query to pull the necessary data at specific intervals dally.",
       "B. Use a cached query to accelerate time to results.",
-      "C. Limit the query columns being pulled.",
+      "C. Limit the query columns being pulled in the final result.",
       "D. Create a materialized view based off of the query being run."
     ],
     "correct": 3,
@@ -13737,13 +13737,13 @@ export const QUESTIONS = [
     "difficulty": 2,
     "question": "Flowlogistic Case Study: CEO wants rapid insight into customer base. The sales team purchased a visualization tool but is overwhelmed by data and spending a lot on queries. You want the most cost-effective solution. What should you do?",
     "options": [
-      "A. Export the data into a Google Sheet.",
+      "A. Export the data into a Google Sheet for virtualization.",
       "B. Create an additional table with only the necessary columns.",
-      "C. Create a view on the table to present to the visualization tool.",
-      "D. Create IAM roles on the appropriate columns."
+      "C. Create a view on the table to present to the virtualization tool.",
+      "D. Create identity and access management (IAM) roles on the appropriate columns, so only they appear in a query."
     ],
-    "correct": 1,
-    "explanation": "Logical views run the underlying query and don't reduce bytes scanned. A smaller physical table physically reduces bytes scanned, minimizing query costs.",
+    "correct": 2,
+    "explanation": "Create a view on the table to present to the virtualization tool. This simplifies the dataset without duplicating storage.",
     "discussion": [
       {
         "user": "Radhika7983",
@@ -13778,13 +13778,13 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": false,
     "discussionSummary": "",
-    "conceptSummary": "BigQuery cost optimization through column reduction (shrunken tables).",
-    "correctRationale": "BigQuery charges based on the amount of data scanned in the columns referenced by a query. Since standard views in BigQuery are logical (they run the full underlying query dynamically), they don't inherently save money; creating a separate, smaller physical table with fewer columns physically reduces the data scanned, directly lowering query costs.",
+    "conceptSummary": "Simplifying BigQuery datasets for BI users with logical views.",
+    "correctRationale": "A logical view acts as a virtual table that simplifies the schema by exposing only the necessary columns to the non-technical sales team. It requires no additional storage costs and prevents the visualization tool from running expensive SELECT * queries against the massive underlying table.",
     "optionRationales": [
-      "Wrong: Google Sheets has strict cell limits and will crash or become unresponsive when attempting to handle 'overwhelming' amounts of raw customer base data.",
-      "Correct: A physical table containing only necessary columns ensures that the BI tool only triggers scans on a small fraction of the original data footprint.",
-      "Wrong: A logical view simply aliases a query. If the underlying logic is complex or the BI tool runs `SELECT *` against the view, it scans the underlying data anyway, providing no cost benefit.",
-      "Wrong: IAM roles provide security and access control; they have absolutely no impact on the volume of data scanned or the computational cost of queries."
+      "Wrong: Google Sheets has strict data limits (currently 10 million cells) and cannot handle Big Data scale. It is not a robust or scalable solution for an enterprise tracking massive amounts of logistics data.",
+      "Wrong: Creating a physical duplicate of the data increases storage costs and adds unnecessary maintenance overhead (ETL pipelines) to keep the new table synchronized with the original data.",
+      "Correct: A logical view acts as a virtual table that simplifies the schema by exposing only the necessary columns to the non-technical sales team. It requires no additional storage costs and prevents the visualization tool from running expensive SELECT * queries against the massive underlying table.",
+      "Wrong: Column-level security (IAM) is designed for data restriction and compliance, not for cost optimization or simplifying the user experience. It would just cause the visualization tool's queries to fail if it tries to access restricted columns."
     ]
   },
   {
