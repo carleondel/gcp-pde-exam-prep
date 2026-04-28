@@ -111,7 +111,10 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
           <span style={{ padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "var(--surface-panel-muted)", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{dragon.hp} HP</span>
         </div>
         <p style={{ color: "var(--text-secondary)", fontSize: 13, margin: "0 0 24px" }}>Acierto: {dragon.dmgRange[0]}-{dragon.dmgRange[1]} dano. Contraataque: {dragon.counterRange[0]}-{dragon.counterRange[1]}. Fallo: {dragon.wrongDmgRange[0]}-{dragon.wrongDmgRange[1]}.</p>
-        <button onClick={() => setPhase("fight")} style={{ padding: "14px 48px", background: "var(--gradient-danger)", border: "none", borderRadius: "var(--radius-md)", color: "white", fontSize: 16, fontWeight: 700, cursor: "pointer", animation: "pulse 1s infinite", fontFamily: "var(--font-mono)" }}>LUCHAR</button>
+        <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+          <button onClick={() => setPhase("fight")} style={{ padding: "14px 48px", background: "var(--gradient-danger)", border: "none", borderRadius: "var(--radius-md)", color: "white", fontSize: 16, fontWeight: 700, cursor: "pointer", animation: "pulse 1s infinite", fontFamily: "var(--font-mono)" }}>LUCHAR</button>
+          <button onClick={onClose} style={{ padding: "14px 28px", background: "transparent", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-md)", color: "var(--text-secondary)", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-mono)" }}>SALTAR</button>
+        </div>
       </div>
     </div>
   );
@@ -137,6 +140,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "linear-gradient(180deg, rgba(33, 10, 10, 0.96), rgba(15, 21, 32, 1))", display: "flex", flexDirection: "column", zIndex: 1000, padding: 20, overflow: "auto", ...(enraged ? { boxShadow: "inset 0 0 60px rgba(240,96,90,0.25)" } : {}) }}>
+      <button onClick={onClose} title="Saltar batalla" aria-label="Saltar batalla" style={{ position: "absolute", top: 14, right: 14, width: 32, height: 32, borderRadius: "var(--radius-pill)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)", color: "var(--text-secondary)", fontSize: 16, fontWeight: 700, cursor: "pointer", lineHeight: 1, fontFamily: "var(--font-mono)" }}>{"\u00D7"}</button>
       <div style={{ textAlign: "center", marginBottom: 16 }}>
         <div style={{ fontSize: 64, animation: shaking ? "shake 0.5s" : enraged ? "shake 0.3s infinite" : "bounce 2s infinite" }}>{dragon.emoji}</div>
         {enraged && <div style={{ fontSize: 11, fontWeight: 900, color: "var(--signal-wrong)", textTransform: "uppercase", letterSpacing: 2, fontFamily: "var(--font-mono)", marginTop: 4, animation: "pulse 0.8s infinite" }}>FURIOSO</div>}

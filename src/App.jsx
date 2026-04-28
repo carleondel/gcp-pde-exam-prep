@@ -2598,7 +2598,7 @@ function App() {
             }} style={{ padding: "15px 16px", borderRadius: "var(--radius-lg)", border, background, color, fontSize: 14, textAlign: "left", cursor: "pointer", lineHeight: 1.45, animation, transition: "all 0.18s ease" }}>
               <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 {isMulti && <span style={{ width: 20, height: 20, borderRadius: 6, border: isSelected ? "2px solid currentColor" : "2px solid var(--surface-line-strong)", background: isSelected ? "currentColor" : "transparent", color: "var(--bg-primary)", fontSize: 10, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{isSelected ? "✓" : ""}</span>}
-                <span style={{ flex: 1 }}>{option}</span>
+                <span style={{ flex: 1, whiteSpace: "pre-line" }}>{option}</span>
                 <span style={{ width: 22, height: 22, borderRadius: 6, border: "1px solid var(--surface-line-strong)", background: "var(--surface-panel-muted)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "var(--text-tertiary)", flexShrink: 0, fontFamily: "var(--font-mono)" }}>{index + 1}</span>
               </span>
             </button>;

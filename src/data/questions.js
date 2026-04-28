@@ -2039,13 +2039,13 @@ export const QUESTIONS = [
     "id": 37,
     "topic": "Security/IAM",
     "difficulty": 2,
-    "question": "As your organization expands its usage of GCP, many teams have started to create their own projects. The central IT team needs to have access to all projects. Data from Cloud Storage buckets and BigQuery datasets must be shared. You want to simplify access control management by minimizing the number of policies. Which two steps should you take? (Choose two.)",
+    "question": "As your organization expands its usage of GCP, many teams have started to create their own projects. Projects are further multiplied to accommodate different stages of deployments and target audiences. Each project requires unique access control configurations. The central IT team needs to have access to all projects.\nFurthermore, data from Cloud Storage buckets and BigQuery datasets must be shared for use in other projects in an ad hoc way. You want to simplify access control management by minimizing the number of policies. Which two steps should you take? (Choose two.)",
     "options": [
       "A. Use Cloud Deployment Manager to automate access provision.",
       "B. Introduce resource hierarchy to leverage access control policy inheritance.",
       "C. Create distinct groups for various teams, and specify groups in Cloud IAM policies.",
       "D. Only use service accounts when sharing data for Cloud Storage buckets and BigQuery datasets.",
-      "E. For each Cloud Storage bucket or BigQuery dataset, decide which projects need access. Find all the active members and create a Cloud IAM policy to grant access."
+      "E. For each Cloud Storage bucket or BigQuery dataset, decide which projects need access. Find all the active members who have access to these projects, and create a Cloud IAM policy to grant access to all these users."
     ],
     "correct": [
       1,
@@ -3968,12 +3968,12 @@ export const QUESTIONS = [
     "id": 71,
     "topic": "Security",
     "difficulty": 3,
-    "question": "You want to archive data in Cloud Storage. Because some data is very sensitive, you want to use the Trust No One (TNO) approach to encrypt your data to prevent cloud provider staff from decrypting your data. What should you do?",
+    "question": "You want to archive data in Cloud Storage. Because some data is very sensitive, you want to use the `Trust No One` (TNO) approach to encrypt your data to prevent the cloud provider staff from decrypting your data. What should you do?",
     "options": [
-      "A. Use gcloud kms keys create to create a symmetric key. Then use gcloud kms encrypt to encrypt each file with the key and unique AAD. Use gsutil cp to upload. Keep the AAD outside of Google Cloud.",
-      "B. Use gcloud kms keys create to create a symmetric key. Then use gcloud kms encrypt to encrypt each file. Use gsutil cp to upload. Manually destroy the key and rotate once.",
-      "C. Specify CSEK in the .boto configuration file. Use gsutil cp to upload. Save the CSEK in Cloud Memorystore.",
-      "D. Specify CSEK in the .boto configuration file. Use gsutil cp to upload. Save the CSEK in a different project that only the security team can access."
+      "A. Use gcloud kms keys create to create a symmetric key. Then use gcloud kms encrypt to encrypt each archival file with the key and unique additional authenticated data (AAD). Use gsutil cp to upload each encrypted file to the Cloud Storage bucket, and keep the AAD outside of Google Cloud.",
+      "B. Use gcloud kms keys create to create a symmetric key. Then use gcloud kms encrypt to encrypt each archival file with the key. Use gsutil cp to upload each encrypted file to the Cloud Storage bucket. Manually destroy the key previously used for encryption, and rotate the key once.",
+      "C. Specify customer-supplied encryption key (CSEK) in the .boto configuration file. Use gsutil cp to upload each archival file to the Cloud Storage bucket. Save the CSEK in Cloud Memorystore as permanent storage of the secret.",
+      "D. Specify customer-supplied encryption key (CSEK) in the .boto configuration file. Use gsutil cp to upload each archival file to the Cloud Storage bucket. Save the CSEK in a different project that only the security team can access."
     ],
     "correct": 0,
     "explanation": "Use gcloud kms keys create to create a symmetric key This Google Cloud Storage provides object storage with strong consistency, lifecycle policies, and versioning; regional buckets optimize for single-region performance.",
@@ -5814,12 +5814,12 @@ export const QUESTIONS = [
     "id": 104,
     "topic": "ML/AI",
     "difficulty": 3,
-    "question": "You are implementing a chatbot to help an online retailer streamline customer service. The chatbot must respond to both text and voice. You want a low-code/no-code option. What should you do?",
+    "question": "You are implementing a chatbot to help an online retailer streamline their customer service. The chatbot must be able to respond to both text and voice inquiries.\nYou are looking for a low-code or no-code option, and you want to be able to easily train the chatbot to provide answers to keywords. What should you do?",
     "options": [
-      "A. Use Speech-to-Text API to build a Python application in App Engine.",
-      "B. Use Speech-to-Text API to build a Python application in Compute Engine.",
-      "C. Use Dialogflow for simple queries and Speech-to-Text API for complex queries.",
-      "D. Use Dialogflow to implement the chatbot, defining intents based on the most common queries."
+      "A. Use the Cloud Speech-to-Text API to build a Python application in App Engine.",
+      "B. Use the Cloud Speech-to-Text API to build a Python application in a Compute Engine instance.",
+      "C. Use Dialogflow for simple queries and the Cloud Speech-to-Text API for complex queries.",
+      "D. Use Dialogflow to implement the chatbot, defining the intents based on the most common queries collected."
     ],
     "correct": 3,
     "explanation": "Use Dialogflow to implement the chatbot, defining intents based on the most common qu This ensures better model generalization and prevents overfitting on unseen data.",
@@ -6930,11 +6930,11 @@ export const QUESTIONS = [
     "id": 124,
     "topic": "Data Processing",
     "difficulty": 2,
-    "question": "Your company uses a proprietary system to send inventory data every 6 hours. Transmitted data includes a payload and timestamp. If there are concerns, the system re-transmits. How should you deduplicate the data most efficiently?",
+    "question": "Your company uses a proprietary system to send inventory data every 6 hours to a data ingestion service in the cloud. Transmitted data includes a payload of several fields and the timestamp of the transmission. If there are any concerns about a transmission, the system re-transmits the data. How should you deduplicate the data most efficiency?",
     "options": [
-      "A. Assign GUIDs to each data entry.",
-      "B. Compute the hash value of each data entry, and compare with all historical data.",
-      "C. Store each entry as primary key in a separate database and apply an index.",
+      "A. Assign global unique identifiers (GUID) to each data entry.",
+      "B. Compute the hash value of each data entry, and compare it with all historical data.",
+      "C. Store each data entry as the primary key in a separate database and apply an index.",
       "D. Maintain a database table to store the hash value and other metadata for each data entry."
     ],
     "correct": 3,
@@ -8895,12 +8895,12 @@ export const QUESTIONS = [
     "id": 160,
     "topic": "Dataflow/DR",
     "difficulty": 2,
-    "question": "You have designed an Apache Beam processing pipeline that reads from a Pub/Sub topic. The topic has a message retention duration of one day, and writes to a Cloud Storage bucket. You need to select a bucket location and processing strategy to prevent data loss in case of a regional outage with an RPO of 15 minutes. What should you do?",
+    "question": "You have designed an Apache Beam processing pipeline that reads from a Pub/Sub topic. The topic has a message retention duration of one day, and writes to a Cloud Storage bucket.\n\nYou need to select a bucket location and processing strategy to prevent data loss in case of a regional outage with an RPO of 15 minutes. What should you do?",
     "options": [
-      "A. 1. Use a dual-region Cloud Storage bucket. 2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs. 3. Seek the subscription back in time by 15 minutes to recover the acknowledged messages. 4. Start the Dataflow job in a secondary region.",
-      "B. 1. Use a multi-regional Cloud Storage bucket. 2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs. 3. Seek the subscription back in time by 60 minutes to recover the acknowledged messages. 4. Start the Dataflow job in a secondary region.",
-      "C. 1. Use a regional Cloud Storage bucket. 2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs. 3. Seek the subscription back in time by one day to recover the acknowledged messages. 4. Start the Dataflow job in a secondary region and write in a bucket in the same region.",
-      "D. 1. Use a dual-region Cloud Storage bucket with turbo replication enabled. 2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs. 3. Seek the subscription back in time by 60 minutes to recover the acknowledged messages. 4. Start the Dataflow job in a secondary region."
+      "A.\n1. Use a dual-region Cloud Storage bucket.\n2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs.\n3. Seek the subscription back in time by 15 minutes to recover the acknowledged messages.\n4. Start the Dataflow job in a secondary region.",
+      "B.\n1. Use a multi-regional Cloud Storage bucket.\n2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs.\n3. Seek the subscription back in time by 60 minutes to recover the acknowledged messages.\n4. Start the Dataflow job in a secondary region.",
+      "C.\n1. Use a regional Cloud Storage bucket.\n2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs.\n3. Seek the subscription back in time by one day to recover the acknowledged messages.\n4. Start the Dataflow job in a secondary region and write in a bucket in the same region.",
+      "D.\n1. Use a dual-region Cloud Storage bucket with turbo replication enabled.\n2. Monitor Dataflow metrics with Cloud Monitoring to determine when an outage occurs.\n3. Seek the subscription back in time by 60 minutes to recover the acknowledged messages.\n4. Start the Dataflow job in a secondary region."
     ],
     "correct": 3,
     "explanation": "Use a dual-region bucket with turbo replication This Google's fully managed streaming and batch data processing service that provides exactly-once semantics with auto-scaling and low latency.",
@@ -11335,12 +11335,12 @@ export const QUESTIONS = [
     "id": 205,
     "topic": "BigLake",
     "difficulty": 2,
-    "question": "You have created an external table for Apache Hive partitioned data in Cloud Storage with a large number of files. Queries are slow. You want to improve performance. What should you do?",
+    "question": "You have created an external table for Apache Hive partitioned data that resides in a Cloud Storage bucket, which contains a large number of files. You notice that queries against this table are slow. You want to improve the performance of these queries. What should you do?",
     "options": [
-      "A. Change storage class from Coldline to Standard.",
-      "B. Create individual external tables for each Hive partition using wildcard table queries.",
-      "C. Upgrade the external table to a BigLake table. Enable metadata caching.",
-      "D. Migrate the Hive partitioned data to a multi-region Cloud Storage bucket."
+      "A. Change the storage class of the Hive partitioned data objects from Coldline to Standard.",
+      "B. Create an individual external table for each Hive partition by using a common table name prefix. Use wildcard table queries to reference the partitioned data.",
+      "C. Upgrade the external table to a BigLake table. Enable metadata caching for the table.",
+      "D. Migrate the Hive partitioned data objects to a multi-region Cloud Storage bucket."
     ],
     "correct": 2,
     "explanation": "Upgrade the external table to a BigLake table. Enable metadata caching This Google Cloud Storage provides object storage with strong consistency, lifecycle policies, and versioning; regional buckets optimize for single-region performance.",
