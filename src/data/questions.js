@@ -4634,12 +4634,12 @@ export const QUESTIONS = [
     "id": 83,
     "topic": "Dataflow",
     "difficulty": 2,
-    "question": "You are designing a pipeline that publishes application events to a Pub/Sub topic. You need to aggregate events across disjoint hourly intervals before loading to BigQuery. What technology should you use to process and load this data while ensuring it scales?",
+    "question": "You are designing a pipeline that publishes application events to a Pub/Sub topic. Although message ordering is not important, you need to be able to aggregate events across disjoint hourly intervals before loading the results to BigQuery for analysis. What technology should you use to process and load this data to BigQuery while ensuring that it will scale with large volumes of events?",
     "options": [
-      "A. Create a Cloud Function that executes using the Pub/Sub trigger.",
-      "B. Schedule a Cloud Function to run hourly, pulling all available messages.",
-      "C. Schedule a batch Dataflow job to run hourly, pulling all available messages.",
-      "D. Create a streaming Dataflow job that reads continually from the Pub/Sub topic and uses tumbling windows."
+      "A. Create a Cloud Function to perform the necessary data processing that executes using the Pub/Sub trigger every time a new message is published to the topic.",
+      "B. Schedule a Cloud Function to run hourly, pulling all available messages from the Pub/Sub topic and performing the necessary aggregations.",
+      "C. Schedule a batch Dataflow job to run hourly, pulling all available messages from the Pub/Sub topic and performing the necessary aggregations.",
+      "D. Create a streaming Dataflow job that reads continually from the Pub/Sub topic and performs the necessary aggregations using tumbling windows."
     ],
     "correct": 3,
     "explanation": "Create a streaming Dataflow job that reads continually from the Pub/Sub topic and use This Google's managed pub/sub messaging service enabling asynchronous communication with built-in ordering guarantees and at-least-once delivery semantics.",
@@ -10399,10 +10399,10 @@ export const QUESTIONS = [
     "id": 188,
     "topic": "Dataflow",
     "difficulty": 2,
-    "question": "You created a new version of a Dataflow streaming pipeline that reads from Pub/Sub and writes to BigQuery. The previous version uses a 5-minute window. You need to deploy without losing data or increasing latency by more than 10 minutes. What should you do?",
+    "question": "You created a new version of a Dataflow streaming data ingestion pipeline that reads from Pub/Sub and writes to BigQuery. The previous version of the pipeline that runs in production uses a 5-minute window for processing. You need to deploy the new version of the pipeline without losing any data, creating inconsistencies, or increasing the processing latency by more than 10 minutes. What should you do?",
     "options": [
       "A. Update the old pipeline with the new pipeline code.",
-      "B. Snapshot the old pipeline, stop it, and start the new pipeline from the snapshot.",
+      "B. Snapshot the old pipeline, stop the old pipeline, and then start the new pipeline from the snapshot.",
       "C. Drain the old pipeline, then start the new pipeline.",
       "D. Cancel the old pipeline, then start the new pipeline."
     ],
@@ -10679,15 +10679,15 @@ export const QUESTIONS = [
     "id": 193,
     "topic": "Data Catalog",
     "difficulty": 2,
-    "question": "You have a BigQuery dataset named 'customers'. All tables will be tagged using a 'gdpr' Data Catalog tag template. All employees must be able to find tables by the 'has_sensitive_data' field. Only HR should see data where has_sensitive_data is true. What should you do?",
+    "question": "You have a BigQuery dataset named \"customers\". All tables will be tagged by using a Data Catalog tag template named \"gdpr\". The template contains one mandatory field, \"has_sensitive_data\", with a boolean value. All employees must be able to do a simple search and find tables in the dataset that have either true or false in the \"has_sensitive_data\" field. However, only the Human Resources (HR) group should be able to see the data inside the tables for which \"has_sensitive_data\" is true. You give the all employees group the bigquery.metadataViewer and bigquery.connectionUser roles on the dataset. You want to minimize configuration overhead. What should you do next?",
     "options": [
-      "A. Create the gdpr tag template with private visibility. Assign bigquery.dataViewer to HR group on tables with sensitive data.",
-      "B. Create the gdpr tag template with private visibility. Assign datacatalog.tagTemplateViewer to all employees. Assign bigquery.dataViewer to HR group.",
-      "C. Create the gdpr tag template with public visibility. Assign bigquery.dataViewer to HR group on tables with sensitive data.",
-      "D. Create the gdpr tag template with public visibility. Assign datacatalog.tagTemplateViewer to all employees. Assign bigquery.dataViewer to HR group."
+      "A. Create the \"gdpr\" tag template with private visibility. Assign the bigquery.dataViewer role to the HR group on the tables that contain sensitive data.",
+      "B. Create the \"gdpr\" tag template with private visibility. Assign the datacatalog.tagTemplateViewer role on this tag to the all employees group, and assign the bigquery.dataViewer role to the HR group on the tables that contain sensitive data.",
+      "C. Create the \"gdpr\" tag template with public visibility. Assign the bigquery.dataViewer role to the HR group on the tables that contain sensitive data.",
+      "D. Create the \"gdpr\" tag template with public visibility. Assign the datacatalog.tagTemplateViewer role on this tag to the all employees group, and assign the bigquery.dataViewer role to the HR group on the tables that contain sensitive data."
     ],
-    "correct": 1,
-    "explanation": "Public visibility requires data access to view tags. Private visibility allows all employees to search tags via tagTemplateViewer without needing BigQuery dataViewer access.",
+    "correct": 2,
+    "explanation": "Create the \"gdpr\" tag template with public visibility. Assign the bigquery.dataViewer role to the HR group on the tables that contain sensitive data. This satisfies the discovery and access requirements with the least additional IAM configuration.",
     "discussion": [
       {
         "user": "raaad",
@@ -10722,13 +10722,13 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": false,
     "discussionSummary": "",
-    "conceptSummary": "Securing Data Catalog tag discoverability using Private Visibility.",
-    "correctRationale": "Tag templates with Private Visibility require users to possess the `datacatalog.tagTemplateViewer` role to search or view the tags. This allows all employees to discover the metadata (that the table has sensitive data) without granting them `bigquery.dataViewer`, which would expose the actual PII. Only HR receives the dataViewer role to see the data.",
+    "conceptSummary": "Using public Data Catalog tags to minimize IAM overhead while preserving table-level data access controls.",
+    "correctRationale": "Public visibility in Data Catalog automatically allows anyone with underlying metadata permissions to view and search the tags. Since employees already have `bigquery.metadataViewer` on the dataset, making the tag public lets them discover tables by the `has_sensitive_data` field without any new tag-specific IAM grants. Granting `bigquery.dataViewer` only to HR on the sensitive tables preserves the required data access restriction while minimizing configuration overhead.",
     "optionRationales": [
-      "Wrong: If visibility is private, the employees cannot search the tags without being granted the `datacatalog.tagTemplateViewer` role.",
-      "Correct: Private visibility combined with `tagTemplateViewer` lets employees discover the metadata, while restricting the actual data access (`dataViewer`) strictly to HR.",
-      "Wrong: Public visibility requires users to have underlying read access to the BigQuery data just to view the tags, defeating the purpose of separating metadata discovery from data access.",
-      "Wrong: Public visibility makes the tags viewable only if the user has data access. Assigning tagTemplateViewer is meaningless if the template is public."
+      "Wrong: If the tag template has private visibility, users must have an explicit role such as `datacatalog.tagTemplateViewer` to search it. Since this option does not grant that role, employees cannot search the tags at all.",
+      "Wrong: This setup works technically, but private visibility forces you to manually grant `datacatalog.tagTemplateViewer` to the all employees group, creating unnecessary administrative overhead.",
+      "Correct: Public visibility allows employees who already have BigQuery metadata access to search the tags without any extra IAM grants. Assigning `bigquery.dataViewer` only to HR on sensitive tables satisfies the data-access requirement with minimal overhead.",
+      "Wrong: With public visibility, adding `datacatalog.tagTemplateViewer` is redundant because employees already have the metadata access needed to discover the tags."
     ]
   },
   {
@@ -10791,12 +10791,12 @@ export const QUESTIONS = [
     "id": 195,
     "topic": "Security",
     "difficulty": 3,
-    "question": "You have a BigQuery table that ingests data directly from a Pub/Sub subscription encrypted with Google-managed key. A new policy requires CMEK. What should you do?",
+    "question": "You have a BigQuery table that ingests data directly from a Pub/Sub subscription. The ingested data is encrypted with a Google-managed encryption key. You need to meet a new organization policy that requires you to use keys from a centralized Cloud Key Management Service (Cloud KMS) project to encrypt data at rest. What should you do?",
     "options": [
-      "A. Use Cloud KMS key with Dataflow to ingest the existing Pub/Sub subscription to the existing table.",
-      "B. Create a new BigQuery table using CMEK, migrate data from the old table.",
-      "C. Create a new Pub/Sub topic with CMEK and use the existing BigQuery table.",
-      "D. Create a new BigQuery table and Pub/Sub topic using CMEK, and migrate the data."
+      "A. Use Cloud KMS encryption key with Dataflow to ingest the existing Pub/Sub subscription to the existing BigQuery table.",
+      "B. Create a new BigQuery table by using customer-managed encryption keys (CMEK), and migrate the data from the old BigQuery table.",
+      "C. Create a new Pub/Sub topic with CMEK and use the existing BigQuery table by using Google-managed encryption key.",
+      "D. Create a new BigQuery table and Pub/Sub topic by using customer-managed encryption keys (CMEK), and migrate the data from the old BigQuery table."
     ],
     "correct": 1,
     "explanation": "Create a new BigQuery table using CMEK, migrate data from the old table This Google's managed pub/sub messaging service enabling asynchronous communication with built-in ordering guarantees and at-least-once delivery semantics.",
@@ -11223,12 +11223,12 @@ export const QUESTIONS = [
     "id": 203,
     "topic": "Bigtable",
     "difficulty": 2,
-    "question": "You work for an ecommerce company using Bigtable with garbage collection set to delete data after 30 days (versions=1). Data analysts sometimes see data older than 30 days. What should you do?",
+    "question": "You work for a large ecommerce company. You store your customer's order data in Bigtable. You have a garbage collection policy set to delete the data after 30 days and the number of versions is set to 1. When the data analysts run a query to report total customer spending, the analysts sometimes see customer data that is older than 30 days. You need to ensure that the analysts do not see customer data older than 30 days while minimizing cost and overhead. What should you do?",
     "options": [
-      "A. Set expiring values of column families to 29 days, keep versions to 1.",
-      "B. Use a timestamp range filter in the query to fetch data for a specific range.",
-      "C. Schedule a daily job to scan and delete data older than 30 days.",
-      "D. Set expiring values to 30 days and set versions to 2."
+      "A. Set the expiring values of the column families to 29 days and keep the number of versions to 1.",
+      "B. Use a timestamp range filter in the query to fetch the customer's data for a specific range.",
+      "C. Schedule a job daily to scan the data in the table and delete data older than 30 days.",
+      "D. Set the expiring values of the column families to 30 days and set the number of versions to 2."
     ],
     "correct": 1,
     "explanation": "Use a timestamp range filter in the query to fetch data for a specific range This NoSQL wide-column store optimized for time-series and analytical workloads with millisecond latency, automatic scaling, and replication.",
@@ -12303,12 +12303,12 @@ export const QUESTIONS = [
     "id": 223,
     "topic": "Database Design",
     "difficulty": 2,
-    "question": "You designed a database for patient records as a pilot project. Your design used a single database table for all patients and visits. Now the scope has expanded 100x and you can no longer run reports. How should you adjust the design?",
+    "question": "You designed a database for patient records as a pilot project to cover a few hundred patients in three clinics. Your design used a single database table to represent all patients and their visits, and you used self-joins to generate reports. The server resource utilization was at 50%. Since then, the scope of the project has expanded. The database must now store 100 times more patient records. You can no longer run the reports, because they either take too long or they encounter errors with insufficient compute resources. How should you adjust the database design?",
     "options": [
-      "A. Add capacity (memory and disk) by 200x.",
-      "B. Shard tables based on date ranges.",
-      "C. Normalize the master table into patient table and visits table.",
-      "D. Partition the table by clinic. Run queries against smaller tables, use unions for consolidated reports."
+      "A. Add capacity (memory and disk space) to the database server by the order of 200.",
+      "B. Shard the tables into smaller ones based on date ranges, and only generate reports with prespecified date ranges.",
+      "C. Normalize the master patient-record table into the patient table and the visits table, and create other necessary tables to avoid self-join.",
+      "D. Partition the table into smaller tables, with one for each clinic. Run queries against the smaller table pairs, and use unions for consolidated reports."
     ],
     "correct": 2,
     "explanation": "Normalize the master table into patient table and visits table This approach meets the stated requirements.",
@@ -12575,11 +12575,11 @@ export const QUESTIONS = [
     "id": 228,
     "topic": "Dataplex",
     "difficulty": 2,
-    "question": "You are managing a Dataplex environment with raw and curated zones. JSON and CSV files uploaded to a bucket asset in the curated zone are not being discovered. What should you do?",
+    "question": "You are managing a Dataplex environment with raw and curated zones. A data engineering team is uploading JSON and CSV files to a bucket asset in the curated zone but the files are not being automatically discovered by Dataplex. What should you do to ensure that the files are discovered by Dataplex?",
     "options": [
       "A. Move the JSON and CSV files to the raw zone.",
       "B. Enable auto-discovery of files for the curated zone.",
-      "C. Use the bq command-line tool to load the files into BigQuery tables.",
+      "C. Use the bg command-line tool to load the JSON and CSV files into BigQuery tables.",
       "D. Grant object level access to the CSV and JSON files in Cloud Storage."
     ],
     "correct": 0,
