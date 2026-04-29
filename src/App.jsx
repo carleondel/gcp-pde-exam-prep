@@ -1113,6 +1113,26 @@ function App() {
     resetQuestionUi();
   }, [mockPreferRecent, resetQuestionUi]);
 
+  const reviewMockMistakes = useCallback(() => {
+    if (!resultPayload || resultPayload.mode !== "mock") return;
+    const wrongIds = resultPayload.history.filter((entry) => !entry.correct).map((entry) => entry.questionId);
+    if (!wrongIds.length) return;
+    const questions = buildPracticeQuestions(QUESTIONS, {
+      questionIds: wrongIds,
+      questionMap,
+      order: "sequential",
+    });
+    if (!questions.length) return;
+    setSession(createPracticeSession(questions, {
+      order: "sequential",
+      source: "mock-review",
+      questionLimit: questions.length,
+    }));
+    setResultPayload(null);
+    setScreen("quiz");
+    resetQuestionUi();
+  }, [questionMap, resetQuestionUi, resultPayload]);
+
   const cancelMock = useCallback(() => {
     if (session?.mode !== "mock") return;
     if (!window.confirm("¿Cancelar simulacro? Se descartará el progreso y no se registrará en el historial.")) return;
@@ -2429,6 +2449,11 @@ function App() {
 
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <button onClick={goToMenu} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: "var(--radius-lg)", background: "var(--gradient-practice)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Volver al menú</button>
+          {resultPayload.mode === "mock" && history.some((entry) => !entry.correct) && (
+            <button onClick={reviewMockMistakes} style={{ flex: 1, padding: "14px 16px", border: "1px solid var(--signal-wrong)", borderRadius: "var(--radius-lg)", background: "var(--wrong-soft)", color: "var(--signal-wrong)", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+              Repasar errores ({history.filter((entry) => !entry.correct).length})
+            </button>
+          )}
           <button onClick={() => resultPayload.mode === "mock" ? startMock() : isBlockResult ? startBlock(blockCatalog.blocks[blockResult.blockIndex]) : startPractice()} style={{ flex: 1, padding: "14px 16px", border: "none", borderRadius: "var(--radius-lg)", background: resultPayload.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-success)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
             {resultPayload.mode === "mock" ? "Nuevo simulacro" : isBlockResult ? `Repetir vuelta ${blockResult?.roundSummary?.roundNumber + 1 || ""}` : "Seguir practicando"}
           </button>

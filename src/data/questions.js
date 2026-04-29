@@ -70,10 +70,10 @@ export const QUESTIONS = [
     ],
     "correct": [
       1,
-      4,
-      5
+      3,
+      4
     ],
-    "explanation": "Segregating data (E) allows granular least-privilege IAM roles. Restricting API access per-user (D) is not a standard GCP capability.",
+    "explanation": "Restrict access by role, restrict BigQuery API access to approved users, and segregate data across tables or datasets to enforce least privilege.",
     "discussion": [
       {
         "user": "samdhimal",
@@ -108,15 +108,15 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": false,
     "discussionSummary": "",
-    "conceptSummary": "Enforcing least privilege and monitoring in BigQuery.",
-    "correctRationale": "To implement least privilege in BigQuery, you must organize data logically into different datasets or tables so you can apply fine-grained Identity and Access Management (IAM) roles. Additionally, Cloud Audit Logs (Data Access logs) provide the monitoring layer necessary to verify compliance and detect policy violations.",
+    "conceptSummary": "Enforcing least privilege in BigQuery.",
+    "correctRationale": "To enforce least privilege in BigQuery, restrict access by IAM role, limit BigQuery API access to approved users, and segregate sensitive data into separate tables or datasets so granular access policies can be applied effectively. Audit logging is useful for investigation, but it is detective rather than preventive and does not enforce access restrictions.",
     "optionRationales": [
       "Wrong: Disabling writes prevents data from being updated, but it does not restrict read access, meaning unauthorized users could still view sensitive information.",
       "Correct: Using IAM roles at the dataset or table level ensures that department users are only granted access to the specific resources they need to do their jobs.",
       "Wrong: Encryption protects data at rest from unauthorized physical or disk-level access, but it does not restrict query access for authenticated users within the GCP project.",
-      "Wrong: BigQuery API access cannot be natively restricted on a per-user basis as a security control; data access is controlled via IAM permissions, not API blocking.",
+      "Correct: Restricting BigQuery API access to approved users prevents unauthorized users from attempting to run queries against BigQuery resources.",
       "Correct: Segregating data across multiple tables or datasets creates the necessary logical boundaries required to attach distinct IAM policies for different departments.",
-      "Correct: Cloud Audit Logging automatically captures Data Access logs, which track exactly who queried what data, allowing the central IT team to audit and detect any unauthorized access attempts."
+      "Wrong: Audit Logging is a detective control. It helps identify policy violations after access occurs, but it does not enforce least-privilege restrictions or prevent unauthorized reads."
     ]
   },
   {
@@ -243,7 +243,7 @@ export const QUESTIONS = [
       "D. Use the BigQuery bulk loader to batch load inventory changes into a daily inventory movement table. Calculate balances in a view that joins it to the historical inventory balance table. Update the inventory balance table nightly."
     ],
     "correct": 2,
-    "explanation": "Use the BigQuery streaming API to stream changes into a daily inventory movement tabl This optimizes query performance through data organization and indexing.",
+    "explanation": "Stream inventory changes into an append-only daily movement table, calculate current balances in a view, and update the historical balance table nightly to avoid frequent BigQuery UPDATE operations.",
     "discussion": [
       {
         "user": "MaxNRG",
@@ -291,12 +291,12 @@ export const QUESTIONS = [
     "id": 6,
     "topic": "BigQuery DR",
     "difficulty": 2,
-    "question": "You have data stored in BigQuery. The data in the BigQuery dataset must be highly available. You need to define a storage, backup, and recovery strategy of this data that minimizes cost. How should you configure the BigQuery table that has a recovery point objective (RPO) of 30 days?",
+    "question": "You have a data stored in BigQuery. The data in the BigQuery dataset must be highly available. You need to define a storage, backup, and recovery strategy of this data that minimizes cost. How should you configure the BigQuery table that have a recovery point objective (RPO) of 30 days?",
     "options": [
       "A. Set the BigQuery dataset to be regional. In the event of an emergency, use a point-in-time snapshot to recover the data.",
-      "B. Set the BigQuery dataset to be regional. Create a scheduled query to make copies of the data to tables suffixed with the time of the backup.",
+      "B. Set the BigQuery dataset to be regional. Create a scheduled query to make copies of the data to tables suffixed with the time of the backup. In the event of an emergency, use the backup copy of the table.",
       "C. Set the BigQuery dataset to be multi-regional. In the event of an emergency, use a point-in-time snapshot to recover the data.",
-      "D. Set the BigQuery dataset to be multi-regional. Create a scheduled query to make copies of the data to tables suffixed with the time of the backup."
+      "D. Set the BigQuery dataset to be multi-regional. Create a scheduled query to make copies of the data to tables suffixed with the time of the backup. In the event of an emergency, use the backup copy of the table."
     ],
     "correct": 1,
     "explanation": "BigQuery time travel only retains data for up to 7 days. To achieve a 30-day RPO, you must schedule queries to copy and persist the data.",
@@ -515,12 +515,12 @@ export const QUESTIONS = [
     "id": 10,
     "topic": "Security/DLP",
     "difficulty": 2,
-    "question": "You work for a shipping company that uses handheld scanners to read shipping labels. Your company has strict data privacy standards that require scanners to only transmit tracking numbers when events are sent to Kafka topics. A recent software update caused the scanners to accidentally transmit recipients' PII to analytics systems. You want to quickly build a scalable solution using cloud-native managed services to prevent exposure of PII to the analytics systems. What should you do?",
+    "question": "You work for a shipping company that uses handheld scanners to read shipping labels. Your company has strict data privacy standards that require scanners to only transmit tracking numbers when events are sent to Kafka topics. A recent software update caused the scanners to accidentally transmit recipients' personally identifiable information (PII) to analytics systems, which violates user privacy rules. You want to quickly build a scalable solution using cloud-native managed services to prevent exposure of PII to the analytics systems. What should you do?",
     "options": [
       "A. Create an authorized view in BigQuery to restrict access to tables with sensitive data.",
-      "B. Install a third-party data validation tool on Compute Engine VMs to check the incoming data for sensitive information.",
+      "B. Install a third-party data validation tool on Compute Engine virtual machines to check the incoming data for sensitive information.",
       "C. Use Cloud Logging to analyze the data passed through the total pipeline to identify transactions that may contain sensitive information.",
-      "D. Build a Cloud Function that reads the topics and makes a call to the Cloud DLP API. Use the tagging and confidence levels to either pass or quarantine the data in a bucket for review."
+      "D. Build a Cloud Function that reads the topics and makes a call to the Cloud Data Loss Prevention (Cloud DLP) API. Use the tagging and confidence levels to either pass or quarantine the data in a bucket for review."
     ],
     "correct": 3,
     "explanation": "Build a Cloud Function that reads the topics and makes a call to the Cloud DLP API This approach meets the stated requirements.",
@@ -571,7 +571,7 @@ export const QUESTIONS = [
       "D. Set up cron jobs in a Compute Engine instance to schedule and monitor the pipelines using GCP API calls."
     ],
     "correct": 0,
-    "explanation": "Create a Direct Acyclic Graph in Cloud Composer to schedule and monitor the jobs This Google's fully managed streaming and batch data processing service that provides exactly-once semantics with auto-scaling and low latency.",
+    "explanation": "Create a Directed Acyclic Graph in Cloud Composer so Airflow can schedule, monitor, and manually trigger the three dependent workflows.",
     "discussion": [
       {
         "user": "Rajokkiyam",
@@ -631,7 +631,7 @@ export const QUESTIONS = [
       2,
       4
     ],
-    "explanation": "Error handling in the subscriber code is not handling run-time errors properly This Google's managed pub/sub messaging service enabling asynchronous communication with built-in ordering guarantees and at-least-once delivery semantics.",
+    "explanation": "Unhandled runtime errors or missing acknowledgements cause Pub/Sub to redeliver the same messages after the ack deadline, creating an artificially high processing rate without infrastructure errors.",
     "discussion": [
       {
         "user": "TNT87",
@@ -680,7 +680,7 @@ export const QUESTIONS = [
     "id": 13,
     "topic": "Dataflow",
     "difficulty": 2,
-    "question": "You are designing a basket abandonment system for an ecommerce company. The system will send a message to a user based on these rules: No interaction by the user on the site for 1 hour, Has added more than $30 worth of products to the basket, Has not completed a transaction. You use Google Cloud Dataflow to process the data and decide if a message should be sent. How should you design the pipeline?",
+    "question": "You are designing a basket abandonment system for an ecommerce company. The system will send a message to a user based on these rules:\n- No interaction by the user on the site for 1 hour\n- Has added more than $30 worth of products to the basket\n- Has not completed a transaction\n\nYou use Google Cloud Dataflow to process the data and decide if a message should be sent. How should you design the pipeline?",
     "options": [
       "A. Use a fixed-time window with a duration of 60 minutes.",
       "B. Use a sliding time window with a duration of 60 minutes.",
@@ -688,7 +688,7 @@ export const QUESTIONS = [
       "D. Use a global window with a time based trigger with a delay of 60 minutes."
     ],
     "correct": 2,
-    "explanation": "Use a session window with a gap time duration of 60 minutes This Google's fully managed streaming and batch data processing service that provides exactly-once semantics with auto-scaling and low latency.",
+    "explanation": "Use a session window with a 60-minute gap duration so the pipeline evaluates the basket after the user's activity has been inactive for 1 hour.",
     "discussion": [
       {
         "user": "vetaal",
@@ -744,7 +744,7 @@ export const QUESTIONS = [
       "D. Add a GroupByKey transform in Cloud Dataflow to group all of the valid data together and discard the rest."
     ],
     "correct": 1,
-    "explanation": "Add a ParDo transform in Cloud Dataflow to discard corrupt elements This Google's fully managed streaming and batch data processing service that provides exactly-once semantics with auto-scaling and low latency.",
+    "explanation": "Add a ParDo transform in Cloud Dataflow to inspect each element and emit only valid records, discarding corrupt elements before writing to BigQuery.",
     "discussion": [
       {
         "user": "SteelWarrior",
@@ -800,7 +800,7 @@ export const QUESTIONS = [
       "D. Write an Apache Beam pipeline that creates a BigQuery table per day. Recommend that the Data Science team use wildcards on the table name suffixes to select the data they need."
     ],
     "correct": 0,
-    "explanation": "Re-create the tables using DDL This reducing GCP spend through resource right-sizing, committed use discounts, and preemptible instances.",
+    "explanation": "Re-create the tables using DDL and partition them by the DATE or TIMESTAMP column so BigQuery can prune partitions and scan only the requested 30-90 day range.",
     "discussion": [
       {
         "user": "[Removed]",
@@ -1072,7 +1072,7 @@ export const QUESTIONS = [
     "id": 20,
     "topic": "BigQuery/CDC",
     "difficulty": 2,
-    "question": "Your company is migrating its on-premises data warehousing solutions to BigQuery. The existing data warehouse uses trigger-based CDC to apply updates from multiple transactional database sources on a daily basis. With BigQuery, your company hopes to improve CDC handling so that changes are available in near-real time using log-based CDC streams, while optimizing performance. Which two steps should they take? (Choose two.)",
+    "question": "Your company is in the process of migrating its on-premises data warehousing solutions to BigQuery. The existing data warehouse uses trigger-based change data capture (CDC) to apply updates from multiple transactional database sources on a daily basis. With BigQuery, your company hopes to improve its handling of CDC so that changes to the source systems are available to query in BigQuery in near-real time using log-based CDC streams, while also optimizing for the performance of applying changes to the data warehouse. Which two steps should they take to ensure that changes are available in the BigQuery reporting table with minimal latency while reducing compute overhead? (Choose two.)",
     "options": [
       "A. Perform a DML INSERT, UPDATE, or DELETE to replicate each individual CDC record in real time directly on the reporting table.",
       "B. Insert each new CDC record and corresponding operation type to a staging table in real time.",
@@ -1189,12 +1189,12 @@ export const QUESTIONS = [
     "id": 22,
     "topic": "Security/IAM",
     "difficulty": 2,
-    "question": "You need to set access to BigQuery for different departments within your company. Each department should have access only to their data. Each department will have one or more leads who need to be able to create and update tables. Each department has data analysts who need to be able to query but not modify data. How should you set access?",
+    "question": "You need to set access to BigQuery for different departments within your company. Your solution should comply with the following requirements:\n- Each department should have access only to their data.\n- Each department will have one or more leads who need to be able to create and update tables and provide them to their team.\n- Each department has data analysts who need to be able to query but not modify data.\n\nHow should you set access to the data in BigQuery?",
     "options": [
       "A. Create a dataset for each department. Assign the department leads the role of OWNER, and assign the data analysts the role of WRITER on their dataset.",
       "B. Create a dataset for each department. Assign the department leads the role of WRITER, and assign the data analysts the role of READER on their dataset.",
-      "C. Create a table for each department. Assign the department leads the role of Owner, and assign the data analysts the role of Editor on the project.",
-      "D. Create a table for each department. Assign the department leads the role of Editor, and assign the data analysts the role of Viewer on the project."
+      "C. Create a table for each department. Assign the department leads the role of Owner, and assign the data analysts the role of Editor on the project the table is in.",
+      "D. Create a table for each department. Assign the department leads the role of Editor, and assign the data analysts the role of Viewer on the project the table is in."
     ],
     "correct": 1,
     "explanation": "Create a dataset for each department This approach meets the stated requirements.",
@@ -1245,12 +1245,12 @@ export const QUESTIONS = [
     "id": 23,
     "topic": "Bigtable",
     "difficulty": 2,
-    "question": "You operate a database that stores stock trades and an application that retrieves average stock price for a given company over an adjustable window of time. The data is stored in Cloud Bigtable where the datetime of the stock trade is the beginning of the row key. Your application has thousands of concurrent users, and you notice performance is starting to degrade as more stocks are added. What should you do?",
+    "question": "You operate a database that stores stock trades and an application that retrieves average stock price for a given company over an adjustable window of time. The data is stored in Cloud Bigtable where the datetime of the stock trade is the beginning of the row key. Your application has thousands of concurrent users, and you notice that performance is starting to degrade as more stocks are added. What should you do to improve the performance of your application?",
     "options": [
-      "A. Change the row key syntax to begin with the stock symbol.",
-      "B. Change the row key syntax to begin with a random number per second.",
+      "A. Change the row key syntax in your Cloud Bigtable table to begin with the stock symbol.",
+      "B. Change the row key syntax in your Cloud Bigtable table to begin with a random number per second.",
       "C. Change the data pipeline to use BigQuery for storing stock trades, and update your application.",
-      "D. Use Cloud Dataflow to write a summary of each day's stock trades to an Avro file on Cloud Storage."
+      "D. Use Cloud Dataflow to write a summary of each day's stock trades to an Avro file on Cloud Storage. Update your application to read from Cloud Storage and Cloud Bigtable to compute the responses."
     ],
     "correct": 0,
     "explanation": "Change the row key syntax to begin with the stock symbol This NoSQL wide-column store optimized for time-series and analytical workloads with millisecond latency, automatic scaling, and replication.",
@@ -1301,14 +1301,14 @@ export const QUESTIONS = [
     "id": 24,
     "topic": "Security/IAM",
     "difficulty": 2,
-    "question": "Your company handles data processing for a number of different clients. Each client prefers to use their own suite of analytics tools. You need to secure the data so that clients cannot see each other's data. Which three steps should you take? (Choose three.)",
+    "question": "Your company handles data processing for a number of different clients. Each client prefers to use their own suite of analytics tools, with some allowing direct query access via Google BigQuery. You need to secure the data so that clients cannot see each other's data. You want to ensure appropriate access to the data. Which three steps should you take? (Choose three.)",
     "options": [
       "A. Load data into different partitions.",
       "B. Load data into a different dataset for each client.",
       "C. Put each client's BigQuery dataset into a different table.",
       "D. Restrict a client's dataset to approved users.",
       "E. Only allow a service account to access the datasets.",
-      "F. Use the appropriate IAM roles for each client's users."
+      "F. Use the appropriate identity and access management (IAM) roles for each client's users."
     ],
     "correct": [
       1,
@@ -1365,7 +1365,7 @@ export const QUESTIONS = [
     "id": 25,
     "topic": "Monitoring",
     "difficulty": 3,
-    "question": "You are operating a Cloud Dataflow streaming pipeline. The pipeline aggregates events from a Cloud Pub/Sub subscription source, within a window, and sinks the resulting aggregation to a Cloud Storage bucket. You want to monitor an alert on behavior of the pipeline with Cloud Stackdriver to ensure that it is processing data. Which Stackdriver alerts should you create?",
+    "question": "You are operating a Cloud Dataflow streaming pipeline. The pipeline aggregates events from a Cloud Pub/Sub subscription source, within a window, and sinks the resulting aggregation to a Cloud Storage bucket. The source has consistent throughput. You want to monitor an alert on behavior of the pipeline with Cloud Stackdriver to ensure that it is processing data. Which Stackdriver alerts should you create?",
     "options": [
       "A. An alert based on a decrease of subscription/num_undelivered_messages for the source and a rate of change increase of instance/storage/used_bytes for the destination.",
       "B. An alert based on an increase of subscription/num_undelivered_messages for the source and a rate of change decrease of instance/storage/used_bytes for the destination.",
@@ -1421,12 +1421,12 @@ export const QUESTIONS = [
     "id": 26,
     "topic": "IoT/Architecture",
     "difficulty": 2,
-    "question": "You currently have a single on-premises Kafka cluster in us-east that ingests messages from IoT devices globally. Because large parts of the globe have poor internet connectivity, messages sometimes batch at the edge and cause spikes. This is becoming difficult to manage. What is the Google-recommended cloud native architecture?",
+    "question": "You currently have a single on-premises Kafka cluster in a data center in the us-east region that is responsible for ingesting messages from IoT devices globally. Because large parts of globe have poor internet connectivity, messages sometimes batch at the edge, come in all at once, and cause a spike in load on your Kafka cluster. This is becoming difficult to manage and prohibitively expensive. What is the Google-recommended cloud native architecture for this scenario?",
     "options": [
       "A. Edge TPUs as sensor devices for storing and transmitting the messages.",
       "B. Cloud Dataflow connected to the Kafka cluster to scale the processing of incoming messages.",
       "C. An IoT gateway connected to Cloud Pub/Sub, with Cloud Dataflow to read and process the messages from Cloud Pub/Sub.",
-      "D. A Kafka cluster virtualized on Compute Engine in us-east with Cloud Load Balancing."
+      "D. A Kafka cluster virtualized on Compute Engine in us-east with Cloud Load Balancing to connect to the devices around the world."
     ],
     "correct": 2,
     "explanation": "An IoT gateway connected to Cloud Pub/Sub, with Cloud Dataflow to read and process th This approach meets the stated requirements.",
@@ -1538,7 +1538,7 @@ export const QUESTIONS = [
     "id": 28,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "You need to create a data pipeline that copies time-series transaction data so that it can be queried from within BigQuery. Every hour, thousands of transactions are updated with a new status. The size of the initial dataset is 1.5 PB. The data is heavily structured, and your team will build ML models. You want to maximize performance and usability. Which two strategies should you adopt? (Choose two.)",
+    "question": "You need to create a data pipeline that copies time-series transaction data so that it can be queried from within BigQuery by your data science team for analysis. Every hour, thousands of transactions are updated with a new status. The size of the initial dataset is 1.5 PB, and it will grow by 3 TB per day. The data is heavily structured, and your data science team will build machine learning models based on this data. You want to maximize performance and usability for your data science team. Which two strategies should you adopt? (Choose two.)",
     "options": [
       "A. Denormalize the data as much as possible.",
       "B. Preserve the structure of the data as much as possible.",
@@ -1599,11 +1599,11 @@ export const QUESTIONS = [
     "id": 29,
     "topic": "Storage",
     "difficulty": 2,
-    "question": "You are designing a cloud-native historical data processing system. The data is in CSV, Avro, and PDF formats and will be accessed by multiple tools including Dataproc, BigQuery, and Compute Engine. A batch pipeline moves daily data. Performance is not a factor. The solution should maximize availability. How should you design data storage?",
+    "question": "You are designing a cloud-native historical data processing system to meet the following conditions:\n- The data being analyzed is in CSV, Avro, and PDF formats and will be accessed by multiple analysis tools including Dataproc, BigQuery, and Compute Engine.\n- A batch pipeline moves daily data.\n- Performance is not a factor in the solution.\n- The solution design should maximize availability.\n\nHow should you design data storage for this solution?",
     "options": [
-      "A. Create a Dataproc cluster with high availability. Store the data in HDFS.",
+      "A. Create a Dataproc cluster with high availability. Store the data in HDFS, and perform analysis as needed.",
       "B. Store the data in BigQuery. Access the data using the BigQuery Connector on Dataproc and Compute Engine.",
-      "C. Store the data in a regional Cloud Storage bucket.",
+      "C. Store the data in a regional Cloud Storage bucket. Access the bucket directly using Dataproc, BigQuery, and Compute Engine.",
       "D. Store the data in a multi-regional Cloud Storage bucket. Access the data directly using Dataproc, BigQuery, and Compute Engine."
     ],
     "correct": 3,
@@ -1647,7 +1647,7 @@ export const QUESTIONS = [
     "id": 30,
     "topic": "Storage",
     "difficulty": 2,
-    "question": "You have a petabyte of analytics data and need to design a storage and processing platform. You must be able to perform data warehouse-style analytics on the data in Google Cloud and expose the dataset as files for batch analysis tools in other cloud providers. What should you do?",
+    "question": "You have a petabyte of analytics data and need to design a storage and processing platform for it. You must be able to perform data warehouse-style analytics on the data in Google Cloud and expose the dataset as files for batch analysis tools in other cloud providers. What should you do?",
     "options": [
       "A. Store and process the entire dataset in BigQuery.",
       "B. Store and process the entire dataset in Bigtable.",
@@ -1759,11 +1759,11 @@ export const QUESTIONS = [
     "id": 32,
     "topic": "ML/AI",
     "difficulty": 3,
-    "question": "You are working on a niche product in the image recognition domain. Your team has developed a model that is dominated by custom C++ TensorFlow ops performing bulky matrix multiplications. It takes days to train. You want to decrease this time significantly and keep cost low by using an accelerator on Google Cloud. What should you do?",
+    "question": "You are working on a niche product in the image recognition domain. Your team has developed a model that is dominated by custom C++ TensorFlow ops your team has implemented. These ops are used inside your main training loop and are performing bulky matrix multiplications. It currently takes up to several days to train a model. You want to decrease this time significantly and keep the cost low by using an accelerator on Google Cloud. What should you do?",
     "options": [
       "A. Use Cloud TPUs without any additional adjustment to your code.",
-      "B. Use Cloud TPUs after implementing GPU kernel support for your custom ops.",
-      "C. Use Cloud GPUs after implementing GPU kernel support for your custom ops.",
+      "B. Use Cloud TPUs after implementing GPU kernel support for your customs ops.",
+      "C. Use Cloud GPUs after implementing GPU kernel support for your customs ops.",
       "D. Stay on CPUs, and increase the size of the cluster you're training your model on."
     ],
     "correct": 2,
@@ -1983,10 +1983,10 @@ export const QUESTIONS = [
     "id": 36,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "The marketing team provides regular updates of a segment of your customer dataset. They gave you a CSV with 1 million records that must be updated in BigQuery. When you use the UPDATE statement, you receive a quotaExceeded error. What should you do?",
+    "question": "The marketing team at your organization provides regular updates of a segment of your customer dataset. The marketing team has given you a CSV with 1 million records that must be updated in BigQuery. When you use the UPDATE statement in BigQuery, you receive a quotaExceeded error. What should you do?",
     "options": [
       "A. Reduce the number of records updated each day to stay within the BigQuery UPDATE DML statement limit.",
-      "B. Increase the BigQuery UPDATE DML statement limit in the Quota management section.",
+      "B. Increase the BigQuery UPDATE DML statement limit in the Quota management section of the Google Cloud Platform Console.",
       "C. Split the source CSV file into smaller CSV files in Cloud Storage to reduce the number of BigQuery UPDATE DML statements per BigQuery job.",
       "D. Import the new records from the CSV file into a new BigQuery table. Create a BigQuery job that merges the new records with the existing records and writes the results to a new BigQuery table."
     ],
@@ -2100,7 +2100,7 @@ export const QUESTIONS = [
     "id": 38,
     "topic": "Storage",
     "difficulty": 2,
-    "question": "Your US-based company has created an application for assessing and responding to user actions. The primary table's data volume grows by 250,000 records per second. APIs should comply with: Single global endpoint, ANSI SQL support, Consistent access to the most up-to-date data. What should you do?",
+    "question": "Your United States-based company has created an application for assessing and responding to user actions. The primary table's data volume grows by 250,000 records per second. Many third parties use your application's APIs to build the functionality into their own frontend applications. Your application's APIs should comply with the following requirements:\n- Single global endpoint\n- ANSI SQL support\n- Consistent access to the most up-to-date data\n\nWhat should you do?",
     "options": [
       "A. Implement BigQuery with no region selected for storage or processing.",
       "B. Implement Cloud Spanner with the leader in North America and read-only replicas in Asia and Europe.",
@@ -2156,12 +2156,12 @@ export const QUESTIONS = [
     "id": 39,
     "topic": "ML/AI",
     "difficulty": 3,
-    "question": "A data scientist has created a BigQuery ML model and asks you to create an ML pipeline to serve predictions. You have a REST API application with the requirement to serve predictions for an individual user ID with latency under 100 milliseconds. How should you create the ML pipeline?",
+    "question": "A data scientist has created a BigQuery ML model and asks you to create an ML pipeline to serve predictions. You have a REST API application with the requirement to serve predictions for an individual user ID with latency under 100 milliseconds. You use the following query to generate predictions:\nSELECT predicted_label, user_id FROM ML.PREDICT (MODEL 'dataset.model', table user_features).\n\nHow should you create the ML pipeline?",
     "options": [
       "A. Add a WHERE clause to the query, and grant the BigQuery Data Viewer role to the application service account.",
       "B. Create an Authorized View with the provided query. Share the dataset that contains the view with the application service account.",
       "C. Create a Dataflow pipeline using BigQueryIO to read results from the query. Grant the Dataflow Worker role to the application service account.",
-      "D. Create a Dataflow pipeline using BigQueryIO to read predictions for all users from the query. Write the results to Bigtable using BigtableIO. Grant the Bigtable Reader role to the application service account."
+      "D. Create a Dataflow pipeline using BigQueryIO to read predictions for all users from the query.\nWrite the results to Bigtable using BigtableIO.\nGrant the Bigtable Reader role to the application service account so that the application can read predictions for individual users from Bigtable."
     ],
     "correct": 3,
     "explanation": "Create a Dataflow pipeline using BigQueryIO to read predictions for all users from th This SQL interface to ML models enabling predictions directly from BigQuery without data export; simplifies ML workflows.",
@@ -2268,11 +2268,11 @@ export const QUESTIONS = [
     "id": 41,
     "topic": "Architecture",
     "difficulty": 3,
-    "question": "You are building a new application that you need to collect data from in a scalable way. Data arrives continuously. You expect to generate approximately 150 GB of JSON data per day by the end of the year. Requirements: Decoupling producer from consumer, space and cost-efficient storage, near real-time SQL query, maintain at least 2 years of historical data. Which pipeline should you use?",
+    "question": "You are building a new application that you need to collect data from in a scalable way. Data arrives continuously from the application throughout the day, and you expect to generate approximately 150 GB of JSON data per day by the end of the year. Your requirements are:\n- Decoupling producer from consumer\n- Space and cost-efficient storage of the raw ingested data, which is to be stored indefinitely\n- Near real-time SQL query\n- Maintain at least 2 years of historical data, which will be queried with SQL\n\nWhich pipeline should you use to meet these requirements?",
     "options": [
       "A. Create an application that provides an API. Write a tool to poll the API and write data to Cloud Storage as gzipped JSON files.",
-      "B. Create an application that writes to a Cloud SQL database. Set up periodic exports of the database to write to Cloud Storage and load into BigQuery.",
-      "C. Create an application that publishes events to Cloud Pub/Sub, and create Spark jobs on Cloud Dataproc to convert the JSON data to Avro format, stored on HDFS.",
+      "B. Create an application that writes to a Cloud SQL database to store the data. Set up periodic exports of the database to write to Cloud Storage and load into BigQuery.",
+      "C. Create an application that publishes events to Cloud Pub/Sub, and create Spark jobs on Cloud Dataproc to convert the JSON data to Avro format, stored on HDFS on Persistent Disk.",
       "D. Create an application that publishes events to Cloud Pub/Sub, and create a Cloud Dataflow pipeline that transforms the JSON event payloads to Avro, writing the data to Cloud Storage and BigQuery."
     ],
     "correct": 3,
@@ -2324,13 +2324,13 @@ export const QUESTIONS = [
     "id": 42,
     "topic": "Dataflow",
     "difficulty": 2,
-    "question": "You are running a pipeline in Dataflow that receives messages from a Pub/Sub topic and writes results to a BigQuery dataset in the EU. Currently in europe-west4 with max 3 workers (n1-standard-1). During peak periods, all 3 workers are at maximum CPU utilization. Which two actions can you take to increase performance? (Choose two.)",
+    "question": "You are running a pipeline in Dataflow that receives messages from a Pub/Sub topic and writes the results to a BigQuery dataset in the EU. Currently, your pipeline is located in europe-west4 and has a maximum of 3 workers, instance type n1-standard-1. You notice that during peak periods, your pipeline is struggling to process records in a timely fashion, when all 3 workers are at maximum CPU utilization. Which two actions can you take to increase performance of your pipeline? (Choose two.)",
     "options": [
       "A. Increase the number of max workers",
       "B. Use a larger instance type for your Dataflow workers",
       "C. Change the zone of your Dataflow pipeline to run in us-central1",
-      "D. Create a temporary table in Bigtable that will act as a buffer for new data.",
-      "E. Create a temporary table in Cloud Spanner that will act as a buffer for new data."
+      "D. Create a temporary table in Bigtable that will act as a buffer for new data.\nCreate a new step in your pipeline to write to this table first, and then create a new pipeline to write from Bigtable to BigQuery",
+      "E. Create a temporary table in Cloud Spanner that will act as a buffer for new data.\nCreate a new step in your pipeline to write to this table first, and then create a new pipeline to write from Cloud Spanner to BigQuery"
     ],
     "correct": [
       0,
@@ -2675,11 +2675,11 @@ export const QUESTIONS = [
     "id": 48,
     "topic": "Security/Logging",
     "difficulty": 2,
-    "question": "Data Analysts in your company have the Cloud IAM Owner role in their projects. Your organization requires that all BigQuery data access logs be retained for 6 months. You need to ensure that only audit personnel can access the data access logs for all projects. What should you do?",
+    "question": "Data Analysts in your company have the Cloud IAM Owner role assigned to them in their projects to allow them to work with multiple GCP products in their projects. Your organization requires that all BigQuery data access logs be retained for 6 months. You need to ensure that only audit personnel in your company can access the data access logs for all projects. What should you do?",
     "options": [
       "A. Enable data access logs in each Data Analyst's project. Restrict access to Stackdriver Logging via Cloud IAM roles.",
-      "B. Export the data access logs via a project-level export sink to a Cloud Storage bucket in the Data Analysts' projects.",
-      "C. Export the data access logs via a project-level export sink to a Cloud Storage bucket in a newly created project for audit logs.",
+      "B. Export the data access logs via a project-level export sink to a Cloud Storage bucket in the Data Analysts' projects. Restrict access to the Cloud Storage bucket.",
+      "C. Export the data access logs via a project-level export sink to a Cloud Storage bucket in a newly created projects for audit logs. Restrict access to the project with the exported logs.",
       "D. Export the data access logs via an aggregated export sink to a Cloud Storage bucket in a newly created project for audit logs. Restrict access to the project that contains the exported logs."
     ],
     "correct": 3,
@@ -2731,12 +2731,12 @@ export const QUESTIONS = [
     "id": 49,
     "topic": "Monitoring",
     "difficulty": 3,
-    "question": "Each analytics team in your organization is running BigQuery jobs in their own projects. You want to enable each team to monitor slot usage within their projects. What should you do?",
+    "question": "Each analytics team in your organization is running BigQuery jobs in their own projects. You want to enable each team to monitor slot usage within their projects.\nWhat should you do?",
     "options": [
       "A. Create a Cloud Monitoring dashboard based on the BigQuery metric query/scanned_bytes",
       "B. Create a Cloud Monitoring dashboard based on the BigQuery metric slots/allocated_for_project",
-      "C. Create a log export for each project, capture the BigQuery job execution logs, create a custom metric based on the totalSlotMs, and create a Cloud Monitoring dashboard based on the custom metric",
-      "D. Create an aggregated log export at the organization level, capture the BigQuery job execution logs, create a custom metric based on the totalSlotMs, and create a Cloud Monitoring dashboard based on the custom metric"
+      "C. Create a log export for each project.\nCapture the BigQuery job execution logs, create a custom metric based on the totalSlotMs, and create a Cloud Monitoring dashboard based on the custom metric",
+      "D. Create an aggregated log export at the organization level.\nCapture the BigQuery job execution logs, create a custom metric based on the totalSlotMs, and create a Cloud Monitoring dashboard based on the custom metric"
     ],
     "correct": 1,
     "explanation": "Create a Cloud Monitoring dashboard based on the BigQuery metric slots/allocated_for_ This provides visibility into system performance and enables proactive alerting.",
@@ -2787,12 +2787,12 @@ export const QUESTIONS = [
     "id": 50,
     "topic": "Dataflow",
     "difficulty": 2,
-    "question": "You are operating a streaming Cloud Dataflow pipeline. Your engineers have a new version with a different windowing algorithm and triggering strategy. You want to update the running pipeline with the new version. You want to ensure that no data is lost. What should you do?",
+    "question": "You are operating a streaming Cloud Dataflow pipeline. Your engineers have a new version of the pipeline with a different windowing algorithm and triggering strategy. You want to update the running pipeline with the new version. You want to ensure that no data is lost during the update. What should you do?",
     "options": [
-      "A. Update the pipeline inflight by passing the --update option with the --jobName set to the existing job name",
-      "B. Update the pipeline inflight by passing the --update option with the --jobName set to a new unique job name",
-      "C. Stop the pipeline with the Cancel option. Create a new Cloud Dataflow job with the updated code",
-      "D. Stop the pipeline with the Drain option. Create a new Cloud Dataflow job with the updated code"
+      "A. Update the Cloud Dataflow pipeline inflight by passing the --update option with the --jobName set to the existing job name",
+      "B. Update the Cloud Dataflow pipeline inflight by passing the --update option with the --jobName set to a new unique job name",
+      "C. Stop the Cloud Dataflow pipeline with the Cancel option. Create a new Cloud Dataflow job with the updated code",
+      "D. Stop the Cloud Dataflow pipeline with the Drain option. Create a new Cloud Dataflow job with the updated code"
     ],
     "correct": 3,
     "explanation": "Stop the pipeline with the Drain option This windowing groups streaming data into logical windows (tumbling, sliding, session) to aggregate time-series data and detect patterns.",
@@ -2955,19 +2955,19 @@ export const QUESTIONS = [
     "id": 53,
     "topic": "Dataproc",
     "difficulty": 2,
-    "question": "You want to migrate an on-premises Hadoop system to Cloud Dataproc. Hive is the primary tool, and the data format is ORC. All ORC files have been copied to a Cloud Storage bucket. You need to replicate some data to the cluster's local HDFS to maximize performance. What are two ways to start using Hive in Cloud Dataproc? (Choose two.)",
+    "question": "You want to migrate an on-premises Hadoop system to Cloud Dataproc. Hive is the primary tool in use, and the data format is Optimized Row Columnar (ORC). All ORC files have been successfully copied to a Cloud Storage bucket. You need to replicate some data to the cluster's local Hadoop Distributed File System (HDFS) to maximize performance. What are two ways to start using Hive in Cloud Dataproc? (Choose two.)",
     "options": [
-      "A. Run gsutil to transfer all ORC files from Cloud Storage to HDFS. Mount the Hive tables locally.",
-      "B. Run gsutil to transfer all ORC files from Cloud Storage to any node of the Dataproc cluster. Mount the Hive tables locally.",
-      "C. Run gsutil to transfer all ORC files from Cloud Storage to the master node. Then run the Hadoop utility to copy them to HDFS. Mount the Hive tables from HDFS.",
-      "D. Leverage Cloud Storage connector for Hadoop to mount the ORC files as external Hive tables. Replicate external Hive tables to the native ones.",
-      "E. Load the ORC files into BigQuery. Leverage BigQuery connector for Hadoop to mount the BigQuery tables as external Hive tables."
+      "A. Run the gsutil utility to transfer all ORC files from the Cloud Storage bucket to HDFS.\nMount the Hive tables locally.",
+      "B. Run the gsutil utility to transfer all ORC files from the Cloud Storage bucket to any node of the Dataproc cluster.\nMount the Hive tables locally.",
+      "C. Run the gsutil utility to transfer all ORC files from the Cloud Storage bucket to the master node of the Dataproc cluster.\nThen run the Hadoop utility to copy them do HDFS.\nMount the Hive tables from HDFS.",
+      "D. Leverage Cloud Storage connector for Hadoop to mount the ORC files as external Hive tables.\nReplicate external Hive tables to the native ones.",
+      "E. Load the ORC files into BigQuery.\nLeverage BigQuery connector for Hadoop to mount the BigQuery tables as external Hive tables.\nReplicate external Hive tables to the native ones."
     ],
     "correct": [
-      2,
+      0,
       3
     ],
-    "explanation": "Run gsutil to transfer all ORC files from Cloud Storage to the master node This Google Cloud Storage provides object storage with strong consistency, lifecycle policies, and versioning; regional buckets optimize for single-region performance.",
+    "explanation": "Run the gsutil utility to transfer all ORC files from the Cloud Storage bucket to HDFS, and leverage the Cloud Storage connector for Hadoop to mount the ORC files as external Hive tables and replicate them to native tables.",
     "discussion": [
       {
         "user": "Sid19",
@@ -3003,13 +3003,13 @@ export const QUESTIONS = [
     "conflict": false,
     "discussionSummary": "",
     "conceptSummary": "Migrating ORC data from GCS to a Dataproc cluster's local HDFS for maximum performance.",
-    "correctRationale": "To maximize performance for I/O intensive jobs, data should reside in the Dataproc cluster's internal HDFS. You can move data from GCS to HDFS by either downloading it to the master node and using Hadoop utilities to copy it into HDFS, or by leveraging Hive itself to read from a GCS external table and write to an internal HDFS table.",
+    "correctRationale": "Dataproc includes the Cloud Storage connector, so Hive can mount ORC files in Cloud Storage as external tables and then replicate selected data into native HDFS-backed Hive tables for better performance. The alternate accepted bulk-transfer approach is to move the ORC files directly into HDFS first and then mount the Hive tables locally.",
     "optionRationales": [
-      "Wrong: `gsutil` copies files to the local OS filesystem of a node, not into the distributed Hadoop File System (HDFS).",
-      "Wrong: Copying data to an arbitrary node's local filesystem does not make it available to the HDFS cluster as a whole.",
-      "Correct: You can stage the files on the master node via `gsutil`, and then use standard Hadoop commands (`hadoop fs -put`) to move them into HDFS.",
-      "Correct: This is the native Hadoop ecosystem approach: define an external Hive table pointing to the GCS bucket, then execute an INSERT query to replicate the data into a native HDFS Hive table.",
-      "Wrong: Loading data into BigQuery just to pull it back down into Hive via a connector is extremely inefficient and ignores that the files are already in GCS."
+      "Correct: This is the bulk-transfer approach. Moving the files into HDFS first lets Hive use native local HDFS tables for maximum cluster-side performance.",
+      "Wrong: Downloading the ORC files to an arbitrary Dataproc node stores them on that node's local filesystem, not in distributed HDFS.",
+      "Wrong: Downloading all files to the master node creates a single-node bottleneck and risks filling the master node's local disk before the data reaches HDFS.",
+      "Correct: This is the recommended Dataproc approach. Use the Cloud Storage connector to create external Hive tables over the ORC files in GCS, then replicate only the needed data into native Hive tables.",
+      "Wrong: Loading ORC files into BigQuery just to expose them back to Hadoop is an unnecessary, slower, and more expensive middle step because the files are already in Cloud Storage."
     ]
   },
   {
@@ -3072,12 +3072,12 @@ export const QUESTIONS = [
     "id": 55,
     "topic": "ML/AI",
     "difficulty": 3,
-    "question": "You work for a shipping company that wants to add cameras to delivery lines to detect and track any visual damage to packages in transit. You need to create a way to automate the detection of damaged packages and flag them for human review in real time while the packages are in transit. Which solution should you choose?",
+    "question": "You work for a shipping company that has distribution centers where packages move on delivery lines to route them properly. The company wants to add cameras to the delivery lines to detect and track any visual damage to the packages in transit. You need to create a way to automate the detection of damaged packages and flag them for human review in real time while the packages are in transit. Which solution should you choose?",
     "options": [
-      "A. Use BigQuery machine learning to train the model at scale, so you can analyze the packages in batches.",
+      "A. Use BigQuery machine learning to be able to train the model at scale, so you can analyze the packages in batches.",
       "B. Train an AutoML model on your corpus of images, and build an API around that model to integrate with the package tracking applications.",
-      "C. Use the Cloud Vision API to detect for damage, and raise an alert through Cloud Functions.",
-      "D. Use TensorFlow to create a model trained on your corpus of images. Create a Python notebook in Cloud Datalab."
+      "C. Use the Cloud Vision API to detect for damage, and raise an alert through Cloud Functions. Integrate the package tracking applications with this function.",
+      "D. Use TensorFlow to create a model that is trained on your corpus of images. Create a Python notebook in Cloud Datalab that uses this model so you can analyze for damaged packages."
     ],
     "correct": 1,
     "explanation": "Train an AutoML model on your corpus of images, and build an API around that model to This ensures better model generalization and prevents overfitting on unseen data.",
@@ -3184,7 +3184,7 @@ export const QUESTIONS = [
     "id": 57,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "You need to store and analyze social media postings in BigQuery at a rate of 10,000 messages per minute in near real-time. Initially, design the application to use streaming inserts. Your application also performs data aggregations right after the streaming inserts. You discover that the queries do not exhibit strong consistency. How can you adjust your application design?",
+    "question": "You need to store and analyze social media postings in Google BigQuery at a rate of 10,000 messages per minute in near real-time. Initially, design the application to use streaming inserts for individual postings. Your application also performs data aggregations right after the streaming inserts. You discover that the queries after streaming inserts do not exhibit strong consistency, and reports from the queries might miss in-flight data. How can you adjust your application design?",
     "options": [
       "A. Re-write the application to load accumulated data every 2 minutes.",
       "B. Convert the streaming insert code to batch load for individual messages.",
@@ -3296,7 +3296,7 @@ export const QUESTIONS = [
     "id": 59,
     "topic": "Dataproc/ML",
     "difficulty": 2,
-    "question": "You work for an advertising company and have developed a Spark ML model to predict click-through rates. You've been developing at your on-premises data center, and now migrating to Google Cloud. You need to migrate existing training pipelines to Google Cloud quickly. The data will be in BigQuery. What should you do?",
+    "question": "You work for an advertising company, and you've developed a Spark ML model to predict click-through rates at advertisement blocks. You've been developing everything at your on-premises data center, and now your company is migrating to Google Cloud. Your data center will be closing soon, so a rapid lift-and-shift migration is necessary. However, the data you've been using will be migrated to migrated to BigQuery. You periodically retrain your Spark ML models, so you need to migrate existing training pipelines to Google Cloud. What should you do?",
     "options": [
       "A. Use Vertex AI for training existing Spark ML models",
       "B. Rewrite your models on TensorFlow, and start using Vertex AI",
@@ -3352,7 +3352,7 @@ export const QUESTIONS = [
     "id": 60,
     "topic": "BigQuery/ML",
     "difficulty": 2,
-    "question": "You work for a global shipping company. You want to train a model on 40 TB of data to predict which ships in each geographic region are likely to cause delivery delays. Telemetry data including location in GeoJSON format will be pulled from each ship. You want to use a storage solution that has native functionality for prediction and geospatial processing. Which storage solution should you use?",
+    "question": "You work for a global shipping company. You want to train a model on 40 TB of data to predict which ships in each geographic region are likely to cause delivery delays on any given day. The model will be based on multiple attributes collected from multiple sources. Telemetry data, including location in GeoJSON format, will be pulled from each ship and loaded every hour. You want to have a dashboard that shows how many and which ships are likely to cause delays within a region. You want to use a storage solution that has native functionality for prediction and geospatial processing. Which storage solution should you use?",
     "options": [
       "A. BigQuery",
       "B. Cloud Bigtable",
@@ -3520,7 +3520,7 @@ export const QUESTIONS = [
     "id": 63,
     "topic": "Data Ingestion",
     "difficulty": 2,
-    "question": "Your company is selecting a system to centralize data ingestion and delivery. Key requirements: ability to seek to a particular offset, support publish/subscribe semantics on hundreds of topics, retain per-key ordering. Which system should you choose?",
+    "question": "Your company is selecting a system to centralize data ingestion and delivery. You are considering messaging and data integration systems to address the requirements. The key requirements are:\n- The ability to seek to a particular offset in a topic, possibly back to the start of all data ever captured\n- Support for publish/subscribe semantics on hundreds of topics\n- Retain per-key ordering\n\nWhich system should you choose?",
     "options": [
       "A. Apache Kafka",
       "B. Cloud Storage",
@@ -3576,12 +3576,12 @@ export const QUESTIONS = [
     "id": 64,
     "topic": "Dataproc",
     "difficulty": 2,
-    "question": "You are planning to migrate your current on-premises Apache Hadoop deployment to the cloud. You need to ensure fault-tolerance and cost-effectiveness for long-running batch jobs. You want to use a managed service. What should you do?",
+    "question": "You are planning to migrate your current on-premises Apache Hadoop deployment to the cloud. You need to ensure that the deployment is as fault-tolerant and cost-effective as possible for long-running batch jobs. You want to use a managed service. What should you do?",
     "options": [
-      "A. Deploy a Dataproc cluster. Use a standard persistent disk and 50% preemptible workers. Store data in Cloud Storage, change references from hdfs:// to gs://",
-      "B. Deploy a Dataproc cluster. Use an SSD persistent disk and 50% preemptible workers. Store data in Cloud Storage.",
-      "C. Install Hadoop and Spark on a 10-node Compute Engine instance group with standard instances.",
-      "D. Install Hadoop and Spark on a 10-node Compute Engine instance group with preemptible instances. Store data in HDFS."
+      "A. Deploy a Dataproc cluster.\nUse a standard persistent disk and 50% preemptible workers.\nStore data in Cloud Storage, and change references in scripts from hdfs:// to gs://",
+      "B. Deploy a Dataproc cluster.\nUse an SSD persistent disk and 50% preemptible workers.\nStore data in Cloud Storage, and change references in scripts from hdfs:// to gs://",
+      "C. Install Hadoop and Spark on a 10-node Compute Engine instance group with standard instances.\nInstall the Cloud Storage connector, and store the data in Cloud Storage.\nChange references in scripts from hdfs:// to gs://",
+      "D. Install Hadoop and Spark on a 10-node Compute Engine instance group with preemptible instances.\nStore data in HDFS.\nChange references in scripts from hdfs:// to gs://"
     ],
     "correct": 0,
     "explanation": "Deploy a Dataproc cluster This reducing GCP spend through resource right-sizing, committed use discounts, and preemptible instances.",
@@ -3916,7 +3916,7 @@ export const QUESTIONS = [
     "options": [
       "A. Create a table in BigQuery, and append the new samples for CPU and memory to the table",
       "B. Create a wide table in BigQuery, create a column for the sample value at each second, and update the row with the interval for each second",
-      "C. Create a narrow table in Bigtable with a row key that combines the computer identifier with the sample time at each second",
+      "C. Create a narrow table in Bigtable with a row key that combines the Computer Engine computer identifier with the sample time at each second",
       "D. Create a wide table in Bigtable with a row key that combines the computer identifier with the sample time at each minute, and combine the values for each second as column data."
     ],
     "correct": 3,
@@ -4128,11 +4128,11 @@ export const QUESTIONS = [
     "id": 74,
     "topic": "Spanner",
     "difficulty": 2,
-    "question": "You work for a large bank that operates in locations throughout North America. You need a data storage system for bank account transactions. You require ACID compliance and the ability to access data with SQL. Which solution is appropriate?",
+    "question": "You work for a large bank that operates in locations throughout North America. You are setting up a data storage system that will handle bank account transactions. You require ACID compliance and the ability to access data with SQL. Which solution is appropriate?",
     "options": [
       "A. Store transaction data in Cloud Spanner. Enable stale reads to reduce latency.",
-      "B. Store transactions in Cloud Spanner. Use locking read-write transactions.",
-      "C. Store transaction data in BigQuery. Disable the query cache to ensure consistency.",
+      "B. Store transaction in Cloud Spanner. Use locking read-write transactions.",
+      "C. Store transaction data in BigQuery. Disabled the query cache to ensure consistency.",
       "D. Store transaction data in Cloud SQL. Use a federated query BigQuery for analysis."
     ],
     "correct": 1,
@@ -4240,7 +4240,7 @@ export const QUESTIONS = [
     "id": 76,
     "topic": "Data Migration",
     "difficulty": 1,
-    "question": "Your company currently runs a large on-premises cluster using Spark, Hive, and HDFS. They are eager to move to the cloud to reduce overhead and benefit from cost savings. They have only 2 months for their initial migration. How would you recommend they approach the migration strategy?",
+    "question": "Your company currently runs a large on-premises cluster using Spark, Hive, and HDFS in a colocation facility. The cluster is designed to accommodate peak usage on the system; however, many jobs are batch in nature, and usage of the cluster fluctuates quite dramatically. Your company is eager to move to the cloud to reduce the overhead associated with on-premises infrastructure and maintenance and to benefit from the cost savings. They are also hoping to modernize their existing infrastructure to use more serverless offerings in order to take advantage of the cloud. Because of the timing of their contract renewal with the colocation facility, they have only 2 months for their initial migration. How would you recommend they approach their upcoming migration strategy so they can maximize their cost savings in the cloud while still executing the migration in time?",
     "options": [
       "A. Migrate the workloads to Dataproc plus HDFS; modernize later.",
       "B. Migrate the workloads to Dataproc plus Cloud Storage; modernize later.",
@@ -4296,12 +4296,12 @@ export const QUESTIONS = [
     "id": 77,
     "topic": "Security/DLP",
     "difficulty": 2,
-    "question": "You work for a financial institution. As new customers register, their data is sent to Pub/Sub before being ingested into BigQuery. You decide to redact the Government issued Identification Number while allowing customer service reps to view the original values when necessary. What should you do?",
+    "question": "You work for a financial institution that lets customers register online. As new customers register, their user data is sent to Pub/Sub before being ingested into BigQuery. For security reasons, you decide to redact your customers' Government issued Identification Number while allowing customer service representatives to view the original values when necessary. What should you do?",
     "options": [
-      "A. Use BigQuery's built-in AEAD encryption to encrypt the SSN column. Save the keys to a new table only viewable by permissioned users.",
-      "B. Use BigQuery column-level security. Set the table permissions so only members of the Customer Service group can see the SSN column.",
-      "C. Before loading into BigQuery, use Cloud DLP to replace input values with a cryptographic hash.",
-      "D. Before loading into BigQuery, use Cloud DLP to replace input values with a cryptographic format-preserving encryption token."
+      "A. Use BigQuery's built-in AEAD encryption to encrypt the SSN column. Save the keys to a new table that is only viewable by permissioned users.",
+      "B. Use BigQuery column-level security. Set the table permissions so that only members of the Customer Service user group can see the SSN column.",
+      "C. Before loading the data into BigQuery, use Cloud Data Loss Prevention (DLP) to replace input values with a cryptographic hash.",
+      "D. Before loading the data into BigQuery, use Cloud Data Loss Prevention (DLP) to replace input values with a cryptographic format-preserving encryption token."
     ],
     "correct": 3,
     "explanation": "Before loading into BigQuery, use Cloud DLP to replace input values with a cryptograp This Google's managed pub/sub messaging service enabling asynchronous communication with built-in ordering guarantees and at-least-once delivery semantics.",
@@ -4352,7 +4352,7 @@ export const QUESTIONS = [
     "id": 78,
     "topic": "BigQuery",
     "difficulty": 2,
-    "question": "You are migrating a table to BigQuery. The table stores purchase information including time of transaction, items, store ID, and city/state of store location. You frequently query for items sold over the past 30 days and look at purchasing trends by state, city, and store. How would you model this table for best performance?",
+    "question": "You are migrating a table to BigQuery and are deciding on the data model. Your table stores information related to purchases made across several store locations and includes information like the time of the transaction, items purchased, the store ID, and the city and state in which the store is located. You frequently query this table to see how many of each item were sold over the past 30 days and to look at purchasing trends by state, city, and individual store. How would you model this table for the best query performance?",
     "options": [
       "A. Partition by transaction time; cluster by state first, then city, then store ID.",
       "B. Partition by transaction time; cluster by store ID first, then city, then state.",
@@ -4408,7 +4408,7 @@ export const QUESTIONS = [
     "id": 79,
     "topic": "Dataproc",
     "difficulty": 2,
-    "question": "Your company is migrating their 30-node Apache Hadoop cluster to the cloud. They want to re-use Hadoop jobs and minimize cluster management. They also want to persist data beyond the life of the cluster. What should you do?",
+    "question": "Your company is migrating their 30-node Apache Hadoop cluster to the cloud. They want to re-use Hadoop jobs they have already created and minimize the management of the cluster as much as possible. They also want to be able to persist data beyond the life of the cluster. What should you do?",
     "options": [
       "A. Create a Google Cloud Dataflow job to process the data.",
       "B. Create a Google Cloud Dataproc cluster that uses persistent disks for HDFS.",
@@ -4466,12 +4466,12 @@ export const QUESTIONS = [
     "id": 80,
     "topic": "Pub/Sub",
     "difficulty": 2,
-    "question": "You are updating the code for a subscriber to a Pub/Sub feed. You are concerned that upon deployment the subscriber may erroneously acknowledge messages, leading to message loss. Your subscriber is not set up to retain acknowledged messages. What should you do?",
+    "question": "You are updating the code for a subscriber to a Pub/Sub feed. You are concerned that upon deployment the subscriber may erroneously acknowledge messages, leading to message loss. Your subscriber is not set up to retain acknowledged messages. What should you do to ensure that you can recover from errors after deployment?",
     "options": [
-      "A. Set up the Pub/Sub emulator on your local machine. Validate the behavior of your new subscriber logic before deploying.",
+      "A. Set up the Pub/Sub emulator on your local machine. Validate the behavior of your new subscriber logic before deploying it to production.",
       "B. Create a Pub/Sub snapshot before deploying new subscriber code. Use a Seek operation to re-deliver messages that became available after the snapshot was created.",
-      "C. Use Cloud Build for your deployment. If an error occurs, use a Seek operation to locate a timestamp logged by Cloud Build.",
-      "D. Enable dead-lettering on the Pub/Sub topic to capture messages that aren't successfully acknowledged."
+      "C. Use Cloud Build for your deployment. If an error occurs after deployment, use a Seek operation to locate a timestamp logged by Cloud Build at the start of the deployment.",
+      "D. Enable dead-lettering on the Pub/Sub topic to capture messages that aren't successfully acknowledged. If an error occurs after deployment, re-deliver any messages captured by the dead-letter queue."
     ],
     "correct": 1,
     "explanation": "Create a Pub/Sub snapshot before deploying new subscriber code This Google's managed pub/sub messaging service enabling asynchronous communication with built-in ordering guarantees and at-least-once delivery semantics.",
@@ -5878,7 +5878,7 @@ export const QUESTIONS = [
       "D. Use an Apache Beam custom connector to write a Dataflow pipeline that streams the data into BigQuery in Avro format."
     ],
     "correct": 3,
-    "explanation": "Use an Apache Beam custom connector to write a Dataflow pipeline that streams data in This approach meets the stated requirements.",
+    "explanation": "Use an Apache Beam custom connector in Dataflow to parse the proprietary source format and stream efficient Avro-formatted records into BigQuery.",
     "discussion": [
       {
         "user": "beanz00",
@@ -11927,15 +11927,15 @@ export const QUESTIONS = [
     "id": 216,
     "topic": "Dataplex",
     "difficulty": 2,
-    "question": "You need to organize data in Cloud Storage and BigQuery. You need to enable a data mesh approach to share data between departments. What should you do?",
+    "question": "Your organization is modernizing their IT services and migrating to Google Cloud. You need to organize the data that will be stored in Cloud Storage and BigQuery. You need to enable a data mesh approach to share the data between sales, product design, and marketing departments. What should you do?",
     "options": [
-      "A. Create a project for each department. Create user groups for authorized readers. Enable IT to administer.",
-      "B. Create multiple projects for each department. Enable each to create buckets and datasets. Publish data in Analytics Hub.",
-      "C. Create a single project. Create a central bucket with three folders. Create a central dataset with table prefixes.",
-      "D. Create multiple projects. In Dataplex, map each department to a data lake. Enable each department to own and share their data."
+      "A. 1. Create a project for storage of the data for each of your departments.\n2. Enable each department to create Cloud Storage buckets and BigQuery datasets.\n3. Create user groups for authorized readers for each bucket and dataset.\n4. Enable the IT team to administer the user groups to add or remove users as the departments' request.",
+      "B. 1. Create multiple projects for storage of the data for each of your departments' applications.\n2. Enable each department to create Cloud Storage buckets and BigQuery datasets.\n3. Publish the data that each department shared in Analytics Hub.\n4. Enable all departments to discover and subscribe to the data they need in Analytics Hub.",
+      "C. 1. Create a project for storage of the data for your organization.\n2. Create a central Cloud Storage bucket with three folders to store the files for each department.\n3. Create a central BigQuery dataset with tables prefixed with the department name.\n4. Give viewer rights for the storage project for the users of your departments.",
+      "D. 1. Create multiple projects for storage of the data for each of your departments' applications.\n2. Enable each department to create Cloud Storage buckets and BigQuery datasets.\n3. In Dataplex, map each department to a data lake and the Cloud Storage buckets, and map the BigQuery datasets to zones.\n4. Enable each department to own and share the data of their data lakes."
     ],
     "correct": 3,
-    "explanation": "Create multiple projects This Google Cloud Storage provides object storage with strong consistency, lifecycle policies, and versioning; regional buckets optimize for single-region performance.",
+    "explanation": "Use Dataplex to map each department to its own data lake and zones so departments can own, govern, and share their data products in a data mesh.",
     "discussion": [
       {
         "user": "raaad",
@@ -13223,12 +13223,12 @@ export const QUESTIONS = [
     "id": 240,
     "topic": "Dataflow/Networking",
     "difficulty": 2,
-    "question": "You are configuring networking for a Dataflow job with custom container images. The pipeline reads from Cloud Storage and writes to BigQuery. You need cost-effective and secure communication. What should you do?",
+    "question": "You are configuring networking for a Dataflow job. The data pipeline uses custom container images with the libraries that are required for the transformation logic preinstalled. The data pipeline reads the data from Cloud Storage and writes the data to BigQuery. You need to ensure cost-effective and secure communication between the pipeline and Google APIs and services. What should you do?",
     "options": [
-      "A. Disable external IP addresses and enable Private Google Access.",
-      "B. Leave external IP addresses. Enforce firewall rules.",
-      "C. Disable external IP addresses and establish a Private Service Connect endpoint.",
-      "D. Enable Cloud NAT for outbound internet while enforcing firewall rules."
+      "A. Disable external IP addresses from worker VMs and enable Private Google Access.",
+      "B. Leave external IP addresses assigned to worker VMs while enforcing firewall rules.",
+      "C. Disable external IP addresses and establish a Private Service Connect endpoint IP address.",
+      "D. Enable Cloud NAT to provide outbound internet connectivity while enforcing firewall rules."
     ],
     "correct": 0,
     "explanation": "Disable external IP addresses and enable Private Google Access This Google's fully managed streaming and batch data processing service that provides exactly-once semantics with auto-scaling and low latency.",

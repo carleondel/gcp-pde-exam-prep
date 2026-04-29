@@ -68,12 +68,15 @@ export function SpinWheel({ onComplete, onClose }) {
           <button onClick={onClose} style={{marginTop:16,padding:"10px 36px",background:"var(--gradient-practice)",border:"none",borderRadius:"var(--radius-sm)",color:"white",fontSize:14,fontWeight:600,cursor:"pointer"}}>Continuar</button>
         </div>
       ) : (
-        <button onClick={spin} disabled={spinning} style={{
-          padding:"14px 52px",background:spinning?"var(--text-muted)":"var(--gradient-mock)",
-          border:"none",borderRadius:"var(--radius-md)",color:"white",fontSize:18,fontWeight:800,
-          cursor:spinning?"wait":"pointer",boxShadow:spinning?"none":"0 4px 25px rgba(212,147,10,0.3)",
-          animation:spinning?"":"pulse 1.5s infinite",position:"relative",fontFamily:"var(--font-mono)"
-        }}>{spinning?"Girando...":"\u2605 GIRAR \u2605"}</button>
+        <div style={{display:"flex",gap:12,justifyContent:"center",alignItems:"center"}}>
+          <button onClick={spin} disabled={spinning} style={{
+            padding:"14px 52px",background:spinning?"var(--text-muted)":"var(--gradient-mock)",
+            border:"none",borderRadius:"var(--radius-md)",color:"white",fontSize:18,fontWeight:800,
+            cursor:spinning?"wait":"pointer",boxShadow:spinning?"none":"0 4px 25px rgba(212,147,10,0.3)",
+            animation:spinning?"":"pulse 1.5s infinite",position:"relative",fontFamily:"var(--font-mono)"
+          }}>{spinning?"Girando...":"\u2605 GIRAR \u2605"}</button>
+          {!spinning && <button onClick={onClose} style={{padding:"14px 28px",background:"transparent",border:"1px solid var(--surface-line)",borderRadius:"var(--radius-md)",color:"var(--text-secondary)",fontSize:14,fontWeight:600,cursor:"pointer",fontFamily:"var(--font-mono)"}}>SALTAR</button>}
+        </div>
       )}
     </div>
   </div>;
