@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { QUESTIONS } from "./certs/gcp-pde/questions.js";
-import { TOPICS } from "./certs/gcp-pde/topics.js";
 import { RANKS, ACHIEVEMENTS, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
 import { EXAM_DOMAINS, computeDomainStats, computeCanonicalTopicStats, getWeakestDomain, getCanonicalTopic } from "./certs/gcp-pde/domains.js";
 import {
@@ -125,10 +123,10 @@ function sanitizePracticeSource(source) {
   return PRACTICE_SOURCE_META[source] ? source : "topics";
 }
 
-function sanitizePracticeTopics(topics) {
-  const values = Array.isArray(topics) ? topics : TOPICS;
-  const next = values.filter((topic, index) => TOPICS.includes(topic) && values.indexOf(topic) === index);
-  return next.length ? next : [...TOPICS];
+function sanitizePracticeTopics(topics, allTopics) {
+  const values = Array.isArray(topics) ? topics : allTopics;
+  const next = values.filter((topic, index) => allTopics.includes(topic) && values.indexOf(topic) === index);
+  return next.length ? next : [...allTopics];
 }
 
 function sanitizePracticeLimit(limit) {
@@ -313,21 +311,22 @@ function rollPracticeRewards(streak, hasBossKey) {
   return rewards;
 }
 
-function buildTopicCounts() {
+function buildTopicCounts(questions) {
   const counts = {};
-  QUESTIONS.forEach((question) => {
+  questions.forEach((question) => {
     counts[question.topic] = (counts[question.topic] || 0) + 1;
   });
   return counts;
 }
 
-function App() {
+function AppContent({ allQuestions }) {
   const qRef = useRef(null);
   const previousAchievementsRef = useRef([]);
   const storedPracticePrefs = useMemo(() => loadPracticePrefs() || {}, []);
   const storedBlockPrefs = useMemo(() => loadBlockPrefs() || {}, []);
-  const questionMap = useMemo(() => new Map(QUESTIONS.map((question) => [question.id, question])), []);
-  const topicCounts = useMemo(() => buildTopicCounts(), []);
+  const topics = useMemo(() => [...new Set(allQuestions.map((q) => q.topic))], [allQuestions]);
+  const questionMap = useMemo(() => new Map(allQuestions.map((question) => [question.id, question])), [allQuestions]);
+  const topicCounts = useMemo(() => buildTopicCounts(allQuestions), [allQuestions]);
   const [ready, setReady] = useState(false);
   const [screen, setScreen] = useState("menu");
   const [progress, setProgress] = useState(EMPTY_PROGRESS);
@@ -336,7 +335,7 @@ function App() {
   const [mockPreferRecent, setMockPreferRecent] = useState(false);
   const [savedBlockSession, setSavedBlockSession] = useState(null);
   const [resultPayload, setResultPayload] = useState(null);
-  const [selectedTopics, setSelectedTopics] = useState(() => new Set(sanitizePracticeTopics(storedPracticePrefs.topics)));
+  const [selectedTopics, setSelectedTopics] = useState(() => new Set(sanitizePracticeTopics(storedPracticePrefs.topics, topics)));
   const [practiceOrder, setPracticeOrder] = useState(() => sanitizePracticeOrder(storedPracticePrefs.order));
   const [practiceSource, setPracticeSource] = useState(() => sanitizePracticeSource(storedPracticePrefs.source));
   const [practiceLimit, setPracticeLimit] = useState(() => sanitizePracticeLimit(storedPracticePrefs.limit));
@@ -383,15 +382,15 @@ function App() {
     [progress.bookmarks, questionMap]
   );
   const recentQuestions = useMemo(
-    () => QUESTIONS.filter((question) => question.isRecent),
+    () => allQuestions.filter((question) => question.isRecent),
     []
   );
   const topicQuestions = useMemo(
-    () => QUESTIONS.filter((question) => selectedTopics.has(question.topic)),
+    () => allQuestions.filter((question) => selectedTopics.has(question.topic)),
     [selectedTopics]
   );
   const weakQuestions = useMemo(
-    () => QUESTIONS.filter((question) => weakTopicSet.has(question.topic)),
+    () => allQuestions.filter((question) => weakTopicSet.has(question.topic)),
     [weakTopicSet]
   );
   const practiceSourceQuestions = useMemo(() => {
@@ -408,7 +407,7 @@ function App() {
     bookmarks: bookmarkedQuestions.length,
     weak: weakQuestions.length,
   }), [bookmarkedQuestions.length, recentQuestions.length, topicQuestions.length, weakQuestions.length, wrongQuestions.length]);
-  const blockCatalog = useMemo(() => buildBlockCatalog(QUESTIONS, blockTrackSize), [blockTrackSize]);
+  const blockCatalog = useMemo(() => buildBlockCatalog(allQuestions, blockTrackSize), [blockTrackSize]);
   const effectiveSelectedBlockIndex = useMemo(() => {
     if (!blockCatalog.blocks.length) return 0;
     return Math.min(Math.max(0, selectedBlockIndex), blockCatalog.blocks.length - 1);
@@ -465,7 +464,7 @@ function App() {
     }
     return {
       title: "Por dominio",
-      subtitle: selectedTopics.size === TOPICS.length
+      subtitle: selectedTopics.size === topics.length
         ? "Banco completo listo para práctica."
         : "Sesión filtrada por dominio.",
       badge: formatPracticeBadge(selectedTopics.size, "tema", "temas"),
@@ -687,7 +686,7 @@ function App() {
     if (rewardKey === "chest") setShowChest(true);
     if (rewardKey === "boss") {
       const dragon = selectDragon(progress.xp);
-      const battleQuestions = getBattleQuestions(QUESTIONS, dragon);
+      const battleQuestions = getBattleQuestions(allQuestions, dragon);
       setBossDragon(dragon);
       setBossQuestions(battleQuestions);
       setShowBoss(true);
@@ -778,13 +777,13 @@ function App() {
     if (!ready) return;
 
     let nextSource = practiceSource;
-    let nextTopics = new Set([...selectedTopics].filter((topic) => TOPICS.includes(topic)));
+    let nextTopics = new Set([...selectedTopics].filter((topic) => topics.includes(topic)));
     let nextLimit = sanitizePracticeLimit(practiceLimit);
     let nextShowCustom = showCustomLimit;
     let nextMessage = "";
 
     if (!nextTopics.size) {
-      nextTopics = new Set(TOPICS);
+      nextTopics = new Set(topics);
       nextMessage = "Ajustamos los temas a los disponibles actualmente.";
     }
 
@@ -801,7 +800,7 @@ function App() {
         ? practiceSourceCounts.bookmarks
         : nextSource === "weak"
           ? practiceSourceCounts.weak
-          : QUESTIONS.filter((question) => nextTopics.has(question.topic)).length;
+          : allQuestions.filter((question) => nextTopics.has(question.topic)).length;
 
     if (nextMax > 0 && nextLimit > nextMax) {
       nextLimit = nextMax;
@@ -1094,7 +1093,7 @@ function App() {
       : practiceSource === "topics"
         ? selectedTopics
         : null;
-    const questions = buildPracticeQuestions(QUESTIONS, {
+    const questions = buildPracticeQuestions(allQuestions, {
       topicSet,
       order: practiceOrder,
       questionIds,
@@ -1114,7 +1113,7 @@ function App() {
   }, [effectivePracticeLimit, practiceOrder, practiceSource, progress.bookmarks, progress.wrongQuestionIds, questionMap, recentQuestions, resetQuestionUi, selectedTopics, weakTopicSet]);
 
   const startMock = useCallback(() => {
-    const questions = buildMockQuestions(QUESTIONS, MOCK_QUESTION_COUNT, { preferRecent: mockPreferRecent });
+    const questions = buildMockQuestions(allQuestions, MOCK_QUESTION_COUNT, { preferRecent: mockPreferRecent });
     const nextSession = createMockSession(questions.map((question) => question.id), {
       status: "active",
       durationSec: MOCK_DURATION_SEC,
@@ -1130,7 +1129,7 @@ function App() {
     if (!resultPayload || resultPayload.mode !== "mock") return;
     const wrongIds = resultPayload.history.filter((entry) => !entry.correct).map((entry) => entry.questionId);
     if (!wrongIds.length) return;
-    const questions = buildPracticeQuestions(QUESTIONS, {
+    const questions = buildPracticeQuestions(allQuestions, {
       questionIds: wrongIds,
       questionMap,
       order: "sequential",
@@ -1159,7 +1158,7 @@ function App() {
 
   const startDailyChallenge = useCallback(() => {
     if (isDailyChallengeCompleted(progress)) return;
-    const questions = buildDailyChallengeQuestions(QUESTIONS);
+    const questions = buildDailyChallengeQuestions(allQuestions);
     if (!questions.length) return;
     setSession(createPracticeSession(questions, {
       order: "sequential",
@@ -1527,7 +1526,7 @@ function App() {
           </div>
           <button onClick={() => {
             const domainTopics = weakestDomain.topics.flatMap((canonical) =>
-              TOPICS.filter((t) => getCanonicalTopic(t) === canonical)
+              topics.filter((t) => getCanonicalTopic(t) === canonical)
             );
             setSelectedTopics(new Set(domainTopics));
             setPracticeSource("topics");
@@ -1589,8 +1588,8 @@ function App() {
       <div style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
           <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Temas</div>
-          <button onClick={() => setSelectedTopics(selectedTopics.size === TOPICS.length ? new Set() : new Set(TOPICS))} style={{ border: "none", background: "transparent", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-            {selectedTopics.size === TOPICS.length ? "Deseleccionar todo" : "Seleccionar todo"}
+          <button onClick={() => setSelectedTopics(selectedTopics.size === topics.length ? new Set() : new Set(topics))} style={{ border: "none", background: "transparent", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+            {selectedTopics.size === topics.length ? "Deseleccionar todo" : "Seleccionar todo"}
           </button>
         </div>
         {EXAM_DOMAINS.map((domain) => (
@@ -1598,7 +1597,7 @@ function App() {
             <div style={{ fontSize: 10, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6, fontFamily: "var(--font-mono)" }}>{domain.short}</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {canonicalTopicStats.filter((s) => s.domainId === domain.id).map((stat) => {
-                const rawTopics = TOPICS.filter((t) => getCanonicalTopic(t) === stat.topic);
+                const rawTopics = topics.filter((t) => getCanonicalTopic(t) === stat.topic);
                 const allSelected = rawTopics.every((t) => selectedTopics.has(t));
                 const qCount = rawTopics.reduce((sum, t) => sum + (topicCounts[t] || 0), 0);
                 const tooltipText = stat.total >= 10 ? `${stat.correct}/${stat.total} correctas` : `${stat.total} intentos`;
@@ -1792,7 +1791,7 @@ function App() {
             <span style={{ fontSize: 12, color: "var(--text-primary)", letterSpacing: 1, textTransform: "uppercase", fontWeight: 700, fontFamily: "var(--font-mono)" }}>{ACTIVE_CERT.tagline}</span>
           </div>
           <h1 style={{ margin: "0 0 8px", fontSize: 44, lineHeight: 1.02, fontWeight: 900, letterSpacing: -1.4, fontFamily: "var(--font-heading)" }}>DataForge <span style={{ fontSize: 20, fontWeight: 700, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{ACTIVE_CERT.short}</span></h1>
-          <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15, fontFamily: "var(--font-mono)" }}>{QUESTIONS.length} preguntas · práctica + simulacro</p>
+          <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15, fontFamily: "var(--font-mono)" }}>{allQuestions.length} preguntas · práctica + simulacro</p>
         </div>
 
         {renderSummaryCards()}
@@ -2720,6 +2719,43 @@ function App() {
       </div>
     </div>
   </div>;
+}
+
+function App() {
+  const [allQuestions, setAllQuestions] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    ACTIVE_CERT.loadQuestions()
+      .then((mod) => {
+        if (!cancelled) setAllQuestions(mod.QUESTIONS);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (error) {
+    return (
+      <div style={{ padding: 32, fontFamily: "var(--font-mono)", color: "var(--text-secondary)" }}>
+        Error cargando preguntas: {String(error?.message ?? error)}
+      </div>
+    );
+  }
+
+  if (!allQuestions) {
+    return (
+      <div style={{ padding: 32, fontFamily: "var(--font-mono)", color: "var(--text-secondary)" }}>
+        Cargando {ACTIVE_CERT.short}…
+      </div>
+    );
+  }
+
+  return <AppContent allQuestions={allQuestions} />;
 }
 
 export default App;
