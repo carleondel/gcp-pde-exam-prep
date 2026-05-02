@@ -1,5 +1,5 @@
 import { xpDiminishingFactor } from "../data/gamification.js";
-import { EXAM_DOMAINS, getCanonicalTopic, getDomainForTopic } from "../data/pde-topics.js";
+import { EXAM_DOMAINS, getCanonicalTopic, getDomainForTopic } from "../certs/gcp-pde/domains.js";
 import { getQuestionOrderNumber } from "./block-study.js";
 
 export const MOCK_DURATION_SEC = 120 * 60;

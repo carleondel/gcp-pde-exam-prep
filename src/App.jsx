@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import googleCloudLogo from "./assets/google-cloud-logo.svg";
-import { QUESTIONS } from "./data/questions.js";
-import { TOPICS } from "./data/topics.js";
+import { QUESTIONS } from "./certs/gcp-pde/questions.js";
+import { TOPICS } from "./certs/gcp-pde/topics.js";
 import { RANKS, ACHIEVEMENTS, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
-import { EXAM_DOMAINS, computeDomainStats, computeCanonicalTopicStats, getWeakestDomain, getCanonicalTopic } from "./data/pde-topics.js";
+import { EXAM_DOMAINS, computeDomainStats, computeCanonicalTopicStats, getWeakestDomain, getCanonicalTopic } from "./certs/gcp-pde/domains.js";
 import {
   AchievementPopup,
   BossBattle,
