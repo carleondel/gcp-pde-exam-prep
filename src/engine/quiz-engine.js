@@ -1,10 +1,6 @@
 import { xpDiminishingFactor } from "../data/gamification.js";
-import { EXAM_DOMAINS, getCanonicalTopic, getDomainForTopic } from "../certs/gcp-pde/domains.js";
 import { getQuestionOrderNumber } from "./block-study.js";
 
-export const MOCK_DURATION_SEC = 120 * 60;
-export const MOCK_QUESTION_COUNT = 50;
-export const PASS_PERCENT = 70;
 export const WEAK_TOPIC_WINDOW = 10;
 export const WEAK_TOPIC_MIN = 5;
 export const WRONG_QUESTION_LIMIT = 150;
@@ -117,8 +113,8 @@ export function buildPracticeQuestions(allQuestions, options = {}) {
   return ordered;
 }
 
-function allocateDomainTargets(count) {
-  const raw = EXAM_DOMAINS.map((domain) => {
+function allocateDomainTargets(count, examDomains) {
+  const raw = examDomains.map((domain) => {
     const exact = (count * domain.weight) / 100;
     const floor = Math.floor(exact);
     return { id: domain.id, short: domain.short, exact, floor, frac: exact - floor };
@@ -131,26 +127,29 @@ function allocateDomainTargets(count) {
   return raw;
 }
 
-export function computeMockDistribution(count = MOCK_QUESTION_COUNT) {
-  return allocateDomainTargets(count).map((entry) => ({
+export function computeMockDistribution(count, examDomains) {
+  return allocateDomainTargets(count, examDomains).map((entry) => ({
     id: entry.id,
     short: entry.short,
     target: entry.floor,
   }));
 }
 
-export function buildMockQuestions(allQuestions, count = MOCK_QUESTION_COUNT, options = {}) {
-  const { preferRecent = false } = options;
+export function buildMockQuestions(allQuestions, count, options = {}) {
+  const { preferRecent = false, examDomains, topicMap } = options;
 
-  const buckets = new Map(EXAM_DOMAINS.map((domain) => [domain.id, []]));
+  const canonicalTopic = (topic) => topicMap[topic] || topic;
+  const domainForTopic = (canonical) => examDomains.find((d) => d.topics.includes(canonical)) || null;
+
+  const buckets = new Map(examDomains.map((domain) => [domain.id, []]));
   const unmatched = [];
   for (const question of allQuestions) {
-    const domain = getDomainForTopic(getCanonicalTopic(question.topic));
+    const domain = domainForTopic(canonicalTopic(question.topic));
     if (domain && buckets.has(domain.id)) buckets.get(domain.id).push(question);
     else unmatched.push(question);
   }
 
-  const targets = new Map(allocateDomainTargets(count).map((entry) => [entry.id, entry.floor]));
+  const targets = new Map(allocateDomainTargets(count, examDomains).map((entry) => [entry.id, entry.floor]));
   const orderPool = (pool) =>
     preferRecent
       ? [...pool].sort((a, b) => getQuestionOrderNumber(b) - getQuestionOrderNumber(a))
@@ -260,7 +259,7 @@ export function buildDailyChallengeQuestions(allQuestions) {
 }
 
 export function buildMockSummary(history, options) {
-  const { startedAt, finishedAt, durationSec, passPercent = PASS_PERCENT, questionCount = history.length } = options;
+  const { startedAt, finishedAt, durationSec, passPercent, questionCount = history.length } = options;
   const score = history.filter((entry) => entry.correct).length;
   const answered = history.filter((entry) => entry.answered).length;
   const percent = questionCount > 0 ? Math.round((score / questionCount) * 100) : 0;

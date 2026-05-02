@@ -1,5 +1,3 @@
-import { MOCK_DURATION_SEC } from "./quiz-engine";
-
 export function createPracticeSession(questions, meta = {}, state = {}) {
   const now = state.startedAt ?? Date.now();
   return {
@@ -32,7 +30,7 @@ export function createMockSession(questionIds, meta = {}) {
     currentIndex: meta.currentIndex ?? 0,
     answersByQuestionId: meta.answersByQuestionId ?? {},
     startedAt,
-    durationSec: meta.durationSec ?? MOCK_DURATION_SEC,
+    durationSec: meta.durationSec,
     currentQuestionStartedAt: meta.currentQuestionStartedAt ?? startedAt,
     meta: meta.meta ?? {},
   };

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RANKS, ACHIEVEMENTS, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
-import { EXAM_DOMAINS, computeDomainStats, computeCanonicalTopicStats, getWeakestDomain, getCanonicalTopic } from "./certs/gcp-pde/domains.js";
+import { createDomainHelpers, getWeakestDomain } from "./engine/domain-helpers.js";
 import {
   AchievementPopup,
   BossBattle,
@@ -69,6 +69,13 @@ const ACTIVE_CERT = getActiveCert(
 const PASS_PERCENT = ACTIVE_CERT.passPercent;
 const MOCK_QUESTION_COUNT = ACTIVE_CERT.mock.count;
 const MOCK_DURATION_SEC = ACTIVE_CERT.mock.durationSec;
+const EXAM_DOMAINS = ACTIVE_CERT.examDomains;
+
+const {
+  getCanonicalTopic,
+  computeDomainStats,
+  computeCanonicalTopicStats,
+} = createDomainHelpers(ACTIVE_CERT);
 
 const {
   clearActiveBlockSession,
@@ -1113,7 +1120,11 @@ function AppContent({ allQuestions }) {
   }, [effectivePracticeLimit, practiceOrder, practiceSource, progress.bookmarks, progress.wrongQuestionIds, questionMap, recentQuestions, resetQuestionUi, selectedTopics, weakTopicSet]);
 
   const startMock = useCallback(() => {
-    const questions = buildMockQuestions(allQuestions, MOCK_QUESTION_COUNT, { preferRecent: mockPreferRecent });
+    const questions = buildMockQuestions(allQuestions, MOCK_QUESTION_COUNT, {
+      preferRecent: mockPreferRecent,
+      examDomains: ACTIVE_CERT.examDomains,
+      topicMap: ACTIVE_CERT.topicMap,
+    });
     const nextSession = createMockSession(questions.map((question) => question.id), {
       status: "active",
       durationSec: MOCK_DURATION_SEC,
@@ -2277,7 +2288,7 @@ function AppContent({ allQuestions }) {
               <div style={{ marginBottom: 12, padding: "10px 12px", borderRadius: "var(--radius-md)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
                 <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6, fontFamily: "var(--font-mono)" }}>Distribución oficial {ACTIVE_CERT.short}</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6, fontSize: 11, fontFamily: "var(--font-mono)" }}>
-                  {computeMockDistribution(MOCK_QUESTION_COUNT).map((entry) => (
+                  {computeMockDistribution(MOCK_QUESTION_COUNT, ACTIVE_CERT.examDomains).map((entry) => (
                     <span key={entry.id} style={{ padding: "3px 8px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontWeight: 700 }}>
                       {entry.short.replace(/^D\d /, "D" + entry.id + " ")} {entry.target}
                     </span>
