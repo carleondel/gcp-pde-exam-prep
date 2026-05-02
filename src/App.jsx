@@ -77,6 +77,11 @@ import {
   saveProgress,
   updateDailyStreak,
 } from "./engine/storage";
+import { getActiveCert } from "./certs/index.js";
+
+const ACTIVE_CERT = getActiveCert(
+  new URLSearchParams(window.location.search).get("cert"),
+);
 
 const PRACTICE_PRESETS = [10, 20, 30, 50];
 const DEFAULT_PRACTICE_LIMIT = 20;
@@ -703,6 +708,10 @@ function App() {
     if (rewardFlow === "queued") openQueuedPracticeReward();
     setRewardFlow("manual");
   }, [openQueuedPracticeReward, rewardFlow]);
+
+  useEffect(() => {
+    document.title = `${ACTIVE_CERT.name} Exam Prep`;
+  }, []);
 
   useEffect(() => {
     const savedProgress = loadProgress();
