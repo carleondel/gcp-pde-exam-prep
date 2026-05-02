@@ -61,10 +61,20 @@ import {
 } from "./engine/session-manager";
 import {
   EMPTY_PROGRESS,
+  completeDailyChallenge,
+  createStorage,
+  isDailyChallengeCompleted,
+  updateDailyStreak,
+} from "./engine/storage";
+import { getActiveCert } from "./certs/index.js";
+
+const ACTIVE_CERT = getActiveCert(
+  new URLSearchParams(window.location.search).get("cert"),
+);
+
+const {
   clearActiveBlockSession,
   clearActiveMock,
-  completeDailyChallenge,
-  isDailyChallengeCompleted,
   loadActiveBlockSession,
   loadActiveMock,
   loadBlockPrefs,
@@ -75,13 +85,7 @@ import {
   saveBlockPrefs,
   savePracticePrefs,
   saveProgress,
-  updateDailyStreak,
-} from "./engine/storage";
-import { getActiveCert } from "./certs/index.js";
-
-const ACTIVE_CERT = getActiveCert(
-  new URLSearchParams(window.location.search).get("cert"),
-);
+} = createStorage(ACTIVE_CERT.id);
 
 const PRACTICE_PRESETS = [10, 20, 30, 50];
 const DEFAULT_PRACTICE_LIMIT = 20;

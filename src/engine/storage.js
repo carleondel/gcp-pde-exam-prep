@@ -1,11 +1,5 @@
 import { MOCK_HISTORY_LIMIT } from "./quiz-engine";
 
-const PROGRESS_KEY = "pde.progress.v2";
-const ACTIVE_MOCK_KEY = "pde.activeMock.v2";
-const PRACTICE_PREFS_KEY = "pde.practicePrefs.v1";
-const BLOCK_PREFS_KEY = "pde.blockPrefs.v1";
-const ACTIVE_BLOCK_SESSION_KEY = "pde.activeBlockSession.v1";
-
 export const EMPTY_PROGRESS = {
   xp: 0,
   achievements: [],
@@ -78,44 +72,6 @@ function sanitizeObject(value) {
   return value && typeof value === "object" ? value : null;
 }
 
-export function loadProgress() {
-  if (!hasStorage()) return EMPTY_PROGRESS;
-  const stored = safeParse(window.localStorage.getItem(PROGRESS_KEY));
-  if (!stored) return EMPTY_PROGRESS;
-  return {
-    ...EMPTY_PROGRESS,
-    ...stored,
-    achievements: sanitizeArray(stored.achievements),
-    bookmarks: sanitizeArray(stored.bookmarks),
-    wrongQuestionIds: sanitizeArray(stored.wrongQuestionIds),
-    mockHistory: sanitizeArray(stored.mockHistory).slice(0, MOCK_HISTORY_LIMIT),
-    topicHistory: stored.topicHistory || {},
-    stats: {
-      ...EMPTY_PROGRESS.stats,
-      ...(stored.stats || {}),
-      topicsOk: sanitizeArray(stored.stats?.topicsOk),
-      bossWinsByDragon: sanitizeObject(stored.stats?.bossWinsByDragon) || {},
-    },
-    inventory: {
-      ...EMPTY_PROGRESS.inventory,
-      ...(stored.inventory || {}),
-    },
-    dailyStreak: {
-      ...EMPTY_PROGRESS.dailyStreak,
-      ...(stored.dailyStreak || {}),
-    },
-    dailyChallenge: {
-      ...EMPTY_PROGRESS.dailyChallenge,
-      ...(stored.dailyChallenge || {}),
-    },
-    blockStudy: {
-      ...EMPTY_PROGRESS.blockStudy,
-      ...(stored.blockStudy || {}),
-      tracks: sanitizeObject(stored.blockStudy?.tracks) || {},
-    },
-  };
-}
-
 export function getTodayString() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -158,57 +114,109 @@ export function completeDailyChallenge(progress) {
   };
 }
 
-export function saveProgress(progress) {
-  if (!hasStorage()) return;
-  window.localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-}
+export function createStorage(certId) {
+  if (!certId || typeof certId !== "string") {
+    throw new Error("createStorage requires a certId string");
+  }
 
-export function loadActiveMock() {
-  if (!hasStorage()) return null;
-  return safeParse(window.localStorage.getItem(ACTIVE_MOCK_KEY));
-}
+  const PROGRESS_KEY = `${certId}.progress.v2`;
+  const ACTIVE_MOCK_KEY = `${certId}.activeMock.v2`;
+  const PRACTICE_PREFS_KEY = `${certId}.practicePrefs.v1`;
+  const BLOCK_PREFS_KEY = `${certId}.blockPrefs.v1`;
+  const ACTIVE_BLOCK_SESSION_KEY = `${certId}.activeBlockSession.v1`;
 
-export function saveActiveMock(session) {
-  if (!hasStorage()) return;
-  window.localStorage.setItem(ACTIVE_MOCK_KEY, JSON.stringify(session));
-}
+  return {
+    loadProgress() {
+      if (!hasStorage()) return EMPTY_PROGRESS;
+      const stored = safeParse(window.localStorage.getItem(PROGRESS_KEY));
+      if (!stored) return EMPTY_PROGRESS;
+      return {
+        ...EMPTY_PROGRESS,
+        ...stored,
+        achievements: sanitizeArray(stored.achievements),
+        bookmarks: sanitizeArray(stored.bookmarks),
+        wrongQuestionIds: sanitizeArray(stored.wrongQuestionIds),
+        mockHistory: sanitizeArray(stored.mockHistory).slice(0, MOCK_HISTORY_LIMIT),
+        topicHistory: stored.topicHistory || {},
+        stats: {
+          ...EMPTY_PROGRESS.stats,
+          ...(stored.stats || {}),
+          topicsOk: sanitizeArray(stored.stats?.topicsOk),
+          bossWinsByDragon: sanitizeObject(stored.stats?.bossWinsByDragon) || {},
+        },
+        inventory: {
+          ...EMPTY_PROGRESS.inventory,
+          ...(stored.inventory || {}),
+        },
+        dailyStreak: {
+          ...EMPTY_PROGRESS.dailyStreak,
+          ...(stored.dailyStreak || {}),
+        },
+        dailyChallenge: {
+          ...EMPTY_PROGRESS.dailyChallenge,
+          ...(stored.dailyChallenge || {}),
+        },
+        blockStudy: {
+          ...EMPTY_PROGRESS.blockStudy,
+          ...(stored.blockStudy || {}),
+          tracks: sanitizeObject(stored.blockStudy?.tracks) || {},
+        },
+      };
+    },
 
-export function clearActiveMock() {
-  if (!hasStorage()) return;
-  window.localStorage.removeItem(ACTIVE_MOCK_KEY);
-}
+    saveProgress(progress) {
+      if (!hasStorage()) return;
+      window.localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+    },
 
-export function loadPracticePrefs() {
-  if (!hasStorage()) return null;
-  return sanitizeObject(safeParse(window.localStorage.getItem(PRACTICE_PREFS_KEY)));
-}
+    loadActiveMock() {
+      if (!hasStorage()) return null;
+      return safeParse(window.localStorage.getItem(ACTIVE_MOCK_KEY));
+    },
 
-export function savePracticePrefs(preferences) {
-  if (!hasStorage()) return;
-  window.localStorage.setItem(PRACTICE_PREFS_KEY, JSON.stringify(preferences));
-}
+    saveActiveMock(session) {
+      if (!hasStorage()) return;
+      window.localStorage.setItem(ACTIVE_MOCK_KEY, JSON.stringify(session));
+    },
 
-export function loadBlockPrefs() {
-  if (!hasStorage()) return null;
-  return sanitizeObject(safeParse(window.localStorage.getItem(BLOCK_PREFS_KEY)));
-}
+    clearActiveMock() {
+      if (!hasStorage()) return;
+      window.localStorage.removeItem(ACTIVE_MOCK_KEY);
+    },
 
-export function saveBlockPrefs(preferences) {
-  if (!hasStorage()) return;
-  window.localStorage.setItem(BLOCK_PREFS_KEY, JSON.stringify(preferences));
-}
+    loadPracticePrefs() {
+      if (!hasStorage()) return null;
+      return sanitizeObject(safeParse(window.localStorage.getItem(PRACTICE_PREFS_KEY)));
+    },
 
-export function loadActiveBlockSession() {
-  if (!hasStorage()) return null;
-  return safeParse(window.localStorage.getItem(ACTIVE_BLOCK_SESSION_KEY));
-}
+    savePracticePrefs(preferences) {
+      if (!hasStorage()) return;
+      window.localStorage.setItem(PRACTICE_PREFS_KEY, JSON.stringify(preferences));
+    },
 
-export function saveActiveBlockSession(session) {
-  if (!hasStorage()) return;
-  window.localStorage.setItem(ACTIVE_BLOCK_SESSION_KEY, JSON.stringify(session));
-}
+    loadBlockPrefs() {
+      if (!hasStorage()) return null;
+      return sanitizeObject(safeParse(window.localStorage.getItem(BLOCK_PREFS_KEY)));
+    },
 
-export function clearActiveBlockSession() {
-  if (!hasStorage()) return;
-  window.localStorage.removeItem(ACTIVE_BLOCK_SESSION_KEY);
+    saveBlockPrefs(preferences) {
+      if (!hasStorage()) return;
+      window.localStorage.setItem(BLOCK_PREFS_KEY, JSON.stringify(preferences));
+    },
+
+    loadActiveBlockSession() {
+      if (!hasStorage()) return null;
+      return safeParse(window.localStorage.getItem(ACTIVE_BLOCK_SESSION_KEY));
+    },
+
+    saveActiveBlockSession(session) {
+      if (!hasStorage()) return;
+      window.localStorage.setItem(ACTIVE_BLOCK_SESSION_KEY, JSON.stringify(session));
+    },
+
+    clearActiveBlockSession() {
+      if (!hasStorage()) return;
+      window.localStorage.removeItem(ACTIVE_BLOCK_SESSION_KEY);
+    },
+  };
 }
