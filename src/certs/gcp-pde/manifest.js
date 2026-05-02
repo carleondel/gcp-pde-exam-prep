@@ -1,10 +1,11 @@
-import logoPath from "../../assets/google-cloud-logo.svg";
+import logoPath from "./assets/logo.svg";
 import { TOPIC_MAP, EXAM_DOMAINS } from "./domains.js";
 
 const manifest = {
   id: "gcp-pde",
   name: "Google Cloud Professional Data Engineer",
   short: "PDE",
+  tagline: "Professional Data Engineer",
   brand: "Google Cloud",
   logoPath,
   disclaimer:

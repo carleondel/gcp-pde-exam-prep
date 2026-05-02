@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import googleCloudLogo from "./assets/google-cloud-logo.svg";
 import { QUESTIONS } from "./certs/gcp-pde/questions.js";
 import { TOPICS } from "./certs/gcp-pde/topics.js";
 import { RANKS, ACHIEVEMENTS, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
@@ -16,9 +15,6 @@ import "./styles/animations.css";
 import {
   DAILY_CHALLENGE_BONUS_XP,
   DAILY_CHALLENGE_COUNT,
-  MOCK_DURATION_SEC,
-  MOCK_QUESTION_COUNT,
-  PASS_PERCENT,
   appendTopicAttempt,
   buildDailyChallengeQuestions,
   buildMockHistory,
@@ -71,6 +67,10 @@ import { getActiveCert } from "./certs/index.js";
 const ACTIVE_CERT = getActiveCert(
   new URLSearchParams(window.location.search).get("cert"),
 );
+
+const PASS_PERCENT = ACTIVE_CERT.passPercent;
+const MOCK_QUESTION_COUNT = ACTIVE_CERT.mock.count;
+const MOCK_DURATION_SEC = ACTIVE_CERT.mock.durationSec;
 
 const {
   clearActiveBlockSession,
@@ -1541,7 +1541,7 @@ function App() {
 
   const renderDomainProgress = () => (
     <div style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Dominios PDE</div>
+      <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Dominios {ACTIVE_CERT.short}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {domainStats.map((domain) => {
           const pct = domain.accuracy;
@@ -1787,11 +1787,11 @@ function App() {
       <div style={{ maxWidth: 1080, margin: "0 auto", padding: "36px 20px 56px" }}>
         <div style={{ textAlign: "center", marginBottom: 26 }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 14, padding: "12px 18px", borderRadius: "var(--radius-pill)", marginBottom: 18, background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)", boxShadow: "var(--shadow-card)" }}>
-            <img src={googleCloudLogo} alt="Google Cloud" style={{ height: 24, width: "auto", opacity: 0.92 }} />
+            <img src={ACTIVE_CERT.logoPath} alt={ACTIVE_CERT.brand} style={{ height: 24, width: "auto", opacity: 0.92 }} />
             <span style={{ width: 1, height: 18, background: "var(--surface-line-strong)" }} />
-            <span style={{ fontSize: 12, color: "var(--text-primary)", letterSpacing: 1, textTransform: "uppercase", fontWeight: 700, fontFamily: "var(--font-mono)" }}>Professional Data Engineer</span>
+            <span style={{ fontSize: 12, color: "var(--text-primary)", letterSpacing: 1, textTransform: "uppercase", fontWeight: 700, fontFamily: "var(--font-mono)" }}>{ACTIVE_CERT.tagline}</span>
           </div>
-          <h1 style={{ margin: "0 0 8px", fontSize: 44, lineHeight: 1.02, fontWeight: 900, letterSpacing: -1.4, fontFamily: "var(--font-heading)" }}>DataForge <span style={{ fontSize: 20, fontWeight: 700, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>PDE</span></h1>
+          <h1 style={{ margin: "0 0 8px", fontSize: 44, lineHeight: 1.02, fontWeight: 900, letterSpacing: -1.4, fontFamily: "var(--font-heading)" }}>DataForge <span style={{ fontSize: 20, fontWeight: 700, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{ACTIVE_CERT.short}</span></h1>
           <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15, fontFamily: "var(--font-mono)" }}>{QUESTIONS.length} preguntas · práctica + simulacro</p>
         </div>
 
@@ -2276,7 +2276,7 @@ function App() {
               <div style={{ fontSize: 24, fontWeight: 800, margin: "6px 0 8px", fontFamily: "var(--font-heading)" }}>{MOCK_QUESTION_COUNT} preguntas · {Math.round(MOCK_DURATION_SEC / 60)} min</div>
               <p style={{ margin: "0 0 12px", color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.6 }}>Sin ayudas. Sin recompensas. {PASS_PERCENT}% para aprobar.</p>
               <div style={{ marginBottom: 12, padding: "10px 12px", borderRadius: "var(--radius-md)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
-                <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6, fontFamily: "var(--font-mono)" }}>Distribución oficial PDE</div>
+                <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6, fontFamily: "var(--font-mono)" }}>Distribución oficial {ACTIVE_CERT.short}</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6, fontSize: 11, fontFamily: "var(--font-mono)" }}>
                   {computeMockDistribution(MOCK_QUESTION_COUNT).map((entry) => (
                     <span key={entry.id} style={{ padding: "3px 8px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontWeight: 700 }}>
@@ -2343,7 +2343,7 @@ function App() {
         </div>
         <div style={{ textAlign: "center", marginTop: 24 }}>
           <div style={{ maxWidth: 760, margin: "0 auto 10px", fontSize: 11, color: "var(--text-tertiary)", lineHeight: 1.6 }}>
-            Herramienta de estudio independiente, no afiliada ni patrocinada por Google LLC. Google Cloud y su logotipo se usan aquí solo como referencia visual para el examen.
+            {ACTIVE_CERT.disclaimer}
           </div>
           <button onClick={() => {
             if (window.confirm("¿Restablecer todo el progreso? Esta acción no se puede deshacer.")) {
