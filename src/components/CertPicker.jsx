@@ -1,5 +1,6 @@
 import React from "react";
 import { CERT_LIST } from "../certs/index.js";
+import { formatDumpDate } from "../engine/format.js";
 
 function selectCert(certId) {
   const params = new URLSearchParams(window.location.search);
@@ -48,6 +49,11 @@ export default function CertPicker() {
                 <span style={{ display: "block", marginTop: 4, fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>
                   {cert.brand} · {cert.mock.count} preguntas · {Math.round(cert.mock.durationSec / 60)} min · {cert.passPercent}%
                 </span>
+                {formatDumpDate(cert.questionsDumpedAt) && (
+                  <span style={{ display: "block", marginTop: 3, fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+                    Preguntas volcadas el {formatDumpDate(cert.questionsDumpedAt)}
+                  </span>
+                )}
               </span>
               <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 800, fontFamily: "var(--font-mono)", flexShrink: 0 }}>
                 {cert.short}

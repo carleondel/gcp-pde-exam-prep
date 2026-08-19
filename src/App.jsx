@@ -62,6 +62,7 @@ import {
 } from "./engine/storage";
 import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
 import CertPicker from "./components/CertPicker.jsx";
+import { formatDumpDate } from "./engine/format.js";
 
 const CERT_ID_FROM_URL = new URLSearchParams(window.location.search).get("cert");
 const NEEDS_CERT_PICK = !isKnownCertId(CERT_ID_FROM_URL) && CERT_LIST.length > 1;
@@ -75,6 +76,8 @@ function openCertPicker() {
 const ACTIVE_CERT = getActiveCert(
   CERT_ID_FROM_URL,
 );
+
+const QUESTIONS_DUMPED_ON = formatDumpDate(ACTIVE_CERT.questionsDumpedAt);
 
 const PASS_PERCENT = ACTIVE_CERT.passPercent;
 const MOCK_QUESTION_COUNT = ACTIVE_CERT.mock.count;
@@ -1850,7 +1853,14 @@ function AppContent({ allQuestions }) {
             )}
           </div>
           <h1 style={{ margin: "0 0 8px", fontSize: 44, lineHeight: 1.02, fontWeight: 900, letterSpacing: -1.4, fontFamily: "var(--font-heading)" }}>DataForge <span style={{ fontSize: 20, fontWeight: 700, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{ACTIVE_CERT.short}</span></h1>
-          <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15, fontFamily: "var(--font-mono)" }}>{allQuestions.length} preguntas · práctica + simulacro</p>
+          <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15, fontFamily: "var(--font-mono)" }}>
+            {allQuestions.length} preguntas
+            {QUESTIONS_DUMPED_ON && (
+              <span title="Fecha en la que se volcó por última vez el banco de preguntas desde la fuente original.">
+                {" · "}último volcado {QUESTIONS_DUMPED_ON}
+              </span>
+            )}
+          </p>
         </div>
 
         {renderSummaryCards()}
