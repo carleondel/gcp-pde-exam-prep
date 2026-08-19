@@ -6,3 +6,6 @@ yarn-debug.log*
 yarn-error.log*
 .DS_Store
 .claude
+
+# Source question dumps (not committed, see STATUS.md)
+raw.md
