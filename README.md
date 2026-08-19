@@ -5,9 +5,10 @@ block-by-block study, daily challenge, and a small gamification layer
 (XP, ranks, achievements, boss battles, mystery chests).
 
 Originally built to prepare for the **Google Cloud Professional Data
-Engineer (PDE)** exam. The codebase has been refactored into a
-multi-cert architecture so other certifications can be plugged in
-behind the same engine.
+Engineer (PDE)** exam, then refactored into a multi-cert architecture.
+It now ships two certifications behind the same engine, with an in-app
+selector to switch between them; progress is tracked separately for
+each.
 
 > Independent study tool, not affiliated with or sponsored by any
 > certification authority. Brand names and logos are used solely as
@@ -15,10 +16,14 @@ behind the same engine.
 
 ## Status
 
-- `gcp-pde` — complete (333 questions, 5 official domains, used for a
-  successful exam attempt).
-- `dbt-aeng` — planned, paused. See [STATUS.md](STATUS.md) for what is
-  needed to bring it online.
+| Cert | Questions | Domains | Bank dumped | State |
+| --- | --- | --- | --- | --- |
+| `gcp-pde` — Professional Data Engineer | 333 | 5 | 2026-04-30 | Complete; used for a successful exam attempt |
+| `gcp-pca` — Professional Cloud Architect | 280 | 6 | 2026-08-17 | Complete; 4 official case studies, 36 questions flagged as outdated |
+| `dbt-aeng` — dbt Analytics Engineering | — | — | — | Planned, paused — needs a question pool |
+
+See [STATUS.md](STATUS.md) for the detail on each and for what is
+needed to bring `dbt-aeng` online.
 
 ![Home](docs/screenshots/home.png)
 
@@ -57,15 +62,21 @@ docker compose up    # http://localhost:8080
 
 ## Selecting a certification
 
-The active cert is resolved at load time from the `cert` URL
-parameter, falling back to `gcp-pde`:
+With more than one cert registered, opening the app without a `cert`
+URL parameter shows the picker (`src/components/CertPicker.jsx`); the
+header then carries a "Cambiar" link back to it. Picking a cert sets
+the parameter and reloads, so the active manifest and the namespaced
+storage keys resolve once at boot.
+
+You can also link straight to one, skipping the picker:
 
 ```
-http://localhost:5173/?cert=gcp-pde
+http://localhost:5173/?cert=gcp-pca
 ```
 
-There is no in-app selector yet — it will be added once a second cert
-is registered.
+An unknown or missing id falls back to the picker rather than to a
+default the user did not choose. With a single cert registered, the
+picker is skipped entirely.
 
 ## Architecture
 
@@ -79,17 +90,23 @@ src/
     session-manager.js      mock and block session lifecycle
     storage.js              createStorage(certId) factory, localStorage
     domain-helpers.js       createDomainHelpers({ topicMap, examDomains })
+    format.js               shared display formatting
   data/
     gamification.js         XP curve, ranks, achievements, dragons, prizes
-  components/rewards/     # SpinWheel, ScratchCard, MysteryChest, BossBattle, Confetti
+  components/
+    CertPicker.jsx          # cert selection screen
+    rewards/                # SpinWheel, ScratchCard, MysteryChest, BossBattle, Confetti
   certs/
-    index.js                # registry + getActiveCert(certIdFromUrl)
+    index.js                # registry, getActiveCert, CERT_LIST, isKnownCertId
     gcp-pde/
       manifest.js             # cert contract (id, name, mock, domains, ...)
       domains.js              # TOPIC_MAP + EXAM_DOMAINS (data only)
       questions.js            # lazy-loaded chunk
       topics.js
       assets/logo.svg
+    gcp-pca/
+      ...                     # same shape, plus:
+      case-studies.js         # official case study briefs, verbatim
   styles/
 ```
 
@@ -104,6 +121,11 @@ namespaced per cert id (e.g. `gcp-pde.progress.v2`).
      `id`, `name`, `short`, `tagline`, `brand`, `logoPath`,
      `disclaimer`, `passPercent`, `mock: { count, durationSec }`,
      `topicMap`, `examDomains`, `loadQuestions: () => import("./questions.js")`.
+
+     Optional: `questionsDumpedAt` (`"YYYY-MM-DD"`, when the question
+     bank was last dumped from its source — shown under the title and
+     in the picker) and `caseStudies` (keyed briefs that questions
+     reference through their `caseStudy` field).
    - `domains.js` exporting `TOPIC_MAP` and `EXAM_DOMAINS` (data only).
    - `questions.js` exporting `QUESTIONS` (array of items with the
      schema below).

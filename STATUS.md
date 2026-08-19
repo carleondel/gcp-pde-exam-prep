@@ -31,6 +31,13 @@ The engine and `App.jsx` no longer reference any specific cert. Only
 - With more than one cert registered and no `?cert=` in the URL, the
   app shows `src/components/CertPicker.jsx`; the header carries a
   "Cambiar" link back to it.
+- Each manifest may carry `questionsDumpedAt` ("YYYY-MM-DD"), the date
+  the question bank was last dumped from its source. Shown under the
+  home title and on each picker card; omitted when absent.
+- The menu screen has sub-views driven by `menuView` state: `home`,
+  `blocks`, `practice`, `mock`, `progress`. The home view carries the
+  next action, three shortcuts, the domain bars and a compact block
+  grid; each configurator lives in its own view.
 
 ## Done: `gcp-pca`
 
@@ -135,8 +142,10 @@ automatically.
       to `docs/screenshots/boss-battle.png`.
 - [ ] Split `src/App.jsx` into per-screen components
       (`PracticeView`, `MockView`, `BlockView`, `BossView`,
-      `ResultView`). The file is ~2.7k lines, hardest single
-      maintainability hit.
+      `ResultView`). The file is ~2.9k lines, hardest single
+      maintainability hit. The `menuView` split already draws the
+      seams inside the menu screen — the sections are now contiguous
+      and independent, so extracting them is mostly cut-and-paste.
 - [ ] Add ESLint + Prettier.
 - [ ] Add Vitest for `engine/` (pure logic — quiz, blocks, sessions,
       storage, domain helpers).
