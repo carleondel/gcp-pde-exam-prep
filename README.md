@@ -124,9 +124,15 @@ should need to change.
   difficulty: 2,                    // 1 easy, 2 medium, 3 hard
   question: "...",
   options: ["A. ...", "B. ...", "C. ...", "D. ..."],
-  correct: 1,                       // 0-based index into options
+  correct: 1,                       // 0-based index, or array for multi-answer
   explanation: "...",
   discussion: [],                   // optional [{ user, text }]
+  correctRationale: "...",          // optional, why the answer is right
+  optionRationales: [],             // optional, one entry per option
+  images: [{ url, alt }],           // optional, served from public/
+  caseStudy: "ehr-healthcare",      // optional, key into manifest.caseStudies
+  legacyNote: "...",                // optional, renders a warning banner
+  resolvedBy: "gemini-2026-08",     // optional, who adjudicated a conflict
   sourceQuestionNumber: null,
   isRecent: false
 }

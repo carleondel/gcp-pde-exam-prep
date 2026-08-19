@@ -1,12 +1,13 @@
 # Status & next steps
 
-Last updated: 2026-05-04. Project paused.
+Last updated: 2026-08-18.
 
 ## Where we are
 
 The original GCP PDE app was refactored into a multi-cert platform.
-The PDE exam was passed; the codebase is in a clean state to host
-additional certifications, but no second cert has been wired up yet.
+The PDE exam was passed. A second certification, GCP Professional
+Cloud Architect (`gcp-pca`), is fully loaded with 280 questions, and
+the in-app cert selector is live.
 
 ### Done (most recent first)
 
@@ -27,10 +28,78 @@ The engine and `App.jsx` no longer reference any specific cert. Only
 - Storage keys are namespaced per cert id.
 - The questions module is code-split into its own chunk; the initial
   bundle is ~80 KB gzip.
-- There is no in-app cert selector yet — that will be needed once a
-  second cert exists.
+- With more than one cert registered and no `?cert=` in the URL, the
+  app shows `src/components/CertPicker.jsx`; the header carries a
+  "Cambiar" link back to it.
 
-## Next: add `dbt-aeng` (dbt Analytics Engineering Certification)
+## Done: `gcp-pca`
+
+The cert package is complete and the full question bank is loaded.
+
+- **280 questions**, covering the entire ExamTopics pool that was
+  collected (source numbers 1–281; 191 is a duplicate of 195).
+- 5 question images in `public/question-images/gcp-pca/`
+  (questions 4, 22, 38, 120, 199).
+- 18 multi-answer questions, 257 with community discussion.
+- 47 questions flagged `conflict: true` where the community disagrees
+  with the loaded answer. The 19 substantive ones were adjudicated
+  externally and all confirmed the loaded answer (`resolvedBy` field).
+- Confidence after adjudication: 263 high, 16 medium, 1 low.
+
+### Case studies
+
+All four case studies from the current exam guide (v6.1) are loaded
+**verbatim** from the official Google PDFs, extracted directly from
+`services.google.com/fh/files/misc/v6.1_pca_*_case_study_english.pdf`:
+
+| id | questions |
+| --- | --- |
+| `altostrat-media` | 219–224 |
+| `cymbal-retail` | none yet (newer than the question bank) |
+| `ehr-healthcare` | 268–270 |
+| `knightmotives-automotive` | 225, 227–234 |
+
+Three case studies from the older blueprint (`helicopter-racing-league`,
+`mountkirk-games`, `terramearth`) are registered with `legacy: true` and
+no content. No question currently references them; they are kept so that
+if an old question is ever added, the UI flags the case study as retired
+rather than silently showing nothing.
+
+Note: several AI assistants still report the *old* four case studies
+(Mountkirk Games, TerramEarth, Helicopter Racing League, EHR Healthcare)
+as current. That is wrong — verified against the official exam guide,
+which redirects to the v6.1 PDF listing the four above.
+
+### Outdated content is flagged in the UI
+
+36 questions carry a `legacyNote`, rendered as a warning banner above the
+question. These cover renamed products (Stackdriver, preemptible VMs,
+Datastore), deprecated tooling (kubemci, Deployment Manager), changed CLI
+commands, capabilities that have since shipped (Pub/Sub ordering keys,
+global snapshots, Cloud SQL for SQL Server HA), and one item (190) that
+is simply broken.
+
+### Remaining content items
+
+- [ ] Confirm the PCA pass mark. `passPercent: 70` is the community
+      estimate; Google does not publish the real cut score.
+- [ ] The question bank predates Cymbal Retail, so no question exercises
+      that case study yet.
+
+### Notes on the exam blueprint
+
+The current official Standard Exam Guide uses weights
+**25 / 17.5 / 17.5 / 15 / 12.5 / 12.5** and the case studies
+Altostrat Media, Cymbal Retail, EHR Healthcare and KnightMotives
+Automotive. An older blueprint (24 / 15 / 18 / 18 / 11 / 14, with
+Mountkirk Games / TerramEarth / Helicopter Racing League) still appears
+on some translated Google pages — `domains.js` uses the current one.
+
+Question pool by domain: D1 47, D2 93, D3 43, D4 36, D5 15, D6 46.
+D2 is over-represented and D5 thin, but every domain has enough
+questions to fill its share of a 50-question mock.
+
+## Next cert: `dbt-aeng` (dbt Analytics Engineering Certification)
 
 The blocker is content. The architecture is ready.
 
@@ -52,31 +121,12 @@ Target: 60–80 questions minimum to make the app useful, 150+ ideal.
 Any format is fine (JSON, CSV, plain text, PDF, screenshots) — it
 gets normalized into the schema documented in `README.md`.
 
-Possible sources:
-
-- dbt Labs official practice exam
-- Udemy / Maven / similar prep courses with practice questions
-- ExamTopics / Skillcertpro / community dumps
-- GitHub repos with study material
-
 ### 3. Build the cert package
 
-Once content is in hand:
-
-- [ ] Create `src/certs/dbt-aeng/manifest.js`,
-      `domains.js`, `questions.js`, `assets/logo.svg`
-- [ ] Register `dbt-aeng` in [src/certs/index.js](src/certs/index.js)
-- [ ] Decide and define `TOPIC_MAP` (raw → canonical) and
-      `EXAM_DOMAINS` based on the official sections + collected
-      question topics
-- [ ] Verify `?cert=dbt-aeng` loads, mock distribution matches the
-      official weights, and the disclaimer / branding render correctly
-
-### 4. Activate the cert selector (only after step 3 lands)
-
-- [ ] Replace the implicit default in `getActiveCert` with a small
-      selector screen that lists every registered manifest when more
-      than one cert exists; deep-link with `?cert=<id>`.
+Follow what `src/certs/gcp-pca/` does: `manifest.js`, `domains.js`,
+`questions.js`, `topics.js`, `assets/logo.svg`, then register the id
+in [src/certs/index.js](src/certs/index.js). The selector picks it up
+automatically.
 
 ## Other open items (lower priority)
 
@@ -101,6 +151,6 @@ Once content is in hand:
 
 In priority order:
 
-1. dbt Analytics Engineering Certification Exam (`dbt-aeng`)
-2. GCP Professional Cloud Architect (`gcp-pca`)
+1. ~~GCP Professional Cloud Architect (`gcp-pca`)~~ — done
+2. dbt Analytics Engineering Certification Exam (`dbt-aeng`)
 3. GCP Professional Cloud Database Engineer (`gcp-pcde`)
