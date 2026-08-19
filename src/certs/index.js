@@ -41,6 +41,12 @@ for (const cert of Object.values(CERTS)) {
   validateCertManifest(cert);
 }
 
+export const CERT_LIST = Object.values(CERTS);
+
+export function isKnownCertId(certId) {
+  return Boolean(certId && CERTS[certId]);
+}
+
 export function getActiveCert(certIdFromUrl) {
   if (certIdFromUrl && CERTS[certIdFromUrl]) {
     return CERTS[certIdFromUrl];

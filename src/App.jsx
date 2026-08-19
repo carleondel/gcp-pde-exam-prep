@@ -60,10 +60,20 @@ import {
   isDailyChallengeCompleted,
   updateDailyStreak,
 } from "./engine/storage";
-import { getActiveCert } from "./certs/index.js";
+import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
+import CertPicker from "./components/CertPicker.jsx";
+
+const CERT_ID_FROM_URL = new URLSearchParams(window.location.search).get("cert");
+const NEEDS_CERT_PICK = !isKnownCertId(CERT_ID_FROM_URL) && CERT_LIST.length > 1;
+
+function openCertPicker() {
+  const params = new URLSearchParams(window.location.search);
+  params.delete("cert");
+  window.location.search = params.toString();
+}
 
 const ACTIVE_CERT = getActiveCert(
-  new URLSearchParams(window.location.search).get("cert"),
+  CERT_ID_FROM_URL,
 );
 
 const PASS_PERCENT = ACTIVE_CERT.passPercent;
@@ -1800,6 +1810,12 @@ function AppContent({ allQuestions }) {
             <img src={ACTIVE_CERT.logoPath} alt={ACTIVE_CERT.brand} style={{ height: 24, width: "auto", opacity: 0.92 }} />
             <span style={{ width: 1, height: 18, background: "var(--surface-line-strong)" }} />
             <span style={{ fontSize: 12, color: "var(--text-primary)", letterSpacing: 1, textTransform: "uppercase", fontWeight: 700, fontFamily: "var(--font-mono)" }}>{ACTIVE_CERT.tagline}</span>
+            {CERT_LIST.length > 1 && (
+              <>
+                <span style={{ width: 1, height: 18, background: "var(--surface-line-strong)" }} />
+                <button onClick={openCertPicker} title="Cambiar de certificación" style={{ border: "none", background: "transparent", color: "var(--text-tertiary)", fontSize: 11, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: 0.5, padding: 0 }}>Cambiar</button>
+              </>
+            )}
           </div>
           <h1 style={{ margin: "0 0 8px", fontSize: 44, lineHeight: 1.02, fontWeight: 900, letterSpacing: -1.4, fontFamily: "var(--font-heading)" }}>DataForge <span style={{ fontSize: 20, fontWeight: 700, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{ACTIVE_CERT.short}</span></h1>
           <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15, fontFamily: "var(--font-mono)" }}>{allQuestions.length} preguntas · práctica + simulacro</p>
@@ -2732,7 +2748,7 @@ function AppContent({ allQuestions }) {
   </div>;
 }
 
-function App() {
+function CertApp() {
   const [allQuestions, setAllQuestions] = useState(null);
   const [error, setError] = useState(null);
 
@@ -2767,6 +2783,11 @@ function App() {
   }
 
   return <AppContent allQuestions={allQuestions} />;
+}
+
+function App() {
+  if (NEEDS_CERT_PICK) return <CertPicker />;
+  return <CertApp />;
 }
 
 export default App;
