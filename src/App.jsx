@@ -107,6 +107,13 @@ const {
 
 const PRACTICE_PRESETS = [10, 20, 30, 50];
 const DEFAULT_PRACTICE_LIMIT = 20;
+const MENU_VIEW_LABELS = {
+  blocks: "Bloques de estudio",
+  practice: "Sesión a medida",
+  mock: "Simulacro",
+  progress: "Inventario y logros",
+};
+
 const PRACTICE_SOURCE_META = {
   topics: {
     label: "Por dominio",
@@ -381,6 +388,9 @@ function AppContent({ allQuestions }) {
   const topicCounts = useMemo(() => buildTopicCounts(allQuestions), [allQuestions]);
   const [ready, setReady] = useState(false);
   const [screen, setScreen] = useState("menu");
+  // Sub-vista del menú: la portada muestra acciones y progreso, y cada
+  // configurador vive en su propia vista para no competir con ellos.
+  const [menuView, setMenuView] = useState("home");
   const [progress, setProgress] = useState(EMPTY_PROGRESS);
   const [session, setSession] = useState(null);
   const [savedMockSession, setSavedMockSession] = useState(null);
@@ -1132,37 +1142,50 @@ function AppContent({ allQuestions }) {
     } : null, savedBlockSession);
   }, [openBlockSession, savedBlockSession]);
 
-  const startPractice = useCallback(() => {
-    const questionIds = practiceSource === "recent"
+  const startPracticeWith = useCallback((overrides = {}) => {
+    const source = overrides.source ?? practiceSource;
+    const order = overrides.order ?? practiceOrder;
+
+    const questionIds = source === "recent"
       ? recentQuestions.map((question) => question.id)
-      : practiceSource === "wrong"
+      : source === "wrong"
       ? progress.wrongQuestionIds
-      : practiceSource === "bookmarks"
+      : source === "bookmarks"
         ? progress.bookmarks
         : null;
-    const topicSet = practiceSource === "weak"
+    const topicSet = source === "weak"
       ? weakTopicSet
-      : practiceSource === "topics"
+      : source === "topics"
         ? selectedTopics
         : null;
+
+    // effectivePracticeLimit is clamped against the *current* source, so a
+    // shortcut that switches source has to clamp against its own pool.
+    const pool = questionIds ? questionIds.length : allQuestions.length;
+    const limit = overrides.limit ?? (overrides.source
+      ? Math.min(Math.max(1, practiceLimit), Math.max(1, pool))
+      : effectivePracticeLimit);
+
     const questions = buildPracticeQuestions(allQuestions, {
       topicSet,
-      order: practiceOrder,
+      order,
       questionIds,
       questionMap,
-      limit: effectivePracticeLimit,
+      limit,
     });
     if (!questions.length) return;
 
     setSession(createPracticeSession(questions, {
-      order: practiceOrder,
-      source: practiceSource,
-      questionLimit: effectivePracticeLimit,
+      order,
+      source,
+      questionLimit: limit,
     }));
     setResultPayload(null);
     setScreen("quiz");
     resetQuestionUi();
-  }, [effectivePracticeLimit, practiceOrder, practiceSource, progress.bookmarks, progress.wrongQuestionIds, questionMap, recentQuestions, resetQuestionUi, selectedTopics, weakTopicSet]);
+  }, [effectivePracticeLimit, practiceLimit, practiceOrder, practiceSource, progress.bookmarks, progress.wrongQuestionIds, questionMap, recentQuestions, resetQuestionUi, selectedTopics, weakTopicSet]);
+
+  const startPractice = useCallback(() => startPracticeWith(), [startPracticeWith]);
 
   const startMock = useCallback(() => {
     const questions = buildMockQuestions(allQuestions, MOCK_QUESTION_COUNT, {
@@ -1587,6 +1610,7 @@ function AppContent({ allQuestions }) {
             setSelectedTopics(new Set(domainTopics));
             setPracticeSource("topics");
             setPracticeMessage(`Cargados temas de ${weakestDomain.short}.`);
+            setMenuView("practice");
           }} style={{ padding: "12px 20px", border: "none", borderRadius: "var(--radius-md)", background: "var(--gradient-danger)", color: "white", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Practicar</button>
         </div>
       );
@@ -1863,10 +1887,83 @@ function AppContent({ allQuestions }) {
           </p>
         </div>
 
-        {renderSummaryCards()}
-        {renderNextAction()}
-        {renderDomainProgress()}
+        {menuView !== "home" && (
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-md)", marginBottom: 18 }}>
+            <button onClick={() => setMenuView("home")} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "9px 15px", borderRadius: "var(--radius-pill)", border: "1px solid var(--surface-line)", background: "var(--surface-panel-muted)", color: "var(--text-secondary)", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+              <span aria-hidden="true">←</span> Inicio
+            </button>
+            <span style={{ fontSize: 12, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{MENU_VIEW_LABELS[menuView]}</span>
+          </div>
+        )}
 
+        {menuView === "home" && renderSummaryCards()}
+
+        {menuView === "home" && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 18, marginBottom: 18, alignItems: "start" }}>
+            <div>
+              {renderNextAction()}
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
+                <button onClick={startPractice} disabled={!hasPracticeQuestions} title={hasPracticeQuestions ? `${PRACTICE_SOURCE_META[practiceSource].label} · ${effectivePracticeLimit} preguntas` : "No hay preguntas para la configuración guardada"} style={{ textAlign: "left", padding: 16, borderRadius: "var(--radius-xl)", border: "1px solid var(--surface-line)", background: "var(--gradient-panel)", color: "var(--text-primary)", cursor: hasPracticeQuestions ? "pointer" : "not-allowed", opacity: hasPracticeQuestions ? 1 : 0.45, fontFamily: "var(--font-body)" }}>
+                  <div style={{ fontSize: 17 }} aria-hidden="true">⚡</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, marginTop: 8, fontFamily: "var(--font-heading)" }}>Práctica rápida</div>
+                  <div style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: 3, fontFamily: "var(--font-mono)" }}>{effectivePracticeLimit} preguntas · {PRACTICE_SOURCE_META[practiceSource].label}</div>
+                </button>
+
+                <button onClick={() => startPracticeWith({ source: "wrong" })} disabled={practiceSourceCounts.wrong === 0} title={practiceSourceCounts.wrong === 0 ? "Aún no hay fallos guardados" : "Repasar solo las preguntas falladas"} style={{ textAlign: "left", padding: 16, borderRadius: "var(--radius-xl)", border: "1px solid var(--surface-line)", background: "var(--gradient-panel)", color: "var(--text-primary)", cursor: practiceSourceCounts.wrong > 0 ? "pointer" : "not-allowed", opacity: practiceSourceCounts.wrong > 0 ? 1 : 0.45, fontFamily: "var(--font-body)" }}>
+                  <div style={{ fontSize: 17 }} aria-hidden="true">↺</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, marginTop: 8, fontFamily: "var(--font-heading)" }}>Repasar fallos</div>
+                  <div style={{ fontSize: 11, color: practiceSourceCounts.wrong > 0 ? "var(--signal-wrong)" : "var(--text-tertiary)", marginTop: 3, fontFamily: "var(--font-mono)" }}>{practiceSourceCounts.wrong > 0 ? `${progress.wrongQuestionIds.length} pendientes` : "Sin fallos"}</div>
+                </button>
+
+                <button onClick={() => setMenuView("mock")} style={{ textAlign: "left", padding: 16, borderRadius: "var(--radius-xl)", border: "1px solid var(--accent-medium)", background: "var(--gradient-panel)", color: "var(--text-primary)", cursor: "pointer", fontFamily: "var(--font-body)" }}>
+                  <div style={{ fontSize: 17 }} aria-hidden="true">◷</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, marginTop: 8, color: "var(--accent-300)", fontFamily: "var(--font-heading)" }}>Simulacro</div>
+                  <div style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: 3, fontFamily: "var(--font-mono)" }}>{MOCK_QUESTION_COUNT} preguntas · {Math.round(MOCK_DURATION_SEC / 60)} min</div>
+                </button>
+              </div>
+
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--surface-line)" }}>
+                <button onClick={() => setMenuView("practice")} style={{ border: "none", background: "transparent", color: "var(--text-tertiary)", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-mono)", padding: 0 }}>Sesión a medida →</button>
+                <button onClick={() => setMenuView("progress")} style={{ border: "none", background: "transparent", color: "var(--text-tertiary)", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-mono)", padding: 0 }}>Inventario y logros →</button>
+              </div>
+            </div>
+
+            <div>
+              {renderDomainProgress()}
+
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Bloques de estudio</div>
+                  <button onClick={() => setMenuView("blocks")} style={{ border: "none", background: "transparent", color: "var(--primary-400)", fontSize: 11, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)", padding: 0 }}>Ver todos →</button>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(62px, 1fr))", gap: 6 }}>
+                  {visibleBlocks.map((block) => {
+                    const blockProgress = getBlockProgressRecord(progress, block.trackId, block.blockIndex);
+                    const tone = getPercentTone(blockProgress?.lastPercent);
+                    const isActive = activeBlockIndex === block.blockIndex;
+                    const mastered = isBlockMastered(blockProgress);
+                    const rounds = blockProgress?.rounds?.length || 0;
+                    return (
+                      <button
+                        key={block.blockIndex}
+                        onClick={() => { setSelectedBlockIndex(block.blockIndex); setMenuView("blocks"); }}
+                        title={`Bloque ${block.blockIndex + 1}${rounds ? ` · ${rounds} vuelta${rounds > 1 ? "s" : ""}` : " · sin empezar"}${mastered ? " · dominado" : ""}`}
+                        style={{ padding: "8px 4px", borderRadius: "var(--radius-sm)", border: `1px solid ${isActive ? "var(--signal-info)" : mastered ? "var(--primary-medium)" : "var(--surface-line)"}`, background: isActive ? "var(--info-soft)" : mastered ? "var(--primary-soft)" : "var(--surface-panel-muted)", cursor: "pointer", fontFamily: "var(--font-mono)" }}
+                      >
+                        <div style={{ fontSize: 10, color: "var(--text-tertiary)" }}>{block.blockIndex + 1}</div>
+                        <div style={{ fontSize: 12, fontWeight: 800, marginTop: 2, color: blockProgress ? tone.text : "var(--text-muted)" }}>{blockProgress ? `${blockProgress.lastPercent}%` : "—"}</div>
+                        <div style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 1 }}>{rounds ? `v${rounds}` : "—"}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {menuView === "blocks" && (
         <div style={{ background: "linear-gradient(180deg, rgba(15, 191, 163, 0.14), rgba(6, 15, 25, 0.92))", border: "1px solid var(--primary-medium)", borderRadius: "var(--radius-2xl)", padding: 24, marginBottom: 18, boxShadow: "var(--shadow-elevated)" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-md)", flexWrap: "wrap", marginBottom: 18 }}>
             <div>
@@ -2089,7 +2186,9 @@ function AppContent({ allQuestions }) {
             </div>
           )}
         </div>
+        )}
 
+        {menuView === "home" && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "var(--space-md)", marginBottom: 18 }}>
           <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)" }}>
             <div>
@@ -2114,8 +2213,11 @@ function AppContent({ allQuestions }) {
             {!dailyDone && <button onClick={startDailyChallenge} style={{ padding: "10px 14px", border: "none", borderRadius: "var(--radius-md)", background: "var(--gradient-mock)", color: "white", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Iniciar reto</button>}
           </div>
         </div>
+        )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 14, marginBottom: 18, alignItems: "start" }}>
+        {menuView !== "home" && menuView !== "blocks" && (
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 14, marginBottom: 18, alignItems: "start" }}>
+        {menuView === "practice" && (
           <div style={{ background: "var(--gradient-panel-strong)", border: "1px solid var(--primary-medium)", borderRadius: "var(--radius-2xl)", padding: 24, boxShadow: "var(--shadow-elevated), var(--shadow-glow)" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <div>
@@ -2337,8 +2439,11 @@ function AppContent({ allQuestions }) {
             </button>
             <div style={{ marginTop: 10, fontSize: 12, color: "var(--text-tertiary)", textAlign: "center" }}>Ayudas y progreso activo solo en práctica.</div>
           </div>
+        )}
 
+        {(menuView === "mock" || menuView === "progress") && (
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {menuView === "mock" && (<>
             <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--accent-medium)", borderRadius: "var(--radius-2xl)", padding: 24, boxShadow: "var(--shadow-card)" }}>
               <div style={{ fontSize: 12, color: "var(--accent-300)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Simulacro</div>
               <div style={{ fontSize: 24, fontWeight: 800, margin: "6px 0 8px", fontFamily: "var(--font-heading)" }}>{MOCK_QUESTION_COUNT} preguntas · {Math.round(MOCK_DURATION_SEC / 60)} min</div>
@@ -2385,7 +2490,9 @@ function AppContent({ allQuestions }) {
                 {renderMockSparkline()}
               </div>
             )}
+            </>)}
 
+            {menuView === "progress" && (
             <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-2xl)", padding: 20 }}>
               <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Inventario y logros</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
@@ -2407,8 +2514,11 @@ function AppContent({ allQuestions }) {
                 ))}
               </div>
             </div>
+            )}
           </div>
+        )}
         </div>
+        )}
         <div style={{ textAlign: "center", marginTop: 24 }}>
           <div style={{ maxWidth: 760, margin: "0 auto 10px", fontSize: 11, color: "var(--text-tertiary)", lineHeight: 1.6 }}>
             {ACTIVE_CERT.disclaimer}
