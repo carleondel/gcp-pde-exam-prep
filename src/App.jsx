@@ -336,6 +336,38 @@ function buildTopicCounts(questions) {
   return counts;
 }
 
+function CaseStudyPanel({ caseStudyId }) {
+  const caseStudy = ACTIVE_CERT.caseStudies?.[caseStudyId];
+  if (!caseStudy) return null;
+
+  return (
+    <details style={{ marginBottom: 18, borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", background: "var(--surface-panel-muted)", overflow: "hidden" }}>
+      <summary style={{ padding: "12px 16px", cursor: "pointer", fontSize: 12, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: 0.5 }}>
+        Caso de estudio · {caseStudy.name}
+      </summary>
+      <div style={{ padding: "0 16px 14px", fontSize: 13, lineHeight: 1.7, color: "var(--text-secondary)", whiteSpace: "pre-line", fontWeight: 400 }}>
+        {caseStudy.legacy && (
+          <div style={{ marginBottom: 12, padding: "10px 12px", borderRadius: "var(--radius-md)", background: "var(--warning-soft)", border: "1px solid var(--signal-warning)", fontSize: 12, lineHeight: 1.6, whiteSpace: "normal" }}>
+            <strong style={{ color: "var(--signal-warning)" }}>Caso retirado.</strong>{" "}
+            Ya no forma parte de la guía oficial vigente. Los casos actuales son Altostrat Media,
+            Cymbal Retail, EHR Healthcare y KnightMotives Automotive.
+          </div>
+        )}
+        {caseStudy.context ?? "Contexto no disponible: este caso ya no está en la guía oficial."}
+        <div style={{ marginTop: 12, fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-mono)", whiteSpace: "normal" }}>
+          {caseStudy.verbatim ? "Texto oficial verbatim (exam guide v6.1)" : caseStudy.legacy ? "Blueprint antiguo" : "Resumen del brief oficial"}
+          {caseStudy.officialUrl && (
+            <>
+              {" · "}
+              <a href={caseStudy.officialUrl} target="_blank" rel="noreferrer" style={{ color: "var(--primary-400)" }}>PDF oficial</a>
+            </>
+          )}
+        </div>
+      </div>
+    </details>
+  );
+}
+
 function AppContent({ allQuestions }) {
   const qRef = useRef(null);
   const previousAchievementsRef = useRef([]);
@@ -2605,6 +2637,18 @@ function AppContent({ allQuestions }) {
       )}
 
       <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-2xl)", border: "1px solid var(--surface-line)", padding: 24, boxShadow: "var(--shadow-elevated)" }}>
+        {currentQuestion.legacyNote && (
+          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 18, padding: "12px 14px", borderRadius: "var(--radius-lg)", background: "var(--warning-soft)", border: "1px solid var(--signal-warning)" }}>
+            <span style={{ fontSize: 15, lineHeight: 1.35, flexShrink: 0 }}>⚠️</span>
+            <span style={{ fontSize: 12.5, lineHeight: 1.6, color: "var(--text-secondary)", fontWeight: 400 }}>
+              <strong style={{ color: "var(--signal-warning)", fontFamily: "var(--font-mono)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 }}>Desactualizado</strong>
+              {" — "}{currentQuestion.legacyNote}
+            </span>
+          </div>
+        )}
+
+        {currentQuestion.caseStudy && <CaseStudyPanel caseStudyId={currentQuestion.caseStudy} />}
+
         <div style={{ marginBottom: 18, fontSize: 19, fontWeight: 700, lineHeight: 1.6, color: "var(--text-primary)", whiteSpace: "pre-line" }}>{currentQuestion.question}</div>
 
         {currentQuestion.images?.length > 0 && (
