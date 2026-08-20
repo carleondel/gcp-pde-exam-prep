@@ -16,43 +16,43 @@ screen components, with tests protecting persistence and study flows.
   separate browser-storage origins.
 - GitHub Actions runs `npm ci`, lint, formatting checks, tests and the
   production build on pushes and pull requests.
-- ESLint, Prettier and Vitest are configured. The CI baseline has 13 existing
-  `exhaustive-deps` warnings and no lint errors.
-- Logic is split into `useProgress`, `usePracticeConfig`, `useBlockStudy` and
-  `useMockSession`.
-- Component and integration tests cover progress, custom practice, blocks,
-  mocks, reloads, storage isolation and selected quiz interactions.
-- `ResultView` and `ProgressView` have been extracted from `App.jsx`.
+- ESLint, Prettier and Vitest are configured, and `src/App.jsx` is no longer
+  exempt from formatting.
+- ESLint reports **no errors and no warnings**. The thirteen `exhaustive-deps`
+  warnings that were the baseline are gone: each was resolved by naming a
+  dependency that was genuinely stable, or by memoising a helper so its effect
+  could name it. None were suppressed, and none cost a behaviour change.
+- Logic is split into four hooks — [useProgress](src/hooks/useProgress.js),
+  [usePracticeConfig](src/hooks/usePracticeConfig.js),
+  [useBlockStudy](src/hooks/useBlockStudy.js) and
+  [useMockSession](src/hooks/useMockSession.js). Storage is injected into all
+  four, so none of them knows which certification is active.
+- The screens are out of `App.jsx` and into [src/views/](src/views/):
+  `HomeView`, `BlockView`, `PracticeView` with its `TopicPicker`, `MockView`,
+  `ProgressView`, `ResultView`, `QuizHeader`, `QuizView` and `RewardOverlays`.
+- `AppContent` is now a coordinator: hooks, state, effects, callbacks and the
+  assembly of those views, with no markup of its own. The file went from 3,051
+  lines to about 1,900.
+- **400 tests**: engine and UI helpers, the four hooks, six view components,
+  and four integration suites that mount the real screen — home, practice,
+  blocks and mock.
 - The optional `discussion` question field is handled safely.
-
-## Remaining work for the current refactor
-
-1. Extract the remaining visual sections, one behaviour-neutral commit at a
-   time:
-   - `MockView`
-   - `BlockView`
-   - `PracticeView`
-   - `HomeView`
-   - shared `QuizView`
-2. Keep `AppContent` as the coordinator for hooks, navigation, session
-   lifecycle and reward overlays. Views must not access localStorage or create
-   another source of truth for progress or sessions.
-3. Preserve and extend component/integration tests where a new wiring path is
-   introduced. Run lint, formatting checks, tests and build after each step.
-4. Remove `src/App.jsx` from `.prettierignore` in a formatting-only commit.
-5. Review the 13 remaining ESLint dependency warnings individually; do not
-   auto-fix dependencies if that could alter when an effect or callback runs.
-6. Update `STATUS.md` with the completed screen split and final test count.
+- Two defects were found and fixed while extracting: a question with no
+  `discussion` field crashed the practice screen, and the XP badge read a
+  session's `history`, which a mock does not have.
 
 ## Definition of done
 
-- App views are separated and `AppContent` is substantially smaller and only
-  orchestrates them.
-- `npm ci`, `npm run lint`, `npm run format:check`, `npm test` and
-  `npm run build` pass from a clean install.
-- GitHub Actions is green for the final commit.
-- Development (`npm run dev`), production preview (`npm run build && npm run
-preview`) and Docker (`docker compose up`) have been smoke-tested.
+- [x] App views are separated and `AppContent` only orchestrates them.
+- [x] `npm ci`, `npm run lint`, `npm run format:check`, `npm test` and
+      `npm run build` pass from a clean install.
+- [x] GitHub Actions is green for the final commit.
+- [x] Development (`npm run dev`) smoke-tested: every source module
+      transforms and is served without error.
+- [x] Production preview (`npm run build && npm run preview`)
+      smoke-tested: the page and all four built assets are served.
+- [ ] Docker (`docker compose up`) smoke-tested. Not verified here — the
+      Docker daemon was not running on the machine that ran the checks.
 
 ## Later improvements (not required for this refactor)
 

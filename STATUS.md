@@ -11,6 +11,19 @@ the in-app cert selector is live.
 
 ### Done (most recent first)
 
+- `d1731ed` clear the last thirteen ESLint warnings, one cause at a time
+- `3f16d92` format `App.jsx` and drop its Prettier exemption
+- `4b22e66` extract `QuizView`, the last screen
+- `1c613ee` extract `QuizHeader`
+- `a56afab` extract `RewardOverlays`
+- `af63dd2` extract `HomeView` and its five sections
+- `097b5c5` extract `PracticeView` and its topic picker
+- `64a14f3` extract `MockView`
+- `294b37a` extract `ProgressView`
+- `7eebe21` extract `ResultView`
+- `25d8a64` extract `useMockSession`
+- `9145989` extract `useBlockStudy`, with the first integration tests
+- `9e224f8` tolerate a question with no `discussion` field
 - `d9a85ac` add "Dominio Total" as the secret achievement
 - `480a7b4` drop the night owl secret achievement
 - `acfb2cb` add a secret achievement and a platinum
@@ -31,6 +44,54 @@ co-author trailer, so those SHAs differ from any noted earlier.
 
 The engine and `App.jsx` no longer reference any specific cert. Only
 `src/certs/<id>/` folders carry cert-specific data and assets.
+
+### How the code is laid out
+
+`src/App.jsx` is a coordinator, not a screen. It holds the hooks, the
+state, the effects and the callbacks, and assembles the views. It
+renders no markup of its own.
+
+| Layer   | Where                      | What it owns                                                                                                                                   |
+| ------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hooks   | [src/hooks/](src/hooks/)   | `useProgress`, `usePracticeConfig`, `useBlockStudy`, `useMockSession`. Storage is injected, so none knows which cert is active.                |
+| Screens | [src/views/](src/views/)   | `HomeView`, `BlockView`, `PracticeView` + `TopicPicker`, `MockView`, `ProgressView`, `ResultView`, `QuizHeader`, `QuizView`, `RewardOverlays`. |
+| Engine  | [src/engine/](src/engine/) | Pure logic: questions, blocks, sessions, storage, domain helpers.                                                                              |
+| Certs   | [src/certs/](src/certs/)   | One folder per certification: manifest, domains, questions, topics, assets.                                                                    |
+
+Views present and emit. They never touch storage, never keep a second
+copy of progress or of the running session, and never work out a rule
+that belongs to a hook. Where a screen needed more inputs than a flat
+signature could carry, they are grouped by who owns them — `answer`,
+`session`, `summary`, `shortcuts` — never as one bag of everything.
+
+Two conventions worth knowing before changing a view:
+
+- `quizMode` is one of `practice`, `blocks` or `mock`. A block is a
+  practice session tagged as one, so anything the two share is keyed off
+  "not mock" rather than off a second flag.
+- The block screen carries two nullable indexes on purpose.
+  `savedBlockIndex` is whatever attempt was left unfinished;
+  `activeBlockIndex` is that same attempt only when it belongs to the
+  track on screen. Change the block size and the first survives while the
+  second disappears.
+
+### Quality gates
+
+- CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs `npm ci`
+  → lint → `format:check` → test → build on Node 20, for every push and
+  pull request.
+- ESLint is at **zero errors and zero warnings**. `rules-of-hooks` is an
+  error and `exhaustive-deps` a warning, but nothing currently trips
+  either. The thirteen dependency warnings that used to be the baseline
+  were each resolved by naming a dependency that was genuinely stable, or
+  by memoising a helper — none suppressed.
+- Prettier covers the whole source tree; only `dist` and the generated
+  question and case-study files are excluded.
+- **400 tests** under Vitest: engine and UI helpers, the four hooks, six
+  view components, and four integration suites that mount the real screen
+  — `App.home`, `App.practice`, `App.blocks` and `App.mock`. Integration
+  is where the wiring is checked: a hook can be right on its own and
+  still be plugged into `AppContent` wrongly.
 
 ### Known shape of the platform
 
@@ -175,15 +236,12 @@ automatically.
 - [ ] Capture a boss-battle screenshot and uncomment the reference in
       [README.md](README.md). Trigger a battle from the menu, save it
       to `docs/screenshots/boss-battle.png`.
-- [ ] Split `src/App.jsx` into per-screen components
-      (`PracticeView`, `MockView`, `BlockView`, `BossView`,
-      `ResultView`). Down to ~2.6k lines from 3.0k, still the hardest
-      single maintainability hit. The four hooks below are out and
-      stable, which was the precondition; the `menuView` split already
-      draws the seams inside the menu screen, so the sections are
-      contiguous and independent. Remove `src/App.jsx` from
-      [.prettierignore](.prettierignore) once the split is done — it
-      was exempted only because the file was about to be cut up.
+- [x] Split `src/App.jsx` into per-screen components under
+      [src/views/](src/views/), one commit each, each with component
+      tests for its own branches and integration tests for its wiring.
+      3,051 lines down to about 1,900, all of it hooks, state, effects,
+      callbacks and assembly. `src/App.jsx` is no longer exempt from
+      Prettier.
 - [x] Extract the stateful logic into hooks, one commit each, each with
       unit tests and — from `useBlockStudy` on — integration tests that
       mount the real screen: [useProgress](src/hooks/useProgress.js),
@@ -195,8 +253,10 @@ automatically.
       ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
       `npm ci` → lint → `format:check` → test → build, on Node 20.
       `rules-of-hooks` is an error, `exhaustive-deps` a warning.
-- [x] Vitest across `engine/`, `ui/`, `hooks/` and the two integration
-      suites — 277 tests.
+- [x] Vitest across `engine/`, `ui/`, `hooks/`, `views/` and four
+      integration suites — 400 tests.
+- [x] Clear the thirteen `exhaustive-deps` warnings without changing
+      behaviour. ESLint is at zero.
 - [ ] Drop the engine's PDE-leaning leftovers (already removed
       `MOCK_DURATION_SEC`, `MOCK_QUESTION_COUNT`, `PASS_PERCENT`;
       audit anything else cert-flavoured).
