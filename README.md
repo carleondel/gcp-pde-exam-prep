@@ -44,21 +44,76 @@ needed to bring `dbt-aeng` online.
   persistence
 - Optional Docker deployment behind nginx
 
-## Run locally
+## Running the app
+
+Three ways to run it, and they are not interchangeable — see the
+warning about saved progress below.
+
+### Development (recommended for day-to-day study)
 
 ```bash
 npm install
 npm run dev          # http://localhost:5173
 ```
 
+Vite dev server with hot module replacement: edits appear without a
+reload and without losing what is on screen. Modules are served
+unbundled, so startup is near-instant. This is what to use both for
+working on the app and for studying with it, since it is the only mode
+where fixing a typo in a question is immediate.
+
+### Production preview
+
 ```bash
-npm run build        # production bundle
-npm run preview      # serve dist/
+npm run build        # bundles into dist/
+npm run preview      # http://localhost:4173
 ```
+
+Serves the real production bundle: minified, tree-shaken, with the
+question banks split into their own lazy-loaded chunk. Use it to check
+what actually ships — bundle size, chunking, and anything that behaves
+differently once minified. No hot reload; every change needs a rebuild.
+
+### Docker
 
 ```bash
 docker compose up    # http://localhost:8080
 ```
+
+Builds inside `node:20-alpine` and serves `dist/` from nginx. Needs no
+Node toolchain on the host and always builds from a clean `npm ci`, so
+it is the closest thing to a deployment and the way to run the app on a
+machine where you would rather not install anything. Slowest loop:
+every change means rebuilding the image.
+
+### Which one to use
+
+**`npm run dev`.** It is the fastest loop and the only one that reloads
+as you edit. Reach for `preview` before publishing something, and for
+Docker when you want a disposable, host-independent run.
+
+> **Saved progress does not carry across these modes.** Progress lives
+> in `localStorage`, which browsers scope by origin — protocol, host
+> *and port*. `localhost:5173`, `localhost:4173` and `localhost:8080`
+> are three different origins, so each keeps its own XP, achievements
+> and block history. Pick one and stay on it, or expect to start over.
+
+### Where progress is stored
+
+`localStorage`, under keys namespaced per cert:
+
+| Key | Contents |
+| --- | --- |
+| `<certId>.progress.v2` | XP, achievements, stats, bookmarks, wrong answers, topic history, block progress, daily streak, mock history |
+| `<certId>.activeMock.v2` | A mock left in progress |
+| `<certId>.activeBlockSession.v1` | A block left in progress |
+| `<certId>.practicePrefs.v1` | Source, order and question count |
+| `<certId>.blockPrefs.v1` | Block size and selection |
+
+Progress is written on every change, not on exit, so closing the tab
+or the browser loses nothing. It survives restarts and rebuilds. It
+does **not** survive clearing site data, and it is not shared across
+browsers, devices, or private windows. There is no export yet.
 
 ## Selecting a certification
 
