@@ -2571,11 +2571,11 @@ export function AppContent({ allQuestions }) {
               </div>
             )}
             <button onClick={() => setShowDiscussion((value) => !value)} style={{ border: "1px solid var(--primary-medium)", background: "var(--primary-soft)", color: "var(--primary-400)", borderRadius: "var(--radius-md)", padding: "10px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-              {showDiscussion ? "Ocultar" : "Ver"} discusión ({currentQuestion.discussion.length})
+              {showDiscussion ? "Ocultar" : "Ver"} discusión ({currentQuestion.discussion?.length ?? 0})
             </button>
             {showDiscussion && <div style={{ background: "var(--surface-panel)", borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", padding: 14 }}>
-              {currentQuestion.discussion.map((entry, index) => (
-                <div key={`${entry.user}-${index}`} style={{ paddingBottom: index < currentQuestion.discussion.length - 1 ? 12 : 0, marginBottom: index < currentQuestion.discussion.length - 1 ? 12 : 0, borderBottom: index < currentQuestion.discussion.length - 1 ? "1px solid var(--surface-line)" : "none" }}>
+              {(currentQuestion.discussion ?? []).map((entry, index) => (
+                <div key={`${entry.user}-${index}`} style={{ paddingBottom: index < (currentQuestion.discussion?.length ?? 0) - 1 ? 12 : 0, marginBottom: index < (currentQuestion.discussion?.length ?? 0) - 1 ? 12 : 0, borderBottom: index < (currentQuestion.discussion?.length ?? 0) - 1 ? "1px solid var(--surface-line)" : "none" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", marginBottom: 4 }}>
                     <div style={{ width: 26, height: 26, borderRadius: "50%", background: `hsl(${index * 110 + 210},65%,38%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800 }}>{entry.user[0]}</div>
                     <span style={{ fontSize: 12, color: "var(--text-primary)", fontWeight: 700 }}>{entry.user}</span>

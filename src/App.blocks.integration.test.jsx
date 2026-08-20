@@ -311,6 +311,20 @@ describe("block study, wired into the app", () => {
     });
   });
 
+  // README documents `discussion` as optional, so a cert can legitimately
+  // ship questions without it. Every question in both banks happens to have
+  // the field, which is why the unguarded read never showed up in use.
+  it("answers a question that has no discussion field at all", () => {
+    const withoutDiscussion = BANK.map(({ discussion: _discussion, ...rest }) => rest);
+    render(<AppContent allQuestions={withoutDiscussion} />);
+    startFirstBlock();
+
+    fireEvent.click(screen.getByText(CORRECT));
+    clickButton(/^Comprobar/);
+
+    expect(screen.getByText(/discusión \(0\)/)).toBeTruthy();
+  });
+
   it("does not overwrite stored progress on mount", () => {
     storage().saveProgress({ ...EMPTY_PROGRESS, xp: 3210, achievements: ["first_blood"] });
 
