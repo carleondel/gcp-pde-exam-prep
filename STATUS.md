@@ -177,13 +177,26 @@ automatically.
       to `docs/screenshots/boss-battle.png`.
 - [ ] Split `src/App.jsx` into per-screen components
       (`PracticeView`, `MockView`, `BlockView`, `BossView`,
-      `ResultView`). The file is ~2.9k lines, hardest single
-      maintainability hit. The `menuView` split already draws the
-      seams inside the menu screen — the sections are now contiguous
-      and independent, so extracting them is mostly cut-and-paste.
-- [ ] Add ESLint + Prettier.
-- [ ] Add Vitest for `engine/` (pure logic — quiz, blocks, sessions,
-      storage, domain helpers).
+      `ResultView`). Down to ~2.6k lines from 3.0k, still the hardest
+      single maintainability hit. The four hooks below are out and
+      stable, which was the precondition; the `menuView` split already
+      draws the seams inside the menu screen, so the sections are
+      contiguous and independent. Remove `src/App.jsx` from
+      [.prettierignore](.prettierignore) once the split is done — it
+      was exempted only because the file was about to be cut up.
+- [x] Extract the stateful logic into hooks, one commit each, each with
+      unit tests and — from `useBlockStudy` on — integration tests that
+      mount the real screen: [useProgress](src/hooks/useProgress.js),
+      [usePracticeConfig](src/hooks/usePracticeConfig.js),
+      [useBlockStudy](src/hooks/useBlockStudy.js),
+      [useMockSession](src/hooks/useMockSession.js). Storage is injected
+      into all four, so none of them knows which cert is active.
+- [x] ESLint + Prettier, wired into CI
+      ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
+      `npm ci` → lint → `format:check` → test → build, on Node 20.
+      `rules-of-hooks` is an error, `exhaustive-deps` a warning.
+- [x] Vitest across `engine/`, `ui/`, `hooks/` and the two integration
+      suites — 277 tests.
 - [ ] Drop the engine's PDE-leaning leftovers (already removed
       `MOCK_DURATION_SEC`, `MOCK_QUESTION_COUNT`, `PASS_PERCENT`;
       audit anything else cert-flavoured).
