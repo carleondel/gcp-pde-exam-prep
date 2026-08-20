@@ -49,7 +49,9 @@ import {
 import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
 import BlockView from "./views/BlockView.jsx";
 import MockView from "./views/MockView.jsx";
+import PracticeView from "./views/PracticeView.jsx";
 import ProgressView from "./views/ProgressView.jsx";
+import TopicPicker from "./views/TopicPicker.jsx";
 import ResultView from "./views/ResultView.jsx";
 import CaseStudyPanel from "./components/CaseStudyPanel.jsx";
 import CertPicker from "./components/CertPicker.jsx";
@@ -64,7 +66,6 @@ import {
   getPercentTone,
 } from "./ui/formatting.js";
 import {
-  PRACTICE_PRESETS,
   PRACTICE_SOURCE_META,
   sanitizeBlockSize,
 } from "./ui/practice-prefs.js";
@@ -933,6 +934,116 @@ export function AppContent({ allQuestions }) {
     [setBlockMessage, setSelectedBlockIndex],
   );
 
+  /**
+   * The topic picker's data, resolved once here rather than in the view: a
+   * canonical topic can stand for several of the bank's raw topics, and that
+   * mapping belongs with the domain helpers, not with the buttons.
+   */
+  const practiceTopicGroups = useMemo(
+    () =>
+      EXAM_DOMAINS.map((domain) => ({
+        domainId: domain.id,
+        domainShort: domain.short,
+        topics: canonicalTopicStats
+          .filter((stat) => stat.domainId === domain.id)
+          .map((stat) => {
+            const rawTopics = topics.filter((topic) => getCanonicalTopic(topic) === stat.topic);
+            return {
+              ...stat,
+              rawTopics,
+              questionCount: rawTopics.reduce((sum, topic) => sum + (topicCounts[topic] || 0), 0),
+            };
+          }),
+      })),
+    [canonicalTopicStats, topicCounts, topics],
+  );
+
+  const toggleAllTopics = useCallback(() => {
+    setSelectedTopics(selectedTopics.size === topics.length ? new Set() : new Set(topics));
+  }, [selectedTopics, setSelectedTopics, topics]);
+
+  /**
+   * Adds or removes a whole canonical topic, and warns when the one just
+   * added barely has any questions behind it.
+   */
+  const toggleTopicGroup = useCallback(
+    (entry) => {
+      const next = new Set(selectedTopics);
+      const allSelected = entry.rawTopics.every((topic) => next.has(topic));
+      entry.rawTopics.forEach((topic) => (allSelected ? next.delete(topic) : next.add(topic)));
+      setSelectedTopics(next);
+      setPracticeSource("topics");
+      setPracticeMessage(
+        entry.questionCount < 5
+          ? `${entry.topic}: solo ${entry.questionCount} preguntas disponibles.`
+          : "",
+      );
+    },
+    [selectedTopics, setPracticeMessage, setPracticeSource, setSelectedTopics],
+  );
+
+  /** Double-clicking a topic narrows the selection down to that one alone. */
+  const isolateTopicGroup = useCallback(
+    (entry) => {
+      setSelectedTopics(new Set(entry.rawTopics));
+      setPracticeSource("topics");
+      setPracticeMessage(`Solo ${entry.topic}.`);
+    },
+    [setPracticeMessage, setPracticeSource, setSelectedTopics],
+  );
+
+  /**
+   * Topics is the only source that is configured rather than derived, so it
+   * says what to do next instead of announcing what it picked.
+   */
+  const selectPracticeSource = useCallback(
+    (source) => {
+      if (source === "topics") {
+        setPracticeSource("topics");
+        setPracticeMessage("Selecciona temas y cantidad.");
+        return;
+      }
+      setPracticeSourcePreset(source);
+    },
+    [setPracticeMessage, setPracticeSource, setPracticeSourcePreset],
+  );
+
+  const backToTopicSource = useCallback(() => {
+    setPracticeSource("topics");
+  }, [setPracticeSource]);
+
+  const toggleCustomLimit = useCallback(() => {
+    setShowCustomLimit((current) => !current);
+  }, [setShowCustomLimit]);
+
+  /** Choosing a preset count also closes the custom input it replaces. */
+  const selectPracticeCount = useCallback(
+    (count) => {
+      setPracticeLimit(count);
+      setPracticeMessage("");
+      setShowCustomLimit(false);
+    },
+    [setPracticeLimit, setPracticeMessage, setShowCustomLimit],
+  );
+
+  /**
+   * The typed count is kept as typed and only warned about: the settings hook
+   * clamps it against the pool on its own, so overwriting it here would fight
+   * the field while it is being edited.
+   */
+  const changeCustomPracticeCount = useCallback(
+    (rawValue) => {
+      const nextValue = rawValue === "" ? 1 : Math.max(1, Number(rawValue));
+      setPracticeLimit(nextValue);
+      setPracticeMessage(
+        nextValue > maxPracticeCount && maxPracticeCount > 0
+          ? `Máximo disponible: ${maxPracticeCount}`
+          : "",
+      );
+    },
+    [maxPracticeCount, setPracticeLimit, setPracticeMessage],
+  );
+
   const goToMenu = useCallback(() => {
     if (session?.mode === "practice" && session.answered > 0 && session.status !== "finished") {
       const message = session.meta?.source === "blocks"
@@ -1333,77 +1444,6 @@ export function AppContent({ allQuestions }) {
     </div>
   );
 
-  const renderTopicHeatmap = () => {
-    const heatmapColor = (accuracy) => {
-      if (accuracy === null) return "var(--text-muted)";
-      if (accuracy >= 90) return "var(--highlight)";
-      if (accuracy >= 70) return "var(--signal-correct)";
-      if (accuracy >= 50) return "var(--signal-warning)";
-      return "var(--signal-wrong)";
-    };
-    const heatmapBg = (accuracy) => {
-      if (accuracy === null) return "var(--surface-panel-muted)";
-      if (accuracy >= 90) return "rgba(143, 255, 106, 0.12)";
-      if (accuracy >= 70) return "var(--correct-soft)";
-      if (accuracy >= 50) return "var(--warning-soft)";
-      return "var(--wrong-soft)";
-    };
-    return (
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-          <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Temas</div>
-          <button onClick={() => setSelectedTopics(selectedTopics.size === topics.length ? new Set() : new Set(topics))} style={{ border: "none", background: "transparent", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-            {selectedTopics.size === topics.length ? "Deseleccionar todo" : "Seleccionar todo"}
-          </button>
-        </div>
-        {EXAM_DOMAINS.map((domain) => (
-          <div key={domain.id} style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 10, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6, fontFamily: "var(--font-mono)" }}>{domain.short}</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {canonicalTopicStats.filter((s) => s.domainId === domain.id).map((stat) => {
-                const rawTopics = topics.filter((t) => getCanonicalTopic(t) === stat.topic);
-                const allSelected = rawTopics.every((t) => selectedTopics.has(t));
-                const qCount = rawTopics.reduce((sum, t) => sum + (topicCounts[t] || 0), 0);
-                const tooltipText = stat.total >= 10 ? `${stat.correct}/${stat.total} correctas` : `${stat.total} intentos`;
-                return (
-                  <button
-                    key={stat.topic}
-                    title={`${stat.topic}: ${tooltipText} · ${qCount} preguntas`}
-                    onClick={() => {
-                      const next = new Set(selectedTopics);
-                      rawTopics.forEach((t) => allSelected ? next.delete(t) : next.add(t));
-                      setSelectedTopics(next);
-                      setPracticeSource("topics");
-                      if (qCount < 5) setPracticeMessage(`${stat.topic}: solo ${qCount} preguntas disponibles.`);
-                      else setPracticeMessage("");
-                    }}
-                    onDoubleClick={() => {
-                      setSelectedTopics(new Set(rawTopics));
-                      setPracticeSource("topics");
-                      setPracticeMessage(`Solo ${stat.topic}.`);
-                    }}
-                    style={{
-                      padding: "6px 10px",
-                      borderRadius: "var(--radius-pill)",
-                      border: allSelected ? `1px solid ${heatmapColor(stat.accuracy)}` : "1px solid var(--surface-line)",
-                      background: allSelected ? heatmapBg(stat.accuracy) : "var(--surface-panel-muted)",
-                      color: allSelected ? heatmapColor(stat.accuracy) : "var(--text-secondary)",
-                      fontSize: 11,
-                      cursor: "pointer",
-                      fontFamily: "var(--font-mono)",
-                    }}
-                  >
-                    {stat.topic} <span style={{ opacity: 0.65 }}>{stat.accuracy !== null ? `${stat.accuracy}%` : "—"}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-        <div style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: 4 }}>Doble click para aislar un tema. Tooltip para detalle.</div>
-      </div>
-    );
-  };
 
   const renderSummaryCards = () => (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "var(--space-md)", marginBottom: 16 }}>
@@ -1662,227 +1702,37 @@ export function AppContent({ allQuestions }) {
         {menuView !== "home" && menuView !== "blocks" && (
         <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 14, marginBottom: 18, alignItems: "start" }}>
         {menuView === "practice" && (
-          <div style={{ background: "var(--gradient-panel-strong)", border: "1px solid var(--primary-medium)", borderRadius: "var(--radius-2xl)", padding: 24, boxShadow: "var(--shadow-elevated), var(--shadow-glow)" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-              <div>
-                <div style={{ fontSize: 12, color: "var(--primary-400)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Practicar</div>
-                <div style={{ fontSize: 28, fontWeight: 800, marginTop: 4, fontFamily: "var(--font-heading)" }}>Sesión a medida</div>
-                <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 6 }}>Control directo de fuente, orden y cantidad.</div>
-              </div>
-              <div style={{ padding: "8px 14px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Feedback inmediato</div>
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Fuente</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
-                {practiceSourceOptions.map((option) => {
-                  const active = practiceSource === option.key;
-                  return (
-                    <button
-                      key={option.key}
-                      disabled={option.disabled}
-                      onClick={() => {
-                        if (option.key === "topics") {
-                          setPracticeSource("topics");
-                          setPracticeMessage("Selecciona temas y cantidad.");
-                        } else {
-                          setPracticeSourcePreset(option.key);
-                        }
-                      }}
-                      style={{
-                        padding: "14px 14px",
-                        borderRadius: "var(--radius-lg)",
-                        border: active ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
-                        background: active ? "linear-gradient(180deg, var(--primary-soft), var(--surface-panel-muted))" : "var(--surface-panel-muted)",
-                        color: option.disabled ? "var(--text-muted)" : "var(--text-primary)",
-                        textAlign: "left",
-                        cursor: option.disabled ? "not-allowed" : "pointer",
-                        opacity: option.disabled ? 0.6 : 1,
-                        transition: "all var(--duration-normal) var(--ease-out)",
-                      }}
-                    >
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "var(--space-md)", marginBottom: 6 }}>
-                        <span style={{ fontSize: 14, fontWeight: 800, fontFamily: "var(--font-heading)" }}>{PRACTICE_SOURCE_META[option.key].label}</span>
-                        <span style={{ padding: "4px 8px", borderRadius: "var(--radius-pill)", background: "var(--bg-primary)", color: option.disabled ? "var(--text-tertiary)" : "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>
-                          {option.badge}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: 12, color: option.disabled ? "var(--text-tertiary)" : "var(--text-secondary)", lineHeight: 1.45 }}>
-                        {option.disabled ? PRACTICE_SOURCE_META[option.key].empty : PRACTICE_SOURCE_META[option.key].helper}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Orden</div>
-                <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{practiceSource === "topics" ? "Configurable" : "Aplicado al bloque cargado"}</div>
-              </div>
-              <div style={{ display: "flex", gap: "var(--space-sm)" }}>
-                {["random", "sequential", "recent-desc"].map((order) => (
-                  <button key={order} onClick={() => setPracticeOrder(order)} style={{
-                    padding: "10px 14px",
-                    borderRadius: "var(--radius-md)",
-                    border: practiceOrder === order ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
-                    background: practiceOrder === order ? "var(--primary-soft)" : "var(--surface-panel-muted)",
-                    color: practiceOrder === order ? "var(--primary-400)" : "var(--text-secondary)",
-                    fontSize: 12,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    fontFamily: "var(--font-mono)",
-                  }}>
-                    {order === "random" ? "Mezclado" : order === "sequential" ? "Secuencial" : "Más recientes"}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {practiceSource === "topics" && renderTopicHeatmap()}
-
-            {practiceSource !== "topics" && (
-              <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: "var(--radius-lg)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "var(--space-md)", alignItems: "center" }}>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>{practiceSummary.title}</div>
-                    <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.45 }}>{practiceSummary.subtitle}</div>
-                  </div>
-                  <button onClick={() => setPracticeSource("topics")} style={{ border: "1px solid var(--surface-line)", borderRadius: "var(--radius-md)", padding: "9px 12px", background: "var(--bg-primary)", color: "var(--text-primary)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-                    Volver a dominio
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div style={{ marginBottom: 18 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Cantidad</div>
-                <button onClick={() => setShowCustomLimit((current) => !current)} style={{ border: "none", background: "transparent", color: "var(--primary-400)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-                  {showCustomLimit ? "Ocultar personalización" : "Personalizar"}
-                </button>
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-sm)", marginBottom: showCustomLimit ? 10 : 0 }}>
-                {PRACTICE_PRESETS.map((preset) => {
-                  const disabled = !hasPracticeQuestions || preset > maxPracticeCount;
-                  const active = effectivePracticeLimit === preset && !showCustomLimit;
-                  return (
-                    <button
-                      key={preset}
-                      disabled={disabled}
-                      onClick={() => {
-                        setPracticeLimit(preset);
-                        setPracticeMessage("");
-                        setShowCustomLimit(false);
-                      }}
-                      style={{
-                        padding: "10px 14px",
-                        borderRadius: "var(--radius-md)",
-                        border: active ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
-                        background: active ? "var(--primary-soft)" : "var(--surface-panel-muted)",
-                        color: disabled ? "var(--text-muted)" : active ? "var(--primary-400)" : "var(--text-secondary)",
-                        fontSize: 12,
-                        fontWeight: 700,
-                        cursor: disabled ? "not-allowed" : "pointer",
-                        opacity: disabled ? 0.55 : 1,
-                        fontFamily: "var(--font-mono)",
-                      }}
-                    >
-                      {preset}
-                    </button>
-                  );
-                })}
-                <button
-                  disabled={!hasPracticeQuestions}
-                  onClick={() => {
-                    setPracticeLimit(maxPracticeCount);
-                    setPracticeMessage("");
-                    setShowCustomLimit(false);
-                  }}
-                  style={{
-                    padding: "10px 14px",
-                    borderRadius: "var(--radius-md)",
-                    border: effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "1px solid var(--primary-medium)" : "1px solid var(--surface-line)",
-                    background: effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "var(--primary-soft)" : "var(--surface-panel-muted)",
-                    color: hasPracticeQuestions ? (effectivePracticeLimit === maxPracticeCount && !showCustomLimit ? "var(--primary-400)" : "var(--text-primary)") : "var(--text-muted)",
-                    fontSize: 12,
-                    fontWeight: 700,
-                    cursor: hasPracticeQuestions ? "pointer" : "not-allowed",
-                    opacity: hasPracticeQuestions ? 1 : 0.55,
-                    fontFamily: "var(--font-mono)",
-                  }}
-                >
-                  {maxPresetLabel}
-                </button>
-              </div>
-              {showCustomLimit && (
-                <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
-                  <input
-                    type="number"
-                    min="1"
-                    max={Math.max(1, maxPracticeCount)}
-                    value={practiceLimit}
-                    onChange={(event) => {
-                      const rawValue = event.target.value;
-                      const nextValue = rawValue === "" ? 1 : Math.max(1, Number(rawValue));
-                      setPracticeLimit(nextValue);
-                      setPracticeMessage(nextValue > maxPracticeCount && maxPracticeCount > 0 ? `Máximo disponible: ${maxPracticeCount}` : "");
-                    }}
-                    style={{
-                      width: 110,
-                      padding: "10px 12px",
-                      borderRadius: "var(--radius-md)",
-                      border: "1px solid var(--surface-line)",
-                      background: "var(--bg-primary)",
-                      color: "var(--text-primary)",
-                      fontSize: 14,
-                      outline: "none",
-                      fontFamily: "var(--font-mono)",
-                    }}
-                  />
-                  <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>Se ajusta automáticamente al máximo disponible.</span>
-                </div>
-              )}
-            </div>
-
-            <div style={{ marginBottom: 18, padding: "16px 18px", borderRadius: "var(--radius-lg)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
-              <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 12, fontFamily: "var(--font-mono)" }}>Resumen</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 10 }}>
-                <div>
-                  <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Fuente</div>
-                  <div style={{ marginTop: 4, fontSize: 15, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>{PRACTICE_SOURCE_META[practiceSource].label}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Disponibles</div>
-                  <div style={{ marginTop: 4, fontSize: 15, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>{maxPracticeCount}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Lanzarás</div>
-                  <div style={{ marginTop: 4, fontSize: 15, fontWeight: 800, color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{hasPracticeQuestions ? effectivePracticeLimit : 0}</div>
-                </div>
-              </div>
-              <div style={{ marginTop: 12, fontSize: 12, color: "var(--text-secondary)" }}>
-                {practiceSummary.badge} • {practiceSummary.subtitle}
-              </div>
-            </div>
-
-            {practiceMessage && (
-              <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: "var(--radius-md)", background: "var(--info-soft)", border: "1px solid var(--signal-info)", color: "var(--signal-info)", fontSize: 12, lineHeight: 1.45 }}>
-                {practiceMessage}
-              </div>
-            )}
-
-            {!hasPracticeQuestions && (
-              <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: "var(--radius-md)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)", color: "var(--text-secondary)", fontSize: 12, lineHeight: 1.45 }}>
-                {PRACTICE_SOURCE_META[practiceSource].empty}
-              </div>
-            )}
-
-            <button onClick={startPractice} disabled={!hasPracticeQuestions} style={{ width: "100%", padding: "16px 18px", border: "none", borderRadius: "var(--radius-lg)", background: hasPracticeQuestions ? "var(--gradient-practice)" : "var(--text-muted)", color: "white", fontSize: 15, fontWeight: 800, cursor: hasPracticeQuestions ? "pointer" : "not-allowed", fontFamily: "var(--font-mono)", boxShadow: hasPracticeQuestions ? "var(--shadow-glow)" : "none" }}>
-              {practiceCtaLabel}
-            </button>
-            <div style={{ marginTop: 10, fontSize: 12, color: "var(--text-tertiary)", textAlign: "center" }}>Ayudas y progreso activo solo en práctica.</div>
-          </div>
+          <PracticeView
+            sourceOptions={practiceSourceOptions}
+            source={practiceSource}
+            summary={practiceSummary}
+            order={practiceOrder}
+            limit={practiceLimit}
+            effectiveLimit={effectivePracticeLimit}
+            maxCount={maxPracticeCount}
+            maxPresetLabel={maxPresetLabel}
+            showCustomLimit={showCustomLimit}
+            message={practiceMessage}
+            ctaLabel={practiceCtaLabel}
+            hasQuestions={hasPracticeQuestions}
+            topicPicker={
+              <TopicPicker
+                groups={practiceTopicGroups}
+                selectedTopics={selectedTopics}
+                allSelected={selectedTopics.size === topics.length}
+                onToggleAll={toggleAllTopics}
+                onToggle={toggleTopicGroup}
+                onIsolate={isolateTopicGroup}
+              />
+            }
+            onSelectSource={selectPracticeSource}
+            onBackToTopics={backToTopicSource}
+            onSelectOrder={setPracticeOrder}
+            onToggleCustomLimit={toggleCustomLimit}
+            onSelectCount={selectPracticeCount}
+            onCustomCountChange={changeCustomPracticeCount}
+            onStart={startPractice}
+          />
         )}
 
         {menuView === "mock" && (
