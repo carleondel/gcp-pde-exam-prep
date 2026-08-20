@@ -1,0 +1,13 @@
+dist
+node_modules
+package-lock.json
+
+# Generated data, not hand-written source.
+src/certs/*/questions.js
+src/certs/*/case-studies.js
+
+# Temporarily exempt: Prettier rewrites ~7000 lines of App.jsx, which
+# would bury the file's history right before it gets split apart. Each
+# module extracted from it is formatted as it is created, so the
+# exemption shrinks on its own. Delete this line once the split is done.
+src/App.jsx
