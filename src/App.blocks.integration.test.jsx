@@ -143,6 +143,23 @@ function answerCurrent() {
   throw new Error("could not advance past a question");
 }
 
+/**
+ * Answers the block on screen to the end, correctly.
+ *
+ * Driven by what is on screen rather than by a count of BLOCK_SIZE answers:
+ * dismissing a reward can advance the question by itself, so the number of
+ * clicks a block needs is not the number of questions it has. The guard is
+ * generous enough to cover that and still fail loudly.
+ */
+function finishBlock() {
+  for (let guard = 0; guard < BLOCK_SIZE + 8; guard += 1) {
+    dismissRewards();
+    if (!findButton(/^Comprobar/)) break;
+    answerCurrent();
+  }
+  dismissRewards();
+}
+
 const trackId = (size = BLOCK_SIZE) => `blocks-desc-${size}`;
 const blockRecord = (index = 0, size = BLOCK_SIZE) =>
   storage().loadProgress().blockStudy?.tracks?.[trackId(size)]?.blocks?.[index];
@@ -381,16 +398,7 @@ describe("block study, wired into the app", () => {
       render(<AppContent allQuestions={BANK} />);
       startFirstBlock();
 
-      // Driven by what is on screen rather than by a count of BLOCK_SIZE
-      // answers: dismissing a reward can advance the question by itself, so
-      // the number of clicks a block needs is not the number of questions it
-      // has. The guard is generous enough to cover that and still fail loudly.
-      for (let guard = 0; guard < BLOCK_SIZE + 8; guard += 1) {
-        dismissRewards();
-        if (!findButton(/^Comprobar/)) break;
-        answerCurrent();
-      }
-      dismissRewards();
+      finishBlock();
 
       expect(
         screen.getByText("Revisión"),
@@ -407,6 +415,41 @@ describe("block study, wired into the app", () => {
 
       clickButton(/^Volver al menú$/);
       expect(screen.getByText("Bloques de estudio")).toBeTruthy();
+    });
+
+    it("starts the next block straight from the result screen", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      finishBlock();
+
+      clickButton(/^Siguiente bloque$/);
+
+      // The second block of a 60-question bank cut at 25, running newest
+      // first: 60→36 is done, so this one opens on 35.
+      expect(screen.getByText("Pregunta numero 35")).toBeTruthy();
+      expect(storage().loadActiveBlockSession().meta.blockStudy.blockIndex).toBe(1);
+    });
+
+    it("replays the same block from the result screen", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      finishBlock();
+
+      clickButton(/^Repetir vuelta 2$/);
+
+      expect(screen.getByText("Pregunta numero 60")).toBeTruthy();
+      expect(storage().loadActiveBlockSession().meta.blockStudy.blockIndex).toBe(0);
+    });
+
+    it("offers no next block after the last one", () => {
+      render(<AppContent allQuestions={BANK} />);
+      openBlocks();
+      clickButton(/^Bloque 3/);
+      clickButton(/^(Empezar|Continuar) bloque/);
+      finishBlock();
+
+      expect(screen.getByText("Revisión")).toBeTruthy();
+      expect(findButton(/^Siguiente bloque$/)).toBeFalsy();
     });
   });
 

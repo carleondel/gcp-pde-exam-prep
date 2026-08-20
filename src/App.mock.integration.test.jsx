@@ -272,6 +272,25 @@ describe("the mock exam, wired into the app", () => {
 
       expect(screen.getByText(/100% Apto/)).toBeTruthy();
     });
+
+    it("starts a fresh attempt straight from the result screen", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startMock();
+      for (let i = 0; i < MOCK_COUNT; i += 1) {
+        answerCurrent();
+      }
+
+      clickButton(/^Nuevo simulacro$/);
+
+      expect(screen.getByText(`1/${MOCK_COUNT}`)).toBeTruthy();
+      const second = activeMock();
+      expect(second).not.toBeNull();
+      expect(second.answersByQuestionId).toEqual({});
+      expect(second.questionIds).toHaveLength(MOCK_COUNT);
+      // Still only the one finished attempt in the history: starting another
+      // must not re-record the one just graded.
+      expect(storage().loadProgress().mockHistory).toHaveLength(1);
+    });
   });
 
   describe("per cert", () => {
