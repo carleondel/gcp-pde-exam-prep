@@ -204,6 +204,31 @@ describe("the mock exam, wired into the app", () => {
     });
   });
 
+  describe("leaving and resuming", () => {
+    it("comes back to the attempt in flight from the menu", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startMock();
+      answerCurrent();
+      answerCurrent();
+
+      // Leaving a mock through the menu keeps it: unlike cancelling, it is
+      // not a decision to throw the attempt away.
+      clickButton(/^← Menú$/);
+      expect(activeMock()).not.toBeNull();
+
+      clickButton(/^Continuar simulacro activo$/);
+
+      expect(screen.getByText(`3/${MOCK_COUNT}`)).toBeTruthy();
+      expect(Object.keys(activeMock().answersByQuestionId)).toHaveLength(2);
+    });
+
+    it("offers nothing to resume when no attempt is in flight", () => {
+      render(<AppContent allQuestions={BANK} />);
+      openMockView();
+      expect(findButton(/^Continuar simulacro activo$/)).toBeFalsy();
+    });
+  });
+
   describe("cancelling", () => {
     it("discards the attempt without writing it to the history", () => {
       vi.spyOn(window, "confirm").mockReturnValue(true);
