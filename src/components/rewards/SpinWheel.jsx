@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { WHEEL_SEGMENTS } from "../../data/gamification.js";
 import { Particles } from "./Confetti.jsx";
 
@@ -11,70 +11,76 @@ export function SpinWheel({ onComplete, onClose }) {
   const segs = WHEEL_SEGMENTS;
   const segAngle = 360 / segs.length;
 
+  const draw = useCallback(
+    (r) => {
+      const c = canvasRef.current;
+      if (!c) return;
+      const ctx = c.getContext("2d");
+      const sz = c.width;
+      const cx = sz / 2;
+      const rad = cx - 12;
+      ctx.clearRect(0, 0, sz, sz);
+      ctx.save();
+      ctx.shadowColor = "rgba(15,191,163,0.28)";
+      ctx.shadowBlur = 40;
+      ctx.beginPath();
+      ctx.arc(cx, cx, rad, 0, Math.PI * 2);
+      ctx.fillStyle = "#151d2e";
+      ctx.fill();
+      ctx.restore();
+      segs.forEach((s, i) => {
+        const sa = ((i * segAngle - 90 + r) * Math.PI) / 180,
+          ea = (((i + 1) * segAngle - 90 + r) * Math.PI) / 180;
+        ctx.beginPath();
+        ctx.moveTo(cx, cx);
+        ctx.arc(cx, cx, rad, sa, ea);
+        ctx.closePath();
+        const g = ctx.createRadialGradient(cx, cx, 0, cx, cx, rad);
+        g.addColorStop(0, s.color + "88");
+        g.addColorStop(1, s.color);
+        ctx.fillStyle = g;
+        ctx.fill();
+        ctx.strokeStyle = "#0f1520";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.save();
+        ctx.translate(cx, cx);
+        ctx.rotate(sa + (segAngle * Math.PI) / 360);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#e8ecf2";
+        ctx.font = "bold 12px 'IBM Plex Sans',sans-serif";
+        ctx.fillText(s.label, rad - 14, 4);
+        ctx.restore();
+      });
+      ctx.beginPath();
+      ctx.arc(cx, cx, 24, 0, Math.PI * 2);
+      ctx.fillStyle = "#0f1520";
+      ctx.fill();
+      ctx.strokeStyle = "#ffb733";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.fillStyle = "#ffb733";
+      ctx.font = "bold 18px 'JetBrains Mono',monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("\u2605", cx, cx);
+      ctx.beginPath();
+      ctx.moveTo(cx - 14, 4);
+      ctx.lineTo(cx + 14, 4);
+      ctx.lineTo(cx, 26);
+      ctx.closePath();
+      ctx.fillStyle = "#ffb733";
+      ctx.fill();
+    },
+    [segAngle, segs],
+  );
+
+  // Drawn once, when the wheel appears. `draw` is memoised over the segment
+  // table, which is a module constant, so it never changes and this cannot
+  // redraw mid-spin — the spin animation drives its own frames.
   useEffect(() => {
     draw(0);
-  }, []);
-
-  const draw = (r) => {
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext("2d");
-    const sz = c.width;
-    const cx = sz / 2;
-    const rad = cx - 12;
-    ctx.clearRect(0, 0, sz, sz);
-    ctx.save();
-    ctx.shadowColor = "rgba(15,191,163,0.28)";
-    ctx.shadowBlur = 40;
-    ctx.beginPath();
-    ctx.arc(cx, cx, rad, 0, Math.PI * 2);
-    ctx.fillStyle = "#151d2e";
-    ctx.fill();
-    ctx.restore();
-    segs.forEach((s, i) => {
-      const sa = ((i * segAngle - 90 + r) * Math.PI) / 180,
-        ea = (((i + 1) * segAngle - 90 + r) * Math.PI) / 180;
-      ctx.beginPath();
-      ctx.moveTo(cx, cx);
-      ctx.arc(cx, cx, rad, sa, ea);
-      ctx.closePath();
-      const g = ctx.createRadialGradient(cx, cx, 0, cx, cx, rad);
-      g.addColorStop(0, s.color + "88");
-      g.addColorStop(1, s.color);
-      ctx.fillStyle = g;
-      ctx.fill();
-      ctx.strokeStyle = "#0f1520";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.save();
-      ctx.translate(cx, cx);
-      ctx.rotate(sa + (segAngle * Math.PI) / 360);
-      ctx.textAlign = "right";
-      ctx.fillStyle = "#e8ecf2";
-      ctx.font = "bold 12px 'IBM Plex Sans',sans-serif";
-      ctx.fillText(s.label, rad - 14, 4);
-      ctx.restore();
-    });
-    ctx.beginPath();
-    ctx.arc(cx, cx, 24, 0, Math.PI * 2);
-    ctx.fillStyle = "#0f1520";
-    ctx.fill();
-    ctx.strokeStyle = "#ffb733";
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    ctx.fillStyle = "#ffb733";
-    ctx.font = "bold 18px 'JetBrains Mono',monospace";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("\u2605", cx, cx);
-    ctx.beginPath();
-    ctx.moveTo(cx - 14, 4);
-    ctx.lineTo(cx + 14, 4);
-    ctx.lineTo(cx, 26);
-    ctx.closePath();
-    ctx.fillStyle = "#ffb733";
-    ctx.fill();
-  };
+  }, [draw]);
 
   const spin = () => {
     if (spinning) return;
