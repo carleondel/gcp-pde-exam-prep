@@ -142,10 +142,14 @@ export function hydrateBlockSession(stored, questionMap) {
     answered: stored.answered,
     streak: stored.streak,
     maxStreak: stored.maxStreak,
-    history: Array.isArray(stored.history) ? stored.history.map((entry) => ({
-      ...entry,
-      question: questionMap.get(entry.questionId),
-    })).filter((entry) => entry.question) : [],
+    history: Array.isArray(stored.history)
+      ? stored.history
+          .map((entry) => ({
+            ...entry,
+            question: questionMap.get(entry.questionId),
+          }))
+          .filter((entry) => entry.question)
+      : [],
     rewardQueue: Array.isArray(stored.rewardQueue) ? stored.rewardQueue : [],
     ui: stored.ui || {},
   });

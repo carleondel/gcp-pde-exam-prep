@@ -61,7 +61,9 @@ export function createDomainHelpers({ topicMap, examDomains }) {
 }
 
 export function getWeakestDomain(domainStats) {
-  const candidates = domainStats.filter((d) => d.total >= 10 && d.accuracy !== null && d.accuracy < 70);
+  const candidates = domainStats.filter(
+    (d) => d.total >= 10 && d.accuracy !== null && d.accuracy < 70,
+  );
   if (candidates.length === 0) return null;
   candidates.sort((a, b) => a.accuracy - b.accuracy || b.weight - a.weight);
   return candidates[0];

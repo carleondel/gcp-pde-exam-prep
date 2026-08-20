@@ -16,11 +16,11 @@ each.
 
 ## Status
 
-| Cert | Questions | Domains | Bank dumped | State |
-| --- | --- | --- | --- | --- |
-| `gcp-pde` — Professional Data Engineer | 333 | 5 | 2026-04-30 | Complete; used for a successful exam attempt |
-| `gcp-pca` — Professional Cloud Architect | 280 | 6 | 2026-08-17 | Complete; 4 official case studies, 36 questions flagged as outdated |
-| `dbt-aeng` — dbt Analytics Engineering | — | — | — | Planned, paused — needs a question pool |
+| Cert                                     | Questions | Domains | Bank dumped | State                                                               |
+| ---------------------------------------- | --------- | ------- | ----------- | ------------------------------------------------------------------- |
+| `gcp-pde` — Professional Data Engineer   | 333       | 5       | 2026-04-30  | Complete; used for a successful exam attempt                        |
+| `gcp-pca` — Professional Cloud Architect | 280       | 6       | 2026-08-17  | Complete; 4 official case studies, 36 questions flagged as outdated |
+| `dbt-aeng` — dbt Analytics Engineering   | —         | —       | —           | Planned, paused — needs a question pool                             |
 
 See [STATUS.md](STATUS.md) for the detail on each and for what is
 needed to bring `dbt-aeng` online.
@@ -94,7 +94,7 @@ Docker when you want a disposable, host-independent run.
 
 > **Saved progress does not carry across these modes.** Progress lives
 > in `localStorage`, which browsers scope by origin — protocol, host
-> *and port*. `localhost:5173`, `localhost:4173` and `localhost:8080`
+> _and port_. `localhost:5173`, `localhost:4173` and `localhost:8080`
 > are three different origins, so each keeps its own XP, achievements
 > and block history. Pick one and stay on it, or expect to start over.
 
@@ -102,13 +102,13 @@ Docker when you want a disposable, host-independent run.
 
 `localStorage`, under keys namespaced per cert:
 
-| Key | Contents |
-| --- | --- |
-| `<certId>.progress.v2` | XP, achievements, stats, bookmarks, wrong answers, topic history, block progress, daily streak, mock history |
-| `<certId>.activeMock.v2` | A mock left in progress |
-| `<certId>.activeBlockSession.v1` | A block left in progress |
-| `<certId>.practicePrefs.v1` | Source, order and question count |
-| `<certId>.blockPrefs.v1` | Block size and selection |
+| Key                              | Contents                                                                                                     |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `<certId>.progress.v2`           | XP, achievements, stats, bookmarks, wrong answers, topic history, block progress, daily streak, mock history |
+| `<certId>.activeMock.v2`         | A mock left in progress                                                                                      |
+| `<certId>.activeBlockSession.v1` | A block left in progress                                                                                     |
+| `<certId>.practicePrefs.v1`      | Source, order and question count                                                                             |
+| `<certId>.blockPrefs.v1`         | Block size and selection                                                                                     |
 
 Progress is written on every change, not on exit, so closing the tab
 or the browser loses nothing. It survives restarts and rebuilds. It
@@ -181,6 +181,7 @@ namespaced per cert id (e.g. `gcp-pde.progress.v2`).
      bank was last dumped from its source — shown under the title and
      in the picker) and `caseStudies` (keyed briefs that questions
      reference through their `caseStudy` field).
+
    - `domains.js` exporting `TOPIC_MAP` and `EXAM_DOMAINS` (data only).
    - `questions.js` exporting `QUESTIONS` (array of items with the
      schema below).

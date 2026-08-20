@@ -2,7 +2,7 @@
 
 export const TOPIC_MAP = {
   // Domain 1 — Designing Data Processing Systems
-  "Architecture": "Architecture",
+  Architecture: "Architecture",
   "IoT/Architecture": "Architecture",
   "Database Design": "Architecture",
   "ML/AI": "ML/AI",
@@ -11,47 +11,47 @@ export const TOPIC_MAP = {
   "BigQuery/ML": "ML/AI",
 
   // Domain 2 — Ingesting and Processing Data
-  "Dataflow": "Dataflow",
+  Dataflow: "Dataflow",
   "Dataflow/Networking": "Dataflow",
   "Dataflow/Bigtable": "Dataflow",
   "Dataflow/DR": "Dataflow",
   "Dataflow/BigQuery": "Dataflow",
   "Pub/Sub": "Pub/Sub",
-  "Dataproc": "Dataproc",
-  "Orchestration": "Orchestration",
+  Dataproc: "Dataproc",
+  Orchestration: "Orchestration",
   "Cloud Composer": "Orchestration",
   "Data Migration": "Data Migration",
   "Data Ingestion": "Data Migration",
-  "Datastream": "Data Migration",
+  Datastream: "Data Migration",
 
   // Domain 3 — Storing the Data
-  "BigQuery": "BigQuery",
+  BigQuery: "BigQuery",
   "BigQuery/DR": "BigQuery",
   "BigQuery DR": "BigQuery",
   "BigQuery/CDC": "BigQuery",
   "BigQuery/BigLake": "BigQuery",
-  "BigLake": "BigQuery",
+  BigLake: "BigQuery",
   "Bigtable/BigQuery": "BigQuery",
-  "Bigtable": "Bigtable",
-  "Storage": "Storage",
+  Bigtable: "Bigtable",
+  Storage: "Storage",
   "Storage/DR": "Storage",
   "Storage/Backup": "Storage",
   "Cloud SQL": "SQL & Spanner",
   "Cloud SQL/DR": "SQL & Spanner",
-  "Spanner": "SQL & Spanner",
-  "Memorystore": "SQL & Spanner",
+  Spanner: "SQL & Spanner",
+  Memorystore: "SQL & Spanner",
 
   // Domain 4 — Preparing and Using Data for Analysis
-  "Dataplex": "Analytics & Gov",
+  Dataplex: "Analytics & Gov",
   "Data Catalog": "Analytics & Gov",
-  "Dataform": "Analytics & Gov",
+  Dataform: "Analytics & Gov",
 
   // Domain 5 — Maintaining and Automating Data Workloads
-  "Security": "Security",
+  Security: "Security",
   "Security/DLP": "Security",
   "Security/IAM": "Security",
   "Security/Logging": "Security",
-  "Monitoring": "Monitoring",
+  Monitoring: "Monitoring",
   "Data Processing": "Data Processing",
 };
 

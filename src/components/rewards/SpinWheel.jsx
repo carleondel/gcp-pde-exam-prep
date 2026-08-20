@@ -11,73 +11,237 @@ export function SpinWheel({ onComplete, onClose }) {
   const segs = WHEEL_SEGMENTS;
   const segAngle = 360 / segs.length;
 
-  useEffect(() => { draw(0); }, []);
+  useEffect(() => {
+    draw(0);
+  }, []);
 
   const draw = (r) => {
-    const c = canvasRef.current; if (!c) return;
-    const ctx = c.getContext("2d"); const sz = c.width; const cx = sz/2; const rad = cx-12;
-    ctx.clearRect(0,0,sz,sz);
-    ctx.save(); ctx.shadowColor="rgba(15,191,163,0.28)"; ctx.shadowBlur=40;
-    ctx.beginPath(); ctx.arc(cx,cx,rad,0,Math.PI*2); ctx.fillStyle="#151d2e"; ctx.fill(); ctx.restore();
-    segs.forEach((s,i) => {
-      const sa=(i*segAngle-90+r)*Math.PI/180, ea=((i+1)*segAngle-90+r)*Math.PI/180;
-      ctx.beginPath(); ctx.moveTo(cx,cx); ctx.arc(cx,cx,rad,sa,ea); ctx.closePath();
-      const g = ctx.createRadialGradient(cx,cx,0,cx,cx,rad);
-      g.addColorStop(0, s.color+"88"); g.addColorStop(1, s.color);
-      ctx.fillStyle=g; ctx.fill(); ctx.strokeStyle="#0f1520"; ctx.lineWidth=2; ctx.stroke();
-      ctx.save(); ctx.translate(cx,cx); ctx.rotate(sa+(segAngle*Math.PI/360));
-      ctx.textAlign="right"; ctx.fillStyle="#e8ecf2"; ctx.font="bold 12px 'IBM Plex Sans',sans-serif";
-      ctx.fillText(s.label, rad-14, 4); ctx.restore();
+    const c = canvasRef.current;
+    if (!c) return;
+    const ctx = c.getContext("2d");
+    const sz = c.width;
+    const cx = sz / 2;
+    const rad = cx - 12;
+    ctx.clearRect(0, 0, sz, sz);
+    ctx.save();
+    ctx.shadowColor = "rgba(15,191,163,0.28)";
+    ctx.shadowBlur = 40;
+    ctx.beginPath();
+    ctx.arc(cx, cx, rad, 0, Math.PI * 2);
+    ctx.fillStyle = "#151d2e";
+    ctx.fill();
+    ctx.restore();
+    segs.forEach((s, i) => {
+      const sa = ((i * segAngle - 90 + r) * Math.PI) / 180,
+        ea = (((i + 1) * segAngle - 90 + r) * Math.PI) / 180;
+      ctx.beginPath();
+      ctx.moveTo(cx, cx);
+      ctx.arc(cx, cx, rad, sa, ea);
+      ctx.closePath();
+      const g = ctx.createRadialGradient(cx, cx, 0, cx, cx, rad);
+      g.addColorStop(0, s.color + "88");
+      g.addColorStop(1, s.color);
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.strokeStyle = "#0f1520";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.save();
+      ctx.translate(cx, cx);
+      ctx.rotate(sa + (segAngle * Math.PI) / 360);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#e8ecf2";
+      ctx.font = "bold 12px 'IBM Plex Sans',sans-serif";
+      ctx.fillText(s.label, rad - 14, 4);
+      ctx.restore();
     });
-    ctx.beginPath(); ctx.arc(cx,cx,24,0,Math.PI*2); ctx.fillStyle="#0f1520"; ctx.fill();
-    ctx.strokeStyle="#ffb733"; ctx.lineWidth=3; ctx.stroke();
-    ctx.fillStyle="#ffb733"; ctx.font="bold 18px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.textBaseline="middle";
-    ctx.fillText("\u2605",cx,cx);
-    ctx.beginPath(); ctx.moveTo(cx-14,4); ctx.lineTo(cx+14,4); ctx.lineTo(cx,26); ctx.closePath();
-    ctx.fillStyle="#ffb733"; ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx, cx, 24, 0, Math.PI * 2);
+    ctx.fillStyle = "#0f1520";
+    ctx.fill();
+    ctx.strokeStyle = "#ffb733";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.fillStyle = "#ffb733";
+    ctx.font = "bold 18px 'JetBrains Mono',monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("\u2605", cx, cx);
+    ctx.beginPath();
+    ctx.moveTo(cx - 14, 4);
+    ctx.lineTo(cx + 14, 4);
+    ctx.lineTo(cx, 26);
+    ctx.closePath();
+    ctx.fillStyle = "#ffb733";
+    ctx.fill();
   };
 
   const spin = () => {
-    if (spinning) return; setSpinning(true); setResult(null);
-    let totalW = segs.reduce((s,p)=>s+p.w,0), rand = Math.random()*totalW, winIdx=0;
-    for (let i=0;i<segs.length;i++){rand-=segs[i].w;if(rand<=0){winIdx=i;break;}}
-    const target = 360*6+(360-(winIdx*segAngle+segAngle/2));
-    const start = Date.now(), dur = 4500, startR = rot;
+    if (spinning) return;
+    setSpinning(true);
+    setResult(null);
+    let totalW = segs.reduce((s, p) => s + p.w, 0),
+      rand = Math.random() * totalW,
+      winIdx = 0;
+    for (let i = 0; i < segs.length; i++) {
+      rand -= segs[i].w;
+      if (rand <= 0) {
+        winIdx = i;
+        break;
+      }
+    }
+    const target = 360 * 6 + (360 - (winIdx * segAngle + segAngle / 2));
+    const start = Date.now(),
+      dur = 4500,
+      startR = rot;
     const anim = () => {
-      const p = Math.min((Date.now()-start)/dur,1), ease=1-Math.pow(1-p,4);
-      const cr = startR+target*ease; draw(cr); setRot(cr);
-      if (p<1) requestAnimationFrame(anim);
-      else { setSpinning(false); setResult(segs[winIdx]); setTimeout(()=>onComplete(segs[winIdx]),1800); }
+      const p = Math.min((Date.now() - start) / dur, 1),
+        ease = 1 - Math.pow(1 - p, 4);
+      const cr = startR + target * ease;
+      draw(cr);
+      setRot(cr);
+      if (p < 1) requestAnimationFrame(anim);
+      else {
+        setSpinning(false);
+        setResult(segs[winIdx]);
+        setTimeout(() => onComplete(segs[winIdx]), 1800);
+      }
     };
     requestAnimationFrame(anim);
   };
 
-  return <div style={{position:"fixed",inset:0,background:"var(--bg-overlay)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,backdropFilter:"blur(10px)"}}>
-    <div style={{background:"var(--gradient-panel-strong)",borderRadius:"var(--radius-2xl)",padding:32,textAlign:"center",border:"2px solid var(--accent-medium)",maxWidth:420,position:"relative",overflow:"hidden",boxShadow:"var(--shadow-elevated)"}}>
-      <Particles count={15} color="var(--accent-300)" />
-      <h2 style={{margin:"0 0 4px",fontSize:22,color:"var(--accent-300)",fontWeight:800,position:"relative",fontFamily:"var(--font-heading)"}}>RULETA DE RECOMPENSAS</h2>
-      <p style={{margin:"0 0 16px",color:"var(--text-secondary)",fontSize:13,position:"relative"}}>Gira y descubre tu premio</p>
-      <canvas ref={canvasRef} width={280} height={280} style={{margin:"0 auto 16px",display:"block",position:"relative"}}/>
-      {result ? (
-        <div style={{animation:"pulse 0.5s",position:"relative"}}>
-          <div style={{fontSize:36,marginBottom:6}}>{"\uD83C\uDF89"}</div>
-          <div style={{fontSize:24,fontWeight:800,color:result.color}}>{result.label}</div>
-          <div style={{color:"var(--text-secondary)",fontSize:13,marginTop:4}}>
-            {result.xp?`+${result.xp} XP`:result.mult?`Multiplicador x${result.mult} activado`:result.scratch?"Rasca y gana desbloqueado":result.chest?"Cofre misterioso obtenido":result.power?"Power-up obtenido":""}
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "var(--bg-overlay)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+        backdropFilter: "blur(10px)",
+      }}
+    >
+      <div
+        style={{
+          background: "var(--gradient-panel-strong)",
+          borderRadius: "var(--radius-2xl)",
+          padding: 32,
+          textAlign: "center",
+          border: "2px solid var(--accent-medium)",
+          maxWidth: 420,
+          position: "relative",
+          overflow: "hidden",
+          boxShadow: "var(--shadow-elevated)",
+        }}
+      >
+        <Particles count={15} color="var(--accent-300)" />
+        <h2
+          style={{
+            margin: "0 0 4px",
+            fontSize: 22,
+            color: "var(--accent-300)",
+            fontWeight: 800,
+            position: "relative",
+            fontFamily: "var(--font-heading)",
+          }}
+        >
+          RULETA DE RECOMPENSAS
+        </h2>
+        <p
+          style={{
+            margin: "0 0 16px",
+            color: "var(--text-secondary)",
+            fontSize: 13,
+            position: "relative",
+          }}
+        >
+          Gira y descubre tu premio
+        </p>
+        <canvas
+          ref={canvasRef}
+          width={280}
+          height={280}
+          style={{ margin: "0 auto 16px", display: "block", position: "relative" }}
+        />
+        {result ? (
+          <div style={{ animation: "pulse 0.5s", position: "relative" }}>
+            <div style={{ fontSize: 36, marginBottom: 6 }}>{"\uD83C\uDF89"}</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: result.color }}>{result.label}</div>
+            <div style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 4 }}>
+              {result.xp
+                ? `+${result.xp} XP`
+                : result.mult
+                  ? `Multiplicador x${result.mult} activado`
+                  : result.scratch
+                    ? "Rasca y gana desbloqueado"
+                    : result.chest
+                      ? "Cofre misterioso obtenido"
+                      : result.power
+                        ? "Power-up obtenido"
+                        : ""}
+            </div>
+            <button
+              onClick={onClose}
+              style={{
+                marginTop: 16,
+                padding: "10px 36px",
+                background: "var(--gradient-practice)",
+                border: "none",
+                borderRadius: "var(--radius-sm)",
+                color: "white",
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Continuar
+            </button>
           </div>
-          <button onClick={onClose} style={{marginTop:16,padding:"10px 36px",background:"var(--gradient-practice)",border:"none",borderRadius:"var(--radius-sm)",color:"white",fontSize:14,fontWeight:600,cursor:"pointer"}}>Continuar</button>
-        </div>
-      ) : (
-        <div style={{display:"flex",gap:12,justifyContent:"center",alignItems:"center"}}>
-          <button onClick={spin} disabled={spinning} style={{
-            padding:"14px 52px",background:spinning?"var(--text-muted)":"var(--gradient-mock)",
-            border:"none",borderRadius:"var(--radius-md)",color:"white",fontSize:18,fontWeight:800,
-            cursor:spinning?"wait":"pointer",boxShadow:spinning?"none":"0 4px 25px rgba(212,147,10,0.3)",
-            animation:spinning?"":"pulse 1.5s infinite",position:"relative",fontFamily:"var(--font-mono)"
-          }}>{spinning?"Girando...":"\u2605 GIRAR \u2605"}</button>
-          {!spinning && <button onClick={onClose} style={{padding:"14px 28px",background:"transparent",border:"1px solid var(--surface-line)",borderRadius:"var(--radius-md)",color:"var(--text-secondary)",fontSize:14,fontWeight:600,cursor:"pointer",fontFamily:"var(--font-mono)"}}>SALTAR</button>}
-        </div>
-      )}
+        ) : (
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", alignItems: "center" }}>
+            <button
+              onClick={spin}
+              disabled={spinning}
+              style={{
+                padding: "14px 52px",
+                background: spinning ? "var(--text-muted)" : "var(--gradient-mock)",
+                border: "none",
+                borderRadius: "var(--radius-md)",
+                color: "white",
+                fontSize: 18,
+                fontWeight: 800,
+                cursor: spinning ? "wait" : "pointer",
+                boxShadow: spinning ? "none" : "0 4px 25px rgba(212,147,10,0.3)",
+                animation: spinning ? "" : "pulse 1.5s infinite",
+                position: "relative",
+                fontFamily: "var(--font-mono)",
+              }}
+            >
+              {spinning ? "Girando..." : "\u2605 GIRAR \u2605"}
+            </button>
+            {!spinning && (
+              <button
+                onClick={onClose}
+                style={{
+                  padding: "14px 28px",
+                  background: "transparent",
+                  border: "1px solid var(--surface-line)",
+                  borderRadius: "var(--radius-md)",
+                  color: "var(--text-secondary)",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  fontFamily: "var(--font-mono)",
+                }}
+              >
+                SALTAR
+              </button>
+            )}
+          </div>
+        )}
+      </div>
     </div>
-  </div>;
+  );
 }

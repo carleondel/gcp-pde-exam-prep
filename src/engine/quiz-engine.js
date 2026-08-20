@@ -28,7 +28,9 @@ export function normalizeSelection(selection) {
   if (selection === null || selection === undefined) return [];
   if (selection instanceof Set) return [...selection].sort((a, b) => a - b);
   if (Array.isArray(selection)) {
-    return [...new Set(selection)].filter((value) => value !== null && value !== undefined).sort((a, b) => a - b);
+    return [...new Set(selection)]
+      .filter((value) => value !== null && value !== undefined)
+      .sort((a, b) => a - b);
   }
   return [selection];
 }
@@ -61,7 +63,10 @@ export function evaluateAnswer(question, selection) {
     correctIndexes,
     missingIndexes,
     extraIndexes,
-    isCorrect: missingIndexes.length === 0 && extraIndexes.length === 0 && selectedIndexes.length === correctIndexes.length,
+    isCorrect:
+      missingIndexes.length === 0 &&
+      extraIndexes.length === 0 &&
+      selectedIndexes.length === correctIndexes.length,
   };
 }
 
@@ -69,7 +74,14 @@ export function get5050HiddenOptions(question) {
   return shuffle(getWrongOptionIndexes(question)).slice(0, 2);
 }
 
-export function calculatePracticeXp(question, elapsedSec, streak, multiplier = 1, hasDoubleXP = false, totalXp = 0) {
+export function calculatePracticeXp(
+  question,
+  elapsedSec,
+  streak,
+  multiplier = 1,
+  hasDoubleXP = false,
+  totalXp = 0,
+) {
   const base = question.difficulty === 3 ? 45 : question.difficulty === 2 ? 30 : 20;
   const streakBonus = Math.min(streak * 8, 80);
   const speedBonus = elapsedSec < 8 ? 40 : elapsedSec < 15 ? 20 : elapsedSec < 25 ? 8 : 0;
@@ -86,14 +98,22 @@ export function calculatePracticeXp(question, elapsedSec, streak, multiplier = 1
 }
 
 export function buildPracticeQuestions(allQuestions, options = {}) {
-  const { topicSet = null, order = "sequential", questionIds = null, questionMap = null, limit = null } = options;
+  const {
+    topicSet = null,
+    order = "sequential",
+    questionIds = null,
+    questionMap = null,
+    limit = null,
+  } = options;
   let selected;
 
   if (questionIds?.length) {
     const lookup = questionMap || new Map(allQuestions.map((question) => [question.id, question]));
     selected = questionIds.map((id) => lookup.get(id)).filter(Boolean);
   } else {
-    selected = topicSet ? allQuestions.filter((question) => topicSet.has(question.topic)) : [...allQuestions];
+    selected = topicSet
+      ? allQuestions.filter((question) => topicSet.has(question.topic))
+      : [...allQuestions];
   }
 
   let ordered = selected;
@@ -139,7 +159,8 @@ export function buildMockQuestions(allQuestions, count, options = {}) {
   const { preferRecent = false, examDomains, topicMap } = options;
 
   const canonicalTopic = (topic) => topicMap[topic] || topic;
-  const domainForTopic = (canonical) => examDomains.find((d) => d.topics.includes(canonical)) || null;
+  const domainForTopic = (canonical) =>
+    examDomains.find((d) => d.topics.includes(canonical)) || null;
 
   const buckets = new Map(examDomains.map((domain) => [domain.id, []]));
   const unmatched = [];
@@ -149,7 +170,9 @@ export function buildMockQuestions(allQuestions, count, options = {}) {
     else unmatched.push(question);
   }
 
-  const targets = new Map(allocateDomainTargets(count, examDomains).map((entry) => [entry.id, entry.floor]));
+  const targets = new Map(
+    allocateDomainTargets(count, examDomains).map((entry) => [entry.id, entry.floor]),
+  );
   const orderPool = (pool) =>
     preferRecent
       ? [...pool].sort((a, b) => getQuestionOrderNumber(b) - getQuestionOrderNumber(a))
@@ -207,7 +230,10 @@ export function computeWeakTopics(topicHistory) {
       };
     })
     .filter((topic) => topic.attempts >= WEAK_TOPIC_MIN)
-    .sort((a, b) => a.accuracy - b.accuracy || a.attempts - b.attempts || a.topic.localeCompare(b.topic));
+    .sort(
+      (a, b) =>
+        a.accuracy - b.accuracy || a.attempts - b.attempts || a.topic.localeCompare(b.topic),
+    );
 }
 
 export function buildMockHistory(questionIds, answersByQuestionId, questionMap) {
@@ -216,7 +242,10 @@ export function buildMockHistory(questionIds, answersByQuestionId, questionMap) 
       const question = questionMap.get(questionId);
       if (!question) return null;
       const selectedIndexes = normalizeSelection(answersByQuestionId[questionId]);
-      const evaluation = selectedIndexes.length > 0 ? evaluateAnswer(question, selectedIndexes) : evaluateAnswer(question, []);
+      const evaluation =
+        selectedIndexes.length > 0
+          ? evaluateAnswer(question, selectedIndexes)
+          : evaluateAnswer(question, []);
       return {
         questionId,
         question,
@@ -259,7 +288,13 @@ export function buildDailyChallengeQuestions(allQuestions) {
 }
 
 export function buildMockSummary(history, options) {
-  const { startedAt, finishedAt, durationSec, passPercent, questionCount = history.length } = options;
+  const {
+    startedAt,
+    finishedAt,
+    durationSec,
+    passPercent,
+    questionCount = history.length,
+  } = options;
   const score = history.filter((entry) => entry.correct).length;
   const answered = history.filter((entry) => entry.answered).length;
   const percent = questionCount > 0 ? Math.round((score / questionCount) * 100) : 0;

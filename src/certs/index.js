@@ -22,9 +22,7 @@ export function validateCertManifest(manifest) {
     return false;
   }
   if (typeof manifest.loadQuestions !== "function") {
-    console.error(
-      `Cert manifest "${manifest.id}" has loadQuestions but it is not a function.`,
-    );
+    console.error(`Cert manifest "${manifest.id}" has loadQuestions but it is not a function.`);
     return false;
   }
   return true;

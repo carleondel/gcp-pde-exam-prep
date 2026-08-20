@@ -9,7 +9,9 @@ export const DEFAULT_BLOCK_SIZE = 25;
 export const BLOCK_MASTERY_PERCENT = 80;
 
 export function getQuestionOrderNumber(question) {
-  return Number.isFinite(question.sourceQuestionNumber) ? question.sourceQuestionNumber : question.id;
+  return Number.isFinite(question.sourceQuestionNumber)
+    ? question.sourceQuestionNumber
+    : question.id;
 }
 
 function getConfidenceScore(question) {
@@ -29,7 +31,10 @@ function compareCanonicalQuestions(left, right) {
 }
 
 function compareOrderedQuestions(left, right) {
-  return getQuestionOrderNumber(right) - getQuestionOrderNumber(left) || compareCanonicalQuestions(left, right);
+  return (
+    getQuestionOrderNumber(right) - getQuestionOrderNumber(left) ||
+    compareCanonicalQuestions(left, right)
+  );
 }
 
 export function buildBlockSignature(questionIds) {

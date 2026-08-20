@@ -55,7 +55,7 @@ The engine and `App.jsx` no longer reference any specific cert. Only
 
 - `domain_master` "Dominio Total" is **secret**: while locked the badge
   shows a question mark and the tooltip only says "Logro oculto". It
-  unlocks at `DOMAIN_MASTERY_PERCENT` (80) accuracy in *every* exam
+  unlocks at `DOMAIN_MASTERY_PERCENT` (80) accuracy in _every_ exam
   domain, so a high average is not enough. The minimum-data floor is
   inherited: `computeDomainStats` leaves `accuracy` null below ten
   attempts, so a domain answered once cannot report 100%.
@@ -94,12 +94,12 @@ All four case studies from the current exam guide (v6.1) are loaded
 **verbatim** from the official Google PDFs, extracted directly from
 `services.google.com/fh/files/misc/v6.1_pca_*_case_study_english.pdf`:
 
-| id | questions |
-| --- | --- |
-| `altostrat-media` | 219–224 |
-| `cymbal-retail` | none yet (newer than the question bank) |
-| `ehr-healthcare` | 268–270 |
-| `knightmotives-automotive` | 225, 227–234 |
+| id                         | questions                               |
+| -------------------------- | --------------------------------------- |
+| `altostrat-media`          | 219–224                                 |
+| `cymbal-retail`            | none yet (newer than the question bank) |
+| `ehr-healthcare`           | 268–270                                 |
+| `knightmotives-automotive` | 225, 227–234                            |
 
 Three case studies from the older blueprint (`helicopter-racing-league`,
 `mountkirk-games`, `terramearth`) are registered with `legacy: true` and
@@ -107,7 +107,7 @@ no content. No question currently references them; they are kept so that
 if an old question is ever added, the UI flags the case study as retired
 rather than silently showing nothing.
 
-Note: several AI assistants still report the *old* four case studies
+Note: several AI assistants still report the _old_ four case studies
 (Mountkirk Games, TerramEarth, Helicopter Racing League, EHR Healthcare)
 as current. That is wrong — verified against the official exam guide,
 which redirects to the v6.1 PDF listing the four above.
