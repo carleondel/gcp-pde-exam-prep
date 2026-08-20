@@ -32,7 +32,6 @@ import {
 import {
   BLOCK_SIZE_PRESETS,
   BLOCK_MASTERY_PERCENT,
-  DEFAULT_BLOCK_SIZE,
   buildBlockCatalog,
   buildBlockRoundSummary,
   getBlockProgressRecord,
@@ -69,6 +68,15 @@ import {
   getPercentTone,
   sameSet,
 } from "./ui/formatting.js";
+import {
+  PRACTICE_PRESETS,
+  PRACTICE_SOURCE_META,
+  sanitizeBlockSize,
+  sanitizePracticeLimit,
+  sanitizePracticeOrder,
+  sanitizePracticeSource,
+  sanitizePracticeTopics,
+} from "./ui/practice-prefs.js";
 
 const CERT_ID_FROM_URL = new URLSearchParams(window.location.search).get("cert");
 const NEEDS_CERT_PICK = !isKnownCertId(CERT_ID_FROM_URL) && CERT_LIST.length > 1;
@@ -111,8 +119,6 @@ const {
   saveProgress,
 } = createStorage(ACTIVE_CERT.id);
 
-const PRACTICE_PRESETS = [10, 20, 30, 50];
-const DEFAULT_PRACTICE_LIMIT = 20;
 const MENU_VIEW_LABELS = {
   blocks: "Bloques de estudio",
   practice: "Sesión a medida",
@@ -120,58 +126,7 @@ const MENU_VIEW_LABELS = {
   progress: "Inventario y logros",
 };
 
-const PRACTICE_SOURCE_META = {
-  topics: {
-    label: "Por dominio",
-    helper: "Selecciona los dominios que quieres cubrir.",
-    empty: "Selecciona temas.",
-  },
-  recent: {
-    label: "Recientes",
-    helper: "Prioriza ExamTopics reciente con las últimas incorporaciones.",
-    empty: "Aún no hay preguntas recientes importadas.",
-  },
-  wrong: {
-    label: "Solo fallos",
-    helper: "Repasa solo lo que más te cuesta.",
-    empty: "Aún no hay fallos guardados.",
-  },
-  bookmarks: {
-    label: "Marcadas",
-    helper: "Retoma preguntas reservadas para revisión.",
-    empty: "Aún no hay preguntas marcadas.",
-  },
-  weak: {
-    label: "Peor rendimiento",
-    helper: "Enfócate en los temas con peor acierto.",
-    empty: "Se activa tras 5 respuestas por tema.",
-  },
-};
 
-function sanitizePracticeOrder(order) {
-  return ["random", "sequential", "recent-desc"].includes(order) ? order : "random";
-}
-
-function sanitizePracticeSource(source) {
-  return PRACTICE_SOURCE_META[source] ? source : "topics";
-}
-
-function sanitizePracticeTopics(topics, allTopics) {
-  const values = Array.isArray(topics) ? topics : allTopics;
-  const next = values.filter((topic, index) => allTopics.includes(topic) && values.indexOf(topic) === index);
-  return next.length ? next : [...allTopics];
-}
-
-function sanitizePracticeLimit(limit) {
-  const numeric = Number(limit);
-  if (!Number.isFinite(numeric) || numeric < 1) return DEFAULT_PRACTICE_LIMIT;
-  return Math.floor(numeric);
-}
-
-function sanitizeBlockSize(size) {
-  const numeric = Number(size);
-  return BLOCK_SIZE_PRESETS.includes(numeric) ? numeric : DEFAULT_BLOCK_SIZE;
-}
 
 
 
