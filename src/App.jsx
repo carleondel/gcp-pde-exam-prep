@@ -48,6 +48,7 @@ import {
 } from "./engine/storage";
 import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
 import BlockView from "./views/BlockView.jsx";
+import HomeView from "./views/HomeView.jsx";
 import MockView from "./views/MockView.jsx";
 import PracticeView from "./views/PracticeView.jsx";
 import ProgressView from "./views/ProgressView.jsx";
@@ -63,7 +64,6 @@ import { formatDumpDate } from "./engine/format.js";
 import {
   formatDuration,
   formatPracticeBadge,
-  getPercentTone,
 } from "./ui/formatting.js";
 import {
   PRACTICE_SOURCE_META,
@@ -1044,6 +1044,99 @@ export function AppContent({ allQuestions }) {
     [maxPracticeCount, setPracticeLimit, setPracticeMessage],
   );
 
+  /**
+   * What the home screen recommends, as a descriptor rather than as rendered
+   * markup: an unfinished block first, then the block worth studying next,
+   * then the weakest domain. Null when none of the three applies.
+   */
+  const nextAction = useMemo(() => {
+    const activeBlockMeta = savedBlockSession?.meta?.blockStudy || null;
+    if (activeBlockMeta && activeBlockMeta.trackId === blockCatalog.trackId) {
+      return { kind: "continue-block", blockNumber: activeBlockMeta.blockIndex + 1 };
+    }
+
+    if (suggestedBlock) {
+      const record = getBlockProgressRecord(
+        progress,
+        blockCatalog.trackId,
+        suggestedBlock.blockIndex,
+      );
+      if (!isBlockMastered(record)) {
+        return {
+          kind: "suggested-block",
+          blockNumber: suggestedBlock.blockIndex + 1,
+          label: suggestedBlock.label,
+          hasRounds: record?.rounds?.length > 0,
+        };
+      }
+    }
+
+    if (weakestDomain) {
+      return {
+        kind: "weak-domain",
+        short: weakestDomain.short,
+        accuracy: weakestDomain.accuracy,
+        total: weakestDomain.total,
+      };
+    }
+
+    return null;
+  }, [blockCatalog.trackId, progress, savedBlockSession, suggestedBlock, weakestDomain]);
+
+  /** Carries out whatever the home screen is currently recommending. */
+  const runNextAction = useCallback(() => {
+    if (!nextAction) return;
+
+    if (nextAction.kind === "continue-block") {
+      continueSavedBlock();
+      return;
+    }
+
+    if (nextAction.kind === "suggested-block") {
+      setSelectedBlockIndex(suggestedBlock.blockIndex);
+      startBlock(suggestedBlock);
+      return;
+    }
+
+    const domainTopics = weakestDomain.topics.flatMap((canonical) =>
+      topics.filter((topic) => getCanonicalTopic(topic) === canonical),
+    );
+    setSelectedTopics(new Set(domainTopics));
+    setPracticeSource("topics");
+    setPracticeMessage(`Cargados temas de ${weakestDomain.short}.`);
+    setMenuView("practice");
+  }, [
+    continueSavedBlock,
+    nextAction,
+    setPracticeMessage,
+    setPracticeSource,
+    setSelectedBlockIndex,
+    setSelectedTopics,
+    startBlock,
+    suggestedBlock,
+    topics,
+    weakestDomain,
+  ]);
+
+  const reviewWrongQuestions = useCallback(
+    () => startPracticeWith({ source: "wrong" }),
+    [startPracticeWith],
+  );
+
+  /** Picking a square on the home grid selects that block and opens the tab. */
+  const openBlockFromGrid = useCallback(
+    (block) => {
+      setSelectedBlockIndex(block.blockIndex);
+      setMenuView("blocks");
+    },
+    [setSelectedBlockIndex],
+  );
+
+  const loadWeakTopics = useCallback(
+    () => setPracticeSourcePreset("weak"),
+    [setPracticeSourcePreset],
+  );
+
   const goToMenu = useCallback(() => {
     if (session?.mode === "practice" && session.answered > 0 && session.status !== "finished") {
       const message = session.meta?.source === "blocks"
@@ -1363,156 +1456,6 @@ export function AppContent({ allQuestions }) {
     </div>;
   }
 
-  const renderNextAction = () => {
-    const activeBlockMeta = savedBlockSession?.meta?.blockStudy || null;
-    const hasActiveBlock = activeBlockMeta && activeBlockMeta.trackId === blockCatalog.trackId;
-    if (hasActiveBlock) {
-      return (
-        <div style={{ background: "linear-gradient(135deg, var(--info-soft), var(--primary-soft))", border: "1px solid var(--signal-info)", borderRadius: "var(--radius-xl)", padding: "18px 20px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)", flexWrap: "wrap" }}>
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>Continuar Bloque {activeBlockMeta.blockIndex + 1}</div>
-            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>Tu bloque actual esta a medias.</div>
-          </div>
-          <button onClick={continueSavedBlock} style={{ padding: "12px 20px", border: "none", borderRadius: "var(--radius-md)", background: "var(--gradient-practice)", color: "white", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Continuar</button>
-        </div>
-      );
-    }
-    const suggested = suggestedBlock;
-    if (suggested && !isBlockMastered(getBlockProgressRecord(progress, blockCatalog.trackId, suggested.blockIndex))) {
-      const suggestedProgress = getBlockProgressRecord(progress, blockCatalog.trackId, suggested.blockIndex);
-      const hasRounds = suggestedProgress?.rounds?.length > 0;
-      return (
-        <div style={{ background: "linear-gradient(135deg, var(--primary-soft), var(--accent-soft))", border: "1px solid var(--primary-medium)", borderRadius: "var(--radius-xl)", padding: "18px 20px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)", flexWrap: "wrap" }}>
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>{hasRounds ? "Repetir" : "Empezar"} Bloque {suggested.blockIndex + 1} <span style={{ color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>{suggested.label}</span></div>
-            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>Siguiente bloque sugerido.</div>
-          </div>
-          <button onClick={() => { setSelectedBlockIndex(suggested.blockIndex); startBlock(suggested); }} style={{ padding: "12px 20px", border: "none", borderRadius: "var(--radius-md)", background: "var(--gradient-practice)", color: "white", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>{hasRounds ? "Repetir" : "Empezar"}</button>
-        </div>
-      );
-    }
-    if (weakestDomain) {
-      return (
-        <div style={{ background: "linear-gradient(135deg, var(--wrong-soft), var(--accent-soft))", border: "1px solid var(--signal-warning)", borderRadius: "var(--radius-xl)", padding: "18px 20px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)", flexWrap: "wrap" }}>
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>Reforzar {weakestDomain.short}</div>
-            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>Tu dominio mas flojo: {weakestDomain.accuracy}% con {weakestDomain.total} intentos.</div>
-          </div>
-          <button onClick={() => {
-            const domainTopics = weakestDomain.topics.flatMap((canonical) =>
-              topics.filter((t) => getCanonicalTopic(t) === canonical)
-            );
-            setSelectedTopics(new Set(domainTopics));
-            setPracticeSource("topics");
-            setPracticeMessage(`Cargados temas de ${weakestDomain.short}.`);
-            setMenuView("practice");
-          }} style={{ padding: "12px 20px", border: "none", borderRadius: "var(--radius-md)", background: "var(--gradient-danger)", color: "white", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Practicar</button>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  const renderDomainProgress = () => (
-    <div style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Dominios {ACTIVE_CERT.short}</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {domainStats.map((domain) => {
-          const pct = domain.accuracy;
-          const lowData = domain.total < 10;
-          const barColor = lowData ? "var(--text-muted)" : pct >= 70 ? "var(--signal-correct)" : pct >= 50 ? "var(--signal-warning)" : "var(--signal-wrong)";
-          return (
-            <div key={domain.id} style={{ display: "grid", gridTemplateColumns: "140px 1fr auto", alignItems: "center", gap: 10 }}>
-              <div style={{ fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={domain.name}>{domain.short}</div>
-              <div style={{ height: 8, background: "var(--surface-line)", borderRadius: "var(--radius-pill)", overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${lowData ? 0 : pct}%`, background: barColor, borderRadius: "var(--radius-pill)", transition: "width 0.3s" }} />
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 110, justifyContent: "flex-end" }}>
-                {lowData ? (
-                  <span style={{ fontSize: 11, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span>
-                ) : (
-                  <span style={{ fontSize: 13, fontWeight: 800, color: barColor, fontFamily: "var(--font-mono)" }}>{pct}%</span>
-                )}
-                <span style={{ fontSize: 11, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>({domain.total})</span>
-                {lowData && <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: "var(--radius-pill)", background: "var(--surface-panel-muted)", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>pocos datos</span>}
-                {!lowData && pct < 70 && <span style={{ fontSize: 10, color: "var(--signal-warning)" }}>⚠</span>}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-
-
-  const renderSummaryCards = () => (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "var(--space-md)", marginBottom: 16 }}>
-      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 16, boxShadow: "var(--shadow-card)" }}>
-        <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Rango</div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8 }}>
-          <div style={{ width: 44, height: 44, borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--primary-soft)", fontSize: 24, boxShadow: "var(--shadow-glow)" }}>
-            {rankState.current.icon}
-          </div>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: rankState.current.color, fontFamily: "var(--font-heading)" }}>{rankState.current.name}</div>
-            <div style={{ fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{progress.xp} XP</div>
-          </div>
-        </div>
-      </div>
-      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 16, boxShadow: "var(--shadow-card)" }}>
-        <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Siguiente rango</div>
-        {rankState.next ? (
-          <>
-            <div style={{ marginTop: 8, fontSize: 17, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>{rankState.next.icon} {rankState.next.name}</div>
-            <div style={{ marginTop: 8, height: 6, background: "var(--surface-line)", borderRadius: "var(--radius-pill)", overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${rankState.progress}%`, background: `linear-gradient(90deg, ${rankState.current.color}, ${rankState.next.color})`, borderRadius: "var(--radius-pill)" }} />
-            </div>
-            <div style={{ marginTop: 8, fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{rankState.next.minXP - progress.xp} XP restantes</div>
-          </>
-        ) : (
-          <div style={{ marginTop: 8, fontSize: 14, color: "var(--highlight)", fontWeight: 700 }}>Rango máximo alcanzado.</div>
-        )}
-      </div>
-      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 16, boxShadow: "var(--shadow-card)" }}>
-        <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Inventario</div>
-        <div style={{ marginTop: 8, fontSize: 22, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>
-          {progress.inventory.shields + progress.inventory.fiftyFifty + progress.inventory.hints + progress.inventory.skips + progress.inventory.doubleXP + progress.inventory.scratchCards + progress.inventory.chestKeys + progress.inventory.bossKeys + progress.inventory.wheelSpins}
-        </div>
-        <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)" }}>{achievementSet.size} logros desbloqueados</div>
-      </div>
-      <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 16, boxShadow: "var(--shadow-card)" }}>
-        <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Peor rendimiento</div>
-        {weakTopics.length ? (
-          <>
-            <div style={{ marginTop: 8, display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)" }}>{weakTopics[0].topic}</div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: weakTopics[0].accuracy >= 70 ? "var(--signal-correct)" : "var(--signal-wrong)", fontFamily: "var(--font-mono)" }}>{weakTopics[0].accuracy}%</div>
-            </div>
-            <button
-              onClick={() => setPracticeSourcePreset("weak")}
-              style={{
-                width: "100%",
-                marginTop: 10,
-                padding: "10px 12px",
-                border: "1px solid var(--wrong-soft)",
-                borderRadius: "var(--radius-md)",
-                background: "var(--wrong-soft)",
-                color: "var(--signal-wrong)",
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: "pointer",
-              }}
-            >
-              Cargar bloque
-            </button>
-          </>
-        ) : (
-          <div style={{ marginTop: 8, fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5 }}>Se mostrará cuando haya suficientes respuestas.</div>
-        )}
-      </div>
-    </div>
-  );
-
   if (screen === "menu") {
     const hasPracticeQuestions = maxPracticeCount > 0;
     const activeBlockMeta = savedBlockSession?.meta?.blockStudy || null;
@@ -1545,10 +1488,56 @@ export function AppContent({ allQuestions }) {
         disabled: practiceSourceCounts.weak === 0,
       },
     ];
+    const homeSummary = {
+      rank: rankState,
+      xp: progress.xp,
+      inventoryCount:
+        progress.inventory.shields +
+        progress.inventory.fiftyFifty +
+        progress.inventory.hints +
+        progress.inventory.skips +
+        progress.inventory.doubleXP +
+        progress.inventory.scratchCards +
+        progress.inventory.chestKeys +
+        progress.inventory.bossKeys +
+        progress.inventory.wheelSpins,
+      achievementCount: achievementSet.size,
+      weakestTopic: weakTopics[0] || null,
+      onLoadWeakTopics: loadWeakTopics,
+    };
+    const homeShortcuts = {
+      practice: {
+        enabled: hasPracticeQuestions,
+        count: effectivePracticeLimit,
+        sourceLabel: PRACTICE_SOURCE_META[practiceSource].label,
+        title: hasPracticeQuestions
+          ? `${PRACTICE_SOURCE_META[practiceSource].label} · ${effectivePracticeLimit} preguntas`
+          : "No hay preguntas para la configuración guardada",
+      },
+      wrong: {
+        count: practiceSourceCounts.wrong,
+        title:
+          practiceSourceCounts.wrong === 0
+            ? "Aún no hay fallos guardados"
+            : "Repasar solo las preguntas falladas",
+      },
+      mock: { questionCount: MOCK_QUESTION_COUNT, durationSec: MOCK_DURATION_SEC },
+    };
+    const homeBlockGrid = {
+      list: visibleBlocks,
+      activeIndex: activeBlockIndex,
+      getRecord: getBlockRecord,
+    };
+    const homeDaily = {
+      current: progress.dailyStreak.current,
+      best: progress.dailyStreak.best,
+      done: isDailyChallengeCompleted(progress),
+      questionCount: DAILY_CHALLENGE_COUNT,
+      bonusXp: DAILY_CHALLENGE_BONUS_XP,
+    };
     const practiceCtaLabel = hasPracticeQuestions
       ? `Iniciar práctica · ${effectivePracticeLimit} preguntas`
       : "Configura la práctica";
-    const dailyDone = isDailyChallengeCompleted(progress);
     return <div style={{ minHeight: "100vh", color: "var(--text-primary)", fontFamily: "var(--font-body)", animation: "fadeIn var(--duration-fast) var(--ease-out)" }}>
 
       {showAch && <AchievementPopup achievement={showAch} onClose={() => setShowAch(null)} />}
@@ -1585,71 +1574,23 @@ export function AppContent({ allQuestions }) {
           </div>
         )}
 
-        {menuView === "home" && renderSummaryCards()}
 
         {menuView === "home" && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 18, marginBottom: 18, alignItems: "start" }}>
-            <div>
-              {renderNextAction()}
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
-                <button onClick={startPractice} disabled={!hasPracticeQuestions} title={hasPracticeQuestions ? `${PRACTICE_SOURCE_META[practiceSource].label} · ${effectivePracticeLimit} preguntas` : "No hay preguntas para la configuración guardada"} style={{ textAlign: "left", padding: 16, borderRadius: "var(--radius-xl)", border: "1px solid var(--surface-line)", background: "var(--gradient-panel)", color: "var(--text-primary)", cursor: hasPracticeQuestions ? "pointer" : "not-allowed", opacity: hasPracticeQuestions ? 1 : 0.45, fontFamily: "var(--font-body)" }}>
-                  <div style={{ fontSize: 17 }} aria-hidden="true">⚡</div>
-                  <div style={{ fontSize: 15, fontWeight: 800, marginTop: 8, fontFamily: "var(--font-heading)" }}>Práctica rápida</div>
-                  <div style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: 3, fontFamily: "var(--font-mono)" }}>{effectivePracticeLimit} preguntas · {PRACTICE_SOURCE_META[practiceSource].label}</div>
-                </button>
-
-                <button onClick={() => startPracticeWith({ source: "wrong" })} disabled={practiceSourceCounts.wrong === 0} title={practiceSourceCounts.wrong === 0 ? "Aún no hay fallos guardados" : "Repasar solo las preguntas falladas"} style={{ textAlign: "left", padding: 16, borderRadius: "var(--radius-xl)", border: "1px solid var(--surface-line)", background: "var(--gradient-panel)", color: "var(--text-primary)", cursor: practiceSourceCounts.wrong > 0 ? "pointer" : "not-allowed", opacity: practiceSourceCounts.wrong > 0 ? 1 : 0.45, fontFamily: "var(--font-body)" }}>
-                  <div style={{ fontSize: 17 }} aria-hidden="true">↺</div>
-                  <div style={{ fontSize: 15, fontWeight: 800, marginTop: 8, fontFamily: "var(--font-heading)" }}>Repasar fallos</div>
-                  <div style={{ fontSize: 11, color: practiceSourceCounts.wrong > 0 ? "var(--signal-wrong)" : "var(--text-tertiary)", marginTop: 3, fontFamily: "var(--font-mono)" }}>{practiceSourceCounts.wrong > 0 ? `${progress.wrongQuestionIds.length} pendientes` : "Sin fallos"}</div>
-                </button>
-
-                <button onClick={() => setMenuView("mock")} style={{ textAlign: "left", padding: 16, borderRadius: "var(--radius-xl)", border: "1px solid var(--accent-medium)", background: "var(--gradient-panel)", color: "var(--text-primary)", cursor: "pointer", fontFamily: "var(--font-body)" }}>
-                  <div style={{ fontSize: 17 }} aria-hidden="true">◷</div>
-                  <div style={{ fontSize: 15, fontWeight: 800, marginTop: 8, color: "var(--accent-300)", fontFamily: "var(--font-heading)" }}>Simulacro</div>
-                  <div style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: 3, fontFamily: "var(--font-mono)" }}>{MOCK_QUESTION_COUNT} preguntas · {Math.round(MOCK_DURATION_SEC / 60)} min</div>
-                </button>
-              </div>
-
-              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--surface-line)" }}>
-                <button onClick={() => setMenuView("practice")} style={{ border: "none", background: "transparent", color: "var(--text-tertiary)", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-mono)", padding: 0 }}>Sesión a medida →</button>
-                <button onClick={() => setMenuView("progress")} style={{ border: "none", background: "transparent", color: "var(--text-tertiary)", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-mono)", padding: 0 }}>Inventario y logros →</button>
-              </div>
-            </div>
-
-            <div>
-              {renderDomainProgress()}
-
-              <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                  <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Bloques de estudio</div>
-                  <button onClick={() => setMenuView("blocks")} style={{ border: "none", background: "transparent", color: "var(--primary-400)", fontSize: 11, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)", padding: 0 }}>Ver todos →</button>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(62px, 1fr))", gap: 6 }}>
-                  {visibleBlocks.map((block) => {
-                    const blockProgress = getBlockProgressRecord(progress, block.trackId, block.blockIndex);
-                    const tone = getPercentTone(blockProgress?.lastPercent);
-                    const isActive = activeBlockIndex === block.blockIndex;
-                    const mastered = isBlockMastered(blockProgress);
-                    const rounds = blockProgress?.rounds?.length || 0;
-                    return (
-                      <button
-                        key={block.blockIndex}
-                        onClick={() => { setSelectedBlockIndex(block.blockIndex); setMenuView("blocks"); }}
-                        title={`Bloque ${block.blockIndex + 1}${rounds ? ` · ${rounds} vuelta${rounds > 1 ? "s" : ""}` : " · sin empezar"}${mastered ? " · dominado" : ""}`}
-                        style={{ padding: "8px 4px", borderRadius: "var(--radius-sm)", border: `1px solid ${isActive ? "var(--signal-info)" : mastered ? "var(--primary-medium)" : "var(--surface-line)"}`, background: isActive ? "var(--info-soft)" : mastered ? "var(--primary-soft)" : "var(--surface-panel-muted)", cursor: "pointer", fontFamily: "var(--font-mono)" }}
-                      >
-                        <div style={{ fontSize: 10, color: "var(--text-tertiary)" }}>{block.blockIndex + 1}</div>
-                        <div style={{ fontSize: 12, fontWeight: 800, marginTop: 2, color: blockProgress ? tone.text : "var(--text-muted)" }}>{blockProgress ? `${blockProgress.lastPercent}%` : "—"}</div>
-                        <div style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 1 }}>{rounds ? `v${rounds}` : "—"}</div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
+          <HomeView
+            certShort={ACTIVE_CERT.short}
+            summary={homeSummary}
+            nextAction={nextAction}
+            onRunNextAction={runNextAction}
+            domainStats={domainStats}
+            shortcuts={homeShortcuts}
+            onQuickPractice={startPractice}
+            onReviewWrong={reviewWrongQuestions}
+            onNavigate={setMenuView}
+            blocks={homeBlockGrid}
+            onPickBlock={openBlockFromGrid}
+            daily={homeDaily}
+            onStartDaily={startDailyChallenge}
+          />
         )}
 
         {menuView === "blocks" && (
@@ -1672,32 +1613,6 @@ export function AppContent({ allQuestions }) {
           />
         )}
 
-        {menuView === "home" && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "var(--space-md)", marginBottom: 18 }}>
-          <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)" }}>
-            <div>
-              <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Racha diaria</div>
-              <div style={{ marginTop: 6, fontSize: 17, fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-heading)" }}>
-                <span style={{ color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{progress.dailyStreak.current}</span> {progress.dailyStreak.current === 1 ? "día" : "días"}
-              </div>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Récord</div>
-              <div style={{ marginTop: 6, fontSize: 17, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>{progress.dailyStreak.best}</div>
-            </div>
-          </div>
-
-          <div style={{ background: dailyDone ? "var(--correct-soft)" : "var(--accent-soft)", border: `1px solid ${dailyDone ? "var(--correct-soft)" : "var(--accent-medium)"}`, borderRadius: "var(--radius-xl)", padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)" }}>
-            <div>
-              <div style={{ fontSize: 11, color: dailyDone ? "var(--signal-correct)" : "var(--accent-300)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Reto diario</div>
-              <div style={{ marginTop: 6, fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>
-                {dailyDone ? "Completado" : `${DAILY_CHALLENGE_COUNT} preguntas · +${DAILY_CHALLENGE_BONUS_XP} XP`}
-              </div>
-            </div>
-            {!dailyDone && <button onClick={startDailyChallenge} style={{ padding: "10px 14px", border: "none", borderRadius: "var(--radius-md)", background: "var(--gradient-mock)", color: "white", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>Iniciar reto</button>}
-          </div>
-        </div>
-        )}
 
         {menuView !== "home" && menuView !== "blocks" && (
         <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 14, marginBottom: 18, alignItems: "start" }}>
