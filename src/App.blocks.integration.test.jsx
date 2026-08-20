@@ -467,6 +467,22 @@ describe("block study, wired into the app", () => {
     expect(screen.getByText(/discusión \(0\)/)).toBeTruthy();
   });
 
+  // The progress tab is the only menu view no session flows through, so this
+  // is what proves ProgressView is wired to the live inventory at all.
+  it("shows the inventory and achievements on the progress tab", () => {
+    storage().saveProgress({
+      ...EMPTY_PROGRESS,
+      inventory: { ...EMPTY_PROGRESS.inventory, hints: 4 },
+      achievements: ["first_blood"],
+    });
+
+    render(<AppContent allQuestions={BANK} />);
+    clickButton(/^Inventario y logros →$/);
+
+    expect(screen.getByText(/💡 4/)).toBeTruthy();
+    expect(screen.queryByText("Sin items acumulados.")).toBeNull();
+  });
+
   it("does not overwrite stored progress on mount", () => {
     storage().saveProgress({ ...EMPTY_PROGRESS, xp: 3210, achievements: ["first_blood"] });
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { RANKS, ACHIEVEMENTS, REGULAR_ACHIEVEMENT_IDS, DOMAIN_MASTERY_PERCENT, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
+import { RANKS, ACHIEVEMENTS, DOMAIN_MASTERY_PERCENT, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
 import { createDomainHelpers, getWeakestDomain } from "./engine/domain-helpers.js";
 import {
   AchievementPopup,
@@ -50,7 +50,7 @@ import {
   updateDailyStreak,
 } from "./engine/storage";
 import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
-import AchievementBadge from "./components/AchievementBadge.jsx";
+import ProgressView from "./views/ProgressView.jsx";
 import ResultView from "./views/ResultView.jsx";
 import CaseStudyPanel from "./components/CaseStudyPanel.jsx";
 import CertPicker from "./components/CertPicker.jsx";
@@ -1467,7 +1467,6 @@ export function AppContent({ allQuestions }) {
   );
 
   if (screen === "menu") {
-    const totalPowerups = progress.inventory.shields + progress.inventory.fiftyFifty + progress.inventory.hints + progress.inventory.skips + progress.inventory.doubleXP + progress.inventory.scratchCards + progress.inventory.chestKeys + progress.inventory.bossKeys + progress.inventory.wheelSpins;
     const hasPracticeQuestions = maxPracticeCount > 0;
     const activeBlockMeta = savedBlockSession?.meta?.blockStudy || null;
     const activeBlockIndex = activeBlockMeta?.trackId === blockCatalog.trackId ? activeBlockMeta.blockIndex : null;
@@ -1517,7 +1516,6 @@ export function AppContent({ allQuestions }) {
       ? `Iniciar práctica · ${effectivePracticeLimit} preguntas`
       : "Configura la práctica";
     const dailyDone = isDailyChallengeCompleted(progress);
-    const regularUnlockedCount = REGULAR_ACHIEVEMENT_IDS.filter((id) => achievementSet.has(id)).length;
     return <div style={{ minHeight: "100vh", color: "var(--text-primary)", fontFamily: "var(--font-body)", animation: "fadeIn var(--duration-fast) var(--ease-out)" }}>
 
       {showAch && <AchievementPopup achievement={showAch} onClose={() => setShowAch(null)} />}
@@ -2151,30 +2149,7 @@ export function AppContent({ allQuestions }) {
             </>)}
 
             {menuView === "progress" && (
-            <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-2xl)", padding: 20 }}>
-              <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Inventario y logros</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-                {progress.inventory.shields > 0 && <span style={{ background: "var(--correct-soft)", color: "var(--signal-correct)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>🛡️ {progress.inventory.shields}</span>}
-                {progress.inventory.fiftyFifty > 0 && <span style={{ background: "var(--info-soft)", color: "var(--signal-info)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>✂️ {progress.inventory.fiftyFifty}</span>}
-                {progress.inventory.hints > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>💡 {progress.inventory.hints}</span>}
-                {progress.inventory.skips > 0 && <span style={{ background: "var(--primary-soft)", color: "var(--primary-400)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>⏭️ {progress.inventory.skips}</span>}
-                {progress.inventory.wheelSpins > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>🎰 {progress.inventory.wheelSpins}</span>}
-                {progress.inventory.scratchCards > 0 && <span style={{ background: "var(--primary-soft)", color: "var(--primary-400)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>🎫 {progress.inventory.scratchCards}</span>}
-                {progress.inventory.chestKeys > 0 && <span style={{ background: "var(--accent-soft)", color: "var(--accent-300)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>📦 {progress.inventory.chestKeys}</span>}
-                {progress.inventory.bossKeys > 0 && <span style={{ background: "var(--wrong-soft)", color: "var(--signal-wrong)", padding: "4px 10px", borderRadius: "var(--radius-pill)", fontSize: 11, fontFamily: "var(--font-mono)" }}>🗝️ {progress.inventory.bossKeys}</span>}
-                {!totalPowerups && <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>Sin items acumulados.</span>}
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {ACHIEVEMENTS.map((achievement) => (
-                  <AchievementBadge
-                    key={achievement.id}
-                    achievement={achievement}
-                    unlocked={achievementSet.has(achievement.id)}
-                    progressLabel={achievement.platinum ? `${regularUnlockedCount} / ${REGULAR_ACHIEVEMENT_IDS.length}` : null}
-                  />
-                ))}
-              </div>
-            </div>
+              <ProgressView inventory={progress.inventory} unlockedAchievements={achievementSet} />
             )}
           </div>
         )}
