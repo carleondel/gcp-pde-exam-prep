@@ -1,4 +1,3 @@
-import React from "react";
 import { CERT_LIST } from "../certs/index.js";
 import { formatDumpDate } from "../engine/format.js";
 

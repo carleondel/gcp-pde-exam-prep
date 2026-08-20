@@ -931,7 +931,6 @@ function AppContent({ allQuestions }) {
     let nextSource = practiceSource;
     let nextTopics = new Set([...selectedTopics].filter((topic) => topics.includes(topic)));
     let nextLimit = sanitizePracticeLimit(practiceLimit);
-    let nextShowCustom = showCustomLimit;
     let nextMessage = "";
 
     if (!nextTopics.size) {
@@ -1369,7 +1368,7 @@ function AppContent({ allQuestions }) {
     });
   }, [updateProgress]);
 
-  const useInventoryReward = useCallback((rewardKey) => {
+  const consumeInventoryReward = useCallback((rewardKey) => {
     updateProgress((prev) => {
       const inventory = { ...prev.inventory };
       if (rewardKey === "wheel" && inventory.wheelSpins > 0) inventory.wheelSpins -= 1;
@@ -2814,10 +2813,10 @@ function AppContent({ allQuestions }) {
             {progress.inventory.fiftyFifty > 0 && <button onClick={use5050} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--signal-info)", background: "var(--info-soft)", color: "var(--signal-info)", cursor: "pointer" }}>✂️</button>}
             {progress.inventory.hints > 0 && <button onClick={useHint} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>💡</button>}
             {progress.inventory.skips > 0 && <button onClick={useSkip} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--primary-400)", background: "var(--primary-soft)", color: "var(--primary-400)", cursor: "pointer" }}>⏭️</button>}
-            {progress.inventory.wheelSpins > 0 && <button onClick={() => useInventoryReward("wheel")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>🎰</button>}
-            {progress.inventory.scratchCards > 0 && <button onClick={() => useInventoryReward("scratch")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--primary-400)", background: "var(--primary-soft)", color: "var(--primary-400)", cursor: "pointer" }}>🎫</button>}
-            {progress.inventory.chestKeys > 0 && <button onClick={() => useInventoryReward("chest")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>📦</button>}
-            {progress.inventory.bossKeys > 0 && <button onClick={() => useInventoryReward("boss")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--signal-wrong)", background: "var(--wrong-soft)", color: "var(--signal-wrong)", cursor: "pointer" }}>🗝️</button>}
+            {progress.inventory.wheelSpins > 0 && <button onClick={() => consumeInventoryReward("wheel")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>🎰</button>}
+            {progress.inventory.scratchCards > 0 && <button onClick={() => consumeInventoryReward("scratch")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--primary-400)", background: "var(--primary-soft)", color: "var(--primary-400)", cursor: "pointer" }}>🎫</button>}
+            {progress.inventory.chestKeys > 0 && <button onClick={() => consumeInventoryReward("chest")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>📦</button>}
+            {progress.inventory.bossKeys > 0 && <button onClick={() => consumeInventoryReward("boss")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--signal-wrong)", background: "var(--wrong-soft)", color: "var(--signal-wrong)", cursor: "pointer" }}>🗝️</button>}
           </div>}
         </div>
       )}

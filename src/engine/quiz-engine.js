@@ -87,7 +87,7 @@ export function calculatePracticeXp(question, elapsedSec, streak, multiplier = 1
 
 export function buildPracticeQuestions(allQuestions, options = {}) {
   const { topicSet = null, order = "sequential", questionIds = null, questionMap = null, limit = null } = options;
-  let selected = [];
+  let selected;
 
   if (questionIds?.length) {
     const lookup = questionMap || new Map(allQuestions.map((question) => [question.id, question]));
