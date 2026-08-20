@@ -393,6 +393,73 @@ describe("block study, wired into the app", () => {
     });
   });
 
+  describe("what the block tab reports", () => {
+    it("shows a finished block's score on its detail panel", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      finishBlock();
+      clickButton(/^Volver al menú$/);
+
+      // Straight onto the block tab, where the round just played must be
+      // reflected — the tab reads progress through AppContent, not directly.
+      expect(screen.getAllByText("Reviewed 1x")).toHaveLength(2);
+      expect(screen.getByText("Repetir vuelta 2")).toBeTruthy();
+      expect(screen.getAllByText("100%").length).toBeGreaterThan(0);
+    });
+
+    it("resets the selection to the first block when the size changes", () => {
+      render(<AppContent allQuestions={BANK} />);
+      openBlocks();
+      clickButton(/^Bloque 3/);
+      // A selected block is named twice: on its grid tile and as the heading
+      // of the detail panel. An unselected one only on its tile.
+      expect(screen.getAllByText(/^Bloque 3$/)).toHaveLength(2);
+
+      clickButton(/^15 preguntas$/);
+
+      // Recutting the track puts the selection back at the start rather than
+      // leaving it pointing at a block that means something else now.
+      expect(screen.getAllByText(/^Bloque 1$/)).toHaveLength(2);
+      expect(screen.getAllByText(/^Bloque 3$/)).toHaveLength(1);
+      expect(screen.getByText("Track de 15 preguntas cargado.")).toBeTruthy();
+      expect(storage().loadBlockPrefs().blockIndex).toBe(0);
+    });
+
+    it("clears the track message when another block is picked from the grid", () => {
+      render(<AppContent allQuestions={BANK} />);
+      openBlocks();
+      clickButton(/^15 preguntas$/);
+      expect(screen.getByText("Track de 15 preguntas cargado.")).toBeTruthy();
+
+      clickButton(/^Bloque 2/);
+
+      // The message described the recut, so it stops applying as soon as the
+      // selection moves. The arrows below the panel leave it standing.
+      expect(screen.queryByText("Track de 15 preguntas cargado.")).toBeNull();
+    });
+
+    it("keeps the header shortcut but drops In progress when the track changes", () => {
+      render(<AppContent allQuestions={BANK} />);
+      openBlocks();
+      clickButton(/^Bloque 2/);
+      clickButton(/^Empezar bloque$/);
+      answerCurrent();
+      // Leaving a half-answered block asks first; it is kept, not discarded.
+      vi.spyOn(window, "confirm").mockReturnValue(true);
+      clickButton(/^← Menú$/);
+
+      // Same track: the interrupted block is both offered and marked.
+      expect(findButton(/^Continuar B2$/)).toBeTruthy();
+      expect(screen.getAllByText("In progress").length).toBeGreaterThan(0);
+
+      clickButton(/^15 preguntas$/);
+
+      // Different track: the shortcut survives, the marker does not.
+      expect(findButton(/^Continuar B2$/)).toBeTruthy();
+      expect(screen.queryByText("In progress")).toBeNull();
+    });
+  });
+
   describe("finishing a block", () => {
     it("records the round, clears the active session and returns to the menu", () => {
       render(<AppContent allQuestions={BANK} />);
