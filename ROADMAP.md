@@ -51,15 +51,13 @@ screen components, with tests protecting persistence and study flows.
       transforms and is served without error.
 - [x] Production preview (`npm run build && npm run preview`)
       smoke-tested: the page and all four built assets are served.
-- [x] Docker smoke-tested. `docker compose build --no-cache` succeeds and
-      the container serves the page, the stylesheet, the app bundle, both
-      lazy question chunks and the question images, with a clean nginx log.
-      The four assets it serves are byte-identical to a local build of the
-      same commit, which is the build the test suite covers. One caveat:
-      `docker compose up` binds host port 8080, and on the machine used for
-      this check that port was already taken by an unrelated container. The
-      mapping itself is right — the bind was attempted and refused — so the
-      image was verified on a spare port. Free 8080 first.
+- [x] Docker smoke-tested. `docker compose build --no-cache` then
+      `docker compose up` brings the service up on the documented port
+      8080, and it serves the page, the stylesheet, the app bundle, both
+      lazy question chunks, the question images and both `?cert=` entry
+      points, with a clean nginx log. The four assets it serves are
+      byte-identical to a local build of the same commit, which is the
+      build the test suite covers.
 
 ## Later improvements (not required for this refactor)
 

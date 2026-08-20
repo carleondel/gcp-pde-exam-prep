@@ -96,9 +96,9 @@ Two conventions worth knowing before changing a view:
 - Prettier covers the whole source tree; only `dist` and the generated
   question and case-study files are excluded.
 - All three run modes are verified: `npm run dev`, `npm run build && npm run
-preview`, and Docker. The Docker image serves assets byte-identical to a
-  local build of the same commit. Note that `docker compose up` wants host
-  port 8080, which is a common one to already have taken.
+preview`, and `docker compose up` on port 8080. The container serves assets
+  byte-identical to a local build of the same commit, so the Docker check is
+  about packaging rather than a second pass over the app.
 - **413 tests** under Vitest: engine and UI helpers, the four hooks, the
   view components, and four integration suites that mount the real screen
   — `App.home`, `App.practice`, `App.blocks` and `App.mock`. Integration
