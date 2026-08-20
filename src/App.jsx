@@ -63,22 +63,18 @@ import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
 import AchievementBadge from "./components/AchievementBadge.jsx";
 import CaseStudyPanel from "./components/CaseStudyPanel.jsx";
 import CertPicker from "./components/CertPicker.jsx";
+import { usePracticeConfig } from "./hooks/usePracticeConfig.js";
 import { useProgress } from "./hooks/useProgress.js";
 import { formatDumpDate } from "./engine/format.js";
 import {
   formatDuration,
   formatPracticeBadge,
   getPercentTone,
-  sameSet,
 } from "./ui/formatting.js";
 import {
   PRACTICE_PRESETS,
   PRACTICE_SOURCE_META,
   sanitizeBlockSize,
-  sanitizePracticeLimit,
-  sanitizePracticeOrder,
-  sanitizePracticeSource,
-  sanitizePracticeTopics,
 } from "./ui/practice-prefs.js";
 
 const CERT_ID_FROM_URL = new URLSearchParams(window.location.search).get("cert");
@@ -250,7 +246,6 @@ function buildTopicCounts(questions) {
 function AppContent({ allQuestions }) {
   const qRef = useRef(null);
   const previousAchievementsRef = useRef([]);
-  const storedPracticePrefs = useMemo(() => loadPracticePrefs() || {}, []);
   const storedBlockPrefs = useMemo(() => loadBlockPrefs() || {}, []);
   const topics = useMemo(() => [...new Set(allQuestions.map((q) => q.topic))], [allQuestions]);
   const questionMap = useMemo(() => new Map(allQuestions.map((question) => [question.id, question])), [allQuestions]);
@@ -271,18 +266,9 @@ function AppContent({ allQuestions }) {
   const [mockPreferRecent, setMockPreferRecent] = useState(false);
   const [savedBlockSession, setSavedBlockSession] = useState(null);
   const [resultPayload, setResultPayload] = useState(null);
-  const [selectedTopics, setSelectedTopics] = useState(() => new Set(sanitizePracticeTopics(storedPracticePrefs.topics, topics)));
-  const [practiceOrder, setPracticeOrder] = useState(() => sanitizePracticeOrder(storedPracticePrefs.order));
-  const [practiceSource, setPracticeSource] = useState(() => sanitizePracticeSource(storedPracticePrefs.source));
-  const [practiceLimit, setPracticeLimit] = useState(() => sanitizePracticeLimit(storedPracticePrefs.limit));
   const [blockTrackSize, setBlockTrackSize] = useState(() => sanitizeBlockSize(storedBlockPrefs.trackSize));
   const [selectedBlockIndex, setSelectedBlockIndex] = useState(() => Math.max(0, Number(storedBlockPrefs.blockIndex) || 0));
   const [blockMessage, setBlockMessage] = useState("");
-  const [showCustomLimit, setShowCustomLimit] = useState(() => {
-    const initialLimit = sanitizePracticeLimit(storedPracticePrefs.limit);
-    return !PRACTICE_PRESETS.includes(initialLimit);
-  });
-  const [practiceMessage, setPracticeMessage] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [showDiscussion, setShowDiscussion] = useState(false);
@@ -321,28 +307,38 @@ function AppContent({ allQuestions }) {
     () => allQuestions.filter((question) => question.isRecent),
     []
   );
-  const topicQuestions = useMemo(
-    () => allQuestions.filter((question) => selectedTopics.has(question.topic)),
-    [selectedTopics]
-  );
   const weakQuestions = useMemo(
     () => allQuestions.filter((question) => weakTopicSet.has(question.topic)),
     [weakTopicSet]
   );
-  const practiceSourceQuestions = useMemo(() => {
-    if (practiceSource === "recent") return recentQuestions;
-    if (practiceSource === "wrong") return wrongQuestions;
-    if (practiceSource === "bookmarks") return bookmarkedQuestions;
-    if (practiceSource === "weak") return weakQuestions;
-    return topicQuestions;
-  }, [bookmarkedQuestions, practiceSource, recentQuestions, topicQuestions, weakQuestions, wrongQuestions]);
-  const practiceSourceCounts = useMemo(() => ({
-    topics: topicQuestions.length,
-    recent: recentQuestions.length,
-    wrong: wrongQuestions.length,
-    bookmarks: bookmarkedQuestions.length,
-    weak: weakQuestions.length,
-  }), [bookmarkedQuestions.length, recentQuestions.length, topicQuestions.length, weakQuestions.length, wrongQuestions.length]);
+  const {
+    selectedTopics,
+    setSelectedTopics,
+    practiceOrder,
+    setPracticeOrder,
+    practiceSource,
+    setPracticeSource,
+    practiceLimit,
+    setPracticeLimit,
+    showCustomLimit,
+    setShowCustomLimit,
+    practiceMessage,
+    setPracticeMessage,
+    topicQuestions,
+    practiceSourceCounts,
+    maxPracticeCount,
+    effectivePracticeLimit,
+  } = usePracticeConfig({
+    allQuestions,
+    topics,
+    recentQuestions,
+    wrongQuestions,
+    bookmarkedQuestions,
+    weakQuestions,
+    loadPracticePrefs,
+    savePracticePrefs,
+    ready,
+  });
   const blockCatalog = useMemo(() => buildBlockCatalog(allQuestions, blockTrackSize), [blockTrackSize]);
   const effectiveSelectedBlockIndex = useMemo(() => {
     if (!blockCatalog.blocks.length) return 0;
@@ -362,8 +358,6 @@ function AppContent({ allQuestions }) {
     () => buildTrackRoundStats(progress, blockCatalog.trackId),
     [progress, blockCatalog.trackId]
   );
-  const maxPracticeCount = practiceSourceQuestions.length;
-  const effectivePracticeLimit = maxPracticeCount > 0 ? Math.min(Math.max(1, practiceLimit), maxPracticeCount) : 0;
   const maxPresetLabel = maxPracticeCount > 0 ? `Máximo disponible (${maxPracticeCount})` : "Máximo disponible";
   const practiceSummary = useMemo(() => {
     if (practiceSource === "recent") {
@@ -689,65 +683,6 @@ function AppContent({ allQuestions }) {
 
   useEffect(() => {
     if (!ready) return;
-
-    let nextSource = practiceSource;
-    let nextTopics = new Set([...selectedTopics].filter((topic) => topics.includes(topic)));
-    let nextLimit = sanitizePracticeLimit(practiceLimit);
-    let nextMessage = "";
-
-    if (!nextTopics.size) {
-      nextTopics = new Set(topics);
-      nextMessage = "Ajustamos los temas a los disponibles actualmente.";
-    }
-
-    if (nextSource !== "topics" && practiceSourceCounts[nextSource] === 0) {
-      nextSource = "topics";
-      nextMessage = "Volvimos a Temas porque esa fuente ya no tiene preguntas disponibles.";
-    }
-
-    const nextMax = nextSource === "wrong"
-      ? practiceSourceCounts.wrong
-      : nextSource === "recent"
-        ? practiceSourceCounts.recent
-      : nextSource === "bookmarks"
-        ? practiceSourceCounts.bookmarks
-        : nextSource === "weak"
-          ? practiceSourceCounts.weak
-          : allQuestions.filter((question) => nextTopics.has(question.topic)).length;
-
-    if (nextMax > 0 && nextLimit > nextMax) {
-      nextLimit = nextMax;
-      nextMessage = `Ajustado a ${nextMax} por disponibilidad actual.`;
-    }
-
-    if (nextMax > 0 && nextLimit < 1) {
-      nextLimit = 1;
-    }
-
-    const topicsChanged = !sameSet(selectedTopics, nextTopics);
-    const sourceChanged = nextSource !== practiceSource;
-    const limitChanged = nextLimit !== practiceLimit;
-
-    if (topicsChanged) setSelectedTopics(nextTopics);
-    if (sourceChanged) setPracticeSource(nextSource);
-    if (limitChanged) setPracticeLimit(nextLimit);
-    if (nextMessage && (topicsChanged || sourceChanged || limitChanged || practiceMessage !== nextMessage)) {
-      setPracticeMessage(nextMessage);
-    }
-  }, [practiceLimit, practiceMessage, practiceSource, practiceSourceCounts, ready, selectedTopics]);
-
-  useEffect(() => {
-    if (!ready) return;
-    savePracticePrefs({
-      source: practiceSource,
-      order: practiceOrder,
-      topics: [...selectedTopics],
-      limit: practiceLimit,
-    });
-  }, [practiceLimit, practiceOrder, practiceSource, ready, selectedTopics]);
-
-  useEffect(() => {
-    if (!ready) return;
     saveBlockPrefs({
       trackSize: blockTrackSize,
       blockIndex: effectiveSelectedBlockIndex,
@@ -913,7 +848,10 @@ function AppContent({ allQuestions }) {
     setPracticeMessage(nextCount > 0
       ? `${PRACTICE_SOURCE_META[source].label} cargado.`
       : PRACTICE_SOURCE_META[source].empty);
-  }, [bookmarkedQuestions.length, practiceLimit, recentQuestions.length, topicQuestions.length, weakQuestions.length, weakTopics, wrongQuestions.length]);
+    // The setters come from usePracticeConfig's useState calls, so React
+    // guarantees their identity is stable and listing them cannot make this
+    // callback change on every render.
+  }, [bookmarkedQuestions.length, practiceLimit, recentQuestions.length, setPracticeLimit, setPracticeMessage, setPracticeOrder, setPracticeSource, setSelectedTopics, topicQuestions.length, weakQuestions.length, weakTopics, wrongQuestions.length]);
 
   const openBlockSession = useCallback((block, existingSession = null) => {
     if (!block) return;
