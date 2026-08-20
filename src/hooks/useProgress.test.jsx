@@ -249,15 +249,26 @@ describe("useProgress", () => {
     expect(firstBlood).toHaveLength(1);
   });
 
-  it("lets the reset button clear progress through setProgress", () => {
-    createStorage("gcp-pca").saveProgress({ ...EMPTY_PROGRESS, xp: 500 });
+  it("clears progress and persists the reset", () => {
+    createStorage("gcp-pca").saveProgress({
+      ...EMPTY_PROGRESS,
+      xp: 500,
+      achievements: ["first_blood"],
+    });
     const { seen } = mountProgress();
 
     act(() => {
-      seen.api.setProgress(EMPTY_PROGRESS);
+      seen.api.resetProgress();
     });
 
-    expect(seen.current.xp).toBe(0);
-    expect(createStorage("gcp-pca").loadProgress().xp).toBe(0);
+    expect(seen.current).toEqual(EMPTY_PROGRESS);
+    expect(createStorage("gcp-pca").loadProgress()).toEqual(EMPTY_PROGRESS);
+  });
+
+  it("keeps the raw setter private, so no update can skip achievements", () => {
+    const { seen } = mountProgress();
+    expect(seen.api.setProgress).toBeUndefined();
+    expect(typeof seen.api.updateProgress).toBe("function");
+    expect(typeof seen.api.resetProgress).toBe("function");
   });
 });

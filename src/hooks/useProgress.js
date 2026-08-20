@@ -73,6 +73,16 @@ export function useProgress({ emptyProgress, loadProgress, saveProgress, getAchi
     [applyUnlockedAchievements],
   );
 
+  /**
+   * Wipes progress back to empty. Separate from updateProgress because it is
+   * the one legitimate case for replacing state wholesale rather than
+   * deriving it — and keeping the raw setter private means no ordinary update
+   * can skip achievement evaluation by accident.
+   */
+  const resetProgress = useCallback(() => {
+    setProgress(emptyProgress);
+  }, [emptyProgress]);
+
   /** Loads stored progress, opens the gate on saving, and returns what it read. */
   const hydrateProgress = useCallback(() => {
     const stored = loadProgress();
@@ -86,5 +96,5 @@ export function useProgress({ emptyProgress, loadProgress, saveProgress, getAchi
     saveProgress(progress);
   }, [hydrated, progress, saveProgress]);
 
-  return { progress, setProgress, updateProgress, hydrateProgress, hydrated };
+  return { progress, updateProgress, resetProgress, hydrateProgress, hydrated };
 }

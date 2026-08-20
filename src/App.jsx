@@ -260,7 +260,7 @@ function AppContent({ allQuestions }) {
   // Sub-vista del menú: la portada muestra acciones y progreso, y cada
   // configurador vive en su propia vista para no competir con ellos.
   const [menuView, setMenuView] = useState("home");
-  const { progress, setProgress, updateProgress, hydrateProgress } = useProgress({
+  const { progress, updateProgress, resetProgress, hydrateProgress } = useProgress({
     emptyProgress: EMPTY_PROGRESS,
     loadProgress,
     saveProgress,
@@ -2380,7 +2380,7 @@ function AppContent({ allQuestions }) {
           </div>
           <button onClick={() => {
             if (window.confirm("¿Restablecer todo el progreso? Esta acción no se puede deshacer.")) {
-              setProgress(EMPTY_PROGRESS);
+              resetProgress();
               setSavedMockSession(null);
               clearActiveMock();
             }
