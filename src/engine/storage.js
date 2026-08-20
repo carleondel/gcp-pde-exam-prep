@@ -11,7 +11,6 @@ export const EMPTY_PROGRESS = {
     totalCorrect: 0,
     hardCorrect: 0,
     fastCorrect: 0,
-    nightOwlCorrect: 0,
     maxStreak: 0,
     jackpot: false,
     topicsOk: [],

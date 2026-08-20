@@ -308,19 +308,12 @@ function getRankState(xp) {
   return { current, next, progress };
 }
 
-// Franja del logro oculto: de 3:00 a 4:59 en hora local del usuario.
-function isSmallHours(now = new Date()) {
-  const hour = now.getHours();
-  return hour >= 3 && hour < 5;
-}
-
 function getAchievementSnapshot(progress) {
   return {
     xp: progress.xp,
     correct: progress.stats.totalCorrect,
     maxStreak: progress.stats.maxStreak,
     fastCorrect: progress.stats.fastCorrect,
-    nightOwlCorrect: progress.stats.nightOwlCorrect || 0,
     hardCorrect: progress.stats.hardCorrect,
     jackpot: progress.stats.jackpot,
     topicsOk: progress.stats.topicsOk.length,
@@ -1558,7 +1551,6 @@ function AppContent({ allQuestions }) {
           totalCorrect: prev.stats.totalCorrect + (evaluation.isCorrect ? 1 : 0),
           hardCorrect: prev.stats.hardCorrect + (evaluation.isCorrect && currentQuestion.difficulty === 3 ? 1 : 0),
           fastCorrect: prev.stats.fastCorrect + (evaluation.isCorrect && elapsedSec < 8 ? 1 : 0),
-          nightOwlCorrect: (prev.stats.nightOwlCorrect || 0) + (evaluation.isCorrect && isSmallHours() ? 1 : 0),
           maxStreak: Math.max(prev.stats.maxStreak, nextStreak),
           topicsOk: [...topicsOk],
         },
