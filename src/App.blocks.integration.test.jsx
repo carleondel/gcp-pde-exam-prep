@@ -414,6 +414,25 @@ describe("block study, wired into the app", () => {
       expect(screen.getByText("Pregunta numero 57")).toBeTruthy();
       expect(findButton(/^Comprobar/)).toBeTruthy();
     });
+
+    it("moves on just the same when the reward is turned down", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+
+      // A streak of five queues a chest, which used to have to be opened.
+      for (let i = 0; i < 4; i += 1) answerCurrent();
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Comprobar/);
+      clickButton(/^Reclamar recompensa/);
+      expect(findButton(/^ABRIR COFRE$/)).toBeTruthy();
+
+      clickButton(/^SALTAR$/);
+
+      // Skipped, so nothing was opened and nothing was paid out — but the
+      // session carries on rather than parking on the answered question.
+      expect(screen.getByText("Pregunta numero 55")).toBeTruthy();
+      expect(storage().loadProgress().stats.chestsOpened).toBe(0);
+    });
   });
 
   describe("what the block tab reports", () => {

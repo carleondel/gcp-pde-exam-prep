@@ -116,6 +116,17 @@ Two conventions worth knowing before changing a view:
   next action, three shortcuts, the domain bars and a compact block
   grid; each configurator lives in its own view.
 
+### Rewards
+
+Every reward can be turned down. Skipping calls the overlay's `onClose`
+without its `onComplete`, so the prize is forfeited — which is what the
+wheel and the boss battle already did. The chest and the scratch card
+now do the same, and the scratch card in particular could previously
+only be dismissed by scratching it all the way to the end.
+
+The skip disappears once the prize is showing: at that point the way out
+is to take it.
+
 ### Achievements
 
 26 achievements in `src/data/gamification.js`, two of them special:

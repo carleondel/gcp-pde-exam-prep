@@ -178,6 +178,30 @@ export function ScratchCard({ onComplete, onClose }) {
             }}
           />
         </div>
+        {!revealed && (
+          // Nothing has been scratched yet, so there is nothing to forfeit
+          // that the player has already seen. Once the prize is showing, this
+          // is replaced by Continuar, which claims it.
+          <button
+            onClick={onClose}
+            style={{
+              display: "block",
+              margin: "14px auto 0",
+              padding: "10px 28px",
+              background: "transparent",
+              border: "1px solid var(--surface-line)",
+              borderRadius: "var(--radius-md)",
+              color: "var(--text-secondary)",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontFamily: "var(--font-mono)",
+            }}
+          >
+            SALTAR
+          </button>
+        )}
+
         {revealed && (
           <div style={{ animation: "pulse 0.5s" }}>
             <div

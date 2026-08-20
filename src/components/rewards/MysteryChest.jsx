@@ -90,6 +90,24 @@ export function MysteryChest({ onComplete, onClose }) {
             >
               ABRIR COFRE
             </button>
+            <button
+              onClick={onClose}
+              style={{
+                display: "block",
+                margin: "14px auto 0",
+                padding: "10px 28px",
+                background: "transparent",
+                border: "1px solid var(--surface-line)",
+                borderRadius: "var(--radius-md)",
+                color: "var(--text-secondary)",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: "var(--font-mono)",
+              }}
+            >
+              SALTAR
+            </button>
           </div>
         ) : (
           <div style={{ animation: "chestOpen 0.8s ease" }}>
