@@ -1,14 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RANKS, ACHIEVEMENTS, DOMAIN_MASTERY_PERCENT, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
 import { createDomainHelpers, getWeakestDomain } from "./engine/domain-helpers.js";
-import {
-  AchievementPopup,
-  BossBattle,
-  Confetti,
-  MysteryChest,
-  ScratchCard,
-  SpinWheel,
-} from "./components/rewards/index.js";
+import { AchievementPopup } from "./components/rewards/index.js";
 import "./styles/animations.css";
 import {
   DAILY_CHALLENGE_BONUS_XP,
@@ -49,6 +42,7 @@ import {
 import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
 import BlockView from "./views/BlockView.jsx";
 import HomeView from "./views/HomeView.jsx";
+import RewardOverlays from "./views/RewardOverlays.jsx";
 import MockView from "./views/MockView.jsx";
 import PracticeView from "./views/PracticeView.jsx";
 import ProgressView from "./views/ProgressView.jsx";
@@ -516,6 +510,25 @@ export function AppContent({ allQuestions }) {
     if (rewardFlow === "queued") openQueuedPracticeReward();
     setRewardFlow("manual");
   }, [openQueuedPracticeReward, rewardFlow]);
+
+  /**
+   * Closes whichever overlay is open. A boss battle also has its questions
+   * and its dragon to let go of; the prize screens have nothing to tidy.
+   */
+  const closeReward = useCallback(
+    (kind) => {
+      if (kind === "wheel") setShowWheel(false);
+      if (kind === "scratch") setShowScratch(false);
+      if (kind === "chest") setShowChest(false);
+      if (kind === "boss") {
+        setShowBoss(false);
+        setBossQuestions(null);
+        setBossDragon(null);
+      }
+      afterRewardClose();
+    },
+    [afterRewardClose],
+  );
 
   useEffect(() => {
     document.title = `${ACTIVE_CERT.name} Exam Prep`;
@@ -1708,13 +1721,20 @@ export function AppContent({ allQuestions }) {
   const practiceInventoryButtons = practiceMode && !showResult;
 
   return <div style={{ minHeight: "100vh", background: session?.mode === "mock" ? "linear-gradient(180deg, var(--bg-primary), var(--bg-deep))" : "radial-gradient(circle at top, rgba(15, 191, 163, 0.12), transparent 24%), linear-gradient(180deg, var(--bg-primary), var(--bg-deep) 55%, var(--bg-deep))", color: "var(--text-primary)", fontFamily: "var(--font-body)", animation: "fadeIn var(--duration-fast) var(--ease-out)" }}>
-    <Confetti active={showConfetti} />
-    {showWheel && <SpinWheel onComplete={handleWheelComplete} onClose={() => { setShowWheel(false); afterRewardClose(); }} />}
-    {showScratch && <ScratchCard onComplete={handleScratchComplete} onClose={() => { setShowScratch(false); afterRewardClose(); }} />}
-    {showChest && <MysteryChest onComplete={handleChestComplete} onClose={() => { setShowChest(false); afterRewardClose(); }} />}
-    {showBoss && bossQuestions && bossDragon && <BossBattle questions={bossQuestions} dragon={bossDragon} onComplete={handleBossComplete} onClose={() => { setShowBoss(false); setBossQuestions(null); setBossDragon(null); afterRewardClose(); }} />}
+    <RewardOverlays
+      confetti={showConfetti}
+      wheel={showWheel}
+      scratch={showScratch}
+      chest={showChest}
+      boss={showBoss && bossQuestions && bossDragon ? { questions: bossQuestions, dragon: bossDragon } : null}
+      xpPop={xpPop}
+      onWheelComplete={handleWheelComplete}
+      onScratchComplete={handleScratchComplete}
+      onChestComplete={handleChestComplete}
+      onBossComplete={handleBossComplete}
+      onClose={closeReward}
+    />
     {showAch && <AchievementPopup achievement={showAch} onClose={() => setShowAch(null)} />}
-    {xpPop && <div key={xpPop.key} style={{ position: "fixed", left: "50%", top: "34%", transform: "translate(-50%,-50%)", fontSize: 30, fontWeight: 900, color: "var(--accent-300)", zIndex: 500, pointerEvents: "none", animation: "floatUp 1.3s ease-out forwards", textShadow: "0 2px 12px rgba(212,147,10,0.4)", fontFamily: "var(--font-mono)" }}>+{xpPop.amount} XP</div>}
 
     <div style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(10, 14, 23, 0.88)", borderBottom: "1px solid var(--surface-line)", backdropFilter: "blur(14px)" }}>
       <div style={{ maxWidth: 920, margin: "0 auto", padding: "12px 20px" }}>

@@ -393,6 +393,29 @@ describe("block study, wired into the app", () => {
     });
   });
 
+  describe("rewards over a question", () => {
+    it("moves on by itself once a claimed reward is dismissed", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+
+      // A streak of three queues a wheel, so the third answer offers to claim
+      // it instead of moving on.
+      answerCurrent();
+      answerCurrent();
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Comprobar/);
+      expect(findButton(/^Reclamar recompensa \(1\)/)).toBeTruthy();
+
+      clickButton(/^Reclamar recompensa/);
+      clickButton(/^SALTAR$/);
+
+      // Dismissing it continues the session rather than parking on the
+      // answered question with a Siguiente still to press.
+      expect(screen.getByText("Pregunta numero 57")).toBeTruthy();
+      expect(findButton(/^Comprobar/)).toBeTruthy();
+    });
+  });
+
   describe("what the block tab reports", () => {
     it("shows a finished block's score on its detail panel", () => {
       render(<AppContent allQuestions={BANK} />);
