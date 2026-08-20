@@ -32,11 +32,9 @@ import {
 import {
   BLOCK_SIZE_PRESETS,
   BLOCK_MASTERY_PERCENT,
-  buildBlockCatalog,
   buildBlockRoundSummary,
   getBlockProgressRecord,
   getBlockRoundNumber,
-  getSuggestedBlockIndex,
   hasBlockChanged,
   isBlockMastered,
 } from "./engine/block-study";
@@ -48,7 +46,6 @@ import {
   getRemainingTime,
   hydrateBlockSession,
   hydrateMockSession,
-  toStoredBlockSession,
   toStoredMockSession,
   withRecordedMockAnswer,
 } from "./engine/session-manager";
@@ -64,6 +61,7 @@ import AchievementBadge from "./components/AchievementBadge.jsx";
 import CaseStudyPanel from "./components/CaseStudyPanel.jsx";
 import CertPicker from "./components/CertPicker.jsx";
 import { usePracticeConfig } from "./hooks/usePracticeConfig.js";
+import { useBlockStudy } from "./hooks/useBlockStudy.js";
 import { useProgress } from "./hooks/useProgress.js";
 import { formatDumpDate } from "./engine/format.js";
 import {
@@ -128,39 +126,6 @@ const MENU_VIEW_LABELS = {
 
 
 
-
-function buildTrackRoundStats(progress, trackId) {
-  const blocks = progress.blockStudy?.tracks?.[trackId]?.blocks || {};
-  const roundsByNumber = new Map();
-
-  Object.values(blocks).forEach((blockRecord) => {
-    (blockRecord?.rounds || []).forEach((round) => {
-      const roundNumber = Number(round?.roundNumber);
-      if (!Number.isFinite(roundNumber)) return;
-
-      const current = roundsByNumber.get(roundNumber) || {
-        roundNumber,
-        correctCount: 0,
-        questionCount: 0,
-        completedBlocks: 0,
-        finishedAt: 0,
-      };
-
-      current.correctCount += Number(round.correctCount) || 0;
-      current.questionCount += Number(round.questionCount) || 0;
-      current.completedBlocks += 1;
-      current.finishedAt = Math.max(current.finishedAt, Number(round.finishedAt) || 0);
-      roundsByNumber.set(roundNumber, current);
-    });
-  });
-
-  return [...roundsByNumber.values()]
-    .sort((left, right) => left.roundNumber - right.roundNumber)
-    .map((round) => ({
-      ...round,
-      percent: round.questionCount > 0 ? Math.round((round.correctCount / round.questionCount) * 100) : 0,
-    }));
-}
 
 function normalizeSessionUi(session) {
   return {
@@ -243,10 +208,12 @@ function buildTopicCounts(questions) {
 
 
 
-function AppContent({ allQuestions }) {
+// Exported for integration tests: they mount the real screen with a small
+// fake bank, which is the only way to check the hooks are actually wired
+// into it rather than merely correct in isolation.
+export function AppContent({ allQuestions }) {
   const qRef = useRef(null);
   const previousAchievementsRef = useRef([]);
-  const storedBlockPrefs = useMemo(() => loadBlockPrefs() || {}, []);
   const topics = useMemo(() => [...new Set(allQuestions.map((q) => q.topic))], [allQuestions]);
   const questionMap = useMemo(() => new Map(allQuestions.map((question) => [question.id, question])), [allQuestions]);
   const topicCounts = useMemo(() => buildTopicCounts(allQuestions), [allQuestions]);
@@ -264,11 +231,7 @@ function AppContent({ allQuestions }) {
   const [session, setSession] = useState(null);
   const [savedMockSession, setSavedMockSession] = useState(null);
   const [mockPreferRecent, setMockPreferRecent] = useState(false);
-  const [savedBlockSession, setSavedBlockSession] = useState(null);
   const [resultPayload, setResultPayload] = useState(null);
-  const [blockTrackSize, setBlockTrackSize] = useState(() => sanitizeBlockSize(storedBlockPrefs.trackSize));
-  const [selectedBlockIndex, setSelectedBlockIndex] = useState(() => Math.max(0, Number(storedBlockPrefs.blockIndex) || 0));
-  const [blockMessage, setBlockMessage] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [showDiscussion, setShowDiscussion] = useState(false);
@@ -339,25 +302,31 @@ function AppContent({ allQuestions }) {
     savePracticePrefs,
     ready,
   });
-  const blockCatalog = useMemo(() => buildBlockCatalog(allQuestions, blockTrackSize), [blockTrackSize]);
-  const effectiveSelectedBlockIndex = useMemo(() => {
-    if (!blockCatalog.blocks.length) return 0;
-    return Math.min(Math.max(0, selectedBlockIndex), blockCatalog.blocks.length - 1);
-  }, [blockCatalog.blocks.length, selectedBlockIndex]);
-  const selectedBlock = blockCatalog.blocks[effectiveSelectedBlockIndex] || null;
-  const suggestedBlockIndex = useMemo(
-    () => getSuggestedBlockIndex(blockCatalog.blocks, progress, savedBlockSession),
-    [blockCatalog.blocks, progress, savedBlockSession]
-  );
-  const suggestedBlock = blockCatalog.blocks[suggestedBlockIndex] || null;
-  const selectedBlockProgress = useMemo(
-    () => selectedBlock ? getBlockProgressRecord(progress, selectedBlock.trackId, selectedBlock.blockIndex) : null,
-    [progress, selectedBlock]
-  );
-  const trackRoundStats = useMemo(
-    () => buildTrackRoundStats(progress, blockCatalog.trackId),
-    [progress, blockCatalog.trackId]
-  );
+  const {
+    savedBlockSession,
+    setSavedBlockSession,
+    blockTrackSize,
+    setBlockTrackSize,
+    setSelectedBlockIndex,
+    blockMessage,
+    setBlockMessage,
+    blockCatalog,
+    selectedBlock,
+    suggestedBlock,
+    selectedBlockProgress,
+    trackRoundStats,
+    recordBlockRound,
+  } = useBlockStudy({
+    allQuestions,
+    progress,
+    updateProgress,
+    session,
+    loadBlockPrefs,
+    saveBlockPrefs,
+    saveActiveBlockSession,
+    clearActiveBlockSession,
+    ready,
+  });
   const maxPresetLabel = maxPracticeCount > 0 ? `Máximo disponible (${maxPracticeCount})` : "Máximo disponible";
   const practiceSummary = useMemo(() => {
     if (practiceSource === "recent") {
@@ -427,54 +396,6 @@ function AppContent({ allQuestions }) {
     if (qRef.current) qRef.current.scrollTop = 0;
   }, []);
 
-  const recordBlockRound = useCallback((finishedSession, summary) => {
-    const blockMeta = finishedSession.meta?.blockStudy;
-    if (!blockMeta) return;
-
-    updateProgress((prev) => {
-      const tracks = prev.blockStudy?.tracks || {};
-      const track = tracks[blockMeta.trackId] || { blocks: {} };
-      const blockRecord = track.blocks?.[blockMeta.blockIndex] || {
-        blockIndex: blockMeta.blockIndex,
-        label: blockMeta.label,
-        size: blockMeta.size,
-        questionIds: blockMeta.questionIds,
-        orderNumbers: blockMeta.orderNumbers,
-        blockSignature: blockMeta.blockSignature,
-        rounds: [],
-        lastStudiedAt: null,
-        lastPercent: 0,
-        bestPercent: 0,
-      };
-      const rounds = [...(blockRecord.rounds || []), summary];
-      return {
-        ...prev,
-        blockStudy: {
-          tracks: {
-            ...tracks,
-            [blockMeta.trackId]: {
-              blocks: {
-                ...(track.blocks || {}),
-                [blockMeta.blockIndex]: {
-                  ...blockRecord,
-                  label: blockMeta.label,
-                  size: blockMeta.size,
-                  questionIds: blockMeta.questionIds,
-                  orderNumbers: blockMeta.orderNumbers,
-                  blockSignature: blockMeta.blockSignature,
-                  rounds,
-                  lastStudiedAt: summary.finishedAt,
-                  lastPercent: summary.percent,
-                  bestPercent: Math.max(blockRecord.bestPercent || 0, summary.percent),
-                },
-              },
-            },
-          },
-        },
-      };
-    });
-  }, [updateProgress]);
-
   const finishPracticeSession = useCallback((finishedSession) => {
     const isDaily = finishedSession.meta?.source === "daily";
     const isBlocks = finishedSession.meta?.source === "blocks";
@@ -513,7 +434,7 @@ function AppContent({ allQuestions }) {
     });
     setScreen("results");
     resetQuestionUi();
-  }, [progress, recordBlockRound, resetQuestionUi, updateProgress]);
+  }, [progress, recordBlockRound, resetQuestionUi, setSavedBlockSession, updateProgress]);
 
   const finalizeMockSession = useCallback((sessionToFinish, reason = "completed") => {
     if (!sessionToFinish || sessionToFinish.mode !== "mock") return;
@@ -589,7 +510,7 @@ function AppContent({ allQuestions }) {
     setSession(nextSession);
     if (nextSession.meta?.source === "blocks") setSavedBlockSession(nextSession);
     resetQuestionUi();
-  }, [finishPracticeSession, resetQuestionUi]);
+  }, [finishPracticeSession, resetQuestionUi, setSavedBlockSession]);
 
   const openRewardByKey = useCallback((rewardKey, flow = "manual") => {
     setRewardFlow(flow);
@@ -672,46 +593,13 @@ function AppContent({ allQuestions }) {
     setReady(true);
     // hydrateProgress is a useCallback over module-level storage functions,
     // so it is stable and cannot make this restore effect run twice.
-  }, [hydrateProgress, questionMap]);
-
-  useEffect(() => {
-    if (!blockCatalog.blocks.length) return;
-    if (selectedBlockIndex !== effectiveSelectedBlockIndex) {
-      setSelectedBlockIndex(effectiveSelectedBlockIndex);
-    }
-  }, [blockCatalog.blocks.length, effectiveSelectedBlockIndex, selectedBlockIndex]);
-
-  useEffect(() => {
-    if (!ready) return;
-    saveBlockPrefs({
-      trackSize: blockTrackSize,
-      blockIndex: effectiveSelectedBlockIndex,
-    });
-  }, [blockTrackSize, effectiveSelectedBlockIndex, ready]);
+  }, [hydrateProgress, questionMap, setBlockTrackSize, setSavedBlockSession, setSelectedBlockIndex]);
 
   useEffect(() => {
     if (!ready) return;
     if (savedMockSession) saveActiveMock(toStoredMockSession(savedMockSession));
     else clearActiveMock();
   }, [ready, savedMockSession]);
-
-  useEffect(() => {
-    if (!ready) return;
-    const activeBlockSession = session?.mode === "practice" && session.meta?.source === "blocks" && session.status !== "finished"
-      ? session
-      : savedBlockSession;
-
-    if (!activeBlockSession || activeBlockSession.status === "finished") {
-      clearActiveBlockSession();
-      return;
-    }
-
-    const stored = toStoredBlockSession(activeBlockSession);
-    if (stored && stored.pausedElapsedSec == null) {
-      stored.pausedElapsedSec = Math.floor((Date.now() - activeBlockSession.startedAt) / 1000);
-    }
-    saveActiveBlockSession(stored);
-  }, [ready, savedBlockSession, session]);
 
   useEffect(() => {
     const previous = previousAchievementsRef.current;
@@ -905,7 +793,7 @@ function AppContent({ allQuestions }) {
     setShowDiscussion(uiState.showDiscussion);
     setHiddenOptions(new Set(uiState.hiddenOptions));
     setShowHint(uiState.showHint);
-  }, [progress, questionMap, resetQuestionUi]);
+  }, [progress, questionMap, resetQuestionUi, setSavedBlockSession]);
 
   const startBlock = useCallback((block = selectedBlock) => {
     if (!block) return;
@@ -913,7 +801,7 @@ function AppContent({ allQuestions }) {
     setSelectedBlockIndex(block.blockIndex);
     setBlockMessage("");
     openBlockSession(block);
-  }, [openBlockSession, selectedBlock]);
+  }, [openBlockSession, selectedBlock, setBlockMessage, setBlockTrackSize, setSelectedBlockIndex]);
 
   const continueSavedBlock = useCallback(() => {
     if (!savedBlockSession) return;
@@ -929,7 +817,7 @@ function AppContent({ allQuestions }) {
       orderNumbers: savedBlockSession.meta.blockStudy.orderNumbers,
       blockSignature: savedBlockSession.meta.blockStudy.blockSignature,
     } : null, savedBlockSession);
-  }, [openBlockSession, savedBlockSession]);
+  }, [openBlockSession, savedBlockSession, setBlockTrackSize, setSelectedBlockIndex]);
 
   const startPracticeWith = useCallback((overrides = {}) => {
     const source = overrides.source ?? practiceSource;
@@ -1056,7 +944,7 @@ function AppContent({ allQuestions }) {
       setSession(null);
     }
     resetQuestionUi();
-  }, [resetQuestionUi, session]);
+  }, [resetQuestionUi, session, setBlockMessage, setSavedBlockSession]);
 
   const toggleBookmark = useCallback((questionId) => {
     updateProgress((prev) => {
@@ -1294,7 +1182,7 @@ function AppContent({ allQuestions }) {
     }
     setXpPop({ amount: xpInfo.xp, key: Date.now() });
     setShowResult(true);
-  }, [canSubmitCurrent, currentQuestion, finalizeMockSession, hiddenOptions, progress.inventory.bossKeys, progress.inventory.doubleXP, progress.inventory.mult, progress.inventory.shields, resetQuestionUi, selectedAnswer, session, showDiscussion, showHint, updateProgress]);
+  }, [canSubmitCurrent, currentQuestion, finalizeMockSession, hiddenOptions, progress.inventory.bossKeys, progress.inventory.doubleXP, progress.inventory.mult, progress.inventory.shields, resetQuestionUi, selectedAnswer, session, setSavedBlockSession, showDiscussion, showHint, updateProgress]);
 
   useEffect(() => {
     const submitHandler = () => submitCurrentAnswer();
