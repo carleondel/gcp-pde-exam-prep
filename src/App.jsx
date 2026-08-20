@@ -42,6 +42,7 @@ import {
 import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
 import BlockView from "./views/BlockView.jsx";
 import HomeView from "./views/HomeView.jsx";
+import QuizHeader from "./views/QuizHeader.jsx";
 import RewardOverlays from "./views/RewardOverlays.jsx";
 import MockView from "./views/MockView.jsx";
 import PracticeView from "./views/PracticeView.jsx";
@@ -391,6 +392,10 @@ export function AppContent({ allQuestions }) {
   const practiceMode = session?.mode === "practice";
   const blockMode = practiceMode && session?.meta?.source === "blocks";
   const blockSessionMeta = blockMode ? session.meta.blockStudy : null;
+  // One name for the three kinds of session the quiz screen renders. Blocks
+  // are practice sessions underneath, so this collapses the two flags above
+  // into the single thing the views actually switch on.
+  const quizMode = blockMode ? "blocks" : session?.mode === "mock" ? "mock" : "practice";
   const currentEvaluation = currentQuestion ? evaluateAnswer(currentQuestion, selectedAnswer) : null;
   const isMulti = currentQuestion ? Array.isArray(currentQuestion.correct) : false;
   const canSubmitCurrent = currentQuestion ? canSubmitAnswer(currentQuestion, selectedAnswer) : false;
@@ -1736,40 +1741,19 @@ export function AppContent({ allQuestions }) {
     />
     {showAch && <AchievementPopup achievement={showAch} onClose={() => setShowAch(null)} />}
 
-    <div style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(10, 14, 23, 0.88)", borderBottom: "1px solid var(--surface-line)", backdropFilter: "blur(14px)" }}>
-      <div style={{ maxWidth: 920, margin: "0 auto", padding: "12px 20px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)", marginBottom: 8 }}>
-          <button onClick={goToMenu} style={{ padding: "8px 12px", borderRadius: "var(--radius-md)", border: "1px solid var(--surface-line)", background: "var(--surface-panel-muted)", color: "var(--text-primary)", fontSize: 12, cursor: "pointer", fontFamily: "var(--font-mono)" }}>← Menú</button>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", flexWrap: "wrap", justifyContent: "flex-end" }}>
-            <span style={{ padding: "6px 10px", borderRadius: "var(--radius-pill)", background: session?.mode === "mock" ? "var(--accent-soft)" : "var(--primary-soft)", color: session?.mode === "mock" ? "var(--accent-300)" : "var(--primary-400)", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
-              {session?.mode === "mock" ? "Simulacro" : blockMode ? "Bloques" : "Practicar"}
-            </span>
-            {blockMode && blockSessionMeta && <span style={{ padding: "6px 10px", borderRadius: "var(--radius-pill)", background: "var(--info-soft)", color: "var(--signal-info)", fontSize: 11, fontWeight: 800, letterSpacing: 1, fontFamily: "var(--font-mono)" }}>
-              B{blockSessionMeta.blockIndex + 1} · V{blockSessionMeta.roundNumber}
-            </span>}
-            {practiceMode && session.streak >= 2 && <span style={{ fontSize: 12, color: session.streak >= 5 ? "var(--accent-300)" : "var(--primary-400)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>x{session.streak}</span>}
-            {practiceMode && progress.inventory.mult > 1 && <span style={{ fontSize: 12, color: "var(--signal-correct)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>mult x{progress.inventory.mult} ({progress.inventory.multDur})</span>}
-            {session?.mode === "mock" && <span style={{ padding: "6px 10px", borderRadius: "var(--radius-md)", background: mockRemainingSec < 300 ? "var(--wrong-soft)" : "var(--surface-line)", color: mockRemainingSec < 300 ? "var(--signal-wrong)" : "var(--text-primary)", fontSize: 13, fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(mockRemainingSec)}</span>}
-            {blockMode && <span style={{ padding: "6px 10px", borderRadius: "var(--radius-md)", background: "var(--surface-line)", color: "var(--text-primary)", fontSize: 13, fontWeight: 800, fontFamily: "var(--font-mono)" }}>⏱ {formatDuration(blockElapsedSec)}</span>}
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", minWidth: 132 }}>
-            <span style={{ fontSize: 20 }}>{rankState.current.icon}</span>
-            <div>
-              <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{rankState.current.name}</div>
-              <div style={{ fontSize: 12, color: "var(--accent-300)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>{progress.xp} XP</div>
-            </div>
-          </div>
-          <div style={{ flex: 1, height: 8, background: "var(--surface-line)", borderRadius: "var(--radius-pill)", overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${((session.currentIndex + 1) / currentQuestions.length) * 100}%`, background: session?.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-practice)", borderRadius: "var(--radius-pill)", transition: "width 0.25s" }} />
-          </div>
-          <div style={{ minWidth: 100, textAlign: "right", fontSize: 12, color: "var(--text-primary)", fontWeight: 700, fontFamily: "var(--font-mono)" }}>
-            {session.currentIndex + 1}/{currentQuestions.length}
-          </div>
-        </div>
-      </div>
-    </div>
+    <QuizHeader
+      mode={quizMode}
+      blockMeta={blockSessionMeta}
+      streak={session.streak}
+      multiplier={{ value: progress.inventory.mult, rounds: progress.inventory.multDur }}
+      rank={rankState}
+      xp={progress.xp}
+      questionNumber={session.currentIndex + 1}
+      questionTotal={currentQuestions.length}
+      mockRemainingSec={mockRemainingSec}
+      blockElapsedSec={blockElapsedSec}
+      onGoToMenu={goToMenu}
+    />
 
     <div ref={qRef} style={{ maxWidth: 920, margin: "0 auto", padding: "24px 20px 40px" }}>
       {practiceMode && (
