@@ -1625,6 +1625,7 @@ export function AppContent({ allQuestions }) {
     progress.inventory.doubleXP,
     progress.inventory.mult,
     progress.inventory.shields,
+    progress.xp,
     resetQuestionUi,
     selectedAnswer,
     session,
