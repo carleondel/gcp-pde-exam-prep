@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { installCanvasStub } from "./test/canvas-stub.js";
 import { AppContent } from "./App.jsx";
-import { createStorage } from "./engine/storage.js";
+import { createStorage, EMPTY_PROGRESS } from "./engine/storage.js";
 
 /**
  * Integration tests for the custom-practice tab.
@@ -284,6 +284,231 @@ describe("custom practice, wired into the app", () => {
 
       clickButton(/^Volver a dominio$/);
       expect(screen.getByText("Temas por dominio")).toBeTruthy();
+    });
+  });
+
+  describe("answering", () => {
+    const startTen = () => {
+      openPractice();
+      clickButton(/^10$/);
+      clickButton(/^Iniciar práctica/);
+    };
+
+    it("marks a question and keeps it for the bookmarks source", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startTen();
+
+      clickButton(/^☆$/);
+
+      expect(findButton(/^★$/)).toBeTruthy();
+      expect(storage().loadProgress().bookmarks).toHaveLength(1);
+    });
+
+    it("unmarks it again", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startTen();
+      clickButton(/^☆$/);
+      clickButton(/^★$/);
+
+      expect(findButton(/^☆$/)).toBeTruthy();
+      expect(storage().loadProgress().bookmarks).toHaveLength(0);
+    });
+
+    it("selects an option with the number keys and submits with Enter", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startTen();
+
+      // Nothing is selected yet, so there is nothing to check.
+      expect(findButton(/^Comprobar/).disabled).toBe(true);
+
+      fireEvent.keyDown(window, { key: "1" });
+      expect(findButton(/^Comprobar/).disabled).toBe(false);
+
+      fireEvent.keyDown(window, { key: "Enter" });
+      expect(screen.getByText(/Explicacion de la respuesta/)).toBeTruthy();
+    });
+
+    it("moves to the next question with Enter once the answer is shown", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startTen();
+      fireEvent.keyDown(window, { key: "1" });
+      fireEvent.keyDown(window, { key: "Enter" });
+
+      fireEvent.keyDown(window, { key: "Enter" });
+
+      expect(progressCounter()).toBe("2/10");
+    });
+
+    it("spends a hint and shows it", () => {
+      storage().saveProgress({
+        ...EMPTY_PROGRESS,
+        inventory: { ...EMPTY_PROGRESS.inventory, hints: 2 },
+      });
+      render(<AppContent allQuestions={BANK} />);
+      startTen();
+
+      clickButton(/^💡$/);
+
+      expect(screen.getByText(/Pista:/)).toBeTruthy();
+      expect(storage().loadProgress().inventory.hints).toBe(1);
+      expect(storage().loadProgress().stats.powerupsUsed).toBe(1);
+    });
+
+    it("spends a 50/50 and removes two wrong options", () => {
+      storage().saveProgress({
+        ...EMPTY_PROGRESS,
+        inventory: { ...EMPTY_PROGRESS.inventory, fiftyFifty: 1 },
+      });
+      render(<AppContent allQuestions={BANK} />);
+      startTen();
+
+      clickButton(/^✂️$/);
+
+      expect(screen.getAllByText("Opción eliminada")).toHaveLength(2);
+      // Never the right one, and the button is gone once it is spent.
+      expect(screen.getByText(CORRECT)).toBeTruthy();
+      expect(findButton(/^✂️$/)).toBeFalsy();
+    });
+
+    it("hides the power-ups once the answer is revealed", () => {
+      storage().saveProgress({
+        ...EMPTY_PROGRESS,
+        inventory: { ...EMPTY_PROGRESS.inventory, hints: 2 },
+      });
+      render(<AppContent allQuestions={BANK} />);
+      startTen();
+      expect(findButton(/^💡$/)).toBeTruthy();
+
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Comprobar/);
+
+      expect(findButton(/^💡$/)).toBeFalsy();
+    });
+
+    it("highlights the option that is picked, before it is checked", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startTen();
+
+      const option = screen.getByText(CORRECT).closest("button");
+      expect(option.style.background).toBe("var(--surface-panel-muted)");
+
+      fireEvent.click(screen.getByText(CORRECT));
+
+      expect(option.style.background).toBe("var(--info-soft)");
+    });
+
+    it("ignores further clicks once the answer is showing", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startTen();
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Comprobar/);
+      expect(screen.getByText("Correcto")).toBeTruthy();
+
+      fireEvent.click(screen.getByText("B. incorrecta"));
+
+      // The question is settled: picking again must not re-judge it.
+      expect(screen.getByText("Correcto")).toBeTruthy();
+      expect(screen.getByText("Correctas 1/1")).toBeTruthy();
+    });
+
+    it("offers the results instead of another question on the last one", () => {
+      render(<AppContent allQuestions={BANK} />);
+      openPractice();
+      clickButton(/^Personalizar$/);
+      fireEvent.change(screen.getByRole("spinbutton"), { target: { value: "2" } });
+      clickButton(/^Iniciar práctica/);
+
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Comprobar/);
+      expect(findButton(/^Siguiente \(Enter\)$/)).toBeTruthy();
+      clickButton(/^Siguiente \(Enter\)$/);
+
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Comprobar/);
+
+      expect(findButton(/^Ver resultados \(Enter\)$/)).toBeTruthy();
+      expect(findButton(/^Siguiente \(Enter\)$/)).toBeFalsy();
+    });
+
+    it("keeps the score in step as questions are answered", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startTen();
+
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Comprobar/);
+      expect(screen.getByText("Correctas 1/1")).toBeTruthy();
+      clickButton(/^(Siguiente|Ver resultados) \(Enter\)$/);
+
+      fireEvent.click(screen.getByText("B. incorrecta"));
+      clickButton(/^Comprobar/);
+      expect(screen.getByText("Correctas 1/2")).toBeTruthy();
+    });
+  });
+
+  describe("a question with several right answers", () => {
+    const MULTI = [
+      {
+        id: 900,
+        topic: "BigQuery",
+        difficulty: 2,
+        question: "Elige dos",
+        options: [CORRECT, "B. tambien correcta", "C. otra", "D. otra mas"],
+        correct: [0, 1],
+        explanation: "Explicacion de la respuesta.",
+        discussion: [],
+        sourceQuestionNumber: 900,
+      },
+      ...BANK.slice(0, 9),
+    ];
+
+    const startMulti = () => {
+      openPractice();
+      clickButton(/^Secuencial$/);
+      clickButton(/^10$/);
+      clickButton(/^Iniciar práctica/);
+    };
+
+    it("says how many answers are still needed", () => {
+      render(<AppContent allQuestions={MULTI} />);
+      startMulti();
+
+      expect(screen.getByText("Multi respuesta")).toBeTruthy();
+      expect(findButton(/^Comprobar \(0\/2\)/)).toBeTruthy();
+
+      fireEvent.click(screen.getByText(CORRECT));
+      expect(findButton(/^Comprobar \(1\/2\)/)).toBeTruthy();
+    });
+
+    it("will not check until every answer is picked", () => {
+      render(<AppContent allQuestions={MULTI} />);
+      startMulti();
+
+      fireEvent.click(screen.getByText(CORRECT));
+      expect(findButton(/^Comprobar/).disabled).toBe(true);
+
+      fireEvent.click(screen.getByText("B. tambien correcta"));
+      expect(findButton(/^Comprobar \(2\/2\)/).disabled).toBe(false);
+    });
+
+    it("lets a pick be taken back", () => {
+      render(<AppContent allQuestions={MULTI} />);
+      startMulti();
+
+      fireEvent.click(screen.getByText(CORRECT));
+      fireEvent.click(screen.getByText(CORRECT));
+
+      expect(findButton(/^Comprobar \(0\/2\)/)).toBeTruthy();
+    });
+
+    it("counts both answers as one correct question", () => {
+      render(<AppContent allQuestions={MULTI} />);
+      startMulti();
+
+      fireEvent.click(screen.getByText(CORRECT));
+      fireEvent.click(screen.getByText("B. tambien correcta"));
+      clickButton(/^Comprobar/);
+
+      expect(screen.getByText("Correctas 1/1")).toBeTruthy();
     });
   });
 

@@ -15,7 +15,6 @@ import {
   computeWeakTopics,
   evaluateAnswer,
   get5050HiddenOptions,
-  getCorrectOptionIndexes,
   pushWrongQuestionId,
   serializeSelection,
 } from "./engine/quiz-engine";
@@ -43,13 +42,13 @@ import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
 import BlockView from "./views/BlockView.jsx";
 import HomeView from "./views/HomeView.jsx";
 import QuizHeader from "./views/QuizHeader.jsx";
+import QuizView from "./views/QuizView.jsx";
 import RewardOverlays from "./views/RewardOverlays.jsx";
 import MockView from "./views/MockView.jsx";
 import PracticeView from "./views/PracticeView.jsx";
 import ProgressView from "./views/ProgressView.jsx";
 import TopicPicker from "./views/TopicPicker.jsx";
 import ResultView from "./views/ResultView.jsx";
-import CaseStudyPanel from "./components/CaseStudyPanel.jsx";
 import CertPicker from "./components/CertPicker.jsx";
 import { usePracticeConfig } from "./hooks/usePracticeConfig.js";
 import { useBlockStudy } from "./hooks/useBlockStudy.js";
@@ -57,7 +56,6 @@ import { useMockSession } from "./hooks/useMockSession.js";
 import { useProgress } from "./hooks/useProgress.js";
 import { formatDumpDate } from "./engine/format.js";
 import {
-  formatDuration,
   formatPracticeBadge,
 } from "./ui/formatting.js";
 import {
@@ -1155,6 +1153,30 @@ export function AppContent({ allQuestions }) {
     [setPracticeSourcePreset],
   );
 
+  /**
+   * Picking an option. A multi-answer question toggles the index in and out
+   * of the selection; a single-answer one replaces it. Once the answer is
+   * showing in practice there is nothing left to pick.
+   */
+  const selectOption = useCallback(
+    (index) => {
+      if (practiceMode && showResult) return;
+      if (isMulti) {
+        setSelectedAnswer((prev) => {
+          const next = new Set(prev instanceof Set ? prev : []);
+          if (next.has(index)) next.delete(index);
+          else next.add(index);
+          return next;
+        });
+        return;
+      }
+      setSelectedAnswer(index);
+    },
+    [isMulti, practiceMode, showResult],
+  );
+
+  const toggleDiscussion = useCallback(() => setShowDiscussion((value) => !value), []);
+  const toggleAllRationales = useCallback(() => setShowAllRationales((value) => !value), []);
   const goToMenu = useCallback(() => {
     if (session?.mode === "practice" && session.answered > 0 && session.status !== "finished") {
       const message = session.meta?.source === "blocks"
@@ -1184,6 +1206,10 @@ export function AppContent({ allQuestions }) {
       };
     });
   }, [updateProgress]);
+
+  const toggleCurrentBookmark = useCallback(() => {
+    if (currentQuestion) toggleBookmark(currentQuestion.id);
+  }, [currentQuestion, toggleBookmark]);
 
   const consumeInventoryReward = useCallback((rewardKey) => {
     updateProgress((prev) => {
@@ -1725,6 +1751,44 @@ export function AppContent({ allQuestions }) {
 
   const practiceInventoryButtons = practiceMode && !showResult;
 
+  /**
+   * What the question on screen looks like right now, as a presentation
+   * contract: indexes rather than the Set kept above, and the derived flags
+   * already worked out. QuizView cannot reach back into this state.
+   */
+  const quizAnswer = {
+    selectedIndexes:
+      selectedAnswer instanceof Set
+        ? [...selectedAnswer]
+        : selectedAnswer === null || selectedAnswer === undefined
+          ? []
+          : [selectedAnswer],
+    hiddenOptions: [...hiddenOptions],
+    evaluation: currentEvaluation,
+    isMulti,
+    canSubmit: canSubmitCurrent,
+    showResult,
+    showHint,
+    showDiscussion,
+    showAllRationales,
+  };
+
+  /** A narrow summary of the run, not the session object itself. */
+  const quizSessionSummary = {
+    mode: quizMode,
+    blockMeta: blockSessionMeta,
+    score: session.score,
+    answered: session.answered,
+    isLast: session.currentIndex === currentQuestions.length - 1,
+    pendingRewards: pendingRewardCount,
+    passPercent: PASS_PERCENT,
+    mockRemainingSec,
+    // Practice keeps a history of answered questions; a mock does not, so
+    // this is read defensively rather than assumed.
+    lastXp: (session.history || []).at(-1)?.xp || 0,
+  };
+
+
   return <div style={{ minHeight: "100vh", background: session?.mode === "mock" ? "linear-gradient(180deg, var(--bg-primary), var(--bg-deep))" : "radial-gradient(circle at top, rgba(15, 191, 163, 0.12), transparent 24%), linear-gradient(180deg, var(--bg-primary), var(--bg-deep) 55%, var(--bg-deep))", color: "var(--text-primary)", fontFamily: "var(--font-body)", animation: "fadeIn var(--duration-fast) var(--ease-out)" }}>
     <RewardOverlays
       confetti={showConfetti}
@@ -1755,217 +1819,27 @@ export function AppContent({ allQuestions }) {
       onGoToMenu={goToMenu}
     />
 
-    <div ref={qRef} style={{ maxWidth: 920, margin: "0 auto", padding: "24px 20px 40px" }}>
-      {practiceMode && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "var(--space-md)", marginBottom: 14 }}>
-          <div style={{ background: "var(--surface-panel)", borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", padding: 14 }}>
-            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 }}>
-              {blockMode ? `Bloque ${blockSessionMeta.label} • orden fijo • vuelta ${blockSessionMeta.roundNumber}` : "Feedback inmediato • recompensas activas • ayudas disponibles"}
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", flexWrap: "wrap" }}>
-              <span style={{ padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Correctas {session.score}/{session.answered}</span>
-              {pendingRewardCount > 0 && <span style={{ padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "var(--accent-soft)", color: "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Pendientes {pendingRewardCount}</span>}
-              {progress.inventory.shields > 0 && <span style={{ padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "var(--correct-soft)", color: "var(--signal-correct)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>🛡️ {progress.inventory.shields}</span>}
-            </div>
-          </div>
-          {practiceInventoryButtons && <div style={{ display: "flex", gap: "var(--space-sm)", flexWrap: "wrap", justifyContent: "flex-end" }}>
-            {progress.inventory.fiftyFifty > 0 && <button onClick={use5050} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--signal-info)", background: "var(--info-soft)", color: "var(--signal-info)", cursor: "pointer" }}>✂️</button>}
-            {progress.inventory.hints > 0 && <button onClick={useHint} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>💡</button>}
-            {progress.inventory.skips > 0 && <button onClick={useSkip} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--primary-400)", background: "var(--primary-soft)", color: "var(--primary-400)", cursor: "pointer" }}>⏭️</button>}
-            {progress.inventory.wheelSpins > 0 && <button onClick={() => consumeInventoryReward("wheel")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>🎰</button>}
-            {progress.inventory.scratchCards > 0 && <button onClick={() => consumeInventoryReward("scratch")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--primary-400)", background: "var(--primary-soft)", color: "var(--primary-400)", cursor: "pointer" }}>🎫</button>}
-            {progress.inventory.chestKeys > 0 && <button onClick={() => consumeInventoryReward("chest")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--accent-300)", background: "var(--accent-soft)", color: "var(--accent-300)", cursor: "pointer" }}>📦</button>}
-            {progress.inventory.bossKeys > 0 && <button onClick={() => consumeInventoryReward("boss")} style={{ width: 38, height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--signal-wrong)", background: "var(--wrong-soft)", color: "var(--signal-wrong)", cursor: "pointer" }}>🗝️</button>}
-          </div>}
-        </div>
-      )}
-
-      {session?.mode === "mock" && (
-        <div style={{ background: "var(--surface-panel)", borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", padding: 14, marginBottom: 14 }}>
-          <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 }}>Sin ayudas ni feedback inmediato. Las no respondidas al acabar el tiempo cuentan como incorrectas.</div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-sm)", flexWrap: "wrap" }}>
-            <span style={{ fontSize: 13, color: "var(--text-primary)", fontWeight: 700 }}>Objetivo mínimo: {PASS_PERCENT}% • Apto/No apto</span>
-            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)" }}>
-              <span style={{ fontSize: 13, color: mockRemainingSec < 300 ? "var(--signal-wrong)" : "var(--accent-300)", fontWeight: 800, fontFamily: "var(--font-mono)" }}>{formatDuration(mockRemainingSec)} restantes</span>
-              <button onClick={cancelMock} style={{ padding: "6px 10px", borderRadius: "var(--radius-md)", border: "1px solid var(--wrong-soft)", background: "transparent", color: "var(--signal-wrong)", fontSize: 11, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: 0.5 }}>Cancelar</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", flexWrap: "wrap", marginBottom: 14 }}>
-        <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{currentQuestion.topic}</span>
-        <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: currentQuestion.difficulty === 3 ? "var(--wrong-soft)" : "var(--accent-soft)", color: currentQuestion.difficulty === 3 ? "var(--signal-wrong)" : "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{"★".repeat(currentQuestion.difficulty)}</span>
-        {blockMode && blockSessionMeta && <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--surface-panel-muted)", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>{blockSessionMeta.label}</span>}
-        {currentQuestion.isRecent && <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--accent-soft)", color: "var(--accent-300)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Reciente #{currentQuestion.sourceQuestionNumber || currentQuestion.id}</span>}
-        {isMulti && <span style={{ padding: "5px 10px", borderRadius: "var(--radius-pill)", background: "var(--surface-panel-muted)", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)" }}>Multi respuesta</span>}
-        {practiceMode && <button onClick={() => toggleBookmark(currentQuestion.id)} style={{ marginLeft: "auto", border: "none", background: "transparent", color: bookmarkSet.has(currentQuestion.id) ? "var(--accent-300)" : "var(--text-tertiary)", fontSize: 20, cursor: "pointer" }}>{bookmarkSet.has(currentQuestion.id) ? "★" : "☆"}</button>}
-      </div>
-
-      {showHint && practiceMode && (
-        <div style={{ background: "var(--accent-soft)", border: "1px solid var(--accent-medium)", borderRadius: "var(--radius-lg)", padding: "12px 16px", marginBottom: 14, color: "var(--accent-300)", fontSize: 13 }}>
-          💡 Pista: {currentQuestion.explanation.split(".")[0]}.
-        </div>
-      )}
-
-      <div style={{ background: "var(--gradient-panel)", borderRadius: "var(--radius-2xl)", border: "1px solid var(--surface-line)", padding: 24, boxShadow: "var(--shadow-elevated)" }}>
-        {currentQuestion.legacyNote && (
-          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 18, padding: "12px 14px", borderRadius: "var(--radius-lg)", background: "var(--warning-soft)", border: "1px solid var(--signal-warning)" }}>
-            <span style={{ fontSize: 15, lineHeight: 1.35, flexShrink: 0 }}>⚠️</span>
-            <span style={{ fontSize: 12.5, lineHeight: 1.6, color: "var(--text-secondary)", fontWeight: 400 }}>
-              <strong style={{ color: "var(--signal-warning)", fontFamily: "var(--font-mono)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 }}>Desactualizado</strong>
-              {" — "}{currentQuestion.legacyNote}
-            </span>
-          </div>
-        )}
-
-        {currentQuestion.caseStudy && (
-          <CaseStudyPanel
-            caseStudyId={currentQuestion.caseStudy}
-            caseStudies={ACTIVE_CERT.caseStudies}
-          />
-        )}
-
-        <div style={{ marginBottom: 18, fontSize: 19, fontWeight: 700, lineHeight: 1.6, color: "var(--text-primary)", whiteSpace: "pre-line" }}>{currentQuestion.question}</div>
-
-        {currentQuestion.images?.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
-            {currentQuestion.images.map((img, i) => (
-              <img key={i} src={img.url} alt={img.alt || ""} loading="lazy" style={{ maxWidth: "100%", borderRadius: "var(--radius-md)", border: "1px solid var(--surface-line)" }} />
-            ))}
-          </div>
-        )}
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
-          {currentQuestion.options.map((option, index) => {
-            if (hiddenOptions.has(index)) {
-              return <div key={index} style={{ padding: "14px 16px", borderRadius: "var(--radius-lg)", border: "1px dashed var(--surface-line)", background: "var(--surface-panel-muted)", color: "var(--text-muted)", fontStyle: "italic" }}>Opción eliminada</div>;
-            }
-
-            const isSelected = selectedAnswer instanceof Set ? selectedAnswer.has(index) : selectedAnswer === index;
-            const isCorrectOption = getCorrectOptionIndexes(currentQuestion).includes(index);
-            const selectedIndexes = currentEvaluation?.selectedIndexes || [];
-            const selectedHasOption = selectedIndexes.includes(index);
-            let background = "var(--surface-panel-muted)";
-            let border = "1px solid var(--surface-line)";
-            let color = "var(--text-primary)";
-            let animation = "";
-
-            if (practiceMode && showResult) {
-              if (isCorrectOption) {
-                background = "var(--correct-soft)";
-                border = "2px solid var(--signal-correct)";
-                color = "var(--signal-correct)";
-              } else if (selectedHasOption) {
-                background = "var(--wrong-soft)";
-                border = "2px solid var(--signal-wrong)";
-                color = "var(--signal-wrong)";
-                animation = "shake 0.4s";
-              }
-            } else if (isSelected) {
-              background = session?.mode === "mock" ? "var(--accent-soft)" : "var(--info-soft)";
-              border = session?.mode === "mock" ? "2px solid var(--accent-300)" : "2px solid var(--signal-info)";
-              color = session?.mode === "mock" ? "var(--accent-300)" : "var(--signal-info)";
-            }
-
-            return <button key={index} onClick={() => {
-              if (practiceMode && showResult) return;
-              if (isMulti) {
-                setSelectedAnswer((prev) => {
-                  const next = new Set(prev instanceof Set ? prev : []);
-                  if (next.has(index)) next.delete(index);
-                  else next.add(index);
-                  return new Set(next);
-                });
-              } else {
-                setSelectedAnswer(index);
-              }
-            }} style={{ padding: "15px 16px", borderRadius: "var(--radius-lg)", border, background, color, fontSize: 14, textAlign: "left", cursor: "pointer", lineHeight: 1.45, animation, transition: "all 0.18s ease" }}>
-              <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                {isMulti && <span style={{ width: 20, height: 20, borderRadius: 6, border: isSelected ? "2px solid currentColor" : "2px solid var(--surface-line-strong)", background: isSelected ? "currentColor" : "transparent", color: "var(--bg-primary)", fontSize: 10, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{isSelected ? "✓" : ""}</span>}
-                <span style={{ flex: 1, whiteSpace: "pre-line" }}>{option}</span>
-                <span style={{ width: 22, height: 22, borderRadius: 6, border: "1px solid var(--surface-line-strong)", background: "var(--surface-panel-muted)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "var(--text-tertiary)", flexShrink: 0, fontFamily: "var(--font-mono)" }}>{index + 1}</span>
-              </span>
-            </button>;
-          })}
-        </div>
-
-        {practiceMode && showResult ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ background: currentEvaluation?.isCorrect ? "var(--correct-soft)" : "var(--wrong-soft)", border: `1px solid ${currentEvaluation?.isCorrect ? "var(--signal-correct)" : "var(--signal-wrong)"}`, borderRadius: "var(--radius-lg)", padding: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-md)", marginBottom: 8 }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: currentEvaluation?.isCorrect ? "var(--signal-correct)" : "var(--signal-wrong)" }}>{currentEvaluation?.isCorrect ? "Correcto" : "Incorrecto"}</div>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>+{session.history[session.history.length - 1]?.xp || 0} XP</div>
-              </div>
-              {currentQuestion.conceptSummary && (
-                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>{currentQuestion.conceptSummary}</div>
-              )}
-              <div style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.6 }}>{currentQuestion.correctRationale || currentQuestion.explanation}</div>
-            </div>
-            {!currentEvaluation?.isCorrect && currentQuestion.optionRationales && (() => {
-              const wrongPicks = (currentEvaluation?.extraIndexes || []);
-              const missed = (currentEvaluation?.missingIndexes || []);
-              const highlights = [...wrongPicks, ...missed].filter((value, i, arr) => arr.indexOf(value) === i);
-              return highlights.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {wrongPicks.map((optIdx) => currentQuestion.optionRationales[optIdx] ? (
-                    <div key={`w-${optIdx}`} style={{ background: "var(--wrong-soft)", border: "1px solid var(--signal-wrong)", borderRadius: "var(--radius-md)", padding: "10px 14px" }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "var(--signal-wrong)", marginBottom: 4 }}>{currentQuestion.options[optIdx]?.split(".")[0]}: tu respuesta</div>
-                      <div style={{ fontSize: 12, color: "var(--text-primary)", lineHeight: 1.55 }}>{currentQuestion.optionRationales[optIdx]}</div>
-                    </div>
-                  ) : null)}
-                  {missed.map((optIdx) => currentQuestion.optionRationales[optIdx] ? (
-                    <div key={`m-${optIdx}`} style={{ background: "var(--correct-soft)", border: "1px solid var(--signal-correct)", borderRadius: "var(--radius-md)", padding: "10px 14px" }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "var(--signal-correct)", marginBottom: 4 }}>{currentQuestion.options[optIdx]?.split(".")[0]}: respuesta correcta</div>
-                      <div style={{ fontSize: 12, color: "var(--text-primary)", lineHeight: 1.55 }}>{currentQuestion.optionRationales[optIdx]}</div>
-                    </div>
-                  ) : null)}
-                </div>
-              ) : null;
-            })()}
-            {currentQuestion.optionRationales && (
-              <button onClick={() => setShowAllRationales((value) => !value)} style={{ border: "1px solid var(--surface-line-strong)", background: "var(--surface-panel-muted)", color: "var(--text-secondary)", borderRadius: "var(--radius-md)", padding: "10px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-                {showAllRationales ? "Ocultar" : "Ver"} todas las justificaciones
-              </button>
-            )}
-            {showAllRationales && currentQuestion.optionRationales && (
-              <div style={{ background: "var(--surface-panel)", borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
-                {currentQuestion.optionRationales.map((rationale, optIdx) => {
-                  const isCorrectOpt = getCorrectOptionIndexes(currentQuestion).includes(optIdx);
-                  return (
-                    <div key={optIdx} style={{ padding: "8px 12px", borderRadius: "var(--radius-md)", background: isCorrectOpt ? "var(--correct-soft)" : "var(--surface-panel-muted)", border: `1px solid ${isCorrectOpt ? "var(--signal-correct)" : "var(--surface-line)"}` }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: isCorrectOpt ? "var(--signal-correct)" : "var(--text-tertiary)", marginBottom: 3 }}>{currentQuestion.options[optIdx]?.split(".")[0]}</div>
-                      <div style={{ fontSize: 12, color: "var(--text-primary)", lineHeight: 1.55 }}>{rationale}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            <button onClick={() => setShowDiscussion((value) => !value)} style={{ border: "1px solid var(--primary-medium)", background: "var(--primary-soft)", color: "var(--primary-400)", borderRadius: "var(--radius-md)", padding: "10px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-              {showDiscussion ? "Ocultar" : "Ver"} discusión ({currentQuestion.discussion?.length ?? 0})
-            </button>
-            {showDiscussion && <div style={{ background: "var(--surface-panel)", borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", padding: 14 }}>
-              {(currentQuestion.discussion ?? []).map((entry, index) => (
-                <div key={`${entry.user}-${index}`} style={{ paddingBottom: index < (currentQuestion.discussion?.length ?? 0) - 1 ? 12 : 0, marginBottom: index < (currentQuestion.discussion?.length ?? 0) - 1 ? 12 : 0, borderBottom: index < (currentQuestion.discussion?.length ?? 0) - 1 ? "1px solid var(--surface-line)" : "none" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", marginBottom: 4 }}>
-                    <div style={{ width: 26, height: 26, borderRadius: "50%", background: `hsl(${index * 110 + 210},65%,38%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800 }}>{entry.user[0]}</div>
-                    <span style={{ fontSize: 12, color: "var(--text-primary)", fontWeight: 700 }}>{entry.user}</span>
-                  </div>
-                  <div style={{ marginLeft: 34, fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.55 }}>{entry.text}</div>
-                </div>
-              ))}
-            </div>}
-            <button onClick={openQueuedPracticeReward} style={{ padding: "14px 16px", border: "none", borderRadius: "var(--radius-lg)", background: pendingRewardCount ? "var(--gradient-mock)" : "var(--gradient-success)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
-              {pendingRewardCount ? `Reclamar recompensa (${pendingRewardCount})` : session.currentIndex === currentQuestions.length - 1 ? "Ver resultados" : "Siguiente"} <span style={{ opacity: 0.5, fontSize: 11 }}>(Enter)</span>
-            </button>
-          </div>
-        ) : (
-          <button onClick={submitCurrentAnswer} disabled={!canSubmitCurrent} style={{ width: "100%", padding: "15px 16px", border: "none", borderRadius: "var(--radius-lg)", background: canSubmitCurrent ? (session?.mode === "mock" ? "var(--gradient-mock)" : "var(--gradient-practice)") : "var(--text-muted)", color: "white", fontSize: 14, fontWeight: 800, cursor: canSubmitCurrent ? "pointer" : "not-allowed", opacity: canSubmitCurrent ? 1 : 0.55, fontFamily: "var(--font-mono)" }}>
-            {session?.mode === "mock" ? "Guardar y continuar" : isMulti ? `Comprobar (${currentEvaluation?.selectedIndexes.length || 0}/${getCorrectOptionIndexes(currentQuestion).length})` : "Comprobar"} {canSubmitCurrent && <span style={{ opacity: 0.5, fontSize: 11 }}>(Enter)</span>}
-          </button>
-        )}
-      </div>
-    </div>
+    <QuizView
+      question={currentQuestion}
+      caseStudies={ACTIVE_CERT.caseStudies}
+      bookmarked={bookmarkSet.has(currentQuestion.id)}
+      answer={quizAnswer}
+      session={quizSessionSummary}
+      inventory={progress.inventory}
+      canUsePowerUps={practiceInventoryButtons}
+      scrollRef={qRef}
+      onSelectOption={selectOption}
+      onSubmit={submitCurrentAnswer}
+      onAdvance={openQueuedPracticeReward}
+      onToggleDiscussion={toggleDiscussion}
+      onToggleRationales={toggleAllRationales}
+      onToggleBookmark={toggleCurrentBookmark}
+      onUseHint={useHint}
+      onUse5050={use5050}
+      onUseSkip={useSkip}
+      onConsumeReward={consumeInventoryReward}
+      onCancelMock={cancelMock}
+    />
   </div>;
 }
 
