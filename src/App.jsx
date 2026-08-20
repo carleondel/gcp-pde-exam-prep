@@ -378,6 +378,53 @@ function CaseStudyPanel({ caseStudyId }) {
   );
 }
 
+function AchievementBadge({ achievement, unlocked }) {
+  const [showTip, setShowTip] = useState(false);
+
+  const show = () => setShowTip(true);
+  const hide = () => setShowTip(false);
+
+  return (
+    <div
+      onMouseEnter={show}
+      onMouseLeave={hide}
+      onFocus={show}
+      onBlur={hide}
+      tabIndex={0}
+      aria-label={`${achievement.name}: ${achievement.desc}${unlocked ? "" : " (bloqueado)"}`}
+      style={{ position: "relative", width: 34, height: 34, borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, cursor: "help", background: unlocked ? "var(--accent-soft)" : "rgba(139,149,168,0.06)", border: unlocked ? "1px solid var(--accent-medium)" : "1px solid var(--surface-line)" }}
+    >
+      {/* La opacidad va en el icono, no en el contenedor: si atenuásemos el
+          contenedor, el tooltip de un logro bloqueado heredaría la opacidad
+          y sería ilegible justo cuando más falta hace leerlo. */}
+      <span aria-hidden="true" style={{ opacity: unlocked ? 1 : 0.3, lineHeight: 1 }}>
+        {unlocked ? achievement.icon : "🔒"}
+      </span>
+
+      {showTip && (
+        <div
+          role="tooltip"
+          style={{ position: "absolute", bottom: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", zIndex: 30, width: "max-content", maxWidth: "min(210px, 60vw)", padding: "9px 12px", borderRadius: "var(--radius-md)", background: "var(--bg-deep)", border: `1px solid ${unlocked ? "var(--accent-medium)" : "var(--surface-line-strong)"}`, boxShadow: "var(--shadow-elevated)", pointerEvents: "none", textAlign: "center" }}
+        >
+          <div style={{ fontSize: 12.5, fontWeight: 800, color: unlocked ? "var(--accent-300)" : "var(--text-secondary)", fontFamily: "var(--font-heading)", lineHeight: 1.3 }}>
+            {achievement.name}
+          </div>
+          <div style={{ fontSize: 11.5, color: "var(--text-secondary)", marginTop: 3, lineHeight: 1.45, fontWeight: 400 }}>
+            {achievement.desc}
+          </div>
+          <div style={{ fontSize: 9.5, marginTop: 5, letterSpacing: 0.8, textTransform: "uppercase", fontFamily: "var(--font-mono)", fontWeight: 700, color: unlocked ? "var(--signal-correct)" : "var(--text-muted)" }}>
+            {unlocked ? "Conseguido" : "Bloqueado"}
+          </div>
+          <span
+            aria-hidden="true"
+            style={{ position: "absolute", top: "100%", left: "50%", marginLeft: -5, width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: `5px solid ${unlocked ? "var(--accent-medium)" : "var(--surface-line-strong)"}` }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AppContent({ allQuestions }) {
   const qRef = useRef(null);
   const previousAchievementsRef = useRef([]);
@@ -2508,9 +2555,11 @@ function AppContent({ allQuestions }) {
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                 {ACHIEVEMENTS.map((achievement) => (
-                  <div key={achievement.id} title={`${achievement.name}: ${achievement.desc}`} style={{ width: 34, height: 34, borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, background: achievementSet.has(achievement.id) ? "var(--accent-soft)" : "rgba(139,149,168,0.06)", border: achievementSet.has(achievement.id) ? "1px solid var(--accent-medium)" : "1px solid var(--surface-line)", opacity: achievementSet.has(achievement.id) ? 1 : 0.22 }}>
-                    {achievementSet.has(achievement.id) ? achievement.icon : "🔒"}
-                  </div>
+                  <AchievementBadge
+                    key={achievement.id}
+                    achievement={achievement}
+                    unlocked={achievementSet.has(achievement.id)}
+                  />
                 ))}
               </div>
             </div>
