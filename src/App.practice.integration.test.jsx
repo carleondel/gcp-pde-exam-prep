@@ -430,6 +430,66 @@ describe("custom practice, wired into the app", () => {
       expect(findButton(/^Siguiente \(Enter\)$/)).toBeFalsy();
     });
 
+    /** XP is scaled down past 5,000 total — gamification.js XP_TIERS. */
+    it("scales the award down once the total crosses a tier", () => {
+      storage().saveProgress({ ...EMPTY_PROGRESS, xp: 4950 });
+      render(<AppContent allQuestions={BANK} />);
+      openPractice();
+      clickButton(/^10$/);
+      clickButton(/^Iniciar práctica/);
+
+      // Still under 5,000, so this one is worth its full 78.
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Comprobar/);
+      expect(screen.getAllByText("+78 XP").length).toBeGreaterThan(0);
+      expect(storage().loadProgress().xp).toBeGreaterThanOrEqual(5000);
+      clickButton(/^(Siguiente|Ver resultados) \(Enter\)$/);
+
+      // Over it now, so the next one is 86 raw at three quarters, not 86 flat.
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Comprobar/);
+      expect(screen.getAllByText("+65 XP").length).toBeGreaterThan(0);
+      expect(screen.queryByText("+86 XP")).toBeNull();
+    });
+
+    /**
+     * The same crossing, caused by a reward rather than by an answer — the
+     * path where the scoring callback's missing progress.xp dependency looked
+     * most likely to matter, since spending a chest changes neither the
+     * session nor any inventory field the callback listed.
+     *
+     * It turned out not to: removing the dependency again leaves this passing,
+     * and the callback still reads the post-chest total. Kept anyway, because
+     * nothing else covers a reward moving the player across a tier.
+     */
+    it("scales the award down after a reward crosses a tier mid-question", () => {
+      storage().saveProgress({
+        ...EMPTY_PROGRESS,
+        xp: 4950,
+        inventory: { ...EMPTY_PROGRESS.inventory, chestKeys: 1 },
+      });
+      render(<AppContent allQuestions={BANK} />);
+      openPractice();
+      clickButton(/^10$/);
+      clickButton(/^Iniciar práctica/);
+
+      // 0.2 picks the common chest tier and stays clear of every reward
+      // threshold in rollPracticeRewards, so the run stays deterministic.
+      Math.random.mockReturnValue(0.2);
+
+      clickButton(/^📦$/);
+      clickButton(/^ABRIR COFRE$/);
+      clickButton(/^Recoger$/);
+      expect(storage().loadProgress().xp).toBe(5050);
+
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Comprobar/);
+
+      // 78 raw at three quarters. Scored against the stale 4,950 it was 78.
+      expect(screen.getAllByText("+59 XP").length).toBeGreaterThan(0);
+      expect(screen.queryByText("+78 XP")).toBeNull();
+    });
+
     it("keeps the score in step as questions are answered", () => {
       render(<AppContent allQuestions={BANK} />);
       startTen();

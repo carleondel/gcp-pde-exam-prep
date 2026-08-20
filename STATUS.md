@@ -84,7 +84,13 @@ Two conventions worth knowing before changing a view:
   error and `exhaustive-deps` a warning, but nothing currently trips
   either. The thirteen dependency warnings that used to be the baseline
   were each resolved by naming a dependency that was genuinely stable, or
-  by memoising a helper — none suppressed.
+  by memoising a helper — none suppressed, and none changed behaviour.
+  One of them, `progress.xp` in the answer-scoring callback, was first
+  reported as a fix for XP awarded against a stale total. That was wrong:
+  the callback is rebuilt on every answer through its `session`
+  dependency, and removing `progress.xp` again does not change what any
+  answer is worth. It is hygiene. The two tier-crossing tests in
+  `App.practice.integration.test.jsx` pin the behaviour either way.
 - Prettier covers the whole source tree; only `dist` and the generated
   question and case-study files are excluded.
 - **400 tests** under Vitest: engine and UI helpers, the four hooks, six
