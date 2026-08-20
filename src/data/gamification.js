@@ -52,7 +52,20 @@ export const ACHIEVEMENTS = [
   { id:"tier2", name:"Silver Era", desc:"Alcanza Tier 2", icon:"\uD83E\uDD48", cond:s=>s.xp>=7500 },
   { id:"tier3", name:"Golden Age", desc:"Alcanza Tier 3", icon:"\uD83E\uDD47", cond:s=>s.xp>=56000 },
   { id:"apex", name:"Mythic Ascension", desc:"Alcanza Certified Mythic", icon:"\uD83C\uDF1F", cond:s=>s.xp>=275000 },
+
+  // secret: el tooltip no revela nombre ni condicion hasta desbloquearlo.
+  { id:"night_owl", name:"Noctambulo", desc:"10 aciertos entre las 3 y las 5 de la madrugada", icon:"\uD83E\uDD89", secret:true, cond:s=>s.nightOwlCorrect>=10 },
+
+  // platinum: se evalua contra los ya desbloqueados, no contra las stats.
+  // Va el ultimo a proposito; applyUnlockedAchievements itera hasta punto
+  // fijo, asi que salta en la misma actualizacion que cierra la coleccion.
+  { id:"platinum", name:"Platino", desc:"Consigue todos los demas logros", icon:"\uD83D\uDC8E", platinum:true, cond:s=>REGULAR_ACHIEVEMENT_IDS.every(id=>s.unlocked.includes(id)) },
 ];
+
+// Todos menos el platino: es lo que hay que completar para conseguirlo.
+export const REGULAR_ACHIEVEMENT_IDS = ACHIEVEMENTS
+  .filter((achievement) => !achievement.platinum)
+  .map((achievement) => achievement.id);
 
 export const WHEEL_SEGMENTS = [
   { label:"+50 XP", xp:50, color:"#4a9eff", w:22 },

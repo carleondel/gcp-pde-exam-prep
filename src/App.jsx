@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { RANKS, ACHIEVEMENTS, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
+import { RANKS, ACHIEVEMENTS, REGULAR_ACHIEVEMENT_IDS, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
 import { createDomainHelpers, getWeakestDomain } from "./engine/domain-helpers.js";
 import {
   AchievementPopup,
@@ -308,12 +308,19 @@ function getRankState(xp) {
   return { current, next, progress };
 }
 
+// Franja del logro oculto: de 3:00 a 4:59 en hora local del usuario.
+function isSmallHours(now = new Date()) {
+  const hour = now.getHours();
+  return hour >= 3 && hour < 5;
+}
+
 function getAchievementSnapshot(progress) {
   return {
     xp: progress.xp,
     correct: progress.stats.totalCorrect,
     maxStreak: progress.stats.maxStreak,
     fastCorrect: progress.stats.fastCorrect,
+    nightOwlCorrect: progress.stats.nightOwlCorrect || 0,
     hardCorrect: progress.stats.hardCorrect,
     jackpot: progress.stats.jackpot,
     topicsOk: progress.stats.topicsOk.length,
@@ -324,6 +331,8 @@ function getAchievementSnapshot(progress) {
     highestTierDefeated: progress.stats.highestTierDefeated || 0,
     totalBossDmgDealt: progress.stats.totalBossDmgDealt || 0,
     flawlessBossWin: !!progress.stats.flawlessBossWin,
+    // El platino se mide contra la colección, no contra las estadísticas.
+    unlocked: progress.achievements,
   };
 }
 
@@ -378,11 +387,28 @@ function CaseStudyPanel({ caseStudyId }) {
   );
 }
 
-function AchievementBadge({ achievement, unlocked }) {
+function AchievementBadge({ achievement, unlocked, progressLabel = null }) {
   const [showTip, setShowTip] = useState(false);
 
   const show = () => setShowTip(true);
   const hide = () => setShowTip(false);
+
+  // Un logro secreto no revela ni nombre ni condición mientras esté
+  // bloqueado; al conseguirlo se comporta como cualquier otro.
+  const hidden = achievement.secret && !unlocked;
+  const title = hidden ? "Logro oculto" : achievement.name;
+  const body = hidden ? "Sigue jugando para descubrirlo." : achievement.desc;
+  const face = hidden ? "❓" : unlocked ? achievement.icon : "🔒";
+
+  const accent = achievement.platinum ? "var(--signal-info)" : "var(--accent-300)";
+  const accentSoft = achievement.platinum ? "var(--info-soft)" : "var(--accent-soft)";
+  const accentLine = achievement.platinum ? "var(--signal-info)" : "var(--accent-medium)";
+
+  const status = unlocked
+    ? "Conseguido"
+    : progressLabel
+      ? `${progressLabel} conseguidos`
+      : "Bloqueado";
 
   return (
     <div
@@ -391,33 +417,33 @@ function AchievementBadge({ achievement, unlocked }) {
       onFocus={show}
       onBlur={hide}
       tabIndex={0}
-      aria-label={`${achievement.name}: ${achievement.desc}${unlocked ? "" : " (bloqueado)"}`}
-      style={{ position: "relative", width: 34, height: 34, borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, cursor: "help", background: unlocked ? "var(--accent-soft)" : "rgba(139,149,168,0.06)", border: unlocked ? "1px solid var(--accent-medium)" : "1px solid var(--surface-line)" }}
+      aria-label={`${title}: ${body}${unlocked ? "" : " (bloqueado)"}`}
+      style={{ position: "relative", width: 34, height: 34, borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, cursor: "help", background: unlocked ? accentSoft : "rgba(139,149,168,0.06)", border: unlocked ? `1px solid ${accentLine}` : "1px solid var(--surface-line)" }}
     >
       {/* La opacidad va en el icono, no en el contenedor: si atenuásemos el
           contenedor, el tooltip de un logro bloqueado heredaría la opacidad
           y sería ilegible justo cuando más falta hace leerlo. */}
       <span aria-hidden="true" style={{ opacity: unlocked ? 1 : 0.3, lineHeight: 1 }}>
-        {unlocked ? achievement.icon : "🔒"}
+        {face}
       </span>
 
       {showTip && (
         <div
           role="tooltip"
-          style={{ position: "absolute", bottom: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", zIndex: 30, width: "max-content", maxWidth: "min(210px, 60vw)", padding: "9px 12px", borderRadius: "var(--radius-md)", background: "var(--bg-deep)", border: `1px solid ${unlocked ? "var(--accent-medium)" : "var(--surface-line-strong)"}`, boxShadow: "var(--shadow-elevated)", pointerEvents: "none", textAlign: "center" }}
+          style={{ position: "absolute", bottom: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", zIndex: 30, width: "max-content", maxWidth: "min(210px, 60vw)", padding: "9px 12px", borderRadius: "var(--radius-md)", background: "var(--bg-deep)", border: `1px solid ${unlocked ? accentLine : "var(--surface-line-strong)"}`, boxShadow: "var(--shadow-elevated)", pointerEvents: "none", textAlign: "center" }}
         >
-          <div style={{ fontSize: 12.5, fontWeight: 800, color: unlocked ? "var(--accent-300)" : "var(--text-secondary)", fontFamily: "var(--font-heading)", lineHeight: 1.3 }}>
-            {achievement.name}
+          <div style={{ fontSize: 12.5, fontWeight: 800, color: unlocked ? accent : "var(--text-secondary)", fontFamily: "var(--font-heading)", lineHeight: 1.3 }}>
+            {title}
           </div>
           <div style={{ fontSize: 11.5, color: "var(--text-secondary)", marginTop: 3, lineHeight: 1.45, fontWeight: 400 }}>
-            {achievement.desc}
+            {body}
           </div>
           <div style={{ fontSize: 9.5, marginTop: 5, letterSpacing: 0.8, textTransform: "uppercase", fontFamily: "var(--font-mono)", fontWeight: 700, color: unlocked ? "var(--signal-correct)" : "var(--text-muted)" }}>
-            {unlocked ? "Conseguido" : "Bloqueado"}
+            {status}
           </div>
           <span
             aria-hidden="true"
-            style={{ position: "absolute", top: "100%", left: "50%", marginLeft: -5, width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: `5px solid ${unlocked ? "var(--accent-medium)" : "var(--surface-line-strong)"}` }}
+            style={{ position: "absolute", top: "100%", left: "50%", marginLeft: -5, width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: `5px solid ${unlocked ? accentLine : "var(--surface-line-strong)"}` }}
           />
         </div>
       )}
@@ -607,17 +633,29 @@ function AppContent({ allQuestions }) {
   }, []);
 
   const applyUnlockedAchievements = useCallback((candidate) => {
-    const unlocked = ACHIEVEMENTS
-      .filter((achievement) => !candidate.achievements.includes(achievement.id) && achievement.cond(getAchievementSnapshot(candidate)))
-      .map((achievement) => achievement.id);
+    // Se itera hasta punto fijo porque un logro puede depender de que otros
+    // ya estén desbloqueados — el platino lo hace. En una sola pasada, el
+    // que cierra la colección y el platino se evaluarían contra el mismo
+    // estado previo, y el platino se quedaría esperando a la siguiente
+    // actualización cualquiera. El resto de condiciones no se reabren, así
+    // que el bucle termina en dos vueltas como mucho.
+    let next = candidate;
+    let unlockedCount = 0;
 
-    if (!unlocked.length) return candidate;
-    const bonusXp = applyDiminishing(unlocked.length * 75, candidate.xp);
-    return {
-      ...candidate,
-      xp: candidate.xp + bonusXp,
-      achievements: [...candidate.achievements, ...unlocked],
-    };
+    for (;;) {
+      const snapshot = getAchievementSnapshot(next);
+      const unlocked = ACHIEVEMENTS
+        .filter((achievement) => !next.achievements.includes(achievement.id) && achievement.cond(snapshot))
+        .map((achievement) => achievement.id);
+      if (!unlocked.length) break;
+
+      next = { ...next, achievements: [...next.achievements, ...unlocked] };
+      unlockedCount += unlocked.length;
+    }
+
+    if (!unlockedCount) return candidate;
+    const bonusXp = applyDiminishing(unlockedCount * 75, candidate.xp);
+    return { ...next, xp: candidate.xp + bonusXp };
   }, []);
 
   const updateProgress = useCallback((updater) => {
@@ -1520,6 +1558,7 @@ function AppContent({ allQuestions }) {
           totalCorrect: prev.stats.totalCorrect + (evaluation.isCorrect ? 1 : 0),
           hardCorrect: prev.stats.hardCorrect + (evaluation.isCorrect && currentQuestion.difficulty === 3 ? 1 : 0),
           fastCorrect: prev.stats.fastCorrect + (evaluation.isCorrect && elapsedSec < 8 ? 1 : 0),
+          nightOwlCorrect: (prev.stats.nightOwlCorrect || 0) + (evaluation.isCorrect && isSmallHours() ? 1 : 0),
           maxStreak: Math.max(prev.stats.maxStreak, nextStreak),
           topicsOk: [...topicsOk],
         },
@@ -1907,6 +1946,7 @@ function AppContent({ allQuestions }) {
       ? `Iniciar práctica · ${effectivePracticeLimit} preguntas`
       : "Configura la práctica";
     const dailyDone = isDailyChallengeCompleted(progress);
+    const regularUnlockedCount = REGULAR_ACHIEVEMENT_IDS.filter((id) => achievementSet.has(id)).length;
     return <div style={{ minHeight: "100vh", color: "var(--text-primary)", fontFamily: "var(--font-body)", animation: "fadeIn var(--duration-fast) var(--ease-out)" }}>
 
       {showAch && <AchievementPopup achievement={showAch} onClose={() => setShowAch(null)} />}
@@ -2559,6 +2599,7 @@ function AppContent({ allQuestions }) {
                     key={achievement.id}
                     achievement={achievement}
                     unlocked={achievementSet.has(achievement.id)}
+                    progressLabel={achievement.platinum ? `${regularUnlockedCount} / ${REGULAR_ACHIEVEMENT_IDS.length}` : null}
                   />
                 ))}
               </div>
