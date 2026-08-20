@@ -72,7 +72,7 @@ export function useBlockStudy({
 
   const blockCatalog = useMemo(
     () => buildBlockCatalog(allQuestions, blockTrackSize),
-    [blockTrackSize],
+    [allQuestions, blockTrackSize],
   );
 
   const effectiveSelectedBlockIndex = useMemo(() => {

@@ -257,10 +257,13 @@ export function AppContent({ allQuestions }) {
     () => progress.bookmarks.map((id) => questionMap.get(id)).filter(Boolean),
     [progress.bookmarks, questionMap],
   );
-  const recentQuestions = useMemo(() => allQuestions.filter((question) => question.isRecent), []);
+  const recentQuestions = useMemo(
+    () => allQuestions.filter((question) => question.isRecent),
+    [allQuestions],
+  );
   const weakQuestions = useMemo(
     () => allQuestions.filter((question) => weakTopicSet.has(question.topic)),
-    [weakTopicSet],
+    [allQuestions, weakTopicSet],
   );
   const {
     selectedTopics,
@@ -389,6 +392,7 @@ export function AppContent({ allQuestions }) {
     progress.wrongQuestionIds.length,
     recentQuestions.length,
     selectedTopics.size,
+    topics.length,
     weakTopics.length,
   ]);
 
@@ -526,7 +530,7 @@ export function AppContent({ allQuestions }) {
         setShowBoss(true);
       }
     },
-    [progress.xp],
+    [allQuestions, progress.xp],
   );
 
   const openQueuedPracticeReward = useCallback(() => {
@@ -940,6 +944,7 @@ export function AppContent({ allQuestions }) {
       resetQuestionUi();
     },
     [
+      allQuestions,
       effectivePracticeLimit,
       practiceLimit,
       practiceOrder,
@@ -985,7 +990,7 @@ export function AppContent({ allQuestions }) {
     setResultPayload(null);
     setScreen("quiz");
     resetQuestionUi();
-  }, [questionMap, resetQuestionUi, resultPayload]);
+  }, [allQuestions, questionMap, resetQuestionUi, resultPayload]);
 
   const cancelMock = useCallback(() => {
     if (session?.mode !== "mock") return;
@@ -1016,7 +1021,7 @@ export function AppContent({ allQuestions }) {
     setResultPayload(null);
     setScreen("quiz");
     resetQuestionUi();
-  }, [progress, resetQuestionUi]);
+  }, [allQuestions, progress, resetQuestionUi]);
 
   /**
    * What the "again" button on the result screen does. Mock and blocks each

@@ -66,7 +66,7 @@ export function usePracticeConfig({
 
   const topicQuestions = useMemo(
     () => allQuestions.filter((question) => selectedTopics.has(question.topic)),
-    [selectedTopics],
+    [allQuestions, selectedTopics],
   );
 
   const practiceSourceQuestions = useMemo(() => {
@@ -111,10 +111,9 @@ export function usePracticeConfig({
    * count larger than the pool — and says so, rather than silently starting
    * a session that does not match what the screen showed.
    *
-   * The dependency list is deliberately the one this effect has always had.
-   * `topics` and `allQuestions` are left out: both are fixed for as long as
-   * the cert is mounted, and adding them would change when the effect runs.
-   * That is a behaviour change and does not belong in a refactor.
+   * `topics` and `allQuestions` are listed even though they never change
+   * while a cert is mounted: the bank is loaded once and handed down, so
+   * naming them costs nothing and keeps the list honest.
    */
   useEffect(() => {
     if (!ready) return;
@@ -167,7 +166,16 @@ export function usePracticeConfig({
     ) {
       setPracticeMessage(nextMessage);
     }
-  }, [practiceLimit, practiceMessage, practiceSource, practiceSourceCounts, ready, selectedTopics]);
+  }, [
+    allQuestions,
+    practiceLimit,
+    practiceMessage,
+    practiceSource,
+    practiceSourceCounts,
+    ready,
+    selectedTopics,
+    topics,
+  ]);
 
   useEffect(() => {
     if (!ready) return;
