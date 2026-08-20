@@ -60,12 +60,12 @@ export const ACHIEVEMENTS = [
   // secret: el tooltip no revela nombre ni condicion hasta desbloquearlo.
   // Es la mejor senal de "listo para el examen" que produce la app: exige
   // no tener ningun dominio flojo, no solo una media alta.
-  { id:"domain_master", name:"Dominio Total", desc:`${DOMAIN_MASTERY_PERCENT}% o mas de acierto en todos los dominios`, icon:"\uD83C\uDF10", secret:true, cond:s=>s.allDomainsMastered },
+  { id:"domain_master", name:"Full Spectrum", desc:`${DOMAIN_MASTERY_PERCENT}% o mas de acierto en todos los dominios`, icon:"\uD83C\uDF10", secret:true, cond:s=>s.allDomainsMastered },
 
   // platinum: se evalua contra los ya desbloqueados, no contra las stats.
   // Va el ultimo a proposito; applyUnlockedAchievements itera hasta punto
   // fijo, asi que salta en la misma actualizacion que cierra la coleccion.
-  { id:"platinum", name:"Platino", desc:"Consigue todos los demas logros", icon:"\uD83D\uDC8E", platinum:true, cond:s=>REGULAR_ACHIEVEMENT_IDS.every(id=>s.unlocked.includes(id)) },
+  { id:"platinum", name:"Platinum", desc:"Consigue todos los demas logros", icon:"\uD83D\uDC8E", platinum:true, cond:s=>REGULAR_ACHIEVEMENT_IDS.every(id=>s.unlocked.includes(id)) },
 ];
 
 // Todos menos el platino: es lo que hay que completar para conseguirlo.
