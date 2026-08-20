@@ -60,6 +60,8 @@ import {
   updateDailyStreak,
 } from "./engine/storage";
 import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
+import AchievementBadge from "./components/AchievementBadge.jsx";
+import CaseStudyPanel from "./components/CaseStudyPanel.jsx";
 import CertPicker from "./components/CertPicker.jsx";
 import { formatDumpDate } from "./engine/format.js";
 import {
@@ -242,101 +244,7 @@ function buildTopicCounts(questions) {
   return counts;
 }
 
-function CaseStudyPanel({ caseStudyId }) {
-  const caseStudy = ACTIVE_CERT.caseStudies?.[caseStudyId];
-  if (!caseStudy) return null;
 
-  return (
-    <details style={{ marginBottom: 18, borderRadius: "var(--radius-lg)", border: "1px solid var(--surface-line)", background: "var(--surface-panel-muted)", overflow: "hidden" }}>
-      <summary style={{ padding: "12px 16px", cursor: "pointer", fontSize: 12, fontWeight: 800, color: "var(--accent-300)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: 0.5 }}>
-        Caso de estudio · {caseStudy.name}
-      </summary>
-      <div style={{ padding: "0 16px 14px", fontSize: 13, lineHeight: 1.7, color: "var(--text-secondary)", whiteSpace: "pre-line", fontWeight: 400 }}>
-        {caseStudy.legacy && (
-          <div style={{ marginBottom: 12, padding: "10px 12px", borderRadius: "var(--radius-md)", background: "var(--warning-soft)", border: "1px solid var(--signal-warning)", fontSize: 12, lineHeight: 1.6, whiteSpace: "normal" }}>
-            <strong style={{ color: "var(--signal-warning)" }}>Caso retirado.</strong>{" "}
-            Ya no forma parte de la guía oficial vigente. Los casos actuales son Altostrat Media,
-            Cymbal Retail, EHR Healthcare y KnightMotives Automotive.
-          </div>
-        )}
-        {caseStudy.context ?? "Contexto no disponible: este caso ya no está en la guía oficial."}
-        <div style={{ marginTop: 12, fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-mono)", whiteSpace: "normal" }}>
-          {caseStudy.verbatim ? "Texto oficial verbatim (exam guide v6.1)" : caseStudy.legacy ? "Blueprint antiguo" : "Resumen del brief oficial"}
-          {caseStudy.officialUrl && (
-            <>
-              {" · "}
-              <a href={caseStudy.officialUrl} target="_blank" rel="noreferrer" style={{ color: "var(--primary-400)" }}>PDF oficial</a>
-            </>
-          )}
-        </div>
-      </div>
-    </details>
-  );
-}
-
-function AchievementBadge({ achievement, unlocked, progressLabel = null }) {
-  const [showTip, setShowTip] = useState(false);
-
-  const show = () => setShowTip(true);
-  const hide = () => setShowTip(false);
-
-  // Un logro secreto no revela ni nombre ni condición mientras esté
-  // bloqueado; al conseguirlo se comporta como cualquier otro.
-  const hidden = achievement.secret && !unlocked;
-  const title = hidden ? "Logro oculto" : achievement.name;
-  const body = hidden ? "Sigue jugando para descubrirlo." : achievement.desc;
-  const face = hidden ? "❓" : unlocked ? achievement.icon : "🔒";
-
-  const accent = achievement.platinum ? "var(--signal-info)" : "var(--accent-300)";
-  const accentSoft = achievement.platinum ? "var(--info-soft)" : "var(--accent-soft)";
-  const accentLine = achievement.platinum ? "var(--signal-info)" : "var(--accent-medium)";
-
-  const status = unlocked
-    ? "Conseguido"
-    : progressLabel
-      ? `${progressLabel} conseguidos`
-      : "Bloqueado";
-
-  return (
-    <div
-      onMouseEnter={show}
-      onMouseLeave={hide}
-      onFocus={show}
-      onBlur={hide}
-      tabIndex={0}
-      aria-label={`${title}: ${body}${unlocked ? "" : " (bloqueado)"}`}
-      style={{ position: "relative", width: 34, height: 34, borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, cursor: "help", background: unlocked ? accentSoft : "rgba(139,149,168,0.06)", border: unlocked ? `1px solid ${accentLine}` : "1px solid var(--surface-line)" }}
-    >
-      {/* La opacidad va en el icono, no en el contenedor: si atenuásemos el
-          contenedor, el tooltip de un logro bloqueado heredaría la opacidad
-          y sería ilegible justo cuando más falta hace leerlo. */}
-      <span aria-hidden="true" style={{ opacity: unlocked ? 1 : 0.3, lineHeight: 1 }}>
-        {face}
-      </span>
-
-      {showTip && (
-        <div
-          role="tooltip"
-          style={{ position: "absolute", bottom: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", zIndex: 30, width: "max-content", maxWidth: "min(210px, 60vw)", padding: "9px 12px", borderRadius: "var(--radius-md)", background: "var(--bg-deep)", border: `1px solid ${unlocked ? accentLine : "var(--surface-line-strong)"}`, boxShadow: "var(--shadow-elevated)", pointerEvents: "none", textAlign: "center" }}
-        >
-          <div style={{ fontSize: 12.5, fontWeight: 800, color: unlocked ? accent : "var(--text-secondary)", fontFamily: "var(--font-heading)", lineHeight: 1.3 }}>
-            {title}
-          </div>
-          <div style={{ fontSize: 11.5, color: "var(--text-secondary)", marginTop: 3, lineHeight: 1.45, fontWeight: 400 }}>
-            {body}
-          </div>
-          <div style={{ fontSize: 9.5, marginTop: 5, letterSpacing: 0.8, textTransform: "uppercase", fontFamily: "var(--font-mono)", fontWeight: 700, color: unlocked ? "var(--signal-correct)" : "var(--text-muted)" }}>
-            {status}
-          </div>
-          <span
-            aria-hidden="true"
-            style={{ position: "absolute", top: "100%", left: "50%", marginLeft: -5, width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: `5px solid ${unlocked ? accentLine : "var(--surface-line-strong)"}` }}
-          />
-        </div>
-      )}
-    </div>
-  );
-}
 
 function AppContent({ allQuestions }) {
   const qRef = useRef(null);
@@ -2742,7 +2650,12 @@ function AppContent({ allQuestions }) {
           </div>
         )}
 
-        {currentQuestion.caseStudy && <CaseStudyPanel caseStudyId={currentQuestion.caseStudy} />}
+        {currentQuestion.caseStudy && (
+          <CaseStudyPanel
+            caseStudyId={currentQuestion.caseStudy}
+            caseStudies={ACTIVE_CERT.caseStudies}
+          />
+        )}
 
         <div style={{ marginBottom: 18, fontSize: 19, fontWeight: 700, lineHeight: 1.6, color: "var(--text-primary)", whiteSpace: "pre-line" }}>{currentQuestion.question}</div>
 
