@@ -11,13 +11,23 @@ the in-app cert selector is live.
 
 ### Done (most recent first)
 
+- `d9a85ac` add "Dominio Total" as the secret achievement
+- `480a7b4` drop the night owl secret achievement
+- `acfb2cb` add a secret achievement and a platinum
+- `4403847` give achievement badges a readable hover tooltip
+- `2660cd0` record gcp-pca as shipped, document the picker
+- `ac80943` split the menu into a home view and one view per mode
+- `e096659` show when each cert's question bank was last dumped
+- `a4767e0` document gcp-pca and the extended question schema
+- `554da04` surface case studies and outdated-content warnings
+- `0a53a74` add cert picker screen
+- `ff56e6a` add gcp-pca cert package with 280 questions
+- `c2616e5` ignore raw question dumps
+- `60888b0` README, STATUS handover and screenshots
 - `c402f8a` decouple engine from cert-specific domains via factory
-- `beafa27` lazy-load questions per cert via `manifest.loadQuestions`
-- `4e3f38f` drive UI strings, logo and exam config from cert manifest
-- `b247122` namespace storage per cert via `createStorage(certId)`
-- `3f36b7f` cert manifest and registry with URL param routing
-- `0b6398f` move PDE data into `src/certs/gcp-pde/`
-- `c9985b6` remove ingestion scripts and source data
+
+Note: everything from `c2616e5` up was rewritten once to strip a
+co-author trailer, so those SHAs differ from any noted earlier.
 
 The engine and `App.jsx` no longer reference any specific cert. Only
 `src/certs/<id>/` folders carry cert-specific data and assets.
@@ -38,6 +48,31 @@ The engine and `App.jsx` no longer reference any specific cert. Only
   `blocks`, `practice`, `mock`, `progress`. The home view carries the
   next action, three shortcuts, the domain bars and a compact block
   grid; each configurator lives in its own view.
+
+### Achievements
+
+26 achievements in `src/data/gamification.js`, two of them special:
+
+- `domain_master` "Dominio Total" is **secret**: while locked the badge
+  shows a question mark and the tooltip only says "Logro oculto". It
+  unlocks at `DOMAIN_MASTERY_PERCENT` (80) accuracy in *every* exam
+  domain, so a high average is not enough. The minimum-data floor is
+  inherited: `computeDomainStats` leaves `accuracy` null below ten
+  attempts, so a domain answered once cannot report 100%.
+- `platinum` "Platino" unlocks when every other achievement is done. It
+  reads `REGULAR_ACHIEVEMENT_IDS` against the unlocked set rather than
+  the stats, so `getAchievementSnapshot` carries `unlocked`.
+
+`applyUnlockedAchievements` iterates to a fixed point. A single pass
+would judge the achievement that closes the collection and the platinum
+against the same prior state, leaving the platinum to fire on whatever
+unrelated update came next. Nothing re-locks, so it settles in three
+passes.
+
+Any new achievement must be reachable on **every** registered cert,
+because the platinum requires the full set. That is what ruled out
+conditions based on `conflict` or `legacyNote` metadata — `gcp-pde` has
+1 and 0 of those respectively.
 
 ## Done: `gcp-pca`
 
