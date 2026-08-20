@@ -46,7 +46,10 @@ export function sanitizePracticeOrder(order) {
 }
 
 export function sanitizePracticeSource(source) {
-  return PRACTICE_SOURCE_META[source] ? source : "topics";
+  // Own properties only. A plain index lookup is truthy for anything on
+  // Object.prototype, so a stored source of "constructor" or "toString"
+  // would pass validation and then read as a source with no label.
+  return Object.hasOwn(PRACTICE_SOURCE_META, source) ? source : "topics";
 }
 
 export function sanitizePracticeTopics(topics, allTopics) {

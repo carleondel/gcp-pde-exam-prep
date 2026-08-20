@@ -41,6 +41,12 @@ describe("sanitizePracticeSource", () => {
     expect(sanitizePracticeSource("retired-source")).toBe("topics");
     expect(sanitizePracticeSource(undefined)).toBe("topics");
   });
+
+  it("is not fooled by names inherited from Object.prototype", () => {
+    for (const inherited of ["constructor", "toString", "valueOf", "hasOwnProperty"]) {
+      expect(sanitizePracticeSource(inherited), inherited).toBe("topics");
+    }
+  });
 });
 
 describe("PRACTICE_SOURCE_META", () => {
