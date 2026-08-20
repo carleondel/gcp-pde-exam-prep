@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { installCanvasStub } from "./test/canvas-stub.js";
 import { AppContent } from "./App.jsx";
@@ -83,10 +83,27 @@ function dismissRewards() {
 
 const openBlocks = () => fireEvent.click(screen.getByText("Ver todos →"));
 
+/**
+ * Reads the block timer chip ("⏱ 00:42") back as a number of seconds, so a
+ * test can assert on the time the user actually sees.
+ */
+function readBlockTimer() {
+  const chip = screen.getByText(/^⏱ \d+:\d\d$/);
+  const [minutes, seconds] = chip.textContent.replace("⏱", "").trim().split(":");
+  return Number(minutes) * 60 + Number(seconds);
+}
+
 function startFirstBlock() {
   openBlocks();
   clickButton(/^(Empezar|Continuar) bloque/);
 }
+
+/**
+ * The button that moves to the next question, matched exactly. A loose
+ * /^Siguiente/ also matches "Siguiente bloque" on the result screen, so a
+ * loop that overshot the end of a block silently started the next one.
+ */
+const ADVANCE_BUTTON = /^(Siguiente|Ver resultados) \(Enter\)$/;
 
 /**
  * Answers the current question correctly and moves to the next one.
@@ -102,7 +119,7 @@ function answerCurrent() {
 
   for (let guard = 0; guard < 20; guard += 1) {
     dismissRewards();
-    const advance = findButton(/^(Siguiente|Ver resultados|Finalizar)/);
+    const advance = findButton(ADVANCE_BUTTON);
     if (advance) {
       fireEvent.click(advance);
       return;
@@ -110,6 +127,9 @@ function answerCurrent() {
     // Dismissing a reward can advance the question by itself; a fresh
     // Comprobar means we are already on the next one.
     if (findButton(/^Comprobar/)) return;
+    // The last question of a block ends on the result screen, where there is
+    // no next question to advance to.
+    if (findButton(/^Volver al menú$/)) return;
     const claim = findButton(/^Reclamar recompensa/);
     if (!claim) {
       throw new Error(
@@ -128,8 +148,15 @@ const blockRecord = (index = 0, size = BLOCK_SIZE) =>
   storage().loadProgress().blockStudy?.tracks?.[trackId(size)]?.blocks?.[index];
 
 describe("block study, wired into the app", () => {
+  // rollPracticeRewards throws dice at 0.15, 0.08, 0.04 and 0.2, so how many
+  // overlays a run has to dismiss varies. The loops above cope with that by
+  // reading the screen instead of counting clicks — they pass across the whole
+  // range of the dice — but pinning the value on top of that keeps a CI run
+  // reproducible: a failure here can be replayed exactly. Above every
+  // threshold, so only the streak-driven rewards fire, and those are fixed.
   beforeEach(() => {
     installStorage();
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
   });
 
   // Vitest runs without globals, so Testing Library's automatic cleanup is
@@ -137,6 +164,7 @@ describe("block study, wired into the app", () => {
   // every query finds several matches.
   afterEach(() => {
     cleanup();
+    vi.restoreAllMocks();
   });
 
   describe("the track on screen", () => {
@@ -259,7 +287,7 @@ describe("block study, wired into the app", () => {
       expect(screen.queryAllByText(/Explicacion de la respuesta/).length).toBeGreaterThan(0);
     });
 
-    it("freezes the elapsed time instead of counting while the tab is closed", () => {
+    it("freezes the elapsed time on the way out", () => {
       const first = render(<AppContent allQuestions={BANK} />);
       startFirstBlock();
       first.unmount();
@@ -267,26 +295,84 @@ describe("block study, wired into the app", () => {
       const stored = storage().loadActiveBlockSession();
       expect(stored.pausedElapsedSec).toBeGreaterThanOrEqual(0);
       expect(stored.pausedElapsedSec).toBeLessThan(60);
-
-      // Simulate the block having been left open a while before closing.
-      globalThis.window.localStorage.setItem(
-        `${CERT_ID}.activeBlockSession.v1`,
-        JSON.stringify({ ...stored, pausedElapsedSec: 42 }),
-      );
-
-      render(<AppContent allQuestions={BANK} />);
-      // Restored from the frozen value rather than from the original
-      // wall-clock start, so it resumes near 42s, not hours later.
-      expect(storage().loadActiveBlockSession().pausedElapsedSec).toBeLessThan(120);
     });
 
-    it("is dropped when the stored block belongs to another cert", () => {
+    it("resumes at the frozen time, not at the wall clock since it started", () => {
+      const first = render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      first.unmount();
+
+      // A block opened two hours ago but only worked on for 42 seconds: the
+      // stored startedAt is a stale wall-clock instant, and pausedElapsedSec
+      // is the only honest number in the record.
+      const stored = storage().loadActiveBlockSession();
+      storage().saveActiveBlockSession({
+        ...stored,
+        startedAt: Date.now() - 2 * 60 * 60 * 1000,
+        pausedElapsedSec: 42,
+      });
+
+      render(<AppContent allQuestions={BANK} />);
+
+      // The timer chip is the observable proof: rebuilding startedAt from the
+      // frozen value shows 00:42. Skip the rebuild and it reads 120:00.
+      expect(readBlockTimer()).toBeGreaterThanOrEqual(40);
+      expect(readBlockTimer()).toBeLessThanOrEqual(45);
+
+      // And it is re-frozen near 42 seconds on the way out, not near two hours.
+      const reStored = storage().loadActiveBlockSession();
+      expect(reStored.pausedElapsedSec).toBeGreaterThanOrEqual(40);
+      expect(reStored.pausedElapsedSec).toBeLessThanOrEqual(45);
+    });
+
+    it("comes back with the hint and the options removed by 50/50 still gone", () => {
+      storage().saveProgress({
+        ...EMPTY_PROGRESS,
+        inventory: { ...EMPTY_PROGRESS.inventory, hints: 1, fiftyFifty: 1 },
+      });
+
+      const first = render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      clickButton(/^💡$/);
+      clickButton(/^✂️$/);
+
+      expect(screen.getByText(/Pista:/)).toBeTruthy();
+      expect(screen.getAllByText("Opción eliminada")).toHaveLength(2);
+      first.unmount();
+
+      render(<AppContent allQuestions={BANK} />);
+
+      expect(screen.getByText("Pregunta numero 60")).toBeTruthy();
+      expect(screen.getByText(/Pista:/)).toBeTruthy();
+      expect(screen.getAllByText("Opción eliminada")).toHaveLength(2);
+    });
+
+    it("is written under this cert only", () => {
       const first = render(<AppContent allQuestions={BANK} />);
       startFirstBlock();
       first.unmount();
 
       expect(storage().loadActiveBlockSession()).not.toBeNull();
       expect(createStorage("gcp-pca").loadActiveBlockSession()).toBeNull();
+    });
+
+    it("neither adopts nor deletes a block interrupted in another cert", () => {
+      // Built from a real PDE session rather than by hand: the shape is what
+      // matters and only the storage key differs between certs.
+      const first = render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      first.unmount();
+      const pcaSession = { ...storage().loadActiveBlockSession(), id: "pca-block-session" };
+      createStorage("gcp-pca").saveActiveBlockSession(pcaSession);
+      globalThis.window.localStorage.removeItem(`${CERT_ID}.activeBlockSession.v1`);
+
+      // PDE now has no block of its own. Mounting it must not adopt PCA's...
+      render(<AppContent allQuestions={BANK} />);
+      expect(screen.getByText("Bloques de estudio")).toBeTruthy();
+      expect(storage().loadActiveBlockSession()).toBeNull();
+
+      // ...and clearing its own empty slot must not reach across the namespace.
+      expect(createStorage("gcp-pca").loadActiveBlockSession()).toEqual(pcaSession);
     });
   });
 
@@ -295,11 +381,21 @@ describe("block study, wired into the app", () => {
       render(<AppContent allQuestions={BANK} />);
       startFirstBlock();
 
-      for (let i = 0; i < BLOCK_SIZE; i += 1) {
+      // Driven by what is on screen rather than by a count of BLOCK_SIZE
+      // answers: dismissing a reward can advance the question by itself, so
+      // the number of clicks a block needs is not the number of questions it
+      // has. The guard is generous enough to cover that and still fail loudly.
+      for (let guard = 0; guard < BLOCK_SIZE + 8; guard += 1) {
+        dismissRewards();
+        if (!findButton(/^Comprobar/)) break;
         answerCurrent();
       }
       dismissRewards();
 
+      expect(
+        screen.getByText("Revisión"),
+        "the block never reached its result screen",
+      ).toBeTruthy();
       expect(storage().loadActiveBlockSession()).toBeNull();
 
       const record = blockRecord(0);
@@ -308,6 +404,9 @@ describe("block study, wired into the app", () => {
       expect(record.lastPercent).toBe(100);
       expect(record.bestPercent).toBe(100);
       expect(record.blockSignature).toBeTruthy();
+
+      clickButton(/^Volver al menú$/);
+      expect(screen.getByText("Bloques de estudio")).toBeTruthy();
     });
   });
 
