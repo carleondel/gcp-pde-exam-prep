@@ -617,13 +617,16 @@ export function AppContent({ allQuestions }) {
     }
 
     setReady(true);
-    // hydrateProgress is a useCallback over module-level storage functions,
-    // so it is stable and cannot make this restore effect run twice.
+    // Everything listed below is stable: hydrateProgress is a useCallback over
+    // module-level storage functions, and the setters come from useState calls
+    // inside the hooks, whose identity React guarantees. Nothing here can make
+    // this restore effect run twice.
   }, [
     hydrateProgress,
     questionMap,
     setBlockTrackSize,
     setSavedBlockSession,
+    setSavedMockSession,
     setSelectedBlockIndex,
   ]);
 
@@ -1630,6 +1633,7 @@ export function AppContent({ allQuestions }) {
     selectedAnswer,
     session,
     setSavedBlockSession,
+    setSavedMockSession,
     showDiscussion,
     showHint,
     updateProgress,
