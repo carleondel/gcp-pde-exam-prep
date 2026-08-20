@@ -63,6 +63,7 @@ import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
 import AchievementBadge from "./components/AchievementBadge.jsx";
 import CaseStudyPanel from "./components/CaseStudyPanel.jsx";
 import CertPicker from "./components/CertPicker.jsx";
+import { useProgress } from "./hooks/useProgress.js";
 import { formatDumpDate } from "./engine/format.js";
 import {
   formatDuration,
@@ -259,7 +260,12 @@ function AppContent({ allQuestions }) {
   // Sub-vista del menú: la portada muestra acciones y progreso, y cada
   // configurador vive en su propia vista para no competir con ellos.
   const [menuView, setMenuView] = useState("home");
-  const [progress, setProgress] = useState(EMPTY_PROGRESS);
+  const { progress, setProgress, updateProgress, hydrateProgress } = useProgress({
+    emptyProgress: EMPTY_PROGRESS,
+    loadProgress,
+    saveProgress,
+    getAchievementSnapshot,
+  });
   const [session, setSession] = useState(null);
   const [savedMockSession, setSavedMockSession] = useState(null);
   const [mockPreferRecent, setMockPreferRecent] = useState(false);
@@ -426,36 +432,6 @@ function AppContent({ allQuestions }) {
     setShowHint(false);
     if (qRef.current) qRef.current.scrollTop = 0;
   }, []);
-
-  const applyUnlockedAchievements = useCallback((candidate) => {
-    // Se itera hasta punto fijo porque un logro puede depender de que otros
-    // ya estén desbloqueados — el platino lo hace. En una sola pasada, el
-    // que cierra la colección y el platino se evaluarían contra el mismo
-    // estado previo, y el platino se quedaría esperando a la siguiente
-    // actualización cualquiera. El resto de condiciones no se reabren, así
-    // que el bucle termina en dos vueltas como mucho.
-    let next = candidate;
-    let unlockedCount = 0;
-
-    for (;;) {
-      const snapshot = getAchievementSnapshot(next);
-      const unlocked = ACHIEVEMENTS
-        .filter((achievement) => !next.achievements.includes(achievement.id) && achievement.cond(snapshot))
-        .map((achievement) => achievement.id);
-      if (!unlocked.length) break;
-
-      next = { ...next, achievements: [...next.achievements, ...unlocked] };
-      unlockedCount += unlocked.length;
-    }
-
-    if (!unlockedCount) return candidate;
-    const bonusXp = applyDiminishing(unlockedCount * 75, candidate.xp);
-    return { ...next, xp: candidate.xp + bonusXp };
-  }, []);
-
-  const updateProgress = useCallback((updater) => {
-    setProgress((prev) => applyUnlockedAchievements(updater(prev)));
-  }, [applyUnlockedAchievements]);
 
   const recordBlockRound = useCallback((finishedSession, summary) => {
     const blockMeta = finishedSession.meta?.blockStudy;
@@ -659,14 +635,13 @@ function AppContent({ allQuestions }) {
   }, []);
 
   useEffect(() => {
-    const savedProgress = loadProgress();
+    const savedProgress = hydrateProgress();
     const storedMock = loadActiveMock();
     const storedBlock = loadActiveBlockSession();
     const restoredMock = storedMock ? hydrateMockSession(storedMock, questionMap) : null;
     const restoredBlock = storedBlock ? hydrateBlockSession(storedBlock, questionMap) : null;
 
     previousAchievementsRef.current = savedProgress.achievements;
-    setProgress(savedProgress);
 
     if (restoredMock) {
       setSavedMockSession(restoredMock);
@@ -701,12 +676,9 @@ function AppContent({ allQuestions }) {
     }
 
     setReady(true);
-  }, [questionMap]);
-
-  useEffect(() => {
-    if (!ready) return;
-    saveProgress(progress);
-  }, [progress, ready]);
+    // hydrateProgress is a useCallback over module-level storage functions,
+    // so it is stable and cannot make this restore effect run twice.
+  }, [hydrateProgress, questionMap]);
 
   useEffect(() => {
     if (!blockCatalog.blocks.length) return;
