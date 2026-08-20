@@ -50,6 +50,7 @@ import {
   updateDailyStreak,
 } from "./engine/storage";
 import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
+import MockView from "./views/MockView.jsx";
 import ProgressView from "./views/ProgressView.jsx";
 import ResultView from "./views/ResultView.jsx";
 import CaseStudyPanel from "./components/CaseStudyPanel.jsx";
@@ -1378,26 +1379,6 @@ export function AppContent({ allQuestions }) {
     );
   };
 
-  const renderMockSparkline = () => {
-    if (!progress.mockHistory.length) return null;
-    const last5 = progress.mockHistory.slice(0, 5);
-    const avg = Math.round(last5.reduce((s, e) => s + e.percent, 0) / last5.length);
-    const recent3 = last5.slice(0, Math.min(3, last5.length));
-    const older = last5.slice(Math.min(3, last5.length));
-    const recentAvg = recent3.length ? recent3.reduce((s, e) => s + e.percent, 0) / recent3.length : 0;
-    const olderAvg = older.length ? older.reduce((s, e) => s + e.percent, 0) / older.length : recentAvg;
-    const trend = recentAvg > olderAvg + 2 ? "↑" : recentAvg < olderAvg - 2 ? "↓" : "→";
-    const trendColor = trend === "↑" ? "var(--signal-correct)" : trend === "↓" ? "var(--signal-wrong)" : "var(--text-secondary)";
-    return (
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginTop: 10 }}>
-        {last5.slice().reverse().map((entry, i) => (
-          <div key={i} title={`${entry.percent}% — ${new Date(entry.date).toLocaleDateString("es-ES")}`} style={{ width: 16, height: Math.max(4, (entry.percent / 100) * 36), borderRadius: 3, background: entry.passed ? "var(--signal-correct)" : "var(--signal-wrong)", opacity: 0.7 + (i / last5.length) * 0.3 }} />
-        ))}
-        <span style={{ fontSize: 12, fontWeight: 800, color: trendColor, fontFamily: "var(--font-mono)", marginLeft: 6 }}>{avg}% {trend}</span>
-      </div>
-    );
-  };
-
   const renderSummaryCards = () => (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "var(--space-md)", marginBottom: 16 }}>
       <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-xl)", padding: 16, boxShadow: "var(--shadow-card)" }}>
@@ -2097,61 +2078,28 @@ export function AppContent({ allQuestions }) {
           </div>
         )}
 
-        {(menuView === "mock" || menuView === "progress") && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            {menuView === "mock" && (<>
-            <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--accent-medium)", borderRadius: "var(--radius-2xl)", padding: 24, boxShadow: "var(--shadow-card)" }}>
-              <div style={{ fontSize: 12, color: "var(--accent-300)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-mono)" }}>Simulacro</div>
-              <div style={{ fontSize: 24, fontWeight: 800, margin: "6px 0 8px", fontFamily: "var(--font-heading)" }}>{MOCK_QUESTION_COUNT} preguntas · {Math.round(MOCK_DURATION_SEC / 60)} min</div>
-              <p style={{ margin: "0 0 12px", color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.6 }}>Sin ayudas. Sin recompensas. {PASS_PERCENT}% para aprobar.</p>
-              <div style={{ marginBottom: 12, padding: "10px 12px", borderRadius: "var(--radius-md)", background: "var(--surface-panel-muted)", border: "1px solid var(--surface-line)" }}>
-                <div style={{ fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6, fontFamily: "var(--font-mono)" }}>Distribución oficial {ACTIVE_CERT.short}</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, fontSize: 11, fontFamily: "var(--font-mono)" }}>
-                  {computeMockDistribution(MOCK_QUESTION_COUNT, ACTIVE_CERT.examDomains).map((entry) => (
-                    <span key={entry.id} style={{ padding: "3px 8px", borderRadius: "var(--radius-pill)", background: "var(--primary-soft)", color: "var(--primary-400)", fontWeight: 700 }}>
-                      {entry.short.replace(/^D\d /, "D" + entry.id + " ")} {entry.target}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <label style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 14, padding: "10px 12px", borderRadius: "var(--radius-md)", background: mockPreferRecent ? "var(--accent-soft)" : "var(--surface-panel-muted)", border: `1px solid ${mockPreferRecent ? "var(--accent-medium)" : "var(--surface-line)"}`, cursor: "pointer", transition: "all 0.18s ease" }}>
-                <input type="checkbox" checked={mockPreferRecent} onChange={(event) => setMockPreferRecent(event.target.checked)} style={{ marginTop: 2, accentColor: "var(--accent-300)", cursor: "pointer" }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: mockPreferRecent ? "var(--accent-300)" : "var(--text-primary)" }}>Priorizar preguntas más recientes</div>
-                  <div style={{ fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.5, marginTop: 2 }}>Mismas proporciones, pero seleccionando los índices más altos en cada dominio.</div>
-                </div>
-              </label>
-              <button onClick={startMock} style={{ width: "100%", padding: "16px 18px", border: "none", borderRadius: "var(--radius-lg)", background: "var(--gradient-mock)", color: "white", fontSize: 15, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
-                Iniciar simulacro
-              </button>
-            </div>
-
-            {savedMockSession && <button onClick={() => {
+        {menuView === "mock" && (
+          <MockView
+            questionCount={MOCK_QUESTION_COUNT}
+            durationSec={MOCK_DURATION_SEC}
+            passPercent={PASS_PERCENT}
+            certShort={ACTIVE_CERT.short}
+            distribution={computeMockDistribution(MOCK_QUESTION_COUNT, ACTIVE_CERT.examDomains)}
+            preferRecent={mockPreferRecent}
+            onPreferRecentChange={setMockPreferRecent}
+            onStart={startMock}
+            savedSession={savedMockSession}
+            onContinue={() => {
               setSession(savedMockSession);
               setScreen("quiz");
               resetQuestionUi();
-            }} style={{ padding: "16px 18px", borderRadius: "var(--radius-xl)", border: "1px solid var(--correct-soft)", background: "var(--correct-soft)", color: "var(--signal-correct)", fontSize: 15, fontWeight: 800, cursor: "pointer", fontFamily: "var(--font-mono)" }}>
-              Continuar simulacro activo
-            </button>}
+            }}
+            history={progress.mockHistory}
+          />
+        )}
 
-            {progress.mockHistory.length > 0 && (
-              <div style={{ background: "var(--gradient-panel)", border: "1px solid var(--surface-line)", borderRadius: "var(--radius-2xl)", padding: 20 }}>
-                <div style={{ fontSize: 11, color: "var(--accent-300)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontFamily: "var(--font-mono)" }}>Historial</div>
-                {progress.mockHistory.slice(0, 5).map((entry, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < Math.min(progress.mockHistory.length, 5) - 1 ? "1px solid var(--surface-line)" : "none" }}>
-                    <span style={{ fontSize: 12, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{new Date(entry.date).toLocaleDateString("es-ES")}</span>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: entry.passed ? "var(--signal-correct)" : "var(--signal-wrong)", fontFamily: "var(--font-mono)" }}>{entry.percent}% {entry.passed ? "Apto" : "No apto"}</span>
-                  </div>
-                ))}
-                {renderMockSparkline()}
-              </div>
-            )}
-            </>)}
-
-            {menuView === "progress" && (
-              <ProgressView inventory={progress.inventory} unlockedAchievements={achievementSet} />
-            )}
-          </div>
+        {menuView === "progress" && (
+          <ProgressView inventory={progress.inventory} unlockedAchievements={achievementSet} />
         )}
         </div>
         )}
