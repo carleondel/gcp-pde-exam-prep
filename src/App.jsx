@@ -15,9 +15,6 @@ import {
   DAILY_CHALLENGE_COUNT,
   appendTopicAttempt,
   buildDailyChallengeQuestions,
-  buildMockHistory,
-  buildMockQuestions,
-  buildMockSummary,
   computeMockDistribution,
   buildPracticeQuestions,
   calculatePracticeXp,
@@ -40,13 +37,9 @@ import {
 } from "./engine/block-study";
 import {
   advanceSession,
-  createMockSession,
   createPracticeSession,
-  getMockStatus,
-  getRemainingTime,
   hydrateBlockSession,
   hydrateMockSession,
-  toStoredMockSession,
   withRecordedMockAnswer,
 } from "./engine/session-manager";
 import {
@@ -62,6 +55,7 @@ import CaseStudyPanel from "./components/CaseStudyPanel.jsx";
 import CertPicker from "./components/CertPicker.jsx";
 import { usePracticeConfig } from "./hooks/usePracticeConfig.js";
 import { useBlockStudy } from "./hooks/useBlockStudy.js";
+import { useMockSession } from "./hooks/useMockSession.js";
 import { useProgress } from "./hooks/useProgress.js";
 import { formatDumpDate } from "./engine/format.js";
 import {
@@ -229,8 +223,6 @@ export function AppContent({ allQuestions }) {
     getAchievementSnapshot,
   });
   const [session, setSession] = useState(null);
-  const [savedMockSession, setSavedMockSession] = useState(null);
-  const [mockPreferRecent, setMockPreferRecent] = useState(false);
   const [resultPayload, setResultPayload] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
@@ -327,6 +319,31 @@ export function AppContent({ allQuestions }) {
     clearActiveBlockSession,
     ready,
   });
+  const {
+    savedMockSession,
+    setSavedMockSession,
+    mockPreferRecent,
+    setMockPreferRecent,
+    mockRemainingSec,
+    mockExpired,
+    createMockAttempt,
+    recordMockResult,
+    discardMock,
+  } = useMockSession({
+    allQuestions,
+    questionMap,
+    updateProgress,
+    session,
+    now,
+    questionCount: MOCK_QUESTION_COUNT,
+    durationSec: MOCK_DURATION_SEC,
+    passPercent: PASS_PERCENT,
+    examDomains: ACTIVE_CERT.examDomains,
+    topicMap: ACTIVE_CERT.topicMap,
+    saveActiveMock,
+    clearActiveMock,
+    ready,
+  });
   const maxPresetLabel = maxPracticeCount > 0 ? `Máximo disponible (${maxPracticeCount})` : "Máximo disponible";
   const practiceSummary = useMemo(() => {
     if (practiceSource === "recent") {
@@ -382,7 +399,6 @@ export function AppContent({ allQuestions }) {
   const currentEvaluation = currentQuestion ? evaluateAnswer(currentQuestion, selectedAnswer) : null;
   const isMulti = currentQuestion ? Array.isArray(currentQuestion.correct) : false;
   const canSubmitCurrent = currentQuestion ? canSubmitAnswer(currentQuestion, selectedAnswer) : false;
-  const mockRemainingSec = session?.mode === "mock" ? getRemainingTime(session, now) : 0;
   const blockElapsedSec = blockMode ? Math.floor((now - session.startedAt) / 1000) : 0;
   const pendingRewardCount = practiceMode ? session.rewardQueue.length : 0;
 
@@ -436,70 +452,25 @@ export function AppContent({ allQuestions }) {
     resetQuestionUi();
   }, [progress, recordBlockRound, resetQuestionUi, setSavedBlockSession, updateProgress]);
 
+  /**
+   * Grading and the progress write live in useMockSession; what stays here is
+   * the part that is about the screen — showing the result and clearing the
+   * question UI.
+   */
   const finalizeMockSession = useCallback((sessionToFinish, reason = "completed") => {
-    if (!sessionToFinish || sessionToFinish.mode !== "mock") return;
+    const finished = recordMockResult(sessionToFinish, reason);
+    if (!finished) return;
 
-    const history = buildMockHistory(sessionToFinish.questionIds, sessionToFinish.answersByQuestionId, questionMap);
-    const finishedAt = reason === "expired" ? sessionToFinish.startedAt + sessionToFinish.durationSec * 1000 : Date.now();
-    const summary = buildMockSummary(history, {
-      startedAt: sessionToFinish.startedAt,
-      finishedAt,
-      durationSec: sessionToFinish.durationSec,
-      passPercent: PASS_PERCENT,
-      questionCount: sessionToFinish.questionIds.length,
-    });
-
-    updateProgress((prev) => {
-      let topicHistory = prev.topicHistory;
-      let wrongQuestionIds = prev.wrongQuestionIds;
-      const topicsOk = new Set(prev.stats.topicsOk);
-      let totalCorrect = prev.stats.totalCorrect;
-      let hardCorrect = prev.stats.hardCorrect;
-
-      history.forEach((entry) => {
-        topicHistory = appendTopicAttempt(topicHistory, entry.question, entry.correct, finishedAt);
-        wrongQuestionIds = pushWrongQuestionId(wrongQuestionIds, entry.questionId, entry.correct);
-        if (entry.correct) {
-          totalCorrect += 1;
-          if (entry.question.difficulty === 3) hardCorrect += 1;
-          topicsOk.add(entry.question.topic);
-        }
-      });
-
-      return {
-        ...prev,
-        topicHistory,
-        wrongQuestionIds,
-        mockHistory: [{
-          date: finishedAt,
-          score: summary.score,
-          questionCount: summary.questionCount,
-          percent: summary.percent,
-          passed: summary.passed,
-          elapsedSec: summary.elapsedSec,
-          wrongQuestionIds: history.filter((entry) => !entry.correct).map((entry) => entry.questionId),
-        }, ...prev.mockHistory].slice(0, 50),
-        stats: {
-          ...prev.stats,
-          totalCorrect,
-          hardCorrect,
-          topicsOk: [...topicsOk],
-        },
-      };
-    });
-
-    clearActiveMock();
-    setSavedMockSession(null);
     setSession({ ...sessionToFinish, status: "finished" });
     setResultPayload({
       mode: "mock",
       reason,
-      history,
-      summary,
+      history: finished.history,
+      summary: finished.summary,
     });
     setScreen("results");
     resetQuestionUi();
-  }, [questionMap, resetQuestionUi, updateProgress]);
+  }, [recordMockResult, resetQuestionUi]);
 
   const advancePracticeSession = useCallback((baseSession) => {
     const nextSession = advanceSession(baseSession);
@@ -596,12 +567,6 @@ export function AppContent({ allQuestions }) {
   }, [hydrateProgress, questionMap, setBlockTrackSize, setSavedBlockSession, setSelectedBlockIndex]);
 
   useEffect(() => {
-    if (!ready) return;
-    if (savedMockSession) saveActiveMock(toStoredMockSession(savedMockSession));
-    else clearActiveMock();
-  }, [ready, savedMockSession]);
-
-  useEffect(() => {
     const previous = previousAchievementsRef.current;
     if (progress.achievements.length > previous.length) {
       const unlockedId = progress.achievements.find((achievementId) => !previous.includes(achievementId));
@@ -692,11 +657,9 @@ export function AppContent({ allQuestions }) {
   }, [blockMode, screen, session]);
 
   useEffect(() => {
-    if (screen !== "quiz" || session?.mode !== "mock") return;
-    if (getMockStatus(session, now) === "expired") {
-      finalizeMockSession({ ...session, status: "expired" }, "expired");
-    }
-  }, [finalizeMockSession, now, screen, session]);
+    if (screen !== "quiz" || !mockExpired) return;
+    finalizeMockSession({ ...session, status: "expired" }, "expired");
+  }, [finalizeMockSession, mockExpired, screen, session]);
 
   const setPracticeSourcePreset = useCallback((source) => {
     if (source === "wrong" && !wrongQuestions.length) {
@@ -865,21 +828,11 @@ export function AppContent({ allQuestions }) {
   const startPractice = useCallback(() => startPracticeWith(), [startPracticeWith]);
 
   const startMock = useCallback(() => {
-    const questions = buildMockQuestions(allQuestions, MOCK_QUESTION_COUNT, {
-      preferRecent: mockPreferRecent,
-      examDomains: ACTIVE_CERT.examDomains,
-      topicMap: ACTIVE_CERT.topicMap,
-    });
-    const nextSession = createMockSession(questions.map((question) => question.id), {
-      status: "active",
-      durationSec: MOCK_DURATION_SEC,
-    });
-    setSavedMockSession(nextSession);
-    setSession(nextSession);
+    setSession(createMockAttempt());
     setResultPayload(null);
     setScreen("quiz");
     resetQuestionUi();
-  }, [mockPreferRecent, resetQuestionUi]);
+  }, [createMockAttempt, resetQuestionUi]);
 
   const reviewMockMistakes = useCallback(() => {
     if (!resultPayload || resultPayload.mode !== "mock") return;
@@ -904,13 +857,12 @@ export function AppContent({ allQuestions }) {
   const cancelMock = useCallback(() => {
     if (session?.mode !== "mock") return;
     if (!window.confirm("¿Cancelar simulacro? Se descartará el progreso y no se registrará en el historial.")) return;
-    clearActiveMock();
-    setSavedMockSession(null);
+    discardMock();
     setSession(null);
     setResultPayload(null);
     setScreen("menu");
     resetQuestionUi();
-  }, [resetQuestionUi, session]);
+  }, [discardMock, resetQuestionUi, session]);
 
   const startDailyChallenge = useCallback(() => {
     if (isDailyChallengeCompleted(progress)) return;
