@@ -7,5 +7,9 @@ yarn-error.log*
 .DS_Store
 .claude
 
-# Source question dumps (not committed, see STATUS.md)
+# Source question dumps
 raw.md
+
+# Working notes, kept local rather than published
+STATUS.md
+ROADMAP.md

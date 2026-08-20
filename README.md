@@ -22,8 +22,8 @@ each.
 | `gcp-pca` — Professional Cloud Architect | 280       | 6       | 2026-08-17  | Complete; 4 official case studies, 36 questions flagged as outdated |
 | `dbt-aeng` — dbt Analytics Engineering   | —         | —       | —           | Planned, paused — needs a question pool                             |
 
-See [STATUS.md](STATUS.md) for the detail on each and for what is
-needed to bring `dbt-aeng` online.
+Adding a cert means adding a folder under `src/certs/` and registering its
+id; see the manifest contract further down.
 
 ![Home](docs/screenshots/home.png)
 
