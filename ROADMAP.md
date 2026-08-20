@@ -33,7 +33,7 @@ screen components, with tests protecting persistence and study flows.
 - `AppContent` is now a coordinator: hooks, state, effects, callbacks and the
   assembly of those views, with no markup of its own. The file went from 3,051
   lines to about 1,900.
-- **400 tests**: engine and UI helpers, the four hooks, six view components,
+- **413 tests**: engine and UI helpers, the four hooks, view components,
   and four integration suites that mount the real screen — home, practice,
   blocks and mock.
 - The optional `discussion` question field is handled safely.

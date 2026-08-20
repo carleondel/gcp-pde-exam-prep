@@ -11,6 +11,8 @@ the in-app cert selector is live.
 
 ### Done (most recent first)
 
+- `c6d22d4` let every reward be skipped
+- `f904669` pin the XP tier crossings, correct the record on one warning
 - `d1731ed` clear the last thirteen ESLint warnings, one cause at a time
 - `3f16d92` format `App.jsx` and drop its Prettier exemption
 - `4b22e66` extract `QuizView`, the last screen
@@ -93,7 +95,7 @@ Two conventions worth knowing before changing a view:
   `App.practice.integration.test.jsx` pin the behaviour either way.
 - Prettier covers the whole source tree; only `dist` and the generated
   question and case-study files are excluded.
-- **400 tests** under Vitest: engine and UI helpers, the four hooks, six
+- **413 tests** under Vitest: engine and UI helpers, the four hooks, the
   view components, and four integration suites that mount the real screen
   — `App.home`, `App.practice`, `App.blocks` and `App.mock`. Integration
   is where the wiring is checked: a hook can be right on its own and
@@ -271,7 +273,7 @@ automatically.
       `npm ci` → lint → `format:check` → test → build, on Node 20.
       `rules-of-hooks` is an error, `exhaustive-deps` a warning.
 - [x] Vitest across `engine/`, `ui/`, `hooks/`, `views/` and four
-      integration suites — 400 tests.
+      integration suites — 413 tests.
 - [x] Clear the thirteen `exhaustive-deps` warnings without changing
       behaviour. ESLint is at zero.
 - [ ] Drop the engine's PDE-leaning leftovers (already removed
