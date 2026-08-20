@@ -108,9 +108,9 @@ export const CHEST_ITEMS = [
 
 export const POWERUPS = [
   { id:"5050", name:"50/50", desc:"Elimina 2 opciones", icon:"\u2702\uFE0F", uses:1 },
-  { id:"hint", name:"Pista", desc:"Muestra pista extra", icon:"\uD83D\uDCA1", uses:1 },
-  { id:"shield", name:"Escudo", desc:"No pierdes racha si fallas", icon:"\uD83D\uDEE1\uFE0F", uses:1 },
-  { id:"double", name:"Doble XP", desc:"x2 XP esta pregunta", icon:"\u26A1", uses:1 },
+  { id:"hint", name:"Hint", desc:"Muestra pista extra", icon:"\uD83D\uDCA1", uses:1 },
+  { id:"shield", name:"Shield", desc:"No pierdes racha si fallas", icon:"\uD83D\uDEE1\uFE0F", uses:1 },
+  { id:"double", name:"Double XP", desc:"x2 XP esta pregunta", icon:"\u26A1", uses:1 },
 ];
 
 // --- XP Diminishing Returns ---
