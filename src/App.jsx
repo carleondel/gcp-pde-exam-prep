@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { RANKS, ACHIEVEMENTS, REGULAR_ACHIEVEMENT_IDS, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
+import { RANKS, ACHIEVEMENTS, REGULAR_ACHIEVEMENT_IDS, DOMAIN_MASTERY_PERCENT, applyDiminishing, selectDragon, getBattleQuestions } from "./data/gamification.js";
 import { createDomainHelpers, getWeakestDomain } from "./engine/domain-helpers.js";
 import {
   AchievementPopup,
@@ -308,6 +308,17 @@ function getRankState(xp) {
   return { current, next, progress };
 }
 
+// Todos los dominios por encima del umbral, ninguno rezagado.
+//
+// computeDomainStats deja accuracy en null por debajo de 10 intentos, así
+// que el guardarraíl contra "100% con una sola respuesta" ya viene dado:
+// un dominio sin datos suficientes no puede satisfacer la condición.
+function hasMasteredEveryDomain(topicHistory) {
+  const stats = computeDomainStats(topicHistory);
+  if (!stats.length) return false;
+  return stats.every((domain) => domain.accuracy !== null && domain.accuracy >= DOMAIN_MASTERY_PERCENT);
+}
+
 function getAchievementSnapshot(progress) {
   return {
     xp: progress.xp,
@@ -324,6 +335,7 @@ function getAchievementSnapshot(progress) {
     highestTierDefeated: progress.stats.highestTierDefeated || 0,
     totalBossDmgDealt: progress.stats.totalBossDmgDealt || 0,
     flawlessBossWin: !!progress.stats.flawlessBossWin,
+    allDomainsMastered: hasMasteredEveryDomain(progress.topicHistory),
     // El platino se mide contra la colección, no contra las estadísticas.
     unlocked: progress.achievements,
   };

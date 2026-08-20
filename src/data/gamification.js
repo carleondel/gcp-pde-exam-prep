@@ -27,6 +27,10 @@ export const RANKS = [
   { name:"Certified Mythic", minXP:275000, icon:"\uD83C\uDF1F", color:"#ff6af0", tier:4 },
 ];
 
+// Umbral del logro "Dominio Total". Vive aqui para que la descripcion y la
+// comprobacion no puedan discrepar: App.jsx lo importa para medir.
+export const DOMAIN_MASTERY_PERCENT = 80;
+
 export const ACHIEVEMENTS = [
   { id:"first_blood", name:"First Blood", desc:"Acierta tu primera pregunta", icon:"\uD83C\uDFAF", cond:s=>s.correct>=1 },
   { id:"streak3", name:"On Fire!", desc:"Racha de 3", icon:"\uD83D\uDD25", cond:s=>s.maxStreak>=3 },
@@ -52,6 +56,11 @@ export const ACHIEVEMENTS = [
   { id:"tier2", name:"Silver Era", desc:"Alcanza Tier 2", icon:"\uD83E\uDD48", cond:s=>s.xp>=7500 },
   { id:"tier3", name:"Golden Age", desc:"Alcanza Tier 3", icon:"\uD83E\uDD47", cond:s=>s.xp>=56000 },
   { id:"apex", name:"Mythic Ascension", desc:"Alcanza Certified Mythic", icon:"\uD83C\uDF1F", cond:s=>s.xp>=275000 },
+
+  // secret: el tooltip no revela nombre ni condicion hasta desbloquearlo.
+  // Es la mejor senal de "listo para el examen" que produce la app: exige
+  // no tener ningun dominio flojo, no solo una media alta.
+  { id:"domain_master", name:"Dominio Total", desc:`${DOMAIN_MASTERY_PERCENT}% o mas de acierto en todos los dominios`, icon:"\uD83C\uDF10", secret:true, cond:s=>s.allDomainsMastered },
 
   // platinum: se evalua contra los ya desbloqueados, no contra las stats.
   // Va el ultimo a proposito; applyUnlockedAchievements itera hasta punto
