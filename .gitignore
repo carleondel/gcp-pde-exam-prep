@@ -13,3 +13,7 @@ raw.md
 # Working notes, kept local rather than published
 STATUS.md
 ROADMAP.md
+
+# Promo video renders (regenerate with `npm run render`)
+video/out
+video/public
