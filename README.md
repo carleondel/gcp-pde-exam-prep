@@ -22,9 +22,10 @@ each.
 
 ## Demo
 
-[![DataForge](docs/dataforge-teaser.gif)](docs/dataforge-promo.mp4)
+https://github.com/user-attachments/assets/d80d82d8-faa9-4ae5-8760-ac9d8e4a126d
 
-**[Watch the full walkthrough →](docs/dataforge-promo.mp4)**
+<sub>Not seeing a player? Your viewer is not GitHub — the file is at
+[docs/dataforge-promo.mp4](docs/dataforge-promo.mp4).</sub>
 
 ## Status
 
