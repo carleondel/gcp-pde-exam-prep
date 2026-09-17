@@ -14,6 +14,12 @@ each.
 > certification authority. Brand names and logos are used solely as
 > visual references.
 
+## Demo
+
+[![DataForge](docs/dataforge-teaser.gif)](docs/dataforge-promo.mp4)
+
+**[Watch the full walkthrough →](docs/dataforge-promo.mp4)**
+
 ## Status
 
 | Cert                                     | Questions | Domains | Bank dumped | State                                                               |
