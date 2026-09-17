@@ -4,6 +4,12 @@ Local-first study app for IT certifications. Practice mode, timed mocks,
 block-by-block study, daily challenge, and a small gamification layer
 (XP, ranks, achievements, boss battles, mystery chests).
 
+**Your progress is saved as you go and is still there when you come
+back.** Close the tab, quit the browser, restart the machine — XP,
+streaks, block history and a half-finished mock all survive, with no
+account and no server involved. See
+[where progress is stored](#where-progress-is-stored).
+
 Originally built to prepare for the **Google Cloud Professional Data
 Engineer (PDE)** exam, then refactored into a multi-cert architecture.
 It now ships two certifications behind the same engine, with an in-app
@@ -116,10 +122,21 @@ Docker when you want a disposable, host-independent run.
 | `<certId>.practicePrefs.v1`      | Source, order and question count                                                                             |
 | `<certId>.blockPrefs.v1`         | Block size and selection                                                                                     |
 
-Progress is written on every change, not on exit, so closing the tab
-or the browser loses nothing. It survives restarts and rebuilds. It
-does **not** survive clearing site data, and it is not shared across
-browsers, devices, or private windows. There is no export yet.
+Progress is written on **every change**, never on exit. There is no
+save button and nothing to flush: by the time you close the app, the
+last answer is already on disk. A mock or a block left half-finished
+comes back exactly where you left it.
+
+| Progress survives                                 | Progress does **not** survive          |
+| ------------------------------------------------- | -------------------------------------- |
+| Closing the tab or quitting the browser           | Clearing site data or browsing history |
+| Restarting the machine                            | A different browser                    |
+| `npm run build`, a rebuilt Docker image, upgrades | A different device                     |
+| Crashes and force-quits                           | Private / incognito windows            |
+
+Rebuilding survives because the data never leaves the browser — but only
+if you come back on the same origin, which is the port caveat above. There
+is no export yet, so treat the browser profile as the backup.
 
 ## Selecting a certification
 
