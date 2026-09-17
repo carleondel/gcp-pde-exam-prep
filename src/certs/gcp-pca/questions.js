@@ -3966,7 +3966,7 @@ export const QUESTIONS = [
       "A. Inspect the logs and metrics from the instances in Cloud Logging and Cloud Monitoring.",
       "B. Change the Compute Engine Instances behind the application to a machine type with more CPU and memory.",
       "C. Restore a backup of the application database from a time before the application became slow.",
-      "D. Deploy the applications on a managed instance group with autoscaling enabled. Add a load balancer in front of the managed instance group..."
+      "D. Deploy the applications on a managed instance group with autoscaling enabled. Add a load balancer in front of the managed instance group, and have the users connect to the IP of the load balancer."
     ],
     "correct": 0,
     "explanation": "The question asks what to do first to find the underlying cause, and diagnosis always precedes remediation: read the logs and metrics before changing anything.",
