@@ -239,6 +239,122 @@ should need to change.
 }
 ```
 
+## Contributing questions
+
+Question banks come from publicly available practice material, pulled in
+one question at a time by hand. There is no scraper and there will not be
+one: the discussion threads are the valuable part and they do not survive
+automated extraction intact.
+
+### 1. Find the question
+
+Search for the exact question number rather than browsing the site:
+
+```
+Google Cloud Professional Data Engineer question 267 discussions examtopics
+```
+
+Two things make this bearable, and skipping either wastes more time than
+it saves:
+
+- **Run an ad blocker** (Adblock Plus or equivalent). Without one the page
+  is mostly interstitials.
+- **Block JavaScript pop-ups** for the domain. The discussion list is what
+  you came for and it sits behind a modal that fires on scroll.
+
+### 2. Copy the whole thing
+
+Select the question, every option, the voted answer **and the full
+discussion thread**, then copy. The thread is not optional padding — the
+disagreements in it are usually what make an ambiguous question tractable,
+and they end up in the app under the answer.
+
+### 3. Have a model format it
+
+Paste the raw copy into Gemini Pro with a prompt that asks for the repo's
+schema and, crucially, for a written justification **per option** — not
+just for the correct one. That per-option reasoning is the thing this app
+has that a flashcard deck does not, and it is the part you cannot copy off
+the page.
+
+A prompt that works:
+
+> Below is a raw copy-paste of one exam question and its community
+> discussion. Return a single JavaScript object literal, nothing else, in
+> exactly this shape:
+>
+> ```js
+> {
+>   id: <number>,
+>   topic: "<one short label, e.g. Pub/Sub, Dataflow, BigQuery, ML/AI>",
+>   difficulty: <1 easy | 2 medium | 3 hard>,
+>   question: "<the question text, verbatim>",
+>   options: ["A. ...", "B. ...", "C. ...", "D. ..."],
+>   correct: <0-based index, or an array of indices for multi-answer>,
+>   explanation: "<two or three sentences on the underlying concept>",
+>   correctRationale: "<why the correct answer is correct>",
+>   optionRationales: ["<why A is right or wrong>", "<...B>", "<...C>", "<...D>"],
+>   discussion: [{ user: "<handle>", text: "<comment>" }],
+>   sourceQuestionNumber: <the number on the source page, or null>,
+>   isRecent: false
+> }
+> ```
+>
+> Rules: `optionRationales` must have one entry per option, and each one
+> must say why that option is right or wrong on its own terms — never
+> "see the correct answer". Prefer the answer the discussion converges on
+> over the site's voted answer when they disagree, and say so in
+> `correctRationale`. Keep `question` and `options` verbatim; everything
+> else is yours to write. Escape quotes for a JavaScript string literal.
+
+Read what comes back before trusting it. Models are confidently wrong
+about GCP service boundaries, and a wrong rationale is worse than no
+rationale — it is a thing you will memorise.
+
+If the discussion flags the question as out of date (a deprecated service,
+a renamed product), add a `legacyNote` and the app renders a warning
+banner above it. If you resolved a conflict with a model rather than from
+the thread, record that in `resolvedBy`, e.g. `"gemini-2026-08"`.
+
+### 4. Images, if the question has one
+
+Some questions are unanswerable without their diagram. Screenshot it,
+save it under `public/question-images/`, and reference it from the
+question:
+
+```
+public/question-images/q259-datastore-indexes.png          # gcp-pde
+public/question-images/gcp-pca/q120-three-vpcs.png         # every other cert
+```
+
+```js
+images: [
+  {
+    url: "/question-images/q259-datastore-indexes.png",
+    alt: "Datastore index config diagrams referenced by options A and B",
+  },
+],
+```
+
+`gcp-pde` sits at the root of that folder for historical reasons; every
+other cert gets its own subfolder. Write a real `alt` — describe what the
+diagram actually shows, because it is also the fallback when the file is
+missing.
+
+### 5. Drop it in and check it
+
+Append the object to the `QUESTIONS` array in
+`src/certs/<cert-id>/questions.js`, then:
+
+```bash
+npm run dev          # find it in practice mode and read it back
+npm test             # the schema is covered by the engine tests
+```
+
+`questions.js` is generated data as far as the toolchain is concerned —
+both Prettier and ESLint skip it — so formatting is on you. Match the
+style of the entries around it.
+
 ## License
 
 Personal project, no public license. Question banks are not committed
