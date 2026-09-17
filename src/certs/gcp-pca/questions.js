@@ -3837,12 +3837,12 @@ export const QUESTIONS = [
     "conflict": true,
     "discussionSummary": "Genuinely split. Supporters of B lean on the phrase 'real time', since data access logs surface bytes processed almost immediately. Supporters of D note that only billing export carries actual cost, and that it is a continuous export rather than a snapshot.",
     "conceptSummary": "Attributing BigQuery spend to queries and users.",
-    "correctRationale": "Cloud Billing export to BigQuery writes usage and cost rows continuously into a dataset, broken down by service, SKU, project and labels. It is the authoritative record of what was actually charged, so querying it gives real monetary cost rather than an estimate derived from bytes scanned. Note that the community is split here: data access logs surface bytes processed with lower latency, which is why several voters prefer that route when the emphasis is placed on the words real time.",
+    "correctRationale": "BigQuery writes a data access log entry for every query job as soon as it completes, carrying the user who ran it (principalEmail), the query itself and totalBilledBytes. On pay-per-use pricing you are charged per byte billed, so multiplying those bytes by the price per TB gives the cost of each query. A Cloud Logging sink streams the entries straight into a BigQuery table, where plain SQL ranks queries and users by spend in near real time. Note that the community is split here: some voters prefer billing export because it holds the actual invoiced cost, but it lags by hours and has no per-user or per-query breakdown.",
     "optionRationales": [
-      "Wrong: Dataset labels are static metadata on the dataset; they cannot dynamically attribute the cost of each individual query back to the user who ran it.",
-      "Wrong: Data access logs record bytes processed, from which cost can only be estimated. They are near real time, which is why many voters prefer this option, but they carry no billing figures.",
-      "Wrong: Exporting logs to Cloud Storage and building a Dataflow pipeline is heavy engineering for analysis that BigQuery can do directly on an exported table.",
-      "Correct: Billing export to BigQuery is the continuous, authoritative source of actual cost, and querying it yields both the most expensive queries and the highest-spending users."
+      "Wrong: Dataset labels are static metadata on the dataset; they cannot attribute each query to the user who ran it, and Billing Reports show aggregated cost with a delay rather than individual queries in real time.",
+      "Correct: Data access logs record the user, the query and its billed bytes as each job runs, and a sink into BigQuery lets you compute and rank cost per query and per user with SQL almost immediately.",
+      "Wrong: The logs are the right source, but routing them through Cloud Storage and a custom Dataflow pipeline adds latency and infrastructure when a sink can write them directly into BigQuery.",
+      "Wrong: Billing export is the authoritative record of actual cost, but it is updated a few times a day and aggregates by service, SKU, project and labels, so it can neither show costs in real time nor say which user ran which query."
     ]
   },
   {
