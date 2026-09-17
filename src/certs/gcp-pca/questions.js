@@ -3795,13 +3795,13 @@ export const QUESTIONS = [
     "difficulty": 3,
     "question": "Your company has a Google Cloud project that uses BigQuery for data warehousing on a pay-per-use basis. You want to monitor queries in real time to discover the most costly queries and which users spend the most. What should you do?",
     "options": [
-      "A. 1. In the BigQuery dataset that contains all the tables to be queried, add a label for each user...",
-      "B. 1. Create a Cloud Logging sink to export BigQuery data access logs to BigQuery. 2. Perform a BigQuery query on the generated table...",
-      "C. 1. Create a Cloud Logging sink to export BigQuery data access logs to Cloud Storage. 2. Develop a Dataflow pipeline...",
+      "A. 1. In the BigQuery dataset that contains all the tables to be queried, add a label for each user that can launch a query. 2. Open the Billing page of the project. 3. Select Reports. 4. Select BigQuery as the product and filter by the user you want to check.",
+      "B. 1. Create a Cloud Logging sink to export BigQuery data access logs to BigQuery. 2. Perform a BigQuery query on the generated table to extract the information you need.",
+      "C. 1. Create a Cloud Logging sink to export BigQuery data access logs to Cloud Storage. 2. Develop a Dataflow pipeline to compute the cost of queries split by users.",
       "D. 1. Activate billing export into BigQuery. 2. Perform a BigQuery query on the billing table to extract the information you need."
     ],
-    "correct": 3,
-    "explanation": "Cloud Billing export to BigQuery is the authoritative source of actual cost per service and user, and it streams continuously rather than being a one-off report.",
+    "correct": 1,
+    "explanation": "BigQuery data access logs record the user, the query and its billed bytes as each job runs, and a sink streams them straight into BigQuery, while billing export lags by hours and has no per-user breakdown.",
     "discussion": [
       {
         "user": "kuboraam",
