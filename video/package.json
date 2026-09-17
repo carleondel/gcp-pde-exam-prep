@@ -1,0 +1,20 @@
+{
+  "name": "dataforge-promo-video",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "shots": "bash scripts/shots.sh",
+    "studio": "npm run shots && remotion studio src/index.jsx",
+    "render": "npm run shots && remotion render src/index.jsx Promo out/dataforge.mp4 --codec=h264 --crf=18",
+    "teaser": "npm run shots && remotion render src/index.jsx Teaser out/teaser.mp4 --codec=h264 --crf=18",
+    "publish": "bash scripts/publish.sh"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.525",
+    "@remotion/google-fonts": "4.0.525",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "4.0.525"
+  }
+}

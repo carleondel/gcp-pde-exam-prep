@@ -59,4 +59,14 @@ export default [
       globals: { ...globals.node },
     },
   },
+
+  {
+    // The promo video under video/ is a Remotion project, not a Vite app.
+    // It has no dev server and no Fast Refresh, so a file mixing a scene
+    // component with the constants that drive it costs nothing there.
+    files: ["video/**/*.{js,jsx}"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 ];
