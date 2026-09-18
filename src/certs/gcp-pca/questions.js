@@ -4358,7 +4358,7 @@ export const QUESTIONS = [
       "A. Configure an organization policy to restrict identities by domain.",
       "B. Configure an organization policy to block creation of service accounts.",
       "C. Configure Cloud Scheduler to trigger a Cloud Function every hour that removes all users that don't belong to the Cloud Identity domain from all projects.",
-      "D. Create a technical user (e.g., crawler@yourdomain.com), and give it the project owner role at root organization level. Write a bash script that... Deletes all users that do not belong to the company domain... Configure a cron job that executes the bash script every hour."
+      "D. Create a technical user (e.g., crawler@yourdomain.com), and give it the project owner role at root organization level. Write a bash script that: • Lists all the IAM rules of all projects within the organization. • Deletes all users that do not belong to the company domain. Create a Compute Engine instance in a project within the Organization and configure gcloud to be executed with technical user credentials. Configure a cron job that executes the bash script every hour."
     ],
     "correct": 0,
     "explanation": "The Domain Restricted Sharing organization policy rejects IAM bindings for principals outside allowed domains at the moment they are attempted, which is prevention rather than cleanup.",
