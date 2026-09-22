@@ -5730,8 +5730,8 @@ export const QUESTIONS = [
     "options": [
       "A. Install Anthos Service Mesh on your cluster. Use the Google Cloud Console to define a Service Level Objective (SLO), and create an alerting policy based on this SLO.",
       "B. Enable the Cloud Trace API on your project, and use Cloud Monitoring Alerts to send an alert based on the Cloud Trace metrics.",
-      "C. Use Cloud Profiler to follow up the request latency. Create a custom metric in Cloud Monitoring based on the results of Cloud Profiler...",
-      "D. Configure Anthos Config Management on your cluster, and create a yaml file that defines the SLO..."
+      "C. Use Cloud Profiler to follow up the request latency. Create a custom metric in Cloud Monitoring based on the results of Cloud Profiler, and create an Alerting policy in case this metric exceeds the threshold.",
+      "D. Configure Anthos Config Management on your cluster, and create a yaml file that defines the SLO and alerting policy you want to deploy in your cluster."
     ],
     "correct": 0,
     "explanation": "Anthos Service Mesh emits latency telemetry per service automatically, and the console lets you define a latency SLO on it and alert when the objective is threatened.",
