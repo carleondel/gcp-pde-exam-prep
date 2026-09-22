@@ -5784,10 +5784,10 @@ export const QUESTIONS = [
     "difficulty": 2,
     "question": "Your company is planning to upload several important files to Cloud Storage. After the upload is completed, they want to verify that the uploaded content is identical to what they have on-premises. You want to minimize the cost and effort of performing this check. What should you do?",
     "options": [
-      "A. 1. Use Linux shasum... 2. gsutil -m to upload... 3. gsutil cp to download... 4. Linux shasum... 5. Compare.",
-      "B. 1. gsutil -m... 2. Develop custom Java app to compute CRC32C... 3. gsutil ls -L... 4. Compare.",
-      "C. 1. gsutil -m... 2. gsutil cp to download... 3. Linux diff to compare...",
-      "D. 1. Use gsutil -m to upload... 2. Use gsutil hash -c FILE_NAME to generate CRC32C hashes of all on-premises files. 3. Use gsutil ls -L gs://[YOUR_BUCKET_NAME] to collect CRC32C hashes of the uploaded files. 4. Compare the hashes."
+      "A. 1. Use Linux shasum to compute a digest of files you want to upload. 2. Use gsutil -m to upload all the files to Cloud Storage. 3. Use gsutil cp to download the uploaded files. 4. Use Linux shasum to compute a digest of the downloaded files. 5. Compare the hashes.",
+      "B. 1. Use gsutil -m to upload the files to Cloud Storage. 2. Develop a custom Java application that computes CRC32C hashes. 3. Use gsutil ls -L gs://[YOUR_BUCKET_NAME] to collect CRC32C hashes of the uploaded files. 4. Compare the hashes.",
+      "C. 1. Use gsutil -m to upload all the files to Cloud Storage. 2. Use gsutil cp to download the uploaded files. 3. Use Linux diff to compare the content of the files.",
+      "D. 1. Use gsutil -m to upload the files to Cloud Storage. 2. Use gsutil hash -c FILE_NAME to generate CRC32C hashes of all on-premises files. 3. Use gsutil ls -L gs://[YOUR_BUCKET_NAME] to collect CRC32C hashes of the uploaded files. 4. Compare the hashes."
     ],
     "correct": 3,
     "explanation": "Comparing locally computed CRC32C hashes against the hashes Cloud Storage already stores in object metadata verifies integrity without downloading anything, so there are no egress charges.",
