@@ -19,7 +19,7 @@ installCanvasStub();
 const question = (id, topic = "BigQuery") => ({
   id,
   topic,
-  question: `Pregunta ${id}`,
+  question: `Question ${id}`,
   options: ["A. correcta", "B. incorrecta"],
   correct: 0,
 });
@@ -70,32 +70,32 @@ describe("ResultView", () => {
   describe("the headline", () => {
     it("praises a strong practice session", () => {
       render_({ result: practiceResult({ summary: { percent: 85, score: 2, answered: 2 } }) });
-      expect(screen.getByText("Sesión excelente")).toBeTruthy();
+      expect(screen.getByText("Excellent session")).toBeTruthy();
     });
 
     it("is encouraging about a middling one", () => {
       render_({ result: practiceResult({ summary: { percent: 65 } }) });
-      expect(screen.getByText("Buen entrenamiento")).toBeTruthy();
+      expect(screen.getByText("Good workout")).toBeTruthy();
     });
 
     it("does not scold a weak one", () => {
       render_({ result: practiceResult({ summary: { percent: 20 } }) });
-      expect(screen.getByText("Seguimos iterando")).toBeTruthy();
+      expect(screen.getByText("Keep iterating")).toBeTruthy();
     });
 
     it("names the daily challenge as its own thing", () => {
       render_({
         result: practiceResult({ mode: "daily", summary: { percent: 90, dailyBonus: 50 } }),
       });
-      expect(screen.getByText("Reto diario superado")).toBeTruthy();
-      expect(screen.getByText("Reto diario")).toBeTruthy();
+      expect(screen.getByText("Daily challenge passed")).toBeTruthy();
+      expect(screen.getByText("Daily challenge")).toBeTruthy();
     });
 
     it("shows the daily bonus in the line under it", () => {
       render_({
         result: practiceResult({ mode: "daily", summary: { xpGained: 200, dailyBonus: 50 } }),
       });
-      expect(screen.getByText(/incluye \+50 bonus reto/)).toBeTruthy();
+      expect(screen.getByText(/includes \+50 challenge bonus/)).toBeTruthy();
     });
   });
 
@@ -106,18 +106,18 @@ describe("ResultView", () => {
       // review list, so both topics turn up twice.
       expect(screen.getAllByText("BigQuery")).toHaveLength(2);
       expect(screen.getAllByText("Dataflow")).toHaveLength(2);
-      expect(screen.getByText("Rendimiento por tema")).toBeTruthy();
+      expect(screen.getByText("Performance by topic")).toBeTruthy();
     });
 
     it("lists every question answered, right and wrong", () => {
       render_();
-      expect(screen.getByText("Pregunta 1")).toBeTruthy();
-      expect(screen.getByText("Pregunta 2")).toBeTruthy();
+      expect(screen.getByText("Question 1")).toBeTruthy();
+      expect(screen.getByText("Question 2")).toBeTruthy();
     });
 
     it("shows the right answer for the ones that were missed", () => {
       render_();
-      expect(screen.getByText(/Resp: A\./)).toBeTruthy();
+      expect(screen.getByText(/Ans: A\./)).toBeTruthy();
     });
   });
 
@@ -125,32 +125,32 @@ describe("ResultView", () => {
     it("goes back to the menu", () => {
       const onGoToMenu = vi.fn();
       render_({ onGoToMenu });
-      fireEvent.click(screen.getByText("Volver al menú"));
+      fireEvent.click(screen.getByText("Back to menu"));
       expect(onGoToMenu).toHaveBeenCalledTimes(1);
     });
 
     it("offers another session of the same kind", () => {
       const onRepeat = vi.fn();
       render_({ onRepeat });
-      fireEvent.click(screen.getByText("Seguir practicando"));
+      fireEvent.click(screen.getByText("Keep practicing"));
       expect(onRepeat).toHaveBeenCalledTimes(1);
     });
 
     it("hides the next-block button when there is no next block", () => {
       render_({ onNextBlock: null });
-      expect(screen.queryByText("Siguiente bloque")).toBeNull();
+      expect(screen.queryByText("Next block")).toBeNull();
     });
 
     it("offers the next block when the caller supplies one", () => {
       const onNextBlock = vi.fn();
       render_({ onNextBlock });
-      fireEvent.click(screen.getByText("Siguiente bloque"));
+      fireEvent.click(screen.getByText("Next block"));
       expect(onNextBlock).toHaveBeenCalledTimes(1);
     });
 
     it("does not offer to review mistakes after a practice session", () => {
       render_();
-      expect(screen.queryByText(/Repasar errores/)).toBeNull();
+      expect(screen.queryByText(/Review mistakes/)).toBeNull();
     });
 
     it("offers to review the mistakes of a failed mock", () => {
@@ -172,8 +172,8 @@ describe("ResultView", () => {
         onReviewMockMistakes,
       });
 
-      expect(screen.getByText("Simulacro completado")).toBeTruthy();
-      fireEvent.click(screen.getByText(/Repasar errores \(1\)/));
+      expect(screen.getByText("Mock exam completed")).toBeTruthy();
+      fireEvent.click(screen.getByText(/Review mistakes \(1\)/));
       expect(onReviewMockMistakes).toHaveBeenCalledTimes(1);
     });
 
@@ -194,8 +194,8 @@ describe("ResultView", () => {
         },
       });
 
-      expect(screen.getByText("Simulacro superado")).toBeTruthy();
-      expect(screen.queryByText(/Repasar errores/)).toBeNull();
+      expect(screen.getByText("Mock exam passed")).toBeTruthy();
+      expect(screen.queryByText(/Review mistakes/)).toBeNull();
     });
   });
 });

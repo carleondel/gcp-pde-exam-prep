@@ -153,7 +153,7 @@ export function SpinWheel({ onComplete, onClose }) {
             fontFamily: "var(--font-heading)",
           }}
         >
-          RULETA DE RECOMPENSAS
+          REWARD WHEEL
         </h2>
         <p
           style={{
@@ -163,7 +163,7 @@ export function SpinWheel({ onComplete, onClose }) {
             position: "relative",
           }}
         >
-          Gira y descubre tu premio
+          Spin to reveal your prize
         </p>
         <canvas
           ref={canvasRef}
@@ -179,13 +179,13 @@ export function SpinWheel({ onComplete, onClose }) {
               {result.xp
                 ? `+${result.xp} XP`
                 : result.mult
-                  ? `Multiplicador x${result.mult} activado`
+                  ? `x${result.mult} multiplier activated`
                   : result.scratch
-                    ? "Rasca y gana desbloqueado"
+                    ? "Scratch card unlocked"
                     : result.chest
-                      ? "Cofre misterioso obtenido"
+                      ? "Mystery chest obtained"
                       : result.power
-                        ? "Power-up obtenido"
+                        ? "Power-up obtained"
                         : ""}
             </div>
             <button
@@ -202,7 +202,7 @@ export function SpinWheel({ onComplete, onClose }) {
                 cursor: "pointer",
               }}
             >
-              Continuar
+              Continue
             </button>
           </div>
         ) : (
@@ -225,7 +225,7 @@ export function SpinWheel({ onComplete, onClose }) {
                 fontFamily: "var(--font-mono)",
               }}
             >
-              {spinning ? "Girando..." : "\u2605 GIRAR \u2605"}
+              {spinning ? "Spinning..." : "\u2605 SPIN \u2605"}
             </button>
             {!spinning && (
               <button
@@ -242,7 +242,7 @@ export function SpinWheel({ onComplete, onClose }) {
                   fontFamily: "var(--font-mono)",
                 }}
               >
-                SALTAR
+                SKIP
               </button>
             )}
           </div>

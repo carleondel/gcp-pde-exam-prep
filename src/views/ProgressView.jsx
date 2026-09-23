@@ -2,7 +2,7 @@ import { ACHIEVEMENTS, REGULAR_ACHIEVEMENT_IDS } from "../data/gamification.js";
 import AchievementBadge from "../components/AchievementBadge.jsx";
 
 /**
- * The "Progreso" tab of the menu: what the player is carrying and what they
+ * The "Inventory & achievements" tab of the menu: what the player is carrying and what they
  * have unlocked.
  *
  * The two counts below are presentation, not state — one decides whether to
@@ -43,7 +43,7 @@ export default function ProgressView({ inventory, unlockedAchievements }) {
           fontFamily: "var(--font-mono)",
         }}
       >
-        Inventario y logros
+        Inventory & achievements
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
         {inventory.shields > 0 && (
@@ -159,7 +159,9 @@ export default function ProgressView({ inventory, unlockedAchievements }) {
           </span>
         )}
         {!totalPowerups && (
-          <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>Sin items acumulados.</span>
+          <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>
+            No items collected yet.
+          </span>
         )}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>

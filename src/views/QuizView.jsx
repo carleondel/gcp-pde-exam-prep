@@ -62,8 +62,8 @@ export default function QuizView({
           >
             <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 }}>
               {session.mode === "blocks"
-                ? `Bloque ${session.blockMeta.label} • orden fijo • vuelta ${session.blockMeta.roundNumber}`
-                : "Feedback inmediato • recompensas activas • ayudas disponibles"}
+                ? `Block ${session.blockMeta.label} • fixed order • round ${session.blockMeta.roundNumber}`
+                : "Instant feedback • rewards active • aids available"}
             </div>
             <div
               style={{
@@ -84,7 +84,7 @@ export default function QuizView({
                   fontFamily: "var(--font-mono)",
                 }}
               >
-                Correctas {session.score}/{session.answered}
+                Correct {session.score}/{session.answered}
               </span>
               {session.pendingRewards > 0 && (
                 <span
@@ -98,7 +98,7 @@ export default function QuizView({
                     fontFamily: "var(--font-mono)",
                   }}
                 >
-                  Pendientes {session.pendingRewards}
+                  Pending {session.pendingRewards}
                 </span>
               )}
               {inventory.shields > 0 && (
@@ -255,8 +255,8 @@ export default function QuizView({
           }}
         >
           <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 }}>
-            Sin ayudas ni feedback inmediato. Las no respondidas al acabar el tiempo cuentan como
-            incorrectas.
+            No aids or instant feedback. Questions left unanswered when time runs out count as
+            incorrect.
           </div>
           <div
             style={{
@@ -268,7 +268,7 @@ export default function QuizView({
             }}
           >
             <span style={{ fontSize: 13, color: "var(--text-primary)", fontWeight: 700 }}>
-              Objetivo mínimo: {session.passPercent}% • Apto/No apto
+              Minimum target: {session.passPercent}% • Pass/Fail
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)" }}>
               <span
@@ -280,7 +280,7 @@ export default function QuizView({
                   fontFamily: "var(--font-mono)",
                 }}
               >
-                {formatDuration(session.mockRemainingSec)} restantes
+                {formatDuration(session.mockRemainingSec)} remaining
               </span>
               <button
                 onClick={onCancelMock}
@@ -298,7 +298,7 @@ export default function QuizView({
                   letterSpacing: 0.5,
                 }}
               >
-                Cancelar
+                Cancel
               </button>
             </div>
           </div>
@@ -367,7 +367,7 @@ export default function QuizView({
               fontFamily: "var(--font-mono)",
             }}
           >
-            Reciente #{question.sourceQuestionNumber || question.id}
+            Recent #{question.sourceQuestionNumber || question.id}
           </span>
         )}
         {answer.isMulti && (
@@ -382,7 +382,7 @@ export default function QuizView({
               fontFamily: "var(--font-mono)",
             }}
           >
-            Multi respuesta
+            Multiple answers
           </span>
         )}
         {session.mode !== "mock" && (
@@ -414,7 +414,7 @@ export default function QuizView({
             fontSize: 13,
           }}
         >
-          💡 Pista: {question.explanation.split(".")[0]}.
+          💡 Hint: {question.explanation.split(".")[0]}.
         </div>
       )}
 
@@ -458,7 +458,7 @@ export default function QuizView({
                   letterSpacing: 0.5,
                 }}
               >
-                Desactualizado
+                Outdated
               </strong>
               {" — "}
               {question.legacyNote}
@@ -516,7 +516,7 @@ export default function QuizView({
                     fontStyle: "italic",
                   }}
                 >
-                  Opción eliminada
+                  Option removed
                 </div>
               );
             }
@@ -646,7 +646,7 @@ export default function QuizView({
                       : "var(--signal-wrong)",
                   }}
                 >
-                  {answer.evaluation?.isCorrect ? "Correcto" : "Incorrecto"}
+                  {answer.evaluation?.isCorrect ? "Correct" : "Incorrect"}
                 </div>
                 <div
                   style={{
@@ -706,7 +706,7 @@ export default function QuizView({
                               marginBottom: 4,
                             }}
                           >
-                            {question.options[optIdx]?.split(".")[0]}: tu respuesta
+                            {question.options[optIdx]?.split(".")[0]}: your answer
                           </div>
                           <div
                             style={{ fontSize: 12, color: "var(--text-primary)", lineHeight: 1.55 }}
@@ -735,7 +735,7 @@ export default function QuizView({
                               marginBottom: 4,
                             }}
                           >
-                            {question.options[optIdx]?.split(".")[0]}: respuesta correcta
+                            {question.options[optIdx]?.split(".")[0]}: correct answer
                           </div>
                           <div
                             style={{ fontSize: 12, color: "var(--text-primary)", lineHeight: 1.55 }}
@@ -762,7 +762,7 @@ export default function QuizView({
                   cursor: "pointer",
                 }}
               >
-                {answer.showAllRationales ? "Ocultar" : "Ver"} todas las justificaciones
+                {answer.showAllRationales ? "Hide" : "Show"} all rationales
               </button>
             )}
             {answer.showAllRationales && question.optionRationales && (
@@ -822,7 +822,7 @@ export default function QuizView({
                 cursor: "pointer",
               }}
             >
-              {answer.showDiscussion ? "Ocultar" : "Ver"} discusión (
+              {answer.showDiscussion ? "Hide" : "Show"} discussion (
               {question.discussion?.length ?? 0})
             </button>
             {answer.showDiscussion && (
@@ -904,10 +904,10 @@ export default function QuizView({
               }}
             >
               {session.pendingRewards
-                ? `Reclamar recompensa (${session.pendingRewards})`
+                ? `Claim reward (${session.pendingRewards})`
                 : session.isLast
-                  ? "Ver resultados"
-                  : "Siguiente"}{" "}
+                  ? "See results"
+                  : "Next"}{" "}
               <span style={{ opacity: 0.5, fontSize: 11 }}>(Enter)</span>
             </button>
           </div>
@@ -934,10 +934,10 @@ export default function QuizView({
             }}
           >
             {session.mode === "mock"
-              ? "Guardar y continuar"
+              ? "Save and continue"
               : answer.isMulti
-                ? `Comprobar (${answer.evaluation?.selectedIndexes.length || 0}/${getCorrectOptionIndexes(question).length})`
-                : "Comprobar"}{" "}
+                ? `Check (${answer.evaluation?.selectedIndexes.length || 0}/${getCorrectOptionIndexes(question).length})`
+                : "Check"}{" "}
             {answer.canSubmit && <span style={{ opacity: 0.5, fontSize: 11 }}>(Enter)</span>}
           </button>
         )}

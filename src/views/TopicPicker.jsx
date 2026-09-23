@@ -50,7 +50,7 @@ export default function TopicPicker({
             fontFamily: "var(--font-mono)",
           }}
         >
-          Temas por dominio
+          Topics by domain
         </div>
         <button
           onClick={onToggleAll}
@@ -65,7 +65,7 @@ export default function TopicPicker({
             padding: 0,
           }}
         >
-          {allSelected ? "Deseleccionar todo" : "Seleccionar todo"}
+          {allSelected ? "Deselect all" : "Select all"}
         </button>
       </div>
 
@@ -88,12 +88,12 @@ export default function TopicPicker({
               const picked = entry.rawTopics.every((topic) => selectedTopics.has(topic));
               const tooltipText =
                 entry.total >= 10
-                  ? `${entry.correct}/${entry.total} correctas`
-                  : `${entry.total} intentos`;
+                  ? `${entry.correct}/${entry.total} correct`
+                  : `${entry.total} attempts`;
               return (
                 <button
                   key={entry.topic}
-                  title={`${entry.topic}: ${tooltipText} · ${entry.questionCount} preguntas`}
+                  title={`${entry.topic}: ${tooltipText} · ${entry.questionCount} questions`}
                   onClick={() => onToggle(entry)}
                   onDoubleClick={() => onIsolate(entry)}
                   style={{
@@ -121,7 +121,7 @@ export default function TopicPicker({
       ))}
 
       <div style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: 4 }}>
-        Doble click para aislar un tema. Tooltip para detalle.
+        Double-click to isolate a topic. Hover for details.
       </div>
     </div>
   );

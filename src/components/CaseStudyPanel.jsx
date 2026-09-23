@@ -30,7 +30,7 @@ export default function CaseStudyPanel({ caseStudyId, caseStudies }) {
           letterSpacing: 0.5,
         }}
       >
-        Caso de estudio · {caseStudy.name}
+        Case study · {caseStudy.name}
       </summary>
       <div
         style={{
@@ -55,12 +55,12 @@ export default function CaseStudyPanel({ caseStudyId, caseStudies }) {
               whiteSpace: "normal",
             }}
           >
-            <strong style={{ color: "var(--signal-warning)" }}>Caso retirado.</strong> Ya no forma
-            parte de la guía oficial vigente. Los casos actuales son Altostrat Media, Cymbal Retail,
-            EHR Healthcare y KnightMotives Automotive.
+            <strong style={{ color: "var(--signal-warning)" }}>Retired case.</strong> It is no
+            longer part of the current official guide. The current cases are Altostrat Media, Cymbal
+            Retail, EHR Healthcare and KnightMotives Automotive.
           </div>
         )}
-        {caseStudy.context ?? "Contexto no disponible: este caso ya no está en la guía oficial."}
+        {caseStudy.context ?? "Context unavailable: this case is no longer in the official guide."}
         <div
           style={{
             marginTop: 12,
@@ -71,10 +71,10 @@ export default function CaseStudyPanel({ caseStudyId, caseStudies }) {
           }}
         >
           {caseStudy.verbatim
-            ? "Texto oficial verbatim (exam guide v6.1)"
+            ? "Official verbatim text (exam guide v6.1)"
             : caseStudy.legacy
-              ? "Blueprint antiguo"
-              : "Resumen del brief oficial"}
+              ? "Old blueprint"
+              : "Summary of the official brief"}
           {caseStudy.officialUrl && (
             <>
               {" · "}
@@ -84,7 +84,7 @@ export default function CaseStudyPanel({ caseStudyId, caseStudies }) {
                 rel="noreferrer"
                 style={{ color: "var(--primary-400)" }}
               >
-                PDF oficial
+                Official PDF
               </a>
             </>
           )}

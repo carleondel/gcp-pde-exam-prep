@@ -79,23 +79,23 @@ describe("BlockView", () => {
     it("calls an untouched block not started", () => {
       render_();
       expect(screen.getAllByText("Not started")).toHaveLength(4);
-      expect(screen.getByText("Empezar bloque")).toBeTruthy();
+      expect(screen.getByText("Start block")).toBeTruthy();
     });
 
     it("marks it as suggested when it is the one to study next", () => {
       render_({ selectedBlock: BLOCKS[1], suggestedBlock: BLOCKS[1] });
-      expect(screen.getByText("Bloque sugerido")).toBeTruthy();
+      expect(screen.getByText("Suggested block")).toBeTruthy();
     });
 
     it("says selected when it is not the suggestion", () => {
       render_({ selectedBlock: BLOCKS[1], suggestedBlock: BLOCKS[0] });
-      expect(screen.getByText("Bloque seleccionado")).toBeTruthy();
+      expect(screen.getByText("Selected block")).toBeTruthy();
     });
 
     it("counts the rounds played and offers the next one", () => {
       render_({ selectedBlockProgress: record([round(60, 1), round(72, 2)]) });
       expect(screen.getByText("Reviewed 2x")).toBeTruthy();
-      expect(screen.getByText("Repetir vuelta 3")).toBeTruthy();
+      expect(screen.getByText("Repeat round 3")).toBeTruthy();
     });
 
     it("calls a block mastered once it is consistently high", () => {
@@ -132,8 +132,8 @@ describe("BlockView", () => {
 
       // Badge on the detail panel and label on its tile.
       expect(screen.getAllByText("In progress")).toHaveLength(2);
-      expect(screen.queryByText("Empezar bloque")).toBeNull();
-      fireEvent.click(screen.getByText("Continuar"));
+      expect(screen.queryByText("Start block")).toBeNull();
+      fireEvent.click(screen.getByText("Continue"));
       expect(onContinueSaved).toHaveBeenCalledTimes(1);
     });
 
@@ -142,42 +142,42 @@ describe("BlockView", () => {
     it("keeps the header shortcut when the attempt belongs to another track", () => {
       render_({ activeBlockIndex: null, savedBlockIndex: 2 });
 
-      expect(screen.getByText("Continuar B3")).toBeTruthy();
+      expect(screen.getByText("Continue B3")).toBeTruthy();
       expect(screen.queryByText("In progress")).toBeNull();
-      expect(screen.getByText("Empezar bloque")).toBeTruthy();
+      expect(screen.getByText("Start block")).toBeTruthy();
     });
 
     it("offers no shortcut when nothing was left unfinished", () => {
       render_();
-      expect(screen.queryByText(/^Continuar B/)).toBeNull();
+      expect(screen.queryByText(/^Continue B/)).toBeNull();
     });
   });
 
   describe("moving around the track", () => {
     it("hides the next-block button on the last block", () => {
       render_({ selectedBlock: BLOCKS[2] });
-      expect(screen.queryByText("Siguiente bloque")).toBeNull();
+      expect(screen.queryByText("Next block")).toBeNull();
     });
 
     it("steps to the next block without clearing the message", () => {
       const onSelectIndex = vi.fn();
-      render_({ onSelectIndex, message: "Track de 25 preguntas cargado." });
-      fireEvent.click(screen.getByText("Siguiente bloque"));
+      render_({ onSelectIndex, message: "25-question track loaded." });
+      fireEvent.click(screen.getByText("Next block"));
       expect(onSelectIndex).toHaveBeenCalledWith(1);
-      expect(screen.getByText("Track de 25 preguntas cargado.")).toBeTruthy();
+      expect(screen.getByText("25-question track loaded.")).toBeTruthy();
     });
 
     it("picks a block from the grid", () => {
       const onPickBlock = vi.fn();
       render_({ onPickBlock });
-      fireEvent.click(screen.getByText(/^Bloque 2/));
+      fireEvent.click(screen.getByText(/^Block 2/));
       expect(onPickBlock).toHaveBeenCalledWith(BLOCKS[1]);
     });
 
     it("asks for a different track size", () => {
       const onSelectSize = vi.fn();
       render_({ onSelectSize });
-      fireEvent.click(screen.getByText("15 preguntas"));
+      fireEvent.click(screen.getByText("15 questions"));
       expect(onSelectSize).toHaveBeenCalledWith(15);
     });
   });

@@ -36,7 +36,7 @@ export function ScratchCard({ onComplete, onClose }) {
     ctx.font = "bold 16px 'JetBrains Mono',monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("RASCA AQU\u00CD \u2193", c.width / 2, c.height / 2 - 10);
+    ctx.fillText("SCRATCH HERE \u2193", c.width / 2, c.height / 2 - 10);
     ctx.fillText("\u2726 \u2726 \u2726 \u2726 \u2726", c.width / 2, c.height / 2 + 14);
   }, []);
 
@@ -101,10 +101,10 @@ export function ScratchCard({ onComplete, onClose }) {
             fontFamily: "var(--font-heading)",
           }}
         >
-          {"\uD83C\uDF9F\uFE0F"} RASCA Y GANA
+          {"\uD83C\uDF9F\uFE0F"} SCRATCH & WIN
         </h2>
         <p style={{ margin: "0 0 16px", color: "var(--text-secondary)", fontSize: 13 }}>
-          Rasca la superficie para revelar tu premio
+          Scratch the surface to reveal your prize
         </p>
         <div
           style={{
@@ -198,7 +198,7 @@ export function ScratchCard({ onComplete, onClose }) {
               fontFamily: "var(--font-mono)",
             }}
           >
-            SALTAR
+            SKIP
           </button>
         )}
 
@@ -213,12 +213,12 @@ export function ScratchCard({ onComplete, onClose }) {
               }}
             >
               {prize.xp
-                ? `+${prize.xp} XP ganados!`
+                ? `+${prize.xp} XP earned!`
                 : prize.mult
-                  ? `Multiplicador x${prize.mult} activado!`
+                  ? `x${prize.mult} multiplier activated!`
                   : prize.freeze
-                    ? "Escudo de racha obtenido!"
-                    : "Skip de pregunta obtenido!"}
+                    ? "Streak shield obtained!"
+                    : "Question skip obtained!"}
             </div>
             <button
               onClick={onClose}
@@ -233,7 +233,7 @@ export function ScratchCard({ onComplete, onClose }) {
                 cursor: "pointer",
               }}
             >
-              Continuar
+              Continue
             </button>
           </div>
         )}

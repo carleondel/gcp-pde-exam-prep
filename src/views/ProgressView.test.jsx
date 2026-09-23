@@ -19,7 +19,7 @@ describe("ProgressView", () => {
   describe("the inventory", () => {
     it("says so when there is nothing to carry", () => {
       render_();
-      expect(screen.getByText("Sin items acumulados.")).toBeTruthy();
+      expect(screen.getByText("No items collected yet.")).toBeTruthy();
     });
 
     it("lists only the items actually held", () => {
@@ -28,14 +28,14 @@ describe("ProgressView", () => {
       expect(screen.getByText(/💡 2/)).toBeTruthy();
       expect(screen.getByText(/🛡️ 1/)).toBeTruthy();
       expect(screen.queryByText(/✂️/)).toBeNull();
-      expect(screen.queryByText("Sin items acumulados.")).toBeNull();
+      expect(screen.queryByText("No items collected yet.")).toBeNull();
     });
 
     // mult defaults to 1 and multDur to 0, and neither is a power-up you
     // spend, so a fresh inventory must still read as empty.
     it("does not count the XP multiplier as an item", () => {
       render_({ inventory: inventory({ mult: 3, multDur: 2 }) });
-      expect(screen.getByText("Sin items acumulados.")).toBeTruthy();
+      expect(screen.getByText("No items collected yet.")).toBeTruthy();
     });
   });
 
@@ -57,14 +57,14 @@ describe("ProgressView", () => {
     it("keeps the secret one secret while it is locked", () => {
       render_();
       expect(SECRET).toBeTruthy();
-      expect(screen.getByLabelText(/^Logro oculto:/)).toBeTruthy();
+      expect(screen.getByLabelText(/^Hidden achievement:/)).toBeTruthy();
       expect(screen.queryByLabelText(new RegExp(`^${SECRET.name}:`))).toBeNull();
     });
 
     it("names the secret one once it is unlocked", () => {
       render_({ unlockedAchievements: new Set([SECRET.id]) });
       expect(screen.getByLabelText(new RegExp(`^${SECRET.name}:`))).toBeTruthy();
-      expect(screen.queryByLabelText(/^Logro oculto:/)).toBeNull();
+      expect(screen.queryByLabelText(/^Hidden achievement:/)).toBeNull();
     });
 
     it("counts the platinum's progress against the regular achievements", () => {
@@ -82,7 +82,7 @@ describe("ProgressView", () => {
       const [first] = REGULAR_ACHIEVEMENT_IDS;
       const earned = ACHIEVEMENTS.find((achievement) => achievement.id === first);
       render_({ unlockedAchievements: new Set([first]) });
-      expect(tooltipOf(earned.name)).toContain("Conseguido");
+      expect(tooltipOf(earned.name)).toContain("Unlocked");
     });
   });
 });

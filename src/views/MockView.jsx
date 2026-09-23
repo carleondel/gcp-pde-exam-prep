@@ -35,7 +35,7 @@ function MockSparkline({ history }) {
         .map((entry, index) => (
           <div
             key={`${entry.date}-${index}`}
-            title={`${entry.percent}% — ${new Date(entry.date).toLocaleDateString("es-ES")}`}
+            title={`${entry.percent}% — ${new Date(entry.date).toLocaleDateString("en-US")}`}
             style={{
               width: 16,
               height: Math.max(4, (entry.percent / 100) * 36),
@@ -94,7 +94,7 @@ export default function MockView({
             fontFamily: "var(--font-mono)",
           }}
         >
-          Simulacro
+          Mock exam
         </div>
         <div
           style={{
@@ -104,7 +104,7 @@ export default function MockView({
             fontFamily: "var(--font-heading)",
           }}
         >
-          {questionCount} preguntas · {Math.round(durationSec / 60)} min
+          {questionCount} questions · {Math.round(durationSec / 60)} min
         </div>
         <p
           style={{
@@ -114,7 +114,7 @@ export default function MockView({
             lineHeight: 1.6,
           }}
         >
-          Sin ayudas. Sin recompensas. {passPercent}% para aprobar.
+          No aids. No rewards. {passPercent}% to pass.
         </p>
         <div
           style={{
@@ -135,7 +135,7 @@ export default function MockView({
               fontFamily: "var(--font-mono)",
             }}
           >
-            Distribución oficial {certShort}
+            Official {certShort} distribution
           </div>
           <div
             style={{
@@ -190,7 +190,7 @@ export default function MockView({
                 color: preferRecent ? "var(--accent-300)" : "var(--text-primary)",
               }}
             >
-              Priorizar preguntas más recientes
+              Prioritize the most recent questions
             </div>
             <div
               style={{
@@ -200,7 +200,7 @@ export default function MockView({
                 marginTop: 2,
               }}
             >
-              Mismas proporciones, pero seleccionando los índices más altos en cada dominio.
+              Same proportions, but picking the highest indexes in each domain.
             </div>
           </div>
         </label>
@@ -219,7 +219,7 @@ export default function MockView({
             fontFamily: "var(--font-mono)",
           }}
         >
-          Iniciar simulacro
+          Start mock exam
         </button>
       </div>
 
@@ -238,7 +238,7 @@ export default function MockView({
             fontFamily: "var(--font-mono)",
           }}
         >
-          Continuar simulacro activo
+          Continue active mock exam
         </button>
       )}
 
@@ -261,7 +261,7 @@ export default function MockView({
               fontFamily: "var(--font-mono)",
             }}
           >
-            Historial
+            History
           </div>
           {history.slice(0, 5).map((entry, index) => (
             <div
@@ -284,7 +284,7 @@ export default function MockView({
                   fontFamily: "var(--font-mono)",
                 }}
               >
-                {new Date(entry.date).toLocaleDateString("es-ES")}
+                {new Date(entry.date).toLocaleDateString("en-US")}
               </span>
               <span
                 style={{
@@ -294,7 +294,7 @@ export default function MockView({
                   fontFamily: "var(--font-mono)",
                 }}
               >
-                {entry.percent}% {entry.passed ? "Apto" : "No apto"}
+                {entry.percent}% {entry.passed ? "Pass" : "Fail"}
               </span>
             </div>
           ))}

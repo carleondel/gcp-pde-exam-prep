@@ -37,21 +37,21 @@ export default function ResultView({
   const headline =
     result.mode === "mock"
       ? summary.passed
-        ? "Simulacro superado"
-        : "Simulacro completado"
+        ? "Mock exam passed"
+        : "Mock exam completed"
       : result.mode === "daily"
         ? summary.percent >= 80
-          ? "Reto diario superado"
-          : "Reto diario completado"
+          ? "Daily challenge passed"
+          : "Daily challenge completed"
         : isBlockResult
           ? summary.percent >= BLOCK_MASTERY_PERCENT
-            ? "Bloque consolidado"
-            : "Bloque completado"
+            ? "Block mastered"
+            : "Block completed"
           : summary.percent >= 80
-            ? "Sesión excelente"
+            ? "Excellent session"
             : summary.percent >= 60
-              ? "Buen entrenamiento"
-              : "Seguimos iterando";
+              ? "Good workout"
+              : "Keep iterating";
 
   return (
     <div
@@ -97,12 +97,12 @@ export default function ResultView({
             }}
           >
             {result.mode === "mock"
-              ? "Simulacro"
+              ? "Mock exam"
               : result.mode === "daily"
-                ? "Reto diario"
+                ? "Daily challenge"
                 : isBlockResult
-                  ? "Bloques"
-                  : "Practicar"}
+                  ? "Blocks"
+                  : "Practice"}
           </div>
           <h2
             style={{
@@ -116,10 +116,10 @@ export default function ResultView({
           </h2>
           <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15 }}>
             {result.mode === "mock"
-              ? `${summary.score}/${summary.questionCount} correctas • ${summary.percent}% • ${summary.passed ? "Apto" : "No apto"}`
+              ? `${summary.score}/${summary.questionCount} correct • ${summary.percent}% • ${summary.passed ? "Pass" : "Fail"}`
               : isBlockResult
-                ? `${summary.score}/${summary.answered} correctas • ${summary.percent}% • vuelta ${blockResult?.roundSummary?.roundNumber ?? "?"} • +${summary.xpGained} XP`
-                : `${summary.score}/${summary.answered} correctas • ${summary.percent}% • +${summary.xpGained} XP${summary.dailyBonus ? ` (incluye +${summary.dailyBonus} bonus reto)` : ""}`}
+                ? `${summary.score}/${summary.answered} correct • ${summary.percent}% • round ${blockResult?.roundSummary?.roundNumber ?? "?"} • +${summary.xpGained} XP`
+                : `${summary.score}/${summary.answered} correct • ${summary.percent}% • +${summary.xpGained} XP${summary.dailyBonus ? ` (includes +${summary.dailyBonus} challenge bonus)` : ""}`}
           </p>
           {isBlockResult && blockResult && (
             <p
@@ -130,7 +130,7 @@ export default function ResultView({
                 fontFamily: "var(--font-mono)",
               }}
             >
-              Bloque {blockResult.blockIndex + 1} · {blockResult.label}
+              Block {blockResult.blockIndex + 1} · {blockResult.label}
             </p>
           )}
         </div>
@@ -173,7 +173,7 @@ export default function ResultView({
                 fontFamily: "var(--font-mono)",
               }}
             >
-              Puntuación
+              Score
             </div>
           </div>
           <div
@@ -205,11 +205,7 @@ export default function ResultView({
                 fontFamily: "var(--font-mono)",
               }}
             >
-              {result.mode === "mock"
-                ? "Tiempo usado"
-                : isBlockResult
-                  ? "Tiempo bloque"
-                  : "XP ganada"}
+              {result.mode === "mock" ? "Time used" : isBlockResult ? "Block time" : "XP earned"}
             </div>
           </div>
           <div
@@ -231,7 +227,7 @@ export default function ResultView({
               {result.mode === "mock"
                 ? summary.questionCount
                 : isBlockResult
-                  ? `V${blockResult?.roundSummary?.roundNumber ?? "-"}`
+                  ? `R${blockResult?.roundSummary?.roundNumber ?? "-"}`
                   : `x${summary.maxStreak}`}
             </div>
             <div
@@ -241,7 +237,7 @@ export default function ResultView({
                 fontFamily: "var(--font-mono)",
               }}
             >
-              {result.mode === "mock" ? "Preguntas" : isBlockResult ? "Vuelta" : "Racha máxima"}
+              {result.mode === "mock" ? "Questions" : isBlockResult ? "Round" : "Max streak"}
             </div>
           </div>
           <div
@@ -267,8 +263,8 @@ export default function ResultView({
             >
               {result.mode === "mock"
                 ? summary.passed
-                  ? "Apto"
-                  : "No apto"
+                  ? "Pass"
+                  : "Fail"
                 : isBlockResult
                   ? `${blockResult?.roundSummary?.correctCount ?? 0}/${blockResult?.roundSummary?.questionCount ?? history.length}`
                   : history.length}
@@ -280,7 +276,7 @@ export default function ResultView({
                 fontFamily: "var(--font-mono)",
               }}
             >
-              {result.mode === "mock" ? "Estado" : isBlockResult ? "Aciertos" : "Preguntas vistas"}
+              {result.mode === "mock" ? "Status" : isBlockResult ? "Correct" : "Questions seen"}
             </div>
           </div>
         </div>
@@ -309,7 +305,7 @@ export default function ResultView({
                 fontFamily: "var(--font-heading)",
               }}
             >
-              Rendimiento por tema
+              Performance by topic
             </div>
             {Object.entries(topicStats)
               .sort((a, b) => a[1].correct / a[1].total - b[1].correct / b[1].total)
@@ -376,7 +372,7 @@ export default function ResultView({
                 fontFamily: "var(--font-heading)",
               }}
             >
-              Revisión
+              Review
             </div>
             {history.map((entry, index) => {
               const correctLabels = getCorrectOptionIndexes(entry.question)
@@ -424,7 +420,7 @@ export default function ResultView({
                       {entry.question.topic}
                       {!entry.correct && (
                         <span style={{ color: "var(--signal-correct)", marginLeft: 8 }}>
-                          Resp: {correctLabels}
+                          Ans: {correctLabels}
                         </span>
                       )}
                     </div>
@@ -451,7 +447,7 @@ export default function ResultView({
               fontFamily: "var(--font-mono)",
             }}
           >
-            Volver al menú
+            Back to menu
           </button>
           {result.mode === "mock" && history.some((entry) => !entry.correct) && (
             <button
@@ -469,7 +465,7 @@ export default function ResultView({
                 fontFamily: "var(--font-mono)",
               }}
             >
-              Repasar errores ({history.filter((entry) => !entry.correct).length})
+              Review mistakes ({history.filter((entry) => !entry.correct).length})
             </button>
           )}
           <button
@@ -489,10 +485,10 @@ export default function ResultView({
             }}
           >
             {result.mode === "mock"
-              ? "Nuevo simulacro"
+              ? "New mock exam"
               : isBlockResult
-                ? `Repetir vuelta ${blockResult?.roundSummary?.roundNumber + 1 || ""}`
-                : "Seguir practicando"}
+                ? `Repeat round ${blockResult?.roundSummary?.roundNumber + 1 || ""}`
+                : "Keep practicing"}
           </button>
           {onNextBlock && (
             <button
@@ -510,7 +506,7 @@ export default function ResultView({
                 fontFamily: "var(--font-mono)",
               }}
             >
-              Siguiente bloque
+              Next block
             </button>
           )}
         </div>

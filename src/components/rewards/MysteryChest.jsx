@@ -69,10 +69,10 @@ export function MysteryChest({ onComplete, onClose }) {
                 fontFamily: "var(--font-heading)",
               }}
             >
-              COFRE MISTERIOSO
+              MYSTERY CHEST
             </h2>
             <p style={{ color: "var(--text-secondary)", fontSize: 14, margin: "0 0 20px" }}>
-              Toca el cofre para abrirlo
+              Tap the chest to open it
             </p>
             <button
               onClick={() => setOpened(true)}
@@ -88,7 +88,7 @@ export function MysteryChest({ onComplete, onClose }) {
                 fontFamily: "var(--font-mono)",
               }}
             >
-              ABRIR COFRE
+              OPEN CHEST
             </button>
             <button
               onClick={onClose}
@@ -106,7 +106,7 @@ export function MysteryChest({ onComplete, onClose }) {
                 fontFamily: "var(--font-mono)",
               }}
             >
-              SALTAR
+              SKIP
             </button>
           </div>
         ) : (
@@ -172,7 +172,7 @@ export function MysteryChest({ onComplete, onClose }) {
                 cursor: "pointer",
               }}
             >
-              Recoger
+              Collect
             </button>
           </div>
         )}

@@ -1898,7 +1898,7 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "DanielB96",
-        "text": "Selected Answer: C. Creo que lo crucial son las inconsistencias y los problemas de análisis (parsing). Por lo tanto, necesitamos un esquema común y réplicas de lectura. (3 votos)"
+        "text": "Selected Answer: C. I think the crucial part is the inconsistencies and the parsing problems. Therefore, we need a common schema and read replicas. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -1935,11 +1935,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "DanielB96",
-        "text": "Selected Answer: D. Nivel de política significa D. (2 votos)"
+        "text": "Selected Answer: D. Policy level means D. (2 votes)"
       },
       {
         "user": "Greenstar",
-        "text": "Selected Answer: D. Este es un problema de Control de Ubicación de Recursos orientado a optimizar costos. La forma más confiable de forzar esto es la D. (1 voto)"
+        "text": "Selected Answer: D. This is a Resource Location Restriction problem aimed at optimizing costs. The most reliable way to enforce this is D. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -1976,11 +1976,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "cachopo",
-        "text": "Selected Answer: A. Configurar los requests ligeramente arriba del uso normal, manteniendo los límites altos crea un perfil de recursos 'burstable'. VPA Auto (C) reinicia los pods, lo cual en Pods Stateful causa interrupciones y tiempos de inactividad. (2 votos)"
+        "text": "Selected Answer: A. Setting requests slightly above normal usage while keeping limits high creates a 'burstable' resource profile. VPA Auto (C) restarts the pods, which on Stateful Pods causes disruptions and downtime. (2 votes)"
       },
       {
         "user": "toasty",
-        "text": "Abogó por C afirmando que VPA optimiza recursos y trabaja con cargas stateful. (3 votos)"
+        "text": "Argued for C, stating that VPA optimizes resources and works with stateful workloads. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -2016,11 +2016,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "cachopo",
-        "text": "Selected Answer: C. Bigtable almacena lexicográficamente. Para optimizar, la row key debe coincidir con el patrón de consulta de izquierda a derecha... Empezar con timestamp (opción B) causa write hotspotting. (2 votos)"
+        "text": "Selected Answer: C. Bigtable stores data lexicographically. To optimize, the row key must match the query pattern from left to right... Starting with the timestamp (option B) causes write hotspotting. (2 votes)"
       },
       {
         "user": "DanielB96",
-        "text": "Selected Answer: C. Debemos mantener los registros de los vehículos juntos, por lo que el ID del vehículo debe ir primero. (2 votos)"
+        "text": "Selected Answer: C. We must keep each vehicle's records together, so the vehicle ID has to go first. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -2057,7 +2057,7 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Gabrycloud",
-        "text": "Selected Answer: D. Esta es una pregunta directa. La respuesta es D. (2 votos)"
+        "text": "Selected Answer: D. This is a straightforward question. The answer is D. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -2094,15 +2094,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Pime13",
-        "text": "Selected Answer: C. En Apigee, una política de Cuota configura el número de mensajes permitidos en un período. A diferencia del 'rate limiting' (para picos de tráfico), las cuotas son restricciones a nivel de negocio usadas para gestión de costos. (3 votos)"
+        "text": "Selected Answer: C. In Apigee, a Quota policy configures the number of messages allowed in a period. Unlike 'rate limiting' (for traffic spikes), quotas are business-level restrictions used for cost management. (3 votes)"
       },
       {
         "user": "DanielB96",
-        "text": "Selected Answer: C. A identifica. B es Auth. C es correcta. D es seguridad de payload. (2 votos)"
+        "text": "Selected Answer: C. A identifies. B is Auth. C is correct. D is payload security. (2 votes)"
       },
       {
         "user": "glb2",
-        "text": "Definitivamente la C. (1 voto)"
+        "text": "Definitivamente la C. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2139,11 +2139,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "DanielB96",
-        "text": "Selected Answer: C. A no es protección DDoS. B es solo capa 7. C es la correcta. D es monitoreo, no mitigación activa. (2 votos)"
+        "text": "Selected Answer: C. A is not DDoS protection. B is layer 7 only. C is the correct one. D is monitoring, not active mitigation. (2 votes)"
       },
       {
         "user": "glb2",
-        "text": "Solo C. Google Cloud Armor es el mejor escudo contra ataques DDOS. (2 votos)"
+        "text": "Only C. Google Cloud Armor is the best shield against DDoS attacks. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -2180,11 +2180,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "DanielB96",
-        "text": "Selected Answer: B. A no es para análisis profundo. B es la correcta. C es buena para latencia pero no uso de CPU/Memoria. D depura la app, no analiza rendimiento. (2 votos)"
+        "text": "Selected Answer: B. A is not for deep analysis. B is the correct one. C is good for latency but not CPU/memory usage. D debugs the app, it doesn't analyze performance. (2 votes)"
       },
       {
         "user": "glb2",
-        "text": "La respuesta es B. Cloud Profiler es lo mejor para esto. (1 voto)"
+        "text": "The answer is B. Cloud Profiler is the best for this. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2221,15 +2221,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "DanielB96",
-        "text": "Selected Answer: A. Just A. (3 votos)"
+        "text": "Selected Answer: A. Just A. (3 votes)"
       },
       {
         "user": "Gall",
-        "text": "Selected Answer: A. Para la opción D: prueba interacciones entre servicios, no aislados. (3 votos)"
+        "text": "Selected Answer: A. For option D: it tests interactions between services, not in isolation. (3 votes)"
       },
       {
         "user": "Gabrycloud",
-        "text": "Seleccionó D."
+        "text": "Selected D."
       }
     ],
     "source": "gemini-validated",
@@ -2266,11 +2266,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "DanielB96",
-        "text": "Selected Answer: B. A es más caro que spot. B es la correcta. C es más caro. D es mejor para tareas de corta duración. (2 votos)"
+        "text": "Selected Answer: B. A is more expensive than spot. B is the correct one. C is more expensive. D is better for short-lived tasks. (2 votes)"
       },
       {
         "user": "Gabrycloud",
-        "text": "Si tuviera que adivinar, elegiría B basándome en la redacción de la pregunta. (3 votos)"
+        "text": "If I had to guess, I'd pick B based on the wording of the question. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -2307,15 +2307,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "glb2",
-        "text": "Answer is D: CMEK with Cloud KMS + IAM. You control keys in Google Cloud Key Management Service. Full audit logs (who used keys, when). Easy integration with Cloud Storage. Google-recommended approach for sensitive data. Combine with IAM for access control. Meets all requirements cleanly (2 votos)"
+        "text": "Answer is D: CMEK with Cloud KMS + IAM. You control keys in Google Cloud Key Management Service. Full audit logs (who used keys, when). Easy integration with Cloud Storage. Google-recommended approach for sensitive data. Combine with IAM for access control. Meets all requirements cleanly (2 votes)"
       },
       {
         "user": "DanielB96",
-        "text": "Selected Answer: D. A. Missing customer control over keys. B. Similar. C. Google recommends to use native solutions, rather than Third Party ones. D. Correct one. (2 votos)"
+        "text": "Selected Answer: D. A. Missing customer control over keys. B. Similar. C. Google recommends to use native solutions, rather than Third Party ones. D. Correct one. (2 votes)"
       },
       {
         "user": "Gabrycloud",
-        "text": "Selected Answer: C. I checked the official docs on this topic, and C is the correct implementation. (2 votos)"
+        "text": "Selected Answer: C. I checked the official docs on this topic, and C is the correct implementation. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -2351,11 +2351,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jeussin",
-        "text": "answer C select. keyword rollback - versioning vs latest tag (2 votos)"
+        "text": "answer C select. keyword rollback - versioning vs latest tag (2 votes)"
       },
       {
         "user": "fakicam",
-        "text": "Selected Answer: C. ci/cd pipelines should never have latest tags for productions. (2 votos)"
+        "text": "Selected Answer: C. ci/cd pipelines should never have latest tags for productions. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -2391,11 +2391,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "02fc23a",
-        "text": "Selected Answer: C. C is the right answer proving the point with the actual data in discussion with FinOps (1 voto)"
+        "text": "Selected Answer: C. C is the right answer proving the point with the actual data in discussion with FinOps (1 vote)"
       },
       {
         "user": "jeussin",
-        "text": "Selected Answer: C. answer C select. deal with architect and finance - justify word not comport (1 voto)"
+        "text": "Selected Answer: C. answer C select. deal with architect and finance - justify word not comport (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2431,15 +2431,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "02fc23a",
-        "text": "Selected Answer: C. corresponds to auditing all the aspects in the question (2 votos)"
+        "text": "Selected Answer: C. corresponds to auditing all the aspects in the question (2 votes)"
       },
       {
         "user": "0d8df8b",
-        "text": "Selected Answer: C. The requirement is: Know who deployed a container. Know who changed cluster configuration. Know who accessed pods/secrets using kubectl. Need a complete audit trail. This information comes from: GKE Audit Logging (Kubernetes API Server logs), Cloud Audit Logs (1 voto)"
+        "text": "Selected Answer: C. The requirement is: Know who deployed a container. Know who changed cluster configuration. Know who accessed pods/secrets using kubectl. Need a complete audit trail. This information comes from: GKE Audit Logging (Kubernetes API Server logs), Cloud Audit Logs (1 vote)"
       },
       {
         "user": "Pime13",
-        "text": "Selected Answer: C. Administrative Visibility: Kubernetes API server audit logs record every call made to the API server... Non-Repudiation: Cloud Audit Logs provide a tamper-evident, permanent record... (1 voto)"
+        "text": "Selected Answer: C. Administrative Visibility: Kubernetes API server audit logs record every call made to the API server... Non-Repudiation: Cloud Audit Logs provide a tamper-evident, permanent record... (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2475,15 +2475,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Pime13",
-        "text": "Selected Answer: A. Centralized Enforcement: Hierarchical firewall policies are created at the Organization or Folder level... Precedence (Evaluation Order): Hierarchical firewall rules are evaluated before VPC-level firewall rules. If a folder-level policy denies traffic, a project-level rule cannot 'override'... (1 voto)"
+        "text": "Selected Answer: A. Centralized Enforcement: Hierarchical firewall policies are created at the Organization or Folder level... Precedence (Evaluation Order): Hierarchical firewall rules are evaluated before VPC-level firewall rules. If a folder-level policy denies traffic, a project-level rule cannot 'override'... (1 vote)"
       },
       {
         "user": "Pime13",
-        "text": "Tag-Based Selectivity: These policies support IAM-governed Tags (Secure Tags), allowing you to write a broad 'Deny All' rule while selectively allowing HTTPS (port 443) only for VMs that possess a specific, centrally managed tag. (1 voto)"
+        "text": "Tag-Based Selectivity: These policies support IAM-governed Tags (Secure Tags), allowing you to write a broad 'Deny All' rule while selectively allowing HTTPS (port 443) only for VMs that possess a specific, centrally managed tag. (1 vote)"
       },
       {
         "user": "02fc23a",
-        "text": "Selected Answer: A. blocks internet ingress traffic to the production folders (1 voto)"
+        "text": "Selected Answer: A. blocks internet ingress traffic to the production folders (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2519,15 +2519,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "41168b9",
-        "text": "Selected Answer: C. Serverless NEG: An External Application Load Balancer cannot talk to Cloud Run directly; it requires a Serverless Network Endpoint Group (NEG) as its backend... WAF Enforcement: Since the Load Balancer is now the only gateway, the Cloud Armor policy attached to it becomes impossible to bypass. (1 voto)"
+        "text": "Selected Answer: C. Serverless NEG: An External Application Load Balancer cannot talk to Cloud Run directly; it requires a Serverless Network Endpoint Group (NEG) as its backend... WAF Enforcement: Since the Load Balancer is now the only gateway, the Cloud Armor policy attached to it becomes impossible to bypass. (1 vote)"
       },
       {
         "user": "Pime13",
-        "text": "Selected Answer: C. Cloud Run services, by default, have a public *.run.app URL... Ingress Settings: Setting ingress to 'Internal and Cloud Load Balancing' ensures that any request hitting the *.run.app URL directly from the public internet is blocked. (1 voto)"
+        "text": "Selected Answer: C. Cloud Run services, by default, have a public *.run.app URL... Ingress Settings: Setting ingress to 'Internal and Cloud Load Balancing' ensures that any request hitting the *.run.app URL directly from the public internet is blocked. (1 vote)"
       },
       {
         "user": "41168b9",
-        "text": "By default, Cloud Run services are assigned a public *.run.app URL... Setting the Cloud Run ingress to 'Internal and Cloud Load Balancing' acts as a built-in shield. (1 voto)"
+        "text": "By default, Cloud Run services are assigned a public *.run.app URL... Setting the Cloud Run ingress to 'Internal and Cloud Load Balancing' acts as a built-in shield. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2563,15 +2563,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "0d8df8b",
-        "text": "Selected Answer: A. Use VPC Peering from each environment to the shared services VPC. This is a hub-and-spoke model. (1 voto)"
+        "text": "Selected Answer: A. Use VPC Peering from each environment to the shared services VPC. This is a hub-and-spoke model. (1 vote)"
       },
       {
         "user": "02fc23a",
-        "text": "Selected Answer: A. A is the correct one. (1 voto)"
+        "text": "Selected Answer: A. A is the correct one. (1 vote)"
       },
       {
         "user": "fakicam",
-        "text": "Selected Answer: A. it should be A (1 voto)"
+        "text": "Selected Answer: A. it should be A (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2607,15 +2607,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Pime13",
-        "text": "Selected Answer: B. An API Facade acts as an abstraction layer between the client and the backend. By using Apigee, you provide a stable, consistent interface (the 'facade') to dependent applications. Even if you rewrite the backend... Apigee's mapping and transformation policies ensure the client-facing API remains unchanged. (1 voto)"
+        "text": "Selected Answer: B. An API Facade acts as an abstraction layer between the client and the backend. By using Apigee, you provide a stable, consistent interface (the 'facade') to dependent applications. Even if you rewrite the backend... Apigee's mapping and transformation policies ensure the client-facing API remains unchanged. (1 vote)"
       },
       {
         "user": "41168b9",
-        "text": "Selected Answer: B. To achieve a 'rapid data center exit' while preparing for 'long-term modernization,' you must decouple the consumers of your API from the actual backend implementation. This is known as the API Facade Pattern. (1 voto)"
+        "text": "Selected Answer: B. To achieve a 'rapid data center exit' while preparing for 'long-term modernization,' you must decouple the consumers of your API from the actual backend implementation. This is known as the API Facade Pattern. (1 vote)"
       },
       {
         "user": "02fc23a",
-        "text": "Selected Answer: B. Apigee both can serve as an API facade for an existing monolith and future migrated microservices. (1 voto)"
+        "text": "Selected Answer: B. Apigee both can serve as an API facade for an existing monolith and future migrated microservices. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2651,15 +2651,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Pime13",
-        "text": "Selected Answer: B. Gemma is a family of lightweight, state-of-the-art open models... Because Gemma is an open model, you can deploy it to specific Vertex AI infrastructure (Endpoints) in a specific region, such as me-central1 (Doha, Qatar). This ensures that both the data in transit and the compute processing occur strictly within that region's infrastructure (1 voto)"
+        "text": "Selected Answer: B. Gemma is a family of lightweight, state-of-the-art open models... Because Gemma is an open model, you can deploy it to specific Vertex AI infrastructure (Endpoints) in a specific region, such as me-central1 (Doha, Qatar). This ensures that both the data in transit and the compute processing occur strictly within that region's infrastructure (1 vote)"
       },
       {
         "user": "02fc23a",
-        "text": "Selected Answer: B. B: we need a pre-trained model + residency constraint answered (1 voto)"
+        "text": "Selected Answer: B. B: we need a pre-trained model + residency constraint answered (1 vote)"
       },
       {
         "user": "jeussin",
-        "text": "answer B select. pre-trained <-> train a custom model (1 voto)"
+        "text": "answer B select. pre-trained <-> train a custom model (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2695,27 +2695,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jeussin",
-        "text": "Selected Answer: C. Coldline storage is ideal for data you plan to read or modify at most once a quarter. (3 votos) [nota: la justificación describe Coldline, que es la opción D]"
+        "text": "Selected Answer: C. Coldline storage is ideal for data you plan to read or modify at most once a quarter. (3 votes) [note: the rationale describes Coldline, which is option D]"
       },
       {
         "user": "respawn",
-        "text": "Selected Answer: D. Correct answer is D... This rules out C archive class because archive retrieval can take minutes to hours. A is wrong because standard class meets latency, but far too expensive... B is wrong because long-term storage pricing only kicks in after 90 days, not 30 days. (1 voto)"
+        "text": "Selected Answer: D. Correct answer is D... This rules out C archive class because archive retrieval can take minutes to hours. A is wrong because standard class meets latency, but far too expensive... B is wrong because long-term storage pricing only kicks in after 90 days, not 30 days. (1 vote)"
       },
       {
         "user": "41168b9",
-        "text": "Selected Answer: D. Why not C: Archive (Option C) has a 365-day minimum storage duration and much higher retrieval fees. While Archive is cheaper at rest, its retrieval fees are significantly higher than Coldline. For quarterly reports... high retrieval cost of Archive would likely outweigh the storage savings. (2 votos)"
+        "text": "Selected Answer: D. Why not C: Archive (Option C) has a 365-day minimum storage duration and much higher retrieval fees. While Archive is cheaper at rest, its retrieval fees are significantly higher than Coldline. For quarterly reports... high retrieval cost of Archive would likely outweigh the storage savings. (2 votes)"
       },
       {
         "user": "CyberPeter",
-        "text": "Selected Answer: D. Archive retrieval does not meet the quick retrieval requirement, so D is the right answer (2 votos)"
+        "text": "Selected Answer: D. Archive retrieval does not meet the quick retrieval requirement, so D is the right answer (2 votes)"
       },
       {
         "user": "connorgee9",
-        "text": "Selected Answer: D. D is correct. (2 votos)"
+        "text": "Selected Answer: D. D is correct. (2 votes)"
       },
       {
         "user": "cachopo",
-        "text": "Selected Answer: D. Configuring an Object Lifecycle Management policy to transition data to Coldline after 30 days perfectly aligns with the access patterns and cost-optimization goals. Standard storage provides the millisecond latency required... Coldline storage is explicitly designed for data accessed at most once a quarter, making it the ideal, most cost-effective tier... (1 voto)"
+        "text": "Selected Answer: D. Configuring an Object Lifecycle Management policy to transition data to Coldline after 30 days perfectly aligns with the access patterns and cost-optimization goals. Standard storage provides the millisecond latency required... Coldline storage is explicitly designed for data accessed at most once a quarter, making it the ideal, most cost-effective tier... (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2751,15 +2751,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "41168b9",
-        "text": "Selected Answer: C. SQL for Analysis: Enabling 'Log Analytics' on a log bucket upgrades it to support BigQuery standard SQL... Visualization: Looker Studio has a native connector for BigQuery... (1 voto)"
+        "text": "Selected Answer: C. SQL for Analysis: Enabling 'Log Analytics' on a log bucket upgrades it to support BigQuery standard SQL... Visualization: Looker Studio has a native connector for BigQuery... (1 vote)"
       },
       {
         "user": "41168b9",
-        "text": "The Google Cloud Well-Architected Framework emphasizes using built-in, managed services that reduce operational overhead... Log Analytics with BigQuery Link is the modern, recommended way. (1 voto)"
+        "text": "The Google Cloud Well-Architected Framework emphasizes using built-in, managed services that reduce operational overhead... Log Analytics with BigQuery Link is the modern, recommended way. (1 vote)"
       },
       {
         "user": "02fc23a",
-        "text": "C is the correct answer. BigQuery is needed for SQL analysis, and Looker Studio is needed for BI dashboards. (1 voto)"
+        "text": "C is the correct answer. BigQuery is needed for SQL analysis, and Looker Studio is needed for BI dashboards. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2795,15 +2795,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jeussin",
-        "text": "answer D. https://docs.cloud.google.com/migration-center/docs/estimate/overview (3 votos)"
+        "text": "answer D. https://docs.cloud.google.com/migration-center/docs/estimate/overview (3 votes)"
       },
       {
         "user": "41168b9",
-        "text": "Google Cloud Migration Center is the unified platform designed specifically for the end-to-end migration journey. It is the Google-recommended tool for 'rapid' and 'comprehensive' assessments because it automates the discovery of your existing infrastructure and provides specialized calculators for complex workloads like SAP. (2 votos)"
+        "text": "Google Cloud Migration Center is the unified platform designed specifically for the end-to-end migration journey. It is the Google-recommended tool for 'rapid' and 'comprehensive' assessments because it automates the discovery of your existing infrastructure and provides specialized calculators for complex workloads like SAP. (2 votes)"
       },
       {
         "user": "fakicam",
-        "text": "it should be D (1 voto)"
+        "text": "it should be D (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2839,15 +2839,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "41168b9",
-        "text": "Cloud Deploy uses Cloud Build as its default execution engine... When your GKE cluster is 'private'... the default Google-managed Cloud Build workers cannot 'see' the cluster because they reside in a separate network. (1 voto)"
+        "text": "Cloud Deploy uses Cloud Build as its default execution engine... When your GKE cluster is 'private'... the default Google-managed Cloud Build workers cannot 'see' the cluster because they reside in a separate network. (1 vote)"
       },
       {
         "user": "41168b9",
-        "text": "Network Reachability: By creating a Cloud Build private pool, you create dedicated worker instances that can be connected to your own VPC via VPC Network Peering... (1 voto)"
+        "text": "Network Reachability: By creating a Cloud Build private pool, you create dedicated worker instances that can be connected to your own VPC via VPC Network Peering... (1 vote)"
       },
       {
         "user": "jeussin",
-        "text": "answer c. https://docs.cloud.google.com/build/docs/private-pools/accessing-private-gke-clusters-with-cloud-build-private-pools (2 votos)"
+        "text": "answer c. https://docs.cloud.google.com/build/docs/private-pools/accessing-private-gke-clusters-with-cloud-build-private-pools (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -2883,11 +2883,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "respawn",
-        "text": "Cloud Build builds the images, and Artifact Analysis (triggered on images pushed to Artifact Registry) provides: Vulnerability scanning, SBOM generation (dependency inventory), Verifiable metadata/attestations for compliance. (2 votos)"
+        "text": "Cloud Build builds the images, and Artifact Analysis (triggered on images pushed to Artifact Registry) provides: Vulnerability scanning, SBOM generation (dependency inventory), Verifiable metadata/attestations for compliance. (2 votes)"
       },
       {
         "user": "41168b9",
-        "text": "The requirements listed—vulnerability identification, verifiable metadata, and dependency inventory—are exactly what Artifact Analysis (formerly Container Analysis) is designed for in a Google Cloud CI/CD pipeline. (2 votos)"
+        "text": "The requirements listed—vulnerability identification, verifiable metadata, and dependency inventory—are exactly what Artifact Analysis (formerly Container Analysis) is designed for in a Google Cloud CI/CD pipeline. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -2923,15 +2923,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Pime13",
-        "text": "AlloyDB Default Networking: By default, AlloyDB instances only have private IP addresses... Serverless Connectivity: Cloud Run... exists outside your VPC. To reach a resource with only a private IP, the Cloud Run service must be configured to send traffic into the VPC. Direct VPC Egress: This is the modern, high-performance method... (1 voto)"
+        "text": "AlloyDB Default Networking: By default, AlloyDB instances only have private IP addresses... Serverless Connectivity: Cloud Run... exists outside your VPC. To reach a resource with only a private IP, the Cloud Run service must be configured to send traffic into the VPC. Direct VPC Egress: This is the modern, high-performance method... (1 vote)"
       },
       {
         "user": "41168b9",
-        "text": "By default, AlloyDB is created with Private IP only... Cloud Run is a serverless environment that runs outside of your VPC by default. (1 voto)"
+        "text": "By default, AlloyDB is created with Private IP only... Cloud Run is a serverless environment that runs outside of your VPC by default. (1 vote)"
       },
       {
         "user": "jeussin",
-        "text": "Cloud Run Serverless to VPC Connect is only way vpc egress (1 voto)"
+        "text": "Cloud Run Serverless to VPC Connect is only way vpc egress (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -2971,15 +2971,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "respawn",
-        "text": "B is obvious. C sounds right but not relevant here because billing data is exported to bigquery, not Cloud SQL... D is for performance/uptime. A is for resilience. so answer is B and E. IaC ensure consistency and avoid orphaned resources. (4 votos)"
+        "text": "B is obvious. C sounds right but not relevant here because billing data is exported to bigquery, not Cloud SQL... D is for performance/uptime. A is for resilience. so answer is B and E. IaC ensure consistency and avoid orphaned resources. (4 votes)"
       },
       {
         "user": "CyberPeter",
-        "text": "B. Labels/tags allow you to track and allocate costs... E. Using IaC allows you to: Track resource creation, Enforce standardization to avoid overprovisioning... (3 votos)"
+        "text": "B. Labels/tags allow you to track and allocate costs... E. Using IaC allows you to: Track resource creation, Enforce standardization to avoid overprovisioning... (3 votes)"
       },
       {
         "user": "jmo09",
-        "text": "The answers are B and E because labels provide the cost visibility... while IaC provides the control and governance needed to manage costs effectively... (3 votos)"
+        "text": "The answers are B and E because labels provide the cost visibility... while IaC provides the control and governance needed to manage costs effectively... (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3020,11 +3020,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "02fc23a",
-        "text": "A - Application load balancer will serve the traffic to the closest region. B - Cloud CDN will serve the static content (2 votos)"
+        "text": "A - Application load balancer will serve the traffic to the closest region. B - Cloud CDN will serve the static content (2 votes)"
       },
       {
         "user": "0d8df8b",
-        "text": "A. Use an external Application Load Balancer... Routes users to the nearest Google edge location. B. Use Cloud CDN... Caches these files close to users worldwide. Result: Faster loading, Lower latency. (1 voto)"
+        "text": "A. Use an external Application Load Balancer... Routes users to the nearest Google edge location. B. Use Cloud CDN... Caches these files close to users worldwide. Result: Faster loading, Lower latency. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -3061,15 +3061,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "respawn",
-        "text": "Application Integration is GCP's iPaaS... Purpose-built for enterprise application integration and has pre-built connectors for Salesforce, ServiceNow, SAP, etc. Handles data mapping, transformation, and real-time sync. (2 votos)"
+        "text": "Application Integration is GCP's iPaaS... Purpose-built for enterprise application integration and has pre-built connectors for Salesforce, ServiceNow, SAP, etc. Handles data mapping, transformation, and real-time sync. (2 votes)"
       },
       {
         "user": "02fc23a",
-        "text": "A, B and C cannot serve the purpose, the question is not how to build some sort of a pipeline, but how to connect different services, and transform the data into reports etc. Perfect answer is B. (1 voto)"
+        "text": "A, B and C cannot serve the purpose, the question is not how to build some sort of a pipeline, but how to connect different services, and transform the data into reports etc. Perfect answer is B. (1 vote)"
       },
       {
         "user": "jeussin",
-        "text": "Answer C. bigquery can ServiceNow ETL (1 voto)"
+        "text": "Answer C. bigquery can ServiceNow ETL (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -3105,19 +3105,19 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "41168b9",
-        "text": "Managing hundreds of VMs requires a centralized, automated system... VM Manager is the native Google Cloud suite designed specifically for this purpose. It uses the OS Config agent... You can define Patch Deployments that run on a specific schedule. (1 voto)"
+        "text": "Managing hundreds of VMs requires a centralized, automated system... VM Manager is the native Google Cloud suite designed specifically for this purpose. It uses the OS Config agent... You can define Patch Deployments that run on a specific schedule. (1 vote)"
       },
       {
         "user": "9cd2320",
-        "text": "Selected Answer: D. Config Sync is designed for Kubernetes (GKE/Anthos) (2 votos)"
+        "text": "Selected Answer: D. Config Sync is designed for Kubernetes (GKE/Anthos) (2 votes)"
       },
       {
         "user": "ahmedbesibis",
-        "text": "VM Manager -> OS Config Agent on VMs -> Patch Jobs (1 voto)"
+        "text": "VM Manager -> OS Config Agent on VMs -> Patch Jobs (1 vote)"
       },
       {
         "user": "jeussin",
-        "text": "D is the only answer. Config Sync for GKE, Ops Agent for VM observability... (1 voto)"
+        "text": "D is the only answer. Config Sync for GKE, Ops Agent for VM observability... (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -3153,15 +3153,15 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "frank_tsai_tech",
-        "text": "VPC Service Controls help you create a security perimeter around your Google Cloud services (like BigQuery) to reduce the risk of data exfiltration... Private Google Access for on-premises hosts ensures that on-premises systems can securely access Google APIs... Together, these measures address the security team's concerns... (2 votos)"
+        "text": "VPC Service Controls help you create a security perimeter around your Google Cloud services (like BigQuery) to reduce the risk of data exfiltration... Private Google Access for on-premises hosts ensures that on-premises systems can securely access Google APIs... Together, these measures address the security team's concerns... (2 votes)"
       },
       {
         "user": "yokoyan",
-        "text": "Answer: B. VPC Service Controls establishes a security perimeter to mitigate data exfiltration risks, while Private Google Access enables private connectivity... (1 voto)"
+        "text": "Answer: B. VPC Service Controls establishes a security perimeter to mitigate data exfiltration risks, while Private Google Access enables private connectivity... (1 vote)"
       },
       {
         "user": "samsonakala",
-        "text": "Answer is B, and I think the question is duplicated (1 voto)"
+        "text": "Answer is B, and I think the question is duplicated (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -3203,27 +3203,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Nick89GR",
-        "text": "Confundido porque contrasta con la pregunta 190. Esperaría que fuera la suma de todos los estados. (17 votos)"
+        "text": "Confused because it contrasts with question 190. Would expect it to be the sum of all the states. (17 votes)"
       },
       {
         "user": "JamesKarianis",
-        "text": "Selecciona C. El filtro actual usa múltiples condiciones AND, lo que significa que busca una métrica que tenga simultáneamente todos los estados. Esto es lógicamente imposible, por lo que el filtro nunca coincide y no se activa el autoescalado. (11 votos)"
+        "text": "Selects C. The current filter uses multiple AND conditions, which means it looks for a metric that has all the states at the same time. That is logically impossible, so the filter never matches and autoscaling never triggers. (11 votes)"
       },
       {
         "user": "tangac",
-        "text": "Selecciona C, tal como se indica claramente en la documentación pública de Google. (9 votos)"
+        "text": "Selects C, as clearly stated in Google's public documentation. (9 votes)"
       },
       {
         "user": "JaquiMB",
-        "text": "Selecciona C. Para configurar el autoescalado basado en el porcentaje, debes filtrar por el estado 'used'. (3 votos)"
+        "text": "Selects C. To configure autoscaling based on the percentage, you must filter by the 'used' state. (3 votes)"
       },
       {
         "user": "frank_tsai_tech",
-        "text": "Selecciona C. Ningún punto de datos puede satisfacer todas las condiciones simultáneamente debido al operador AND. (2 votos)"
+        "text": "Selects C. No data point can satisfy all the conditions at once because of the AND operator. (2 votes)"
       },
       {
         "user": "Piddi",
-        "text": "Aclara dudas usando IA, indicando que usar el estado 'free' (Opción D) también captura con precisión el uso de la memoria. Sin embargo, C es la solución más directa al error de sintaxis original. (1 voto)"
+        "text": "Clears up doubts using AI, pointing out that using the 'free' state (Option D) also accurately captures memory usage. However, C is the most direct fix for the original syntax error. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -3259,11 +3259,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "f9bc58e",
-        "text": "Selecciona D. Es la respuesta correcta ya que dos versiones (Vieja y Nueva) deben mantenerse con un único endpoint expuesto a los desarrolladores. (5 votos)"
+        "text": "Selects D. It is the correct answer since two versions (Old and New) must be maintained with a single endpoint exposed to developers. (5 votes)"
       },
       {
         "user": "JamesKarianis",
-        "text": "Selecciona D. Esta solución permite cumplir todos los requisitos de una manera limpia y mantenible. (5 votos)"
+        "text": "Selects D. This solution meets all the requirements in a clean and maintainable way. (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3299,27 +3299,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "japij10711",
-        "text": "Selecciona A. Sí, es la A. (5 votos)"
+        "text": "Selects A. Yes, it's A. (5 votes)"
       },
       {
         "user": "MoeHaydar",
-        "text": "Selecciona A. (3 votos)"
+        "text": "Selects A. (3 votes)"
       },
       {
         "user": "david_tay",
-        "text": "Selecciona A. Debe tener un bloqueo de retención, de lo contrario alguien podría cambiar la política de retención. (2 votos)"
+        "text": "Selects A. It must have a retention lock, otherwise someone could change the retention policy. (2 votes)"
       },
       {
         "user": "Gino17m",
-        "text": "Selecciona A. La política debe estar bloqueada y no hay necesidad de aplicarla a toda la organización o proyecto. (2 votos)"
+        "text": "Selects A. The policy must be locked and there is no need to apply it to the whole organization or project. (2 votes)"
       },
       {
         "user": "666Amitava666",
-        "text": "Selecciona A. (2 votos)"
+        "text": "Selects A. (2 votes)"
       },
       {
         "user": "201b6fa",
-        "text": "Selecciona A. (2 votos)"
+        "text": "Selects A. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3355,27 +3355,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "cchiaramelli",
-        "text": "Selecciona D. La documentación dice que el Transfer Appliance es adecuado cuando tomaría más de una semana subir los datos por red. Como 10TB tomarían mucho menos, elige D. (15 votos)"
+        "text": "Selects D. The documentation says Transfer Appliance is suitable when uploading the data over the network would take more than a week. Since 10TB would take much less, picks D. (15 votes)"
       },
       {
         "user": "mgm7",
-        "text": "Selecciona B. Argumenta sobre el límite de 5TB de GCS. (7 votos)"
+        "text": "Selects B. Argues about GCS's 5TB limit. (7 votes)"
       },
       {
         "user": "Zonci",
-        "text": "Selecciona B. Cree que usar el appliance se alinea mejor con las limitaciones. (4 votos)"
+        "text": "Selects B. Thinks using the appliance fits the constraints better. (4 votes)"
       },
       {
         "user": "mstaicu",
-        "text": "Refuta la opción B, recordando que los datos aún deben terminar en GCS y un export de base de datos no es necesariamente un solo archivo enorme. (3 votos)"
+        "text": "Refutes option B, pointing out that the data still has to end up in GCS and a database export is not necessarily a single huge file. (3 votes)"
       },
       {
         "user": "david_tay",
-        "text": "Selecciona B. Argumenta que aunque tomaría unas 22 horas, hay riesgo de interrupción. (3 votos)"
+        "text": "Selects B. Argues that although it would take about 22 hours, there is a risk of interruption. (3 votes)"
       },
       {
         "user": "ahmedbesibis",
-        "text": "Selecciona D. Calcula que con 1 Gbps (125 MB/s), 10 TB toman casi exactamente un día. (2 votos)"
+        "text": "Selects D. Calculates that at 1 Gbps (125 MB/s), 10 TB takes almost exactly one day. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3411,27 +3411,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "minmin2020",
-        "text": "Selecciona A. Es válido con asunciones, logrando el 99.99% usando dos túneles. C es más caro. (8 votos)"
+        "text": "Selects A. It's valid with assumptions, achieving 99.99% using two tunnels. C is more expensive. (8 votes)"
       },
       {
         "user": "TopTalk",
-        "text": "Selecciona A. HA VPN soporta dos túneles para lograr 99.99%. Classic VPN no. Más de dos túneles (C) es un gasto excesivo. (7 votos)"
+        "text": "Selects A. HA VPN supports two tunnels to achieve 99.99%. Classic VPN doesn't. More than two tunnels (C) is an unnecessary expense. (7 votes)"
       },
       {
         "user": "e5019c6",
-        "text": "Señala que la 195 y 191 son la misma pregunta. (9 votos)"
+        "text": "Points out that 195 and 191 are the same question. (9 votes)"
       },
       {
         "user": "alexandercamachop",
-        "text": "Selecciona A. Provee 99.99% y no hay necesidad de C que es más caro. (5 votos)"
+        "text": "Selects A. Provides 99.99% and there's no need for C, which is more expensive. (5 votes)"
       },
       {
         "user": "sheucm89",
-        "text": "Selecciona A. Pregunta duplicada. (4 votos)"
+        "text": "Selects A. Duplicate question. (4 votes)"
       },
       {
         "user": "BiddlyBdoyng",
-        "text": "A cumple exactamente con los requisitos de HA, mientras que C va más allá de HA sin optimizar costes. (3 votos)"
+        "text": "A meets the HA requirements exactly, while C goes beyond HA without optimizing costs. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3467,27 +3467,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "e5019c6",
-        "text": "Selecciona D. Sí, actualmente necesitas una instancia 'sole-tenant' para instalar un servidor Windows con tu licencia BYOL. (26 votos)"
+        "text": "Selects D. Yes, you currently need a 'sole-tenant' instance to install a Windows server with your BYOL license. (26 votes)"
       },
       {
         "user": "MahAli",
-        "text": "Selecciona D. El propósito de sole-tenant es facilitar la importación de licencias BYOL cumpliendo requisitos de hardware dedicado. (6 votos)"
+        "text": "Selects D. The purpose of sole-tenant is to make importing BYOL licenses easier while meeting dedicated hardware requirements. (6 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selecciona D. Para crear una VM que use la imagen personalizada BYOL, debes aprovisionarla en un nodo sole-tenant. (4 votos)"
+        "text": "Selects D. To create a VM that uses the custom BYOL image, you must provision it on a sole-tenant node. (4 votes)"
       },
       {
         "user": "techtitan",
-        "text": "Selecciona A, confundiendo License Mobility para apps de Microsoft con las licencias del Sistema Operativo base. (2 votos)"
+        "text": "Selects A, confusing License Mobility for Microsoft apps with the base Operating System licenses. (2 votes)"
       },
       {
         "user": "Ahmed_Safwat",
-        "text": "Selecciona A. Cree que no hay necesidad de sole-tenancy. (2 votos)"
+        "text": "Selects A. Thinks there is no need for sole-tenancy. (2 votes)"
       },
       {
         "user": "ductrinh",
-        "text": "Selecciona D. Seguro que es D con BYOL. (2 votos)"
+        "text": "Selects D. It's definitely D with BYOL. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3523,27 +3523,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "cchiaramelli",
-        "text": "Selecciona B. Private Google Access es para APIs de Google, un bastion es para acceder de fuera hacia adentro y Cloud NAT es la solución recomendada. (5 votos)"
+        "text": "Selects B. Private Google Access is for Google APIs, a bastion is for accessing from the outside in, and Cloud NAT is the recommended solution. (5 votes)"
       },
       {
         "user": "ampmusic",
-        "text": "Selecciona B. Cloud NAT es el servicio correcto cuando quieres alcanzar servicios de internet sin exponer la VM. (3 votos)"
+        "text": "Selects B. Cloud NAT is the right service when you want to reach internet services without exposing the VM. (3 votes)"
       },
       {
         "user": "dsyouness",
-        "text": "Selecciona B. Cloud NAT permite a los recursos privados actualizarse. (2 votos)"
+        "text": "Selects B. Cloud NAT lets private resources get updates. (2 votes)"
       },
       {
         "user": "ahmedbesibis",
-        "text": "Selecciona B. Explica mediante diagramas la diferencia con Private Google Access. (1 voto)"
+        "text": "Selects B. Explains the difference with Private Google Access using diagrams. (1 vote)"
       },
       {
         "user": "41168b9",
-        "text": "Selecciona B. (1 voto)"
+        "text": "Selects B. (1 vote)"
       },
       {
         "user": "piyu1515",
-        "text": "Selecciona C (comentando luego que B es la correcta). (1 voto)"
+        "text": "Selects C (later commenting that B is the correct one). (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -3579,27 +3579,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "mmathiou",
-        "text": "Selecciona A. Dado que el payload no debe pasar por el backend, se debe configurar CORS en el bucket. (11 votos)"
+        "text": "Selects A. Since the payload must not go through the backend, CORS has to be configured on the bucket. (11 votes)"
       },
       {
         "user": "cruel_sun",
-        "text": "Selecciona A. La configuración CORS permite requests desde el origen App Engine. Las Signed URLs permiten la carga sin pasar por el backend. (5 votos)"
+        "text": "Selects A. The CORS configuration allows requests from the App Engine origin. Signed URLs allow the upload without going through the backend. (5 votes)"
       },
       {
         "user": "Namanjain7206",
-        "text": "Selecciona C. Enlazando un blog sobre cómo subir con Signed URLs. (3 votos)"
+        "text": "Selects C. Links a blog post on how to upload with Signed URLs. (3 votes)"
       },
       {
         "user": "someone2011",
-        "text": "Defiende A citando la documentación de GCS que indica que hay que configurar CORS. (3 votos)"
+        "text": "Defends A, citing the GCS documentation that says CORS has to be configured. (3 votes)"
       },
       {
         "user": "Prakzz",
-        "text": "Discute sobre C. (3 votos)"
+        "text": "Discute sobre C. (3 votes)"
       },
       {
         "user": "xaqanik",
-        "text": "Indica que se necesita vincular la App Engine con el bucket. (3 votos)"
+        "text": "Says the App Engine needs to be linked to the bucket. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3635,27 +3635,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Mahmoud_E",
-        "text": "Selecciona C. Argumenta que te da el uso total de memoria, mientras descarta A, B y D por ser erróneas. (36 votos)"
+        "text": "Selects C. Argues that it gives you the total memory usage, while dismissing A, B and D as wrong. (36 votes)"
       },
       {
         "user": "kiappy81",
-        "text": "Selecciona A. Justifica qué es gauge vs delta-per-minute. (16 votos)"
+        "text": "Selects A. Explains what gauge vs delta-per-minute means. (16 votes)"
       },
       {
         "user": "Gino17m",
-        "text": "Selecciona C. Comenta que probablemente hay un error en la pregunta asumiendo que el operador debería ser un OR en lugar de un AND. (5 votos)"
+        "text": "Selects C. Says there is probably a mistake in the question, assuming the operator should be an OR instead of an AND. (5 votes)"
       },
       {
         "user": "nuts_bee",
-        "text": "Aclara que en el examen real, la cadena gigante de ANDs viene en la PREGUNTA (es decir, como la 199) y la respuesta pasa a ser la de simplificarlo. (5 votos)"
+        "text": "Clarifies that in the real exam, the giant chain of ANDs is in the QUESTION (i.e., like 199) and the answer becomes simplifying it. (5 votes)"
       },
       {
         "user": "pcamaster",
-        "text": "Confirma que el examen cambió esta pregunta a la estructura que vimos en la 199. (4 votos)"
+        "text": "Confirms the exam changed this question to the structure we saw in 199. (4 votes)"
       },
       {
         "user": "chickennuggets",
-        "text": "Selecciona C adjuntando enlaces. (4 votos)"
+        "text": "Selects C, attaching links. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3675,7 +3675,7 @@ export const QUESTIONS = [
       "Wrong: Alerting on free memory below 20% is arithmetically equivalent and defensible, but it was not the behaviour this item was written to test."
     ],
     "resolvedBy": "gemini-2026-08",
-    "legacyNote": "Pregunta rota: el filtro con AND encadenados es lógicamente imposible. La 199 es la variante vigente y corregida del mismo item; estudia esa."
+    "legacyNote": "Broken question: the filter with chained ANDs is logically impossible. 199 is the current, corrected variant of the same item; study that one."
   },
   {
     "id": 189,
@@ -3693,27 +3693,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "namesgeo",
-        "text": "Object Versioning es una característica que te permite almacenar múltiples versiones de un objeto en Cloud Storage. Por ende, la respuesta debe ser B. (9 votos)"
+        "text": "Object Versioning is a feature that lets you store multiple versions of an object in Cloud Storage. Therefore, the answer should be B. (9 votes)"
       },
       {
         "user": "khadar",
-        "text": "Yo también tuve esta pregunta en mi examen del 10-09-22 con opciones similares y el resultado fue aprobado. (7 votos)"
+        "text": "I also had this question in my exam on 10-09-22 with similar options, and the result was a pass. (7 votes)"
       },
       {
         "user": "alexandercamachop",
-        "text": "Object versioning, súper importante para poder hacer rollback en caso de cualquier borrado. (4 votos)"
+        "text": "Object versioning, super important to be able to roll back in case of any deletion. (4 votes)"
       },
       {
         "user": "kiappy81",
-        "text": "https://cloud.google.com/storage/docs/object-versioning (3 votos)"
+        "text": "https://cloud.google.com/storage/docs/object-versioning (3 votes)"
       },
       {
         "user": "AzureDP900",
-        "text": "B - Object versioning (2 votos)"
+        "text": "B - Object versioning (2 votes)"
       },
       {
         "user": "megumin",
-        "text": "B is ok (1 voto)"
+        "text": "B is ok (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -3749,27 +3749,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Gino17m",
-        "text": "VPC peering. Las redes VPC emparejadas pueden estar en la misma o en diferentes organizaciones. Las rutas de subred IPv4 no pueden superponerse. (3 votos)"
+        "text": "VPC peering. Peered VPC networks can be in the same or in different organizations. IPv4 subnet routes cannot overlap. (3 votes)"
       },
       {
         "user": "megumin",
-        "text": "A is ok (2 votos)"
+        "text": "A is ok (2 votes)"
       },
       {
         "user": "jake_edman",
-        "text": "Claramente A, ya que las IPs no se superponen. (2 votos)"
+        "text": "Clearly A, since the IPs don't overlap. (2 votes)"
       },
       {
         "user": "Mahmoud_E",
-        "text": "A es la respuesta correcta según la documentación de Google. (2 votos)"
+        "text": "A is the correct answer according to Google's documentation. (2 votes)"
       },
       {
         "user": "AzureDP900",
-        "text": "A is right answer (2 votos)"
+        "text": "A is right answer (2 votes)"
       },
       {
         "user": "6721sora",
-        "text": "Clearly A (2 votos)"
+        "text": "Clearly A (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3805,27 +3805,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "kuboraam",
-        "text": "Elegí B por la palabra 'tiempo real'. De lo contrario, D parece ser la más relevante y flexible. (15 votos)"
+        "text": "I chose B because of the phrase 'real time'. Otherwise, D seems to be the most relevant and flexible. (15 votes)"
       },
       {
         "user": "VSMu",
-        "text": "D también puede ser continuo. Creo que D es la respuesta correcta. (10 votos)"
+        "text": "D can also be continuous. I think D is the correct answer. (10 votes)"
       },
       {
         "user": "Mahmoud_E",
-        "text": "Apoya a B basándose en un blog antiguo de Google de monitoreo práctico. (10 votos)"
+        "text": "Supports B based on an old Google blog post on practical monitoring. (10 votes)"
       },
       {
         "user": "someone2011",
-        "text": "Apoya a B basándose en el mismo blog de Google. (2 votos)"
+        "text": "Supports B based on the same Google blog post. (2 votes)"
       },
       {
         "user": "dsyouness",
-        "text": "B no proporciona el costo real (solo la D lo hace). (2 votos)"
+        "text": "B doesn't provide the actual cost (only D does). (2 votes)"
       },
       {
         "user": "daidaidai",
-        "text": "La respuesta es D. Los logs de acceso a datos de BQ (opción B) no incluyen información de facturación ni costos de consultas de forma nativa. (2 votos)"
+        "text": "The answer is D. BQ data access logs (option B) don't natively include billing or query cost information. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3861,27 +3861,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jabrrJ68w02ond1",
-        "text": "C se ve muy bien. Autoescalar cargas de trabajo y pools de nodos hace la infraestructura más elástica. D no sirve porque las cargas stateful no manejan bien las VMs preemptible. (16 votos)"
+        "text": "C looks very good. Autoscaling workloads and node pools makes the infrastructure more elastic. D doesn't work because stateful workloads don't handle preemptible VMs well. (16 votes)"
       },
       {
         "user": "ramzez4815",
-        "text": "C es la correcta, no requiere cambios mayores a la configuración de Kubernetes. (8 votos)"
+        "text": "C is correct, it doesn't require major changes to the Kubernetes configuration. (8 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "HPA escala pods. Node Autoscaling escala nodos. Combinados, reducen costos según el uso real. (5 votos)"
+        "text": "HPA scales pods. Node Autoscaling scales nodes. Combined, they reduce costs based on actual usage. (5 votes)"
       },
       {
         "user": "spET_1024",
-        "text": "La empresa no quiere comprometer la disponibilidad, por lo que HPA es la opción idónea. (3 votos)"
+        "text": "The company doesn't want to compromise availability, so HPA is the ideal option. (3 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Da explicaciones descartando A, B y D de manera detallada. (3 votos)"
+        "text": "Da explicaciones descartando A, B y D de manera detallada. (3 votes)"
       },
       {
         "user": "aswani",
-        "text": "Selected Answer: C. (2 votos)"
+        "text": "Selected Answer: C. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3917,27 +3917,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jabrrJ68w02ond1",
-        "text": "A: Configurar las sondas previene interrupciones al lanzar un nuevo ReplicaSet, porque los Pods solo reciben tráfico cuando se consideran listos. (22 votos)"
+        "text": "A: Configuring the probes prevents disruptions when rolling out a new ReplicaSet, because Pods only receive traffic once they are considered ready. (22 votes)"
       },
       {
         "user": "khadar",
-        "text": "Proporciona un enlace oficial de mejores prácticas para health checks en K8s. (9 votos)"
+        "text": "Provides an official best-practices link for health checks in K8s. (9 votes)"
       },
       {
         "user": "aut0pil0t",
-        "text": "No hay MIGs en GKE. Lo único que tiene sentido es tener buenos readiness probes. (4 votos)"
+        "text": "There are no MIGs in GKE. The only thing that makes sense is having good readiness probes. (4 votes)"
       },
       {
         "user": "CGS22",
-        "text": "Esto ayudará a asegurar que solo los pods sanos sirvan tráfico. (4 votos)"
+        "text": "This will help make sure only healthy pods serve traffic. (4 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Si un Pod falla el liveness/readiness probe, no recibirá tráfico o se reiniciará, evitando problemas de parámetros mal configurados. (3 votos)"
+        "text": "If a Pod fails the liveness/readiness probe, it won't receive traffic or it will be restarted, avoiding problems from misconfigured parameters. (3 votes)"
       },
       {
         "user": "a53fd2c",
-        "text": "No existe tal cosa como instancias manejadas en GKE para esto. (2 votos)"
+        "text": "There is no such thing as managed instances in GKE for this. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -3973,27 +3973,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "aut0pil0t",
-        "text": "Lo primero que se debe hacer es inspeccionar los logs y monitorear para ver qué está sucediendo. (26 votos)"
+        "text": "The first thing to do is inspect the logs and monitor to see what is happening. (26 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Cuando una aplicación se pone lenta, el primer paso es recolectar información sobre la causa... A través de logs puedes ver faltas de recursos, problemas de red o errores. (8 votos)"
+        "text": "When an application slows down, the first step is to collect information about the cause... Through logs you can see resource shortages, network problems or errors. (8 votes)"
       },
       {
         "user": "RVivek",
-        "text": "La pregunta dice explícitamente 'You want to find the underlying cause'. B, C y D intentan arreglar el problema sin buscar la causa. (5 votos)"
+        "text": "The question explicitly says 'You want to find the underlying cause'. B, C and D try to fix the problem without looking for the cause. (5 votes)"
       },
       {
         "user": "Wael216",
-        "text": "Esto no tiene que ver con GCP, esto es instinto puro de un SRE. (4 votos)"
+        "text": "This has nothing to do with GCP, this is pure SRE instinct. (4 votes)"
       },
       {
         "user": "AugustoKras011111",
-        "text": "Palabra clave 'find the underlying cause', por lo tanto la respuesta es A. (4 votos)"
+        "text": "Key phrase 'find the underlying cause', so the answer is A. (4 votes)"
       },
       {
         "user": "alexandercamachop",
-        "text": "Acuerdo con la A. La D es una buena acción a futuro, pero dice 'qué hacer PRIMERO', lo cual siempre es diagnosticar. (3 votos)"
+        "text": "Agree with A. D is a good future action, but it says 'what to do FIRST', which is always to diagnose. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4029,27 +4029,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "6721sora",
-        "text": "VPC Peering no se puede establecer si hay superposición de rangos IP. C es correcto porque la VPN permite enrutar solo los rangos que se requieren. (29 votos)"
+        "text": "VPC Peering can't be established if IP ranges overlap. C is correct because the VPN lets you route only the ranges that are needed. (29 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Opción A fallará porque Peering no soporta subredes superpuestas. La solución es configurar VPN gateways. (11 votos)"
+        "text": "Option A will fail because Peering doesn't support overlapping subnets. The solution is to configure VPN gateways. (11 votes)"
       },
       {
         "user": "jlambdan",
-        "text": "Cita mejores prácticas de GCP indicando que VPN ignora límites de Peering y soluciona bloqueos por IPs estáticas cruzadas. (9 votos)"
+        "text": "Cites GCP best practices stating that VPN ignores Peering limits and solves blocks caused by crossed static IPs. (9 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Explica los comportamientos técnicos de VPC peering vs superposición de rangos. (9 votos)"
+        "text": "Explains the technical behavior of VPC peering vs overlapping ranges. (9 votes)"
       },
       {
         "user": "BalaGCPArch",
-        "text": "Cita la documentación oficial: 'Si hay superposición, el peering no se establece porque causa problemas de enrutamiento.' (6 votos)"
+        "text": "Cites the official documentation: 'If there is overlap, peering is not established because it causes routing problems.' (6 votes)"
       },
       {
         "user": "megumin",
-        "text": "Apoya la A. (5 votos)"
+        "text": "Supports A. (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4085,27 +4085,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "alexandercamachop",
-        "text": "C y D hacen mucho trabajo y dice 'no quieres manejar gcloud manualmente'. B no es buena por costo. Así que A es la única correcta, e incluso guarda tus archivos en $HOME. (9 votos)"
+        "text": "C and D involve a lot of work, and it says 'you don't want to manage gcloud manually'. B is bad on cost. So A is the only correct one, and it even keeps your files in $HOME. (9 votes)"
       },
       {
         "user": "kiappy81",
-        "text": "Si usas Cloud Shell, la CLI está disponible automáticamente y no necesitas instalarla. (5 votos)"
+        "text": "If you use Cloud Shell, the CLI is automatically available and you don't need to install it. (5 votes)"
       },
       {
         "user": "jabrrJ68w02ond1",
-        "text": "A es la solución correcta ya que el único requerimiento para tu máquina es tener un navegador instalado. (4 votos)"
+        "text": "A is the correct solution since the only requirement for your machine is having a browser installed. (4 votes)"
       },
       {
         "user": "mczopins",
-        "text": "La manera más simple. (1 voto)"
+        "text": "The simplest way. (1 vote)"
       },
       {
         "user": "moiradavis",
-        "text": "¡Es la manera más simple! (1 voto)"
+        "text": "It's the simplest way! (1 vote)"
       },
       {
         "user": "OrangeTiger",
-        "text": "Con B podrías mantener tu terminal viva, pero la pregunta dice que no quieres manejarlo tú mismo. (1 voto)"
+        "text": "With B you could keep your terminal alive, but the question says you don't want to manage it yourself. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -4141,27 +4141,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Tesla",
-        "text": "C es correcto pero a la vez un poco errado en la vida real... Un Sink no puede gatillar directo, necesita Pub/Sub primero. (13 votos)"
+        "text": "C is correct but at the same time a bit off in real life... A Sink can't trigger directly, it needs Pub/Sub first. (13 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Para correr algo de manera segura sin depender de la instancia, usar un sink desde Cloud Logging asegura que la tarea se hace siempre después de que se borra la instancia. (8 votos)"
+        "text": "To run something safely without depending on the instance, using a sink from Cloud Logging ensures the task always runs after the instance is deleted. (8 votes)"
       },
       {
         "user": "jabrrJ68w02ond1",
-        "text": "GCP no garantiza el tiempo de los shutdown scripts (cita documentación). C tomará un par de segundos extra, pero hará el trabajo 100% de las veces. (4 votos)"
+        "text": "GCP doesn't guarantee shutdown script timing (cites documentation). C will take a couple of extra seconds, but it will do the job 100% of the time. (4 votes)"
       },
       {
         "user": "kuboraam",
-        "text": "C sería la solución más limpia. Aunque hoy requiera Pub/Sub en el medio, es mucho mejor que D. (4 votos)"
+        "text": "C would be the cleanest solution. Even though today it requires Pub/Sub in between, it's much better than D. (4 votes)"
       },
       {
         "user": "charlie_lee",
-        "text": "Votó por D. (4 votos)"
+        "text": "Voted for D. (4 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "D no funciona porque sigues dependiendo del shutdown script que es inestable. (3 votos)"
+        "text": "D doesn't work because you still depend on the shutdown script, which is unreliable. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4197,27 +4197,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "amxexam",
-        "text": "Mirando 10 TB a primera vista pensaría en C, pero como el escenario es 'otro proveedor de cloud storage', no puedes pedir un Transfer Appliance allí. Es B. (11 votos)"
+        "text": "Seeing 10 TB at first glance I'd think C, but since the scenario is 'another cloud storage provider', you can't order a Transfer Appliance there. It's B. (11 votes)"
       },
       {
         "user": "cloudmon",
-        "text": "Provee la documentación oficial de opciones de transferencia masiva hacia Google Cloud. (9 votos)"
+        "text": "Provides the official documentation on bulk transfer options into Google Cloud. (9 votes)"
       },
       {
         "user": "StelSen",
-        "text": "A (rechazada por ser 10TB). C (no se puede enviar un Appliance a un centro de datos de otra nube). D (requeriría ancho de banda loco). Nos queda la B. (5 votos)"
+        "text": "A (rejected because it's 10TB). C (you can't ship an Appliance to another cloud's data center). D (would require crazy bandwidth). That leaves B. (5 votes)"
       },
       {
         "user": "technodev",
-        "text": "Tuve esta pregunta en mi examen, contesté B. (5 votos)"
+        "text": "I had this question in my exam, I answered B. (5 votes)"
       },
       {
         "user": "SAMBIT",
-        "text": "El origen es un object store así que es un proveedor en la nube... por ende Storage Transfer Service. (3 votos)"
+        "text": "The source is an object store, so it's a cloud provider... therefore Storage Transfer Service. (3 votes)"
       },
       {
         "user": "AzureDP900",
-        "text": "B is right, please refer this link. (2 votos)"
+        "text": "B is right, please refer this link. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4253,27 +4253,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "someone2011",
-        "text": "C: view in a different dataset. https://cloud.google.com/bigquery/docs/share-access-views: 'Authorized views should be created in a different dataset from the source data...' (10 votos)"
+        "text": "C: view in a different dataset. https://cloud.google.com/bigquery/docs/share-access-views: 'Authorized views should be created in a different dataset from the source data...' (10 votes)"
       },
       {
         "user": "Mournes",
-        "text": "Selected Answer: C. A will prevent data scientists from viewing PII in the view, it doesn't stop them from viewing it in the table however. (7 votos)"
+        "text": "Selected Answer: C. A will prevent data scientists from viewing PII in the view, it doesn't stop them from viewing it in the table however. (7 votes)"
       },
       {
         "user": "telp",
-        "text": "Selected Answer: C. Agree with C from the link with google best practice. Create a dataset where you can store your view... (7 votos)"
+        "text": "Selected Answer: C. Agree with C from the link with google best practice. Create a dataset where you can store your view... (7 votes)"
       },
       {
         "user": "Mahmoud_E",
-        "text": "Selected Answer: C. C is the correct answer. (5 votos)"
+        "text": "Selected Answer: C. C is the correct answer. (5 votes)"
       },
       {
         "user": "JC0926",
-        "text": "Selected Answer: C. Option A is not the best choice because it doesn't involve creating a separate dataset for the data science team... (4 votos)"
+        "text": "Selected Answer: C. Option A is not the best choice because it doesn't involve creating a separate dataset for the data science team... (4 votes)"
       },
       {
         "user": "AugustoKras011111",
-        "text": "Selected Answer: C. I vote for C. Option C provides better security option. (3 votos)"
+        "text": "Selected Answer: C. I vote for C. Option C provides better security option. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4309,27 +4309,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "StelSen",
-        "text": "Option-C is correct: https://cloud.google.com/bigtable/docs/schema-design#row-keys (14 votos)"
+        "text": "Option-C is correct: https://cloud.google.com/bigtable/docs/schema-design#row-keys (14 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "C. Review your RowKey strategy... If the keys are not evenly spread across the alphabet, it can result in a hotspot... (10 votos)"
+        "text": "C. Review your RowKey strategy... If the keys are not evenly spread across the alphabet, it can result in a hotspot... (10 votes)"
       },
       {
         "user": "JoeyCASD",
-        "text": "Suggest to study the following reference, it's important to design the row key pattern in Bigtable. (8 votos)"
+        "text": "Suggest to study the following reference, it's important to design the row key pattern in Bigtable. (8 votes)"
       },
       {
         "user": "AjayPrajapati",
-        "text": "C looks good, I don't think we have to control number of nodes in Bigtable. (3 votos)"
+        "text": "C looks good, I don't think we have to control number of nodes in Bigtable. (3 votes)"
       },
       {
         "user": "Nirca",
-        "text": "The issue described is with 'querying' meaning reading... C: distributing across the Alphabet is good for Writing (and reading spread). (2 votos)"
+        "text": "The issue described is with 'querying' meaning reading... C: distributing across the Alphabet is good for Writing (and reading spread). (2 votes)"
       },
       {
         "user": "GMats",
-        "text": "C is answer. Hot key/partitions are created due to improper row key design. (2 votos)"
+        "text": "C is answer. Hot key/partitions are created due to improper row key design. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4365,27 +4365,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "kimharsh",
-        "text": "LOL, if we give this question to someone who knows nothing about GCP they will select A (19 votos)"
+        "text": "LOL, if we give this question to someone who knows nothing about GCP they will select A (19 votes)"
       },
       {
         "user": "Fotofilico",
-        "text": "Selected Answer: A. https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains (18 votos)"
+        "text": "Selected Answer: A. https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains (18 votes)"
       },
       {
         "user": "azureaspirant",
-        "text": "2/15/21 exam (5 votos)"
+        "text": "2/15/21 exam (5 votes)"
       },
       {
         "user": "Tirthankar17",
-        "text": "Whoever wrote option D was high af. (4 votos)"
+        "text": "Whoever wrote option D was high af. (4 votes)"
       },
       {
         "user": "exam9391",
-        "text": "Selected Answer: A. A is ok. (3 votos)"
+        "text": "Selected Answer: A. A is ok. (3 votes)"
       },
       {
         "user": "blk_rook",
-        "text": "Selected Answer: A. must restrict the access, not clean up every hour. (3 votos)"
+        "text": "Selected Answer: A. must restrict the access, not clean up every hour. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4421,27 +4421,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "gggsrs",
-        "text": "The answer is A. The practice for managing logs generated on Compute Engine... is to install the Cloud Logging agent and send them to Cloud Logging... (25 votos)"
+        "text": "The answer is A. The practice for managing logs generated on Compute Engine... is to install the Cloud Logging agent and send them to Cloud Logging... (25 votes)"
       },
       {
         "user": "SANTHEDAN",
-        "text": "None of the options are correct: A - It should be archive... (6 votos)"
+        "text": "None of the options are correct: A - It should be archive... (6 votes)"
       },
       {
         "user": "gggsrs",
-        "text": "Proporcionó los enlaces oficiales a la documentación. (4 votos)"
+        "text": "Provided the official links to the documentation. (4 votes)"
       },
       {
         "user": "AzureDP900",
-        "text": "I agree with A, there is no need of BigQuery. (2 votos)"
+        "text": "I agree with A, there is no need of BigQuery. (2 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "A. 1. Install a Cloud Logging agent... This approach follows Google-recommended practices... (2 votos)"
+        "text": "A. 1. Install a Cloud Logging agent... This approach follows Google-recommended practices... (2 votes)"
       },
       {
         "user": "Tirthankar17",
-        "text": "Selected Answer: A. No need to look at any other options. (2 votos)"
+        "text": "Selected Answer: A. No need to look at any other options. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4477,27 +4477,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "simbu1299",
-        "text": "The correct answer is A (16 votos)"
+        "text": "The correct answer is A (16 votes)"
       },
       {
         "user": "9xnine",
-        "text": "Projects vs. folder. If you create the export on the folder it will apply to all new projects under that folder. (10 votos)"
+        "text": "Projects vs. folder. If you create the export on the folder it will apply to all new projects under that folder. (10 votes)"
       },
       {
         "user": "technodev",
-        "text": "Selected Answer: A. A is the right answer. (9 votos)"
+        "text": "Selected Answer: A. A is the right answer. (9 votes)"
       },
       {
         "user": "Atanu",
-        "text": "The admin must have failed this exam multiple times. How can one select option B here. (9 votos)"
+        "text": "The admin must have failed this exam multiple times. How can one select option B here. (9 votes)"
       },
       {
         "user": "Mahmoud_E",
-        "text": "Selected Answer: A. A is the right answer https://cloud.google.com/logging/docs/export/aggregated_sinks (6 votos)"
+        "text": "Selected Answer: A. A is the right answer https://cloud.google.com/logging/docs/export/aggregated_sinks (6 votes)"
       },
       {
         "user": "CGS22",
-        "text": "Selected Answer: A. The correct answer is: A... (5 votos)"
+        "text": "Selected Answer: A. The correct answer is: A... (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4533,27 +4533,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "StelSen",
-        "text": "Option-A is correct. Although Option-C sounds good, ultimately we should not store PII data at all as per question says. (52 votos)"
+        "text": "Option-A is correct. Although Option-C sounds good, ultimately we should not store PII data at all as per question says. (52 votes)"
       },
       {
         "user": "edilramos",
-        "text": "Selected Answer: A. The correct answer is A. Option C seems to be an option, but there are two non-conformities there. In addition to storing personal data in the GCS... (14 votos)"
+        "text": "Selected Answer: A. The correct answer is A. Option C seems to be an option, but there are two non-conformities there. In addition to storing personal data in the GCS... (14 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "I would recommend option A... (5 votos)"
+        "text": "I would recommend option A... (5 votes)"
       },
       {
         "user": "BiddlyBdoyng",
-        "text": "The problem with C is the data is stored in the bucket with the PII data even though the BigQuery data has it removed? (3 votos)"
+        "text": "The problem with C is the data is stored in the bucket with the PII data even though the BigQuery data has it removed? (3 votes)"
       },
       {
         "user": "RVivek",
-        "text": "Selected Answer: A. C is wrong because PII data is uploaded and the bucket is locked... (2 votos)"
+        "text": "Selected Answer: A. C is wrong because PII data is uploaded and the bucket is locked... (2 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Option B, storing non-PII data in BigQuery and PII data in a Cloud Storage bucket... would not fully protect the PII data. (2 votos)"
+        "text": "Option B, storing non-PII data in BigQuery and PII data in a Cloud Storage bucket... would not fully protect the PII data. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4589,27 +4589,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Deb2293",
-        "text": "Selected Answer: A. Archival storage: Cloud Storage is the best (4 votos)"
+        "text": "Selected Answer: A. Archival storage: Cloud Storage is the best (4 votes)"
       },
       {
         "user": "edilramos",
-        "text": "Selected Answer: A. A is correct. Set up a filter in Cloud Logging and a Cloud Storage bucket as an export target... (4 votos)"
+        "text": "Selected Answer: A. A is correct. Set up a filter in Cloud Logging and a Cloud Storage bucket as an export target... (4 votes)"
       },
       {
         "user": "StelSen",
-        "text": "Option-A is correct. Need cloud storage bucket for long time storage. (4 votos)"
+        "text": "Option-A is correct. Need cloud storage bucket for long time storage. (4 votes)"
       },
       {
         "user": "6721sora",
-        "text": "Selected Answer: A. Logs needed for a year. Coldline or Archive storage classes available. (3 votos)"
+        "text": "Selected Answer: A. Logs needed for a year. Coldline or Archive storage classes available. (3 votes)"
       },
       {
         "user": "plumbig11",
-        "text": "Selected Answer: A. Save logs for 1 year you must include cloud storage. (2 votos)"
+        "text": "Selected Answer: A. Save logs for 1 year you must include cloud storage. (2 votes)"
       },
       {
         "user": "AzureDP900",
-        "text": "I would like to go with Option A. (2 votos)"
+        "text": "I would like to go with Option A. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4645,27 +4645,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "CGS22",
-        "text": "Selected Answer: D. The correct answer is: D... Using Cloud CDN to deliver files to users from a location that is closer to them. (11 votos)"
+        "text": "Selected Answer: D. The correct answer is: D... Using Cloud CDN to deliver files to users from a location that is closer to them. (11 votes)"
       },
       {
         "user": "Jconnor",
-        "text": "A is Ridiculous. (6 votos)"
+        "text": "A is Ridiculous. (6 votes)"
       },
       {
         "user": "jabrrJ68w02ond1",
-        "text": "Selected Answer: D. Do not trust the official answers here, D is correct... never use gcsfuse in production. Performance is bad... (4 votos)"
+        "text": "Selected Answer: D. Do not trust the official answers here, D is correct... never use gcsfuse in production. Performance is bad... (4 votes)"
       },
       {
         "user": "nkit",
-        "text": "Selected Answer: D. A is wrong because you can't be serving files directly from Compute Engine instance. GCS + CDN is best option. (4 votos)"
+        "text": "Selected Answer: D. A is wrong because you can't be serving files directly from Compute Engine instance. GCS + CDN is best option. (4 votes)"
       },
       {
         "user": "MikeH20",
-        "text": "Most of the 'official' answers are, unfortunately, wrong. I've pretty much defaulted to the community answer distributions exclusively. (3 votos)"
+        "text": "Most of the 'official' answers are, unfortunately, wrong. I've pretty much defaulted to the community answer distributions exclusively. (3 votes)"
       },
       {
         "user": "nocrush",
-        "text": "Selected Answer: D. The correct answer is D. https://cloud.google.com/cdn?hl=en#static-content (3 votos)"
+        "text": "Selected Answer: D. The correct answer is D. https://cloud.google.com/cdn?hl=en#static-content (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4701,27 +4701,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "cloudmon",
-        "text": "Selected Answer: C. C, because managing multiple organizations is not a Google best practice. (15 votos)"
+        "text": "Selected Answer: C. C, because managing multiple organizations is not a Google best practice. (15 votes)"
       },
       {
         "user": "aaa7",
-        "text": "For everyone commenting that multiple organizations is bad practice according to Google, check the best practices link. (3 votos)"
+        "text": "For everyone commenting that multiple organizations is bad practice according to Google, check the best practices link. (3 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "I would recommend option C, creating two folders under the Organization resource named 'Development' and 'Production'... (3 votos)"
+        "text": "I would recommend option C, creating two folders under the Organization resource named 'Development' and 'Production'... (3 votes)"
       },
       {
         "user": "ashrafh",
-        "text": "All 4 answers seem stupid. (2 votos)"
+        "text": "All 4 answers seem stupid. (2 votes)"
       },
       {
         "user": "cloudinit",
-        "text": "Selected Answer: C. I don't think anyone can create projects outside the organization using the workspace account... (2 votos)"
+        "text": "Selected Answer: C. I don't think anyone can create projects outside the organization using the workspace account... (2 votes)"
       },
       {
         "user": "AzureDP900",
-        "text": "C is the best option. (2 votos)"
+        "text": "C is the best option. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4757,27 +4757,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "get2dd",
-        "text": "Correct answer is C... Digitally sign each timestamp and log entry and store the signature... (32 votos)"
+        "text": "Correct answer is C... Digitally sign each timestamp and log entry and store the signature... (32 votes)"
       },
       {
         "user": "JoeShmoe",
-        "text": "C is correct and common practice. (24 votos)"
+        "text": "C is correct and common practice. (24 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "I would recommend option C, digitally signing each timestamp and log entry and storing the signature... (5 votos)"
+        "text": "I would recommend option C, digitally signing each timestamp and log entry and storing the signature... (5 votes)"
       },
       {
         "user": "MaxNRG",
-        "text": "C - Digitally sign each timestamp and log entry and store the signature. This is a fun Q where all options are technically correct. But the point is to find the most efficient... (5 votos)"
+        "text": "C - Digitally sign each timestamp and log entry and store the signature. This is a fun Q where all options are technically correct. But the point is to find the most efficient... (5 votes)"
       },
       {
         "user": "Amber25",
-        "text": "C (Correct answer) - Digitally sign each timestamp and log entry and store the signature. (2 votos)"
+        "text": "C (Correct answer) - Digitally sign each timestamp and log entry and store the signature. (2 votes)"
       },
       {
         "user": "joe2211",
-        "text": "Selected Answer: C. vote C. (2 votos)"
+        "text": "Selected Answer: C. vote C. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4817,27 +4817,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "PeppaPig",
-        "text": "I would go with B&C. Cloud-native, less-ops and auto-scaling all get addressed (18 votos)"
+        "text": "I would go with B&C. Cloud-native, less-ops and auto-scaling all get addressed (18 votes)"
       },
       {
         "user": "kinghin",
-        "text": "Pregunta por qué la E es incorrecta si MIG hace auto-scaling. (9 votos)"
+        "text": "Asks why E is incorrect if MIG does auto-scaling. (9 votes)"
       },
       {
         "user": "AhmedH7793",
-        "text": "No ops = Serverless / Almost Serverless. MIG is not. (8 votos)"
+        "text": "No ops = Serverless / Almost Serverless. MIG is not. (8 votes)"
       },
       {
         "user": "JC0926",
-        "text": "Selected Answer: BC. GKE automatically manages and scales containerized applications... App Engine Standard Environment is a fully managed platform... (5 votos)"
+        "text": "Selected Answer: BC. GKE automatically manages and scales containerized applications... App Engine Standard Environment is a fully managed platform... (5 votes)"
       },
       {
         "user": "Deb2293",
-        "text": "Vota C y E argumentando que GKE requiere overhead operativo. (5 votos)"
+        "text": "Votes C and E, arguing that GKE requires operational overhead. (5 votes)"
       },
       {
         "user": "6721sora",
-        "text": "Vota C y E argumentando que GKE no es estrictamente no-ops. (5 votos)"
+        "text": "Votes C and E, arguing that GKE isn't strictly no-ops. (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4877,27 +4877,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "rishab86",
-        "text": "A & C seems to be the correct answer. (27 votos)"
+        "text": "A & C seems to be the correct answer. (27 votes)"
       },
       {
         "user": "victory108",
-        "text": "A. Use Google App Engine... C. Use a managed instance group... (10 votos)"
+        "text": "A. Use Google App Engine... C. Use a managed instance group... (10 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Explica que App Engine es totalmente administrado y Bigtable es de alto rendimiento NoSQL diseñado para escalar horizontalmente. (7 votos)"
+        "text": "Explains that App Engine is fully managed and Bigtable is a high-performance NoSQL database designed to scale horizontally. (7 votes)"
       },
       {
         "user": "Bert_77",
-        "text": "Explica por qué la D es incorrecta: because a single GCE instance might not be able to handle the unpredictable load. (6 votos)"
+        "text": "Explains why D is incorrect: because a single GCE instance might not be able to handle the unpredictable load. (6 votes)"
       },
       {
         "user": "Sephethus",
-        "text": "Selected Answer: AC. Both Bigtable and Datastore seem like overkill solutions but A&C are the only options that make sense here... (4 votos)"
+        "text": "Selected Answer: AC. Both Bigtable and Datastore seem like overkill solutions but A&C are the only options that make sense here... (4 votes)"
       },
       {
         "user": "zerg0",
-        "text": "Cloud Datastore and Bigtable are the only solutions that can handle 500000 clicks (3 votos)"
+        "text": "Cloud Datastore and Bigtable are the only solutions that can handle 500000 clicks (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4933,27 +4933,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AWS56",
-        "text": "Agree C (24 votos)"
+        "text": "Agree C (24 votes)"
       },
       {
         "user": "Eroc",
-        "text": "Explica en detalle por qué A, B y D son incorrectas basándose en la documentación oficial de Google y sintaxis, concluyendo que C es la única funcional. (12 votos)"
+        "text": "Explains in detail why A, B and D are incorrect based on Google's official documentation and syntax, concluding that C is the only one that works. (12 votes)"
       },
       {
         "user": "tartar",
-        "text": "C is ok (9 votos)"
+        "text": "C is ok (9 votes)"
       },
       {
         "user": "tartar",
-        "text": "Cita la documentación actual: gcloud container clusters update cluster-name --enable-autoscaling --min-nodes 1 --max-nodes 10... (9 votos)"
+        "text": "Cites the current documentation: gcloud container clusters update cluster-name --enable-autoscaling --min-nodes 1 --max-nodes 10... (9 votes)"
       },
       {
         "user": "TheCloudBoy77",
-        "text": "C - cluster is already running so use update instead of create new cluster. (6 votos)"
+        "text": "C - cluster is already running so use update instead of create new cluster. (6 votes)"
       },
       {
         "user": "AugustoKras011111",
-        "text": "Selected Answer: C. no need to create a new one, just update! (5 votos)"
+        "text": "Selected Answer: C. no need to create a new one, just update! (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -4993,27 +4993,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "PeppaPig",
-        "text": "B&E. Code signing only verifies the author. In other words it only checks who you are, but not what you have done (52 votos)"
+        "text": "B&E. Code signing only verifies the author. In other words it only checks who you are, but not what you have done (52 votes)"
       },
       {
         "user": "rishab86",
-        "text": "Votó por D&E. (36 votos)"
+        "text": "Voted for D&E. (36 votes)"
       },
       {
         "user": "ravisar",
-        "text": "Argumenta que 'Speed and Agility' invalida D porque la autorización binaria añade retrasos operativos. La respuesta es B&E. (10 votos)"
+        "text": "Argues that 'Speed and Agility' rules out D because Binary Authorization adds operational delays. The answer is B&E. (10 votes)"
       },
       {
         "user": "phantomsg",
-        "text": "(Profesional de ciberseguridad) Indica que SAST y DAST son B y E. D solo asegura que código de confianza se despliegue, no reduce errores introducidos accidentalmente. (6 votos)"
+        "text": "(Cybersecurity professional) Says SAST and DAST are B and E. D only ensures trusted code is deployed; it doesn't reduce accidentally introduced errors. (6 votes)"
       },
       {
         "user": "balajisreenivas",
-        "text": "Selected Answer: BE. Source Code Security Analyzers... Vulnerability Security Scanner... (5 votos)"
+        "text": "Selected Answer: BE. Source Code Security Analyzers... Vulnerability Security Scanner... (5 votes)"
       },
       {
         "user": "02fc23a",
-        "text": "Votó DE compartiendo un blog de DevSecOps. (5 votos)"
+        "text": "Voted DE, sharing a DevSecOps blog post. (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5051,27 +5051,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "shandy",
-        "text": "Explica el principio de menor privilegio: Owner y Admin son demasiado amplios. B da exactamente lo que piden (viewers). (32 votos)"
+        "text": "Explains the principle of least privilege: Owner and Admin are too broad. B gives exactly what they ask for (viewers). (32 votes)"
       },
       {
         "user": "Eroc",
-        "text": "B is the best answer because according to Google documentation it is best to use predefined roles and give every team the least amount of access... (12 votos)"
+        "text": "B is the best answer because according to Google documentation it is best to use predefined roles and give every team the least amount of access... (12 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (6 votos)"
+        "text": "B is ok (6 votes)"
       },
       {
         "user": "mahima123k",
-        "text": "Menciona que una pregunta muy similar apareció en exámenes recientes. (3 votos)"
+        "text": "Mentions that a very similar question appeared in recent exams. (3 votes)"
       },
       {
         "user": "Bill76",
-        "text": "(Comentario fuera de tema.) (3 votos)"
+        "text": "(Off-topic comment.) (3 votes)"
       },
       {
         "user": "mudot",
-        "text": "Resumen detallado que descarta A, C y D por ser roles demasiado amplios. (2 votos)"
+        "text": "Detailed summary that rules out A, C and D for being overly broad roles. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5113,27 +5113,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "rishab86",
-        "text": "A: Always run your own typical workloads against a Bigtable cluster... B: Create separate project... F: Standard factor of testing, gather logs and metrics. (35 votos)"
+        "text": "A: Always run your own typical workloads against a Bigtable cluster... B: Create separate project... F: Standard factor of testing, gather logs and metrics. (35 votes)"
       },
       {
         "user": "e5019c6",
-        "text": "Vota B, D, F. (10 votos)"
+        "text": "Votes B, D, F. (10 votes)"
       },
       {
         "user": "jlambdan",
-        "text": "Hace un desglose punto por punto, decantándose por BEF. (6 votos)"
+        "text": "Does a point-by-point breakdown, settling on BEF. (6 votes)"
       },
       {
         "user": "andras",
-        "text": "Why testing Bigtable... by definition Google would absorb practically any load... don't you trust Google? (5 votos)"
+        "text": "Why testing Bigtable... by definition Google would absorb practically any load... don't you trust Google? (5 votes)"
       },
       {
         "user": "Kayceetalks",
-        "text": "Argumenta a favor de A, B, F basándose en la necesidad de aislar y validar el esquema. (4 votos)"
+        "text": "Argues in favor of A, B, F based on the need to isolate and validate the schema. (4 votes)"
       },
       {
         "user": "AK2020",
-        "text": "There is no relevance to D here. So ABF. (4 votos)"
+        "text": "There is no relevance to D here. So ABF. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5172,27 +5172,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "hannibal1969",
-        "text": "I think it's B... gcsfuse will write to GCS which is much slower than writing directly to an added SSD... Writing to the extra SSD would be my recommended solution. (54 votos)"
+        "text": "I think it's B... gcsfuse will write to GCS which is much slower than writing directly to an added SSD... Writing to the extra SSD would be my recommended solution. (54 votes)"
       },
       {
         "user": "Rathish",
-        "text": "Ans: B. Persistent Disk snapshot not required: 'They need to take backups of a specific database...' Attached Local SSD has advantage in this case, since there is no network involved. (16 votos)"
+        "text": "Ans: B. Persistent Disk snapshot not required: 'They need to take backups of a specific database...' Attached Local SSD has advantage in this case, since there is no network involved. (16 votes)"
       },
       {
         "user": "tartar",
-        "text": "B. (10 votos)"
+        "text": "B. (10 votes)"
       },
       {
         "user": "blitzzzz",
-        "text": "Who wants to backup to a local SSD? If your instance is down, you lost all data. (5 votos)"
+        "text": "Who wants to backup to a local SSD? If your instance is down, you lost all data. (5 votes)"
       },
       {
         "user": "raf2121",
-        "text": "Debate si el SSD local puede ser montado en instancias en ejecución. (4 votos)"
+        "text": "Debates whether local SSD can be mounted on running instances. (4 votes)"
       },
       {
         "user": "Pradeepkumar",
-        "text": "Cita las mejores prácticas oficiales de GCP: 'Use the local SSD to stage your backups and then push them to a Cloud Storage bucket.' (4 votos)"
+        "text": "Cites GCP's official best practices: 'Use the local SSD to stage your backups and then push them to a Cloud Storage bucket.' (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5228,27 +5228,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Eroc",
-        "text": "D is correct... Option C is not offered within GCP... B is talking about appending the file system... (31 votos)"
+        "text": "D is correct... Option C is not offered within GCP... B is talking about appending the file system... (31 votes)"
       },
       {
         "user": "ArthurL20",
-        "text": "Different zones and different project hence, you must use a bucket. (16 votos)"
+        "text": "Different zones and different project hence, you must use a bucket. (16 votes)"
       },
       {
         "user": "Sudipta",
-        "text": "Why Not B. (Proporciona links recientes indicando que el comportamiento de GCP ha cambiado.) (16 votos)"
+        "text": "Why Not B. (Provides recent links showing that GCP's behavior has changed.) (16 votes)"
       },
       {
         "user": "Jack_in_Large",
-        "text": "You can't use the snapshot created by another project. (13 votos)"
+        "text": "You can't use the snapshot created by another project. (13 votes)"
       },
       {
         "user": "JasminL",
-        "text": "I think the question has 2 different answers now as Google improved the snapshot function... (11 votos)"
+        "text": "I think the question has 2 different answers now as Google improved the snapshot function... (11 votes)"
       },
       {
         "user": "tartar",
-        "text": "D is ok (10 votos)"
+        "text": "D is ok (10 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5268,7 +5268,7 @@ export const QUESTIONS = [
       "Correct: Snapshot to custom image gives a shareable, versionable artifact that can boot instances in another project and region and be replaced as production changes."
     ],
     "resolvedBy": "gemini-2026-08",
-    "legacyNote": "Los snapshots de Compute Engine ya son globales y compartibles entre proyectos, así que hoy la opción B también funcionaría. La ruta snapshot → imagen personalizada sigue siendo la respuesta del examen."
+    "legacyNote": "Compute Engine snapshots are now global and shareable across projects, so today option B would also work. The snapshot → custom image path is still the exam answer."
   },
   {
     "id": 161,
@@ -5286,27 +5286,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "clouddude",
-        "text": "I am going to go with C. Answer A doesn't seem to fit because the matter of when a VM was created... C focuses on logging, the selection of network events... (19 votos)"
+        "text": "I am going to go with C. Answer A doesn't seem to fit because the matter of when a VM was created... C focuses on logging, the selection of network events... (19 votes)"
       },
       {
         "user": "Eroc",
-        "text": "When you search for Create Insert, it displays a JSON code string that contains the creator's e-mail (17 votos)"
+        "text": "When you search for Create Insert, it displays a JSON code string that contains the creator's e-mail (17 votes)"
       },
       {
         "user": "tartar",
-        "text": "C is ok (14 votos)"
+        "text": "C is ok (14 votes)"
       },
       {
         "user": "cloudmon",
-        "text": "Se queja de tener que memorizar esto, pero valida la opción de Logging en la consola. (12 votos)"
+        "text": "Complains about having to memorize this, but confirms the Logging option in the console. (12 votes)"
       },
       {
         "user": "willan",
-        "text": "Agree, C (3 votos)"
+        "text": "Agree, C (3 votes)"
       },
       {
         "user": "n_nana",
-        "text": "Question is asking about network origin creation not VM creation. That's why it is C (3 votos)"
+        "text": "Question is asking about network origin creation not VM creation. That's why it is C (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5325,7 +5325,7 @@ export const QUESTIONS = [
       "Correct: Filtering on the GCE Network resource and the insert entry surfaces the audit record whose payload names the principal that created the network.",
       "Wrong: Operating system login records inside the VM show who connected to that machine, not who provisioned the network through the Google Cloud API."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 160,
@@ -5343,27 +5343,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "rishab86",
-        "text": "Answer is definitely D. A longer randomized prefix provides more effective auto-scaling when ramping to very high read and write rates... (39 votos)"
+        "text": "Answer is definitely D. A longer randomized prefix provides more effective auto-scaling when ramping to very high read and write rates... (39 votes)"
       },
       {
         "user": "cloudstd",
-        "text": "Answer: C (8 votos)"
+        "text": "Answer: C (8 votes)"
       },
       {
         "user": "joe2211",
-        "text": "Selected Answer: D. vote D (5 votos)"
+        "text": "Selected Answer: D. vote D (5 votes)"
       },
       {
         "user": "ptsironis",
-        "text": "Why not option B?? (4 votos)"
+        "text": "Why not option B?? (4 votes)"
       },
       {
         "user": "Mahmoud_E",
-        "text": "D is the correct answer. (Adjunta documentación de naming conventions.) (3 votos)"
+        "text": "D is the correct answer. (Attaches naming conventions documentation.) (3 votes)"
       },
       {
         "user": "marcohol",
-        "text": "I agree with D, but then, using a random prefix wouldn't it make it more difficult to retrieve the file? (2 votos)"
+        "text": "I agree with D, but then, using a random prefix wouldn't it make it more difficult to retrieve the file? (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5399,27 +5399,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AWS56",
-        "text": "I agree with C. (16 votos)"
+        "text": "I agree with C. (16 votes)"
       },
       {
         "user": "lynx256",
-        "text": "IMO C is ok. A and D are wrong because they are about changing the app - whereas in the task 'You want to help him ensure his application will run properly' (not REDESIGN)... (7 votos)"
+        "text": "IMO C is ok. A and D are wrong because they are about changing the app - whereas in the task 'You want to help him ensure his application will run properly' (not REDESIGN)... (7 votes)"
       },
       {
         "user": "ryaryarya",
-        "text": "Selected Answer: D. As an architect, it is our job to help design scalable and resilient systems. The developer has presented you with a poor design if session data is tied to one server... (2 votos)"
+        "text": "Selected Answer: D. As an architect, it is our job to help design scalable and resilient systems. The developer has presented you with a poor design if session data is tied to one server... (2 votes)"
       },
       {
         "user": "e5019c6",
-        "text": "Selected Answer: D. I think that, since the app is in design stage, it's totally valid to change its design to adapt to work better in the cloud... (3 votos)"
+        "text": "Selected Answer: D. I think that, since the app is in design stage, it's totally valid to change its design to adapt to work better in the cloud... (3 votes)"
       },
       {
         "user": "examch",
-        "text": "Selected Answer: C. Google Cloud HTTP(S)-based load balancers have native support for the WebSocket protocol... (3 votos)"
+        "text": "Selected Answer: C. Google Cloud HTTP(S)-based load balancers have native support for the WebSocket protocol... (3 votes)"
       },
       {
         "user": "NodummyIQ",
-        "text": "The answer is D. C is not the best answer because it does not address the issue of websockets and HTTP sessions not being distributed... (1 voto)"
+        "text": "The answer is D. C is not the best answer because it does not address the issue of websockets and HTTP sessions not being distributed... (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -5455,27 +5455,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AWS56",
-        "text": "B, https://cloud.google.com/compute/docs/autoscaler/ (24 votos)"
+        "text": "B, https://cloud.google.com/compute/docs/autoscaler/ (24 votes)"
       },
       {
         "user": "RVivek",
-        "text": "Selected Answer: B. Changing the tests as little as possible rules out C & D. Test takes several hours and you need to improve performance. Autoscaling with MIG will do it... (5 votos)"
+        "text": "Selected Answer: B. Changing the tests as little as possible rules out C & D. Test takes several hours and you need to improve performance. Autoscaling with MIG will do it... (5 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (7 votos)"
+        "text": "B is ok (7 votes)"
       },
       {
         "user": "SerGCP",
-        "text": "¿Por qué no A? La app personalizada podría no soportar autoescalado... (2 votos)"
+        "text": "Why not A? The custom app might not support autoscaling... (2 votes)"
       },
       {
         "user": "e5019c6",
-        "text": "Confirma que no hay otra respuesta válida: A no da beneficio de rendimiento, C no procesa C++, D es para apps web. (1 voto)"
+        "text": "Confirms there's no other valid answer: A gives no performance benefit, C doesn't process C++, D is for web apps. (1 vote)"
       },
       {
         "user": "plumbig11",
-        "text": "C++ test on prem == compute engine, in this case we need to scale if necessary so managed. (1 voto)"
+        "text": "C++ test on prem == compute engine, in this case we need to scale if necessary so managed. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -5494,7 +5494,7 @@ export const QUESTIONS = [
       "Wrong: Dataproc runs Hadoop and Spark jobs, so the entire suite would have to be rewritten as MapReduce, which is the opposite of changing the tests as little as possible.",
       "Wrong: App Engine targets web applications and would require substantial adaptation of a C++ test harness."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 157,
@@ -5512,27 +5512,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "pr2web",
-        "text": "Answer is D. La pregunta trata sobre alinear a CADA cliente con sus nodos dedicados (D), no con un grupo de nodos (C). compute.googleapis.com/node-name (63 votos)"
+        "text": "Answer is D. The question is about aligning EACH customer with their dedicated nodes (D), not with a node group (C). compute.googleapis.com/node-name (63 votes)"
       },
       {
         "user": "Binoz",
-        "text": "D. Affinity should be set at node level, not node-group as every client has its own node in the group (18 votos)"
+        "text": "D. Affinity should be set at node level, not node-group as every client has its own node in the group (18 votes)"
       },
       {
         "user": "MikeB19",
-        "text": "That's what I thought too (7 votos)"
+        "text": "That's what I thought too (7 votes)"
       },
       {
         "user": "deenee",
-        "text": "D: Node affinity labels are key-value pairs assigned to nodes... (4 votos)"
+        "text": "D: Node affinity labels are key-value pairs assigned to nodes... (4 votes)"
       },
       {
         "user": "Andras2k",
-        "text": "I had this question recently... went with D. After doing some investigation, that seems to be the right answer. (3 votos)"
+        "text": "I had this question recently... went with D. After doing some investigation, that seems to be the right answer. (3 votes)"
       },
       {
         "user": "plumbig11",
-        "text": "Affinity label only for dedicated nodes, not a node group. (2 votos)"
+        "text": "Affinity label only for dedicated nodes, not a node group. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5568,27 +5568,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Craigenator",
-        "text": "Without the discussion this site would be useless... Majority of answers are wrong... (72 votos)"
+        "text": "Without the discussion this site would be useless... Majority of answers are wrong... (72 votes)"
       },
       {
         "user": "diaga2",
-        "text": "C is the recommended one https://cloud.google.com/vpc-service-controls/docs/overview (31 votos)"
+        "text": "C is the recommended one https://cloud.google.com/vpc-service-controls/docs/overview (31 votes)"
       },
       {
         "user": "nkit",
-        "text": "Going by definition - VPC Service Controls improves your ability to mitigate the risk of data exfiltration... (7 votos)"
+        "text": "Going by definition - VPC Service Controls improves your ability to mitigate the risk of data exfiltration... (7 votes)"
       },
       {
         "user": "squishy_fishy",
-        "text": "Correct answer is C. Security benefits of VPC Service Controls: Data exfiltration by malicious insiders... (3 votos)"
+        "text": "Correct answer is C. Security benefits of VPC Service Controls: Data exfiltration by malicious insiders... (3 votes)"
       },
       {
         "user": "examch",
-        "text": "C is the correct answer. To secure data from exfiltration... we use VPC Service Controls. For private access... we use Private Google Access. (2 votos)"
+        "text": "C is the correct answer. To secure data from exfiltration... we use VPC Service Controls. For private access... we use Private Google Access. (2 votes)"
       },
       {
         "user": "thewalker",
-        "text": "VPC Service Controls is required to stop data exfiltration. Hence C (2 votos)"
+        "text": "VPC Service Controls is required to stop data exfiltration. Hence C (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5624,27 +5624,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "pr2web",
-        "text": "Answer is D. Rightsizing provides cost-based recommendations based on the current CPU and RAM configuration of the on-premises VM... (56 votos)"
+        "text": "Answer is D. Rightsizing provides cost-based recommendations based on the current CPU and RAM configuration of the on-premises VM... (56 votes)"
       },
       {
         "user": "cloudmon",
-        "text": "It's definitely D... algorithm is suited to workloads that follow weekly patterns, which matches 'consistent usage pattern over multiple weeks'. Option A focuses only on CPU, not memory. (9 votos)"
+        "text": "It's definitely D... algorithm is suited to workloads that follow weekly patterns, which matches 'consistent usage pattern over multiple weeks'. Option A focuses only on CPU, not memory. (9 votes)"
       },
       {
         "user": "cloudmon",
-        "text": "I've noticed a pattern... cloud provider wants to advertise their recommendation engine. (4 votos)"
+        "text": "I've noticed a pattern... cloud provider wants to advertise their recommendation engine. (4 votes)"
       },
       {
         "user": "shekarcfc",
-        "text": "A, the benefit of moving to cloud is scaling based on load... (4 votos)"
+        "text": "A, the benefit of moving to cloud is scaling based on load... (4 votes)"
       },
       {
         "user": "e5019c6",
-        "text": "I chose A at first... but Rightsizing Recommendations can give an estimate with less time too. (3 votos)"
+        "text": "I chose A at first... but Rightsizing Recommendations can give an estimate with less time too. (3 votes)"
       },
       {
         "user": "SerGCP",
-        "text": "A, application may not support horizontal scaling. B, dockerize is not a requirement. C, too expensive. D, simple and works. (3 votos)"
+        "text": "A, application may not support horizontal scaling. B, dockerize is not a requirement. C, too expensive. D, simple and works. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5680,27 +5680,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "vladik820",
-        "text": "C is ok. https://cloud.google.com/blog/products/gcp/how-to-deploy-geographically-distributed-services-on-kubernetes-engine-with-kubemci (37 votos)"
+        "text": "C is ok. https://cloud.google.com/blog/products/gcp/how-to-deploy-geographically-distributed-services-on-kubernetes-engine-with-kubemci (37 votes)"
       },
       {
         "user": "Rzla",
-        "text": "Problem with A is that a service load balancer is not L7 HTTPS. The question is outdated, the answer would have been C. Now it would be Anthos multi cluster ingress. (14 votos)"
+        "text": "Problem with A is that a service load balancer is not L7 HTTPS. The question is outdated, the answer would have been C. Now it would be Anthos multi cluster ingress. (14 votes)"
       },
       {
         "user": "Lk9876",
-        "text": "I'm not sure about C. kubemci is deprecated... I'll go with A (11 votos)"
+        "text": "I'm not sure about C. kubemci is deprecated... I'll go with A (11 votes)"
       },
       {
         "user": "mikesp",
-        "text": "Me too. CDN does not make sense (6 votos)"
+        "text": "Me too. CDN does not make sense (6 votes)"
       },
       {
         "user": "cotam",
-        "text": "That's actually not true. Service of type LoadBalancer is a service from K8s point of view, which creates L7 HTTP(S)... (5 votos)"
+        "text": "That's actually not true. Service of type LoadBalancer is a service from K8s point of view, which creates L7 HTTP(S)... (5 votes)"
       },
       {
         "user": "ale_brd_111",
-        "text": "Answer is C but kubemci is deprecated... Multi Cluster Ingress is a cloud-hosted controller... (5 votos)"
+        "text": "Answer is C but kubemci is deprecated... Multi Cluster Ingress is a cloud-hosted controller... (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5720,7 +5720,7 @@ export const QUESTIONS = [
       "Wrong: More CPU and memory in us-central1 cannot shorten the physical network distance between Asia and North America."
     ],
     "resolvedBy": "gemini-2026-08",
-    "legacyNote": "kubemci está deprecado. Hoy se usa Multi Cluster Ingress o la Gateway API multi-clúster. El concepto evaluado (balanceo global L7 sobre varios clústeres) sigue vigente."
+    "legacyNote": "kubemci is deprecated. Today you use Multi Cluster Ingress or the multi-cluster Gateway API. The concept being tested (global L7 load balancing across several clusters) still applies."
   },
   {
     "id": 153,
@@ -5738,27 +5738,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "vladik820",
-        "text": "A is ok. https://cloud.google.com/service-mesh/docs/observability/slo-overview (25 votos)"
+        "text": "A is ok. https://cloud.google.com/service-mesh/docs/observability/slo-overview (25 votes)"
       },
       {
         "user": "examch",
-        "text": "Selected Answer: A. Cloud Monitoring can trigger an alert when a Service is on track to violate an SLO... (5 votos)"
+        "text": "Selected Answer: A. Cloud Monitoring can trigger an alert when a Service is on track to violate an SLO... (5 votes)"
       },
       {
         "user": "technodev",
-        "text": "Got this question in my exam, answered A (4 votos)"
+        "text": "Got this question in my exam, answered A (4 votes)"
       },
       {
         "user": "cchiaramelli",
-        "text": "'Google Cloud Console to define a Service Level Objective (SLO)' seems odd, B doesn't seem wrong (4 votos)"
+        "text": "'Google Cloud Console to define a Service Level Objective (SLO)' seems odd, B doesn't seem wrong (4 votes)"
       },
       {
         "user": "ryzior",
-        "text": "I think A is about monitoring and alerting without any further investigation, while Trace is for finding the root cause/detective purposes... (3 votos)"
+        "text": "I think A is about monitoring and alerting without any further investigation, while Trace is for finding the root cause/detective purposes... (3 votes)"
       },
       {
         "user": "sivre",
-        "text": "Pregunta por qué no B y enlaza a las trazas en Service Mesh. (3 votos)"
+        "text": "Asks why not B and links to traces in Service Mesh. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5794,27 +5794,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "vladik820",
-        "text": "D is ok. https://cloud.google.com/storage/docs/gsutil/commands/hash (39 votos)"
+        "text": "D is ok. https://cloud.google.com/storage/docs/gsutil/commands/hash (39 votes)"
       },
       {
         "user": "Bahubali1988",
-        "text": "Seems most of the questions have wrong answers. If there is no discussion, it's highly difficult to get the right answers. (17 votos)"
+        "text": "Seems most of the questions have wrong answers. If there is no discussion, it's highly difficult to get the right answers. (17 votes)"
       },
       {
         "user": "Nuwan_SriLanka",
-        "text": "Selected Answer: D. Calculate hashes on local files, which can be used to compare with gsutil ls -L output... (5 votos)"
+        "text": "Selected Answer: D. Calculate hashes on local files, which can be used to compare with gsutil ls -L output... (5 votes)"
       },
       {
         "user": "Jay_Krish",
-        "text": "Duda cómo es posible hacer gsutil hash -c en archivos locales. (2 votos)"
+        "text": "Wonders how it's possible to run gsutil hash -c on local files. (2 votes)"
       },
       {
         "user": "binpan",
-        "text": "Correct Answer C... (2 votos)"
+        "text": "Correct Answer C... (2 votes)"
       },
       {
         "user": "SIMMEAT",
-        "text": "There is a hash option in gsutil for local files. (2 votos)"
+        "text": "There is a hash option in gsutil for local files. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5850,27 +5850,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Roncy",
-        "text": "D is right, refer to https://cloud.google.com/vpc/docs/serverless-vpc-access#use_cases (44 votos)"
+        "text": "D is right, refer to https://cloud.google.com/vpc/docs/serverless-vpc-access#use_cases (44 votes)"
       },
       {
         "user": "Besss",
-        "text": "D. Configuring serverless VPC access, App Engine can connect to the VPC and then through the VPN tunnel to the on-prem DB (18 votos)"
+        "text": "D. Configuring serverless VPC access, App Engine can connect to the VPC and then through the VPN tunnel to the on-prem DB (18 votes)"
       },
       {
         "user": "theBestStudent",
-        "text": "Answer is D. Here the explanation: 1- We have a VPC. 2- We have an onprem DB. 3- App Engine runs isolated. 4- VPC connects to on-prem via VPN. 5- App Engine needs Serverless VPC access to enter the VPC. (17 votos)"
+        "text": "Answer is D. Here the explanation: 1- We have a VPC. 2- We have an onprem DB. 3- App Engine runs isolated. 4- VPC connects to on-prem via VPN. 5- App Engine needs Serverless VPC access to enter the VPC. (17 votes)"
       },
       {
         "user": "cloudguy2",
-        "text": "D is correct. Use case example: Your serverless environment needs to access data from your on-premises database through Cloud VPN. (10 votos)"
+        "text": "D is correct. Use case example: Your serverless environment needs to access data from your on-premises database through Cloud VPN. (10 votes)"
       },
       {
         "user": "jay9114",
-        "text": "Upvote if there was no mention of 'serverless VPC access' in the training videos... (9 votos)"
+        "text": "Upvote if there was no mention of 'serverless VPC access' in the training videos... (9 votes)"
       },
       {
         "user": "JC0926",
-        "text": "Explica por qué A, B y C son incorrectas y validan la D. (6 votos)"
+        "text": "Explains why A, B and C are incorrect and confirm D. (6 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5906,27 +5906,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "ACE_ASPIRE",
-        "text": "Cloud NAT is the correct answer (33 votos)"
+        "text": "Cloud NAT is the correct answer (33 votes)"
       },
       {
         "user": "RitwickKumar",
-        "text": "Selected Answer: A... 'B' can never be an answer here as Private Google Access enables internal access to Google APIs only whereas in the question the ask is 'access to third-party services on the internet'. (26 votos)"
+        "text": "Selected Answer: A... 'B' can never be an answer here as Private Google Access enables internal access to Google APIs only whereas in the question the ask is 'access to third-party services on the internet'. (26 votes)"
       },
       {
         "user": "jlambdan",
-        "text": "(Comentario sobre la calidad de las respuestas oficiales del sitio.) (13 votos)"
+        "text": "(Comment on the quality of the site's official answers.) (13 votes)"
       },
       {
         "user": "KongsMom",
-        "text": "B is right... (3 votos)"
+        "text": "B is right... (3 votes)"
       },
       {
         "user": "examch",
-        "text": "Selected Answer: A. Granting private nodes outbound internet access... use Cloud NAT to create and configure a Cloud Router. (4 votos)"
+        "text": "Selected Answer: A. Granting private nodes outbound internet access... use Cloud NAT to create and configure a Cloud Router. (4 votes)"
       },
       {
         "user": "dbsmk",
-        "text": "A. https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters (3 votos)"
+        "text": "A. https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -5962,27 +5962,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "victory108",
-        "text": "B. Create a key with Cloud Key Management Service (KMS). Set the encryption key on the bucket to the Cloud KMS key. (32 votos)"
+        "text": "B. Create a key with Cloud Key Management Service (KMS). Set the encryption key on the bucket to the Cloud KMS key. (32 votes)"
       },
       {
         "user": "SweetieS",
-        "text": "B is OK. (9 votos)"
+        "text": "B is OK. (9 votes)"
       },
       {
         "user": "JC0926",
-        "text": "To rotate the encryption key... it is recommended to use Cloud KMS. You can create a new key version, set it as the primary version, and update the bucket's default KMS key... This approach provides security and compliance. (4 votos)"
+        "text": "To rotate the encryption key... it is recommended to use Cloud KMS. You can create a new key version, set it as the primary version, and update the bucket's default KMS key... This approach provides security and compliance. (4 votes)"
       },
       {
         "user": "RitwickKumar",
-        "text": "As per question: 'your company must be able to rotate the encryption key'. It is easily possible with KMS. (3 votos)"
+        "text": "As per question: 'your company must be able to rotate the encryption key'. It is easily possible with KMS. (3 votes)"
       },
       {
         "user": "vc1011",
-        "text": "Comenta sobre las restricciones de las CSEK: you cannot encrypt an object with a customer-managed encryption key by updating the object's metadata... this makes rotating keys difficult. (2 votos)"
+        "text": "Comments on CSEK restrictions: you cannot encrypt an object with a customer-managed encryption key by updating the object's metadata... this makes rotating keys difficult. (2 votes)"
       },
       {
         "user": "Ric350",
-        "text": "'Your company must be able to rotate the encryption key' is the requirement which eliminates CSEK... (2 votos)"
+        "text": "'Your company must be able to rotate the encryption key' is the requirement which eliminates CSEK... (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -6018,27 +6018,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "alexandercamachop",
-        "text": "The answer is easy. It says keys must be left outside of Google Cloud. This automatically eliminates A / B. Now the C option says decrypts before storing it in BigQuery... D is the only possible answer. (20 votos)"
+        "text": "The answer is easy. It says keys must be left outside of Google Cloud. This automatically eliminates A / B. Now the C option says decrypts before storing it in BigQuery... D is the only possible answer. (20 votes)"
       },
       {
         "user": "SweetieS",
-        "text": "D is OK. (17 votos)"
+        "text": "D is OK. (17 votes)"
       },
       {
         "user": "devnul",
-        "text": "Menciona que la documentación dice que BigQuery no soporta CSEK, pero demuestra con un test que importando la clave externa a KMS funciona. (4 votos)"
+        "text": "Mentions that the documentation says BigQuery doesn't support CSEK, but shows with a test that importing the external key into KMS works. (4 votes)"
       },
       {
         "user": "NodummyIQ",
-        "text": "Argumenta a favor de CMEK y explica el error semántico de la pregunta. (4 votos)"
+        "text": "Argues in favor of CMEK and explains the semantic error in the question. (4 votes)"
       },
       {
         "user": "Sephethus",
-        "text": "Except that BigQuery doesn't support customer supplied keys outside of GCP. (3 votos)"
+        "text": "Except that BigQuery doesn't support customer supplied keys outside of GCP. (3 votes)"
       },
       {
         "user": "plumbig11",
-        "text": "Selected Answer: D. Import key and BigQuery. (2 votos)"
+        "text": "Selected Answer: D. Import key and BigQuery. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -6058,7 +6058,7 @@ export const QUESTIONS = [
       "Correct: Importing an externally generated key into Cloud KMS and applying it to the BigQuery dataset is the only option meeting both requirements, despite the customer-supplied wording."
     ],
     "resolvedBy": "gemini-2026-08",
-    "legacyNote": "El enunciado dice “customer-supplied key”, pero BigQuery usa CMEK (customer-managed). Es un error de redacción del examen original; el mecanismo correcto es importar la clave externa a Cloud KMS."
+    "legacyNote": "The question says “customer-supplied key”, but BigQuery uses CMEK (customer-managed). It's a wording error in the original exam; the correct mechanism is to import the external key into Cloud KMS."
   },
   {
     "id": 147,
@@ -6076,27 +6076,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "juma_david",
-        "text": "Answer C. (45 votos)"
+        "text": "Answer C. (45 votes)"
       },
       {
         "user": "[Removed]",
-        "text": "C is right answer... gcs-fuse is slower than a regional SSD PD. (42 votos)"
+        "text": "C is right answer... gcs-fuse is slower than a regional SSD PD. (42 votes)"
       },
       {
         "user": "zetalexg",
-        "text": "Admins please take some time and redo the answers, put them to match at least the most voted ones... (7 votos)"
+        "text": "Admins please take some time and redo the answers, put them to match at least the most voted ones... (7 votes)"
       },
       {
         "user": "ashrafh",
-        "text": "Regional persistent disk is a storage option that provides synchronous replication of data between two zones in a region. Regional persistent disks can be a good building block to use when you implement HA services. (2 votos)"
+        "text": "Regional persistent disk is a storage option that provides synchronous replication of data between two zones in a region. Regional persistent disks can be a good building block to use when you implement HA services. (2 votes)"
       },
       {
         "user": "plumbig11",
-        "text": "Selected Answer: C. Regional persistent disk (1 voto)"
+        "text": "Selected Answer: C. Regional persistent disk (1 vote)"
       },
       {
         "user": "afsarkhan",
-        "text": "C makes better sense than any other option. (1 voto)"
+        "text": "C makes better sense than any other option. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -6132,27 +6132,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "pr2web",
-        "text": "This is pretty simple. Time to transfer using Transfer Appliance: 1-3 weeks... Time to transfer using 1Gbps: ~30 hours. Answer is D, using gsutil. (108 votos)"
+        "text": "This is pretty simple. Time to transfer using Transfer Appliance: 1-3 weeks... Time to transfer using 1Gbps: ~30 hours. Answer is D, using gsutil. (108 votes)"
       },
       {
         "user": "gingerbeer",
-        "text": "Discute el debate entre B y D, asumiendo que gsutil aplica solo para menos de 1TB. (21 votos)"
+        "text": "Discusses the debate between B and D, assuming gsutil only applies to less than 1TB. (21 votes)"
       },
       {
         "user": "cloudguy2",
-        "text": "Defiende B basándose en recomendaciones antiguas de documentación de Google. (15 votos)"
+        "text": "Defends B based on old Google documentation recommendations. (15 votes)"
       },
       {
         "user": "joe2211",
-        "text": "Menciona que la pregunta busca 'Google-recommended practices'. (8 votos)"
+        "text": "Mentions that the question is looking for 'Google-recommended practices'. (8 votes)"
       },
       {
         "user": "MikeB19",
-        "text": "Argumenta sobre la matriz de transferencia de Google según el tamaño de datos. (3 votos)"
+        "text": "Argues based on Google's transfer matrix by data size. (3 votes)"
       },
       {
         "user": "eff12c1",
-        "text": "Selected Answer: D. For a 10-TB export over a 1-Gbps link, compress it and use parallel gsutil -m upload... Transfer Appliance is overkill for 10 TB when you have 1 Gbps bandwidth. (2 votos)"
+        "text": "Selected Answer: D. For a 10-TB export over a 1-Gbps link, compress it and use parallel gsutil -m upload... Transfer Appliance is overkill for 10 TB when you have 1 Gbps bandwidth. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -6188,27 +6188,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "diaga2",
-        "text": "C is fine. (15 votos)"
+        "text": "C is fine. (15 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Option C... Binary Authorization is a feature of Google Kubernetes Engine that allows you to enforce policies on the images that are deployed to your clusters... ensure that only images that have been attested by an authorized entity are allowed. (13 votos)"
+        "text": "Option C... Binary Authorization is a feature of Google Kubernetes Engine that allows you to enforce policies on the images that are deployed to your clusters... ensure that only images that have been attested by an authorized entity are allowed. (13 votes)"
       },
       {
         "user": "vincy2202",
-        "text": "C is the correct answer. (6 votos)"
+        "text": "C is the correct answer. (6 votes)"
       },
       {
         "user": "AzureDP900",
-        "text": "C is right. Binary Authorization implements a policy model, where a policy is a set of rules that governs the deployment of container images. (4 votos)"
+        "text": "C is right. Binary Authorization implements a policy model, where a policy is a set of rules that governs the deployment of container images. (4 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Explica en detalle por qué las opciones A, B y D son incorrectas. (2 votos)"
+        "text": "Explains in detail why options A, B and D are incorrect. (2 votes)"
       },
       {
         "user": "AnilKr",
-        "text": "C is correct, Binary Authorization is the solution. (2 votos)"
+        "text": "C is correct, Binary Authorization is the solution. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -6244,27 +6244,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Manh",
-        "text": "It's B (16 votos)"
+        "text": "It's B (16 votes)"
       },
       {
         "user": "victory108",
-        "text": "Cita la respuesta completa B validándola. (10 votos)"
+        "text": "Quotes the full answer B, confirming it. (10 votes)"
       },
       {
         "user": "edilramos",
-        "text": "B is ideal for minimal maintenance and maximum overview of IAM permissions as each department's projects start and end. Managing users inside Groups will make it easier. (5 votos)"
+        "text": "B is ideal for minimal maintenance and maximum overview of IAM permissions as each department's projects start and end. Managing users inside Groups will make it easier. (5 votes)"
       },
       {
         "user": "AnilKr",
-        "text": "B is correct, folder restructure per department and IAM permission for Group is recommended. (4 votos)"
+        "text": "B is correct, folder restructure per department and IAM permission for Group is recommended. (4 votes)"
       },
       {
         "user": "diaga2",
-        "text": "Yes, B (4 votos)"
+        "text": "Yes, B (4 votes)"
       },
       {
         "user": "danielfootc",
-        "text": "I would select B. (2 votos)"
+        "text": "I would select B. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -6300,27 +6300,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "vladik820",
-        "text": "D is ok. The data needs to be stored as it is retrieved. This would mean that any processing should be done after it is stored. (30 votos)"
+        "text": "D is ok. The data needs to be stored as it is retrieved. This would mean that any processing should be done after it is stored. (30 votes)"
       },
       {
         "user": "MaxNRG",
-        "text": "D, store RAW unstructured data as-is in Cloud Storage, and then define how to process it. Classical Data Lake ELT (Extract -> Load -> Transform). (7 votos)"
+        "text": "D, store RAW unstructured data as-is in Cloud Storage, and then define how to process it. Classical Data Lake ELT (Extract -> Load -> Transform). (7 votes)"
       },
       {
         "user": "technodev",
-        "text": "Got this question in my exam, answered D (4 votos)"
+        "text": "Got this question in my exam, answered D (4 votes)"
       },
       {
         "user": "jlambdan",
-        "text": "Here GCS is the lake. Not a copy. The data warehouse will be what comes out of the pipelines. (3 votos)"
+        "text": "Here GCS is the lake. Not a copy. The data warehouse will be what comes out of the pipelines. (3 votes)"
       },
       {
         "user": "devnul",
-        "text": "D. It aligns with an example in the Cloud Architecture Framework. (3 votos)"
+        "text": "D. It aligns with an example in the Cloud Architecture Framework. (3 votes)"
       },
       {
         "user": "wykofc",
-        "text": "Both Bigtable and Datastore are NoSQL databases, question mentioned that data structure may change anytime. (2 votos)"
+        "text": "Both Bigtable and Datastore are NoSQL databases, question mentioned that data structure may change anytime. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -6356,27 +6356,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "vladik820",
-        "text": "B is ok (21 votos)"
+        "text": "B is ok (21 votes)"
       },
       {
         "user": "SweetieS",
-        "text": "B is ok. (13 votos)"
+        "text": "B is ok. (13 votes)"
       },
       {
         "user": "cugena",
-        "text": "Cita la documentación: Source code is written in specific versions... Go 1.11, Go 1.12... (8 votos)"
+        "text": "Cites the documentation: Source code is written in specific versions... Go 1.11, Go 1.12... (8 votes)"
       },
       {
         "user": "tmnd91",
-        "text": "Selected Answer: B. App Engine standard has autoscaling out of the box, supports Go 1.12 and can scale down to 0 to save money. (6 votos)"
+        "text": "Selected Answer: B. App Engine standard has autoscaling out of the box, supports Go 1.12 and can scale down to 0 to save money. (6 votes)"
       },
       {
         "user": "cugena",
-        "text": "Intended to run for free or at very low cost... Experiences sudden and extreme spikes of traffic which require immediate scaling. (4 votos)"
+        "text": "Intended to run for free or at very low cost... Experiences sudden and extreme spikes of traffic which require immediate scaling. (4 votes)"
       },
       {
         "user": "munnysh",
-        "text": "App Engine standard environment supports Go and also handles the unpredictable load. (3 votos)"
+        "text": "App Engine standard environment supports Go and also handles the unpredictable load. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -6412,27 +6412,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "djosani",
-        "text": "Developer shouldn't tag or comment every commit with some specific data... I'd go with C as it's an automated, error-less approach that answers the question. (36 votos)"
+        "text": "Developer shouldn't tag or comment every commit with some specific data... I'd go with C as it's an automated, error-less approach that answers the question. (36 votes)"
       },
       {
         "user": "victory108",
-        "text": "C. Make the container tag match the source code commit hash. (16 votos)"
+        "text": "C. Make the container tag match the source code commit hash. (16 votes)"
       },
       {
         "user": "ynoot",
-        "text": "If you got the commit hash from the container you can check the corresponding commit in the git repository. So the change... can be audited. (11 votos)"
+        "text": "If you got the commit hash from the container you can check the corresponding commit in the git repository. So the change... can be audited. (11 votes)"
       },
       {
         "user": "ridyr",
-        "text": "Cita las mejores prácticas de Google: By design, the Git commit hash is immutable and references a specific version of your software... Doing so makes Docker images traceable. (7 votos)"
+        "text": "Cites Google's best practices: By design, the Git commit hash is immutable and references a specific version of your software... Doing so makes Docker images traceable. (7 votes)"
       },
       {
         "user": "tmnd91",
-        "text": "Selected Answer: C. Humans are unreliable. (6 votos)"
+        "text": "Selected Answer: C. Humans are unreliable. (6 votes)"
       },
       {
         "user": "Narinder",
-        "text": "Debatía que la opción A era mejor si no usabas contenedores. (5 votos)"
+        "text": "Argued that option A was better if you weren't using containers. (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -6468,27 +6468,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Rzla",
-        "text": "Answer is D. num_undelivered_messages metric can indicate if subscribers are keeping up with message submissions. (41 votos)"
+        "text": "Answer is D. num_undelivered_messages metric can indicate if subscribers are keeping up with message submissions. (41 votes)"
       },
       {
         "user": "aut0pil0t",
-        "text": "Provee el yaml exacto de GCP confirmando que se usa num_undelivered_messages en un HorizontalPodAutoscaler. (23 votos)"
+        "text": "Provides the exact GCP yaml confirming that num_undelivered_messages is used in a HorizontalPodAutoscaler. (23 votes)"
       },
       {
         "user": "GopeshSahu",
-        "text": "Comparte el enlace del tutorial de autoescalado de Kubernetes basado en métricas de Pub/Sub. (5 votos)"
+        "text": "Shares the link to the Kubernetes autoscaling tutorial based on Pub/Sub metrics. (5 votes)"
       },
       {
         "user": "gcppandit",
-        "text": "The problem says PULL request and B is related to PUSH request. I do not think it is related. (4 votos)"
+        "text": "The problem says PULL request and B is related to PUSH request. I do not think it is related. (4 votes)"
       },
       {
         "user": "Sephethus",
-        "text": "(Reflexión sobre la métrica apropiada para colas.) (4 votos)"
+        "text": "(Thoughts on the right metric for queues.) (4 votes)"
       },
       {
         "user": "rishab86",
-        "text": "D is correct! (2 votos)"
+        "text": "D is correct! (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7084,27 +7084,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "MamthaSJ",
-        "text": "Answer is A (29 votos)"
+        "text": "Answer is A (29 votes)"
       },
       {
         "user": "PeppaPig",
-        "text": "Answer is A 100%. B is incorrect. Ingress comes with an HTTP(S) LB with external IP hence is not needed for communications within the cluster internally. (20 votos)"
+        "text": "Answer is A 100%. B is incorrect. Ingress comes with an HTTP(S) LB with external IP hence is not needed for communications within the cluster internally. (20 votes)"
       },
       {
         "user": "jay9114",
-        "text": "Selected Answer: A. Benefit of using Service: leveraging service allows you to set up your environment with static IP addresses... Using DNS for your Service you can look up Services and/or Pods by name instead of IP. (10 votos)"
+        "text": "Selected Answer: A. Benefit of using Service: leveraging service allows you to set up your environment with static IP addresses... Using DNS for your Service you can look up Services and/or Pods by name instead of IP. (10 votes)"
       },
       {
         "user": "JoeyCASD",
-        "text": "Vote A. 1. Based on the description 'configure each microservice with a specific number of replicas', it's a hint to use either Deployment or StatefulSet... 2. Ingress with external HTTP LB is not needed internally. (9 votos)"
+        "text": "Vote A. 1. Based on the description 'configure each microservice with a specific number of replicas', it's a hint to use either Deployment or StatefulSet... 2. Ingress with external HTTP LB is not needed internally. (9 votes)"
       },
       {
         "user": "wooloo",
-        "text": "Each microservice with a specific number of replicas = Deployment. Internal to the cluster = Service. (8 votos)"
+        "text": "Each microservice with a specific number of replicas = Deployment. Internal to the cluster = Service. (8 votes)"
       },
       {
         "user": "azureaspirant",
-        "text": "2/15/21 exam (6 votos)"
+        "text": "2/15/21 exam (6 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7140,27 +7140,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Enzian",
-        "text": "Any correct answer must involve Cloud Bigtable over BigQuery since Bigtable is optimized for heavy write loads. That leaves B and D. I would suggest B because it is lower cost ('The business wants to keep costs low') (81 votos)"
+        "text": "Any correct answer must involve Cloud Bigtable over BigQuery since Bigtable is optimized for heavy write loads. That leaves B and D. I would suggest B because it is lower cost ('The business wants to keep costs low') (81 votes)"
       },
       {
         "user": "pakilodi",
-        "text": "Not only: occasionally there will be no requests, so Cloud Run will scale to zero (21 votos)"
+        "text": "Not only: occasionally there will be no requests, so Cloud Run will scale to zero (21 votes)"
       },
       {
         "user": "MamthaSJ",
-        "text": "B is correct answer. (16 votos)"
+        "text": "B is correct answer. (16 votes)"
       },
       {
         "user": "AmitRBS",
-        "text": "B. Agree. Additionally data needs to be stored now so use Bigtable as the question is not for analysing or data analytics. (4 votos)"
+        "text": "B. Agree. Additionally data needs to be stored now so use Bigtable as the question is not for analysing or data analytics. (4 votes)"
       },
       {
         "user": "convers39",
-        "text": "Selected Answer: B. (4 votos)"
+        "text": "Selected Answer: B. (4 votes)"
       },
       {
         "user": "pancakes22",
-        "text": "Selected Answer: B. There is no direct limit for the number of concurrent requests served by a Cloud Run service. (4 votos)"
+        "text": "Selected Answer: B. There is no direct limit for the number of concurrent requests served by a Cloud Run service. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7196,27 +7196,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "TotoroChina",
-        "text": "Answer should be D. (45 votos)"
+        "text": "Answer should be D. (45 votes)"
       },
       {
         "user": "victorlie",
-        "text": "Why are almost all answers wrong? (15 votos)"
+        "text": "Why are almost all answers wrong? (15 votes)"
       },
       {
         "user": "MamthaSJ",
-        "text": "Answer is D (12 votos)"
+        "text": "Answer is D (12 votes)"
       },
       {
         "user": "zr79",
-        "text": "To prevent us from memorizing the answers. (10 votos)"
+        "text": "To prevent us from memorizing the answers. (10 votes)"
       },
       {
         "user": "grejao",
-        "text": "The trick is: 'process that is consuming all available CPU' and 'autoscaling has reached the upper limit of instances'... after reaching the upper limit of instances, it doesn't matter the thresholds... So, option D is the best option. (9 votos)"
+        "text": "The trick is: 'process that is consuming all available CPU' and 'autoscaling has reached the upper limit of instances'... after reaching the upper limit of instances, it doesn't matter the thresholds... So, option D is the best option. (9 votes)"
       },
       {
         "user": "poseidon24",
-        "text": "Agree. Cannot be A, since changing the metric used for autoscaling will not solve the issue... the unique workaround is to allow introducing new nodes/workers/VMs. (9 votos)"
+        "text": "Agree. Cannot be A, since changing the metric used for autoscaling will not solve the issue... the unique workaround is to allow introducing new nodes/workers/VMs. (9 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7252,27 +7252,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "TotoroChina",
-        "text": "Answer should be C, obviously. (46 votos)"
+        "text": "Answer should be C, obviously. (46 votes)"
       },
       {
         "user": "AdGlad",
-        "text": "Question says 'relevant microservice will be deployed automatically in the development environment.' Therefore A and B are out. D says 'Rely on Vulnerability Scanning to ensure the code tests succeed.' Vulnerability Scanning is not test so D is out. The correct answer is therefore C. (44 votos)"
+        "text": "Question says 'relevant microservice will be deployed automatically in the development environment.' Therefore A and B are out. D says 'Rely on Vulnerability Scanning to ensure the code tests succeed.' Vulnerability Scanning is not test so D is out. The correct answer is therefore C. (44 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The correct answer is C: Create a Cloud Build trigger based on the development branch... To ensure that only code that has been properly tested and built is deployed... (8 votos)"
+        "text": "The correct answer is C: Create a Cloud Build trigger based on the development branch... To ensure that only code that has been properly tested and built is deployed... (8 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Option A is incorrect because installing a pre-commit hook on each developer's workstation does not ensure that the build and test process is followed consistently... (3 votos)"
+        "text": "Option A is incorrect because installing a pre-commit hook on each developer's workstation does not ensure that the build and test process is followed consistently... (3 votes)"
       },
       {
         "user": "de1001c",
-        "text": "Automatic, no developer running stuff... The C over D is because the pipeline in Cloud Build should run the tests, not the vulnerability scanner. (2 votos)"
+        "text": "Automatic, no developer running stuff... The C over D is because the pipeline in Cloud Build should run the tests, not the vulnerability scanner. (2 votes)"
       },
       {
         "user": "madmike123",
-        "text": "'any code change that has been pushed to the remote develop branch... should be built' - this excludes A and B since both happen locally... Answer D only performs security scanning (no test)... (1 voto)"
+        "text": "'any code change that has been pushed to the remote develop branch... should be built' - this excludes A and B since both happen locally... Answer D only performs security scanning (no test)... (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -7308,27 +7308,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "VishalB",
-        "text": "Answer A. If a bucket has a retention policy, objects in the bucket can only be deleted or replaced once their age is greater than the retention period. Once you lock a retention policy, you cannot remove it or reduce the retention period it has. (32 votos)"
+        "text": "Answer A. If a bucket has a retention policy, objects in the bucket can only be deleted or replaced once their age is greater than the retention period. Once you lock a retention policy, you cannot remove it or reduce the retention period it has. (32 votes)"
       },
       {
         "user": "azureaspirant",
-        "text": "2/15/21 exam (7 votos)"
+        "text": "2/15/21 exam (7 votes)"
       },
       {
         "user": "examch",
-        "text": "A is the correct answer. You can include a retention policy when creating a new bucket... Placing a retention policy on a bucket ensures that all current and future objects in the bucket cannot be deleted or replaced... (5 votos)"
+        "text": "A is the correct answer. You can include a retention policy when creating a new bucket... Placing a retention policy on a bucket ensures that all current and future objects in the bucket cannot be deleted or replaced... (5 votes)"
       },
       {
         "user": "joe2211",
-        "text": "Selected Answer: A. vote A (3 votos)"
+        "text": "Selected Answer: A. vote A (3 votes)"
       },
       {
         "user": "technodev",
-        "text": "Got this question in my exam, answered A (3 votos)"
+        "text": "Got this question in my exam, answered A (3 votes)"
       },
       {
         "user": "AnilKr",
-        "text": "Locking a retention policy is an irreversible action. Once locked, you must delete the entire bucket in order to remove the bucket's retention policy... (2 votos)"
+        "text": "Locking a retention policy is an irreversible action. Once locked, you must delete the entire bucket in order to remove the bucket's retention policy... (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7364,27 +7364,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AnilKr",
-        "text": "The Anthos Service Mesh pages in the Google Cloud Console provide both summary and in-depth metrics, charts, and graphs that enable you to observe service behavior... (23 votos)"
+        "text": "The Anthos Service Mesh pages in the Google Cloud Console provide both summary and in-depth metrics, charts, and graphs that enable you to observe service behavior... (23 votes)"
       },
       {
         "user": "MamthaSJ",
-        "text": "Answer is A (13 votos)"
+        "text": "Answer is A (13 votes)"
       },
       {
         "user": "VishalB",
-        "text": "Ans: A. Anthos Service Mesh's robust tracing, monitoring, and logging features give you deep insights into how your services are performing... (9 votos)"
+        "text": "Ans: A. Anthos Service Mesh's robust tracing, monitoring, and logging features give you deep insights into how your services are performing... (9 votes)"
       },
       {
         "user": "AnilKr",
-        "text": "Ans A (con link a documentación) (6 votos)"
+        "text": "Ans A (with a link to documentation) (6 votes)"
       },
       {
         "user": "victory108",
-        "text": "A. Use the Service Mesh visualization in the Cloud Console to inspect the telemetry between the microservices. (5 votos)"
+        "text": "A. Use the Service Mesh visualization in the Cloud Console to inspect the telemetry between the microservices. (5 votes)"
       },
       {
         "user": "technodev",
-        "text": "Got this question in my exam, answered A (5 votos)"
+        "text": "Got this question in my exam, answered A (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7420,27 +7420,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "TotoroChina",
-        "text": "Answer should be C... (36 votos)"
+        "text": "Answer should be C... (36 votes)"
       },
       {
         "user": "XDevX",
-        "text": "IMHO D is wrong, the correct answer is C. The requirement is explicitly POSIX filesystem - using gcsfuse, Cloud Storage still remains object storage... (16 votos)"
+        "text": "IMHO D is wrong, the correct answer is C. The requirement is explicitly POSIX filesystem - using gcsfuse, Cloud Storage still remains object storage... (16 votes)"
       },
       {
         "user": "Frollo",
-        "text": "FUSE is not POSIX (11 votos)"
+        "text": "FUSE is not POSIX (11 votes)"
       },
       {
         "user": "CloudWars",
-        "text": "Directly from the documentation of gcsfuse: While Cloud Storage FUSE has a file system interface, it is not like an NFS or CIFS file system on the backend. Additionally, Cloud Storage FUSE is not POSIX compliant... (8 votos)"
+        "text": "Directly from the documentation of gcsfuse: While Cloud Storage FUSE has a file system interface, it is not like an NFS or CIFS file system on the backend. Additionally, Cloud Storage FUSE is not POSIX compliant... (8 votes)"
       },
       {
         "user": "decw",
-        "text": "'For a POSIX file system product in Google Cloud, see Filestore.' (5 votos)"
+        "text": "'For a POSIX file system product in Google Cloud, see Filestore.' (5 votes)"
       },
       {
         "user": "JeffClarke111",
-        "text": "Agreed - C (5 votos)"
+        "text": "Agreed - C (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7476,27 +7476,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "TotoroChina",
-        "text": "According to the reference, answer should be A... (50 votos)"
+        "text": "According to the reference, answer should be A... (50 votes)"
       },
       {
         "user": "poseidon24",
-        "text": "Correct, from GCP best practices for GKE we should rely on native logging capabilities. No need for additional solutions like Prometheus. Also it is about reviewing logs, monitoring the service, not receiving alerts... (19 votos)"
+        "text": "Correct, from GCP best practices for GKE we should rely on native logging capabilities. No need for additional solutions like Prometheus. Also it is about reviewing logs, monitoring the service, not receiving alerts... (19 votes)"
       },
       {
         "user": "XDevX",
-        "text": "IMHO A is the correct answer, not C... The additional value of an alert is not clear - and it is not clear why we need additionally to install Prometheus... (19 votos)"
+        "text": "IMHO A is the correct answer, not C... The additional value of an alert is not clear - and it is not clear why we need additionally to install Prometheus... (19 votes)"
       },
       {
         "user": "victorlie",
-        "text": "Also, as long as you know there is a problem, I think you should investigate immediately the issue, not wait for new errors (6 votos)"
+        "text": "Also, as long as you know there is a problem, I think you should investigate immediately the issue, not wait for new errors (6 votes)"
       },
       {
         "user": "MF2C",
-        "text": "But updating cluster requires downtime, isn't it? (5 votos)"
+        "text": "But updating cluster requires downtime, isn't it? (5 votes)"
       },
       {
         "user": "Nick89GR",
-        "text": "No it actually does not require shutting down the cluster. (5 votos)"
+        "text": "No it actually does not require shutting down the cluster. (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7532,27 +7532,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "victory108",
-        "text": "B. Create a Debian-based Compute Engine instance, install and configure the application, and use OS patch management to install available updates. (24 votos)"
+        "text": "B. Create a Debian-based Compute Engine instance, install and configure the application, and use OS patch management to install available updates. (24 votes)"
       },
       {
         "user": "MamthaSJ",
-        "text": "Answer is B (9 votos)"
+        "text": "Answer is B (9 votes)"
       },
       {
         "user": "examch",
-        "text": "B is the correct answer. Use OS patch management to apply operating system patches across a set of Compute Engine VM instances... (6 votos)"
+        "text": "B is the correct answer. Use OS patch management to apply operating system patches across a set of Compute Engine VM instances... (6 votes)"
       },
       {
         "user": "Ric350",
-        "text": "Yes, patching the OS has nothing to do with the complicated configuration... The ask is 'you want to ensure that you can install Debian distribution updates (which is OS updates, not application updates) with minimal manual intervention'... The answer then is B. (6 votos)"
+        "text": "Yes, patching the OS has nothing to do with the complicated configuration... The ask is 'you want to ensure that you can install Debian distribution updates (which is OS updates, not application updates) with minimal manual intervention'... The answer then is B. (6 votes)"
       },
       {
         "user": "biswa_b",
-        "text": "(Votó por A, argumentando que reconstruir la instancia es mejor.) (3 votos)"
+        "text": "(Voted for A, arguing that rebuilding the instance is better.) (3 votes)"
       },
       {
         "user": "freecloud",
-        "text": "Can someone explain why the answer is not D? Isn't the best practice to use containers? (3 votos)"
+        "text": "Can someone explain why the answer is not D? Isn't the best practice to use containers? (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7594,27 +7594,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "XDevX",
-        "text": "According to my understanding the requirement is that only VM1 shall be able to communicate with VM2 and VM3, but not VM2 with VM3. We can exclude D as D would enable VM2 to communicate with VM3... (25 votos)"
+        "text": "According to my understanding the requirement is that only VM1 shall be able to communicate with VM2 and VM3, but not VM2 with VM3. We can exclude D as D would enable VM2 to communicate with VM3... (25 votes)"
       },
       {
         "user": "Ishu_awsguy",
-        "text": "The answer is B. The following link has this: 'Use multiple network interfaces when an individual instance needs access to more than one VPC network, but you don't want to connect both networks directly.' (13 votos)"
+        "text": "The answer is B. The following link has this: 'Use multiple network interfaces when an individual instance needs access to more than one VPC network, but you don't want to connect both networks directly.' (13 votes)"
       },
       {
         "user": "MamthaSJ",
-        "text": "Answer is B (11 votos)"
+        "text": "Answer is B (11 votes)"
       },
       {
         "user": "lazybeanbag",
-        "text": "I think it is because the instances are in separate VPCs. Google Cloud VPC networks are by default isolated private networking domains... (8 votos)"
+        "text": "I think it is because the instances are in separate VPCs. Google Cloud VPC networks are by default isolated private networking domains... (8 votes)"
       },
       {
         "user": "coutcin",
-        "text": "Instances already exist. You cannot add or remove additional NICs to a VM (7 votos)"
+        "text": "Instances already exist. You cannot add or remove additional NICs to a VM (7 votes)"
       },
       {
         "user": "sameer2803",
-        "text": "This link says a VM can have multiple NICs attached to different VPCs... so B is the answer (6 votos)"
+        "text": "This link says a VM can have multiple NICs attached to different VPCs... so B is the answer (6 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7650,27 +7650,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "TotoroChina",
-        "text": "Should be B, you want to minimize costs. https://cloud.google.com/dataproc/docs/concepts/compute/secondary-vms (69 votos)"
+        "text": "Should be B, you want to minimize costs. https://cloud.google.com/dataproc/docs/concepts/compute/secondary-vms (69 votes)"
       },
       {
         "user": "firecloud",
-        "text": "It's A, the primary workers can only be standard, where secondary workers can be preemptible... (35 votos)"
+        "text": "It's A, the primary workers can only be standard, where secondary workers can be preemptible... (35 votes)"
       },
       {
         "user": "zetalexg",
-        "text": "(Comentario fuera de tema.) (30 votos)"
+        "text": "(Off-topic comment.) (30 votes)"
       },
       {
         "user": "jasenmornin",
-        "text": "The question is very short and literally says 'You want to minimize costs' lol (14 votos)"
+        "text": "The question is very short and literally says 'You want to minimize costs' lol (14 votes)"
       },
       {
         "user": "Sukon_Desknot",
-        "text": "'without modifying the underlying infrastructure' is the watch word. Most likely did not utilize preemptible on-premises (8 votos)"
+        "text": "'without modifying the underlying infrastructure' is the watch word. Most likely did not utilize preemptible on-premises (8 votes)"
       },
       {
         "user": "xprtz1",
-        "text": "Learn to read before applying to the exam (8 votos)"
+        "text": "Learn to read before applying to the exam (8 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7689,7 +7689,7 @@ export const QUESTIONS = [
       "Wrong: Hand-deploying Hadoop on Compute Engine means owning cluster installation, scaling and upgrades, which is the management effort to be minimized.",
       "Wrong: This has the same manual management burden, and preemptible instances without Dataproc's managed handling make the cluster fragile."
     ],
-    "legacyNote": "Las preemptible VMs son hoy Spot VMs. En Dataproc solo los secondary workers pueden serlo; los primary deben ser estándar."
+    "legacyNote": "Preemptible VMs are now Spot VMs. In Dataproc only secondary workers can be Spot; primary workers must be standard."
   },
   {
     "id": 118,
@@ -7707,27 +7707,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "VishalB",
-        "text": "Correct Answer: A - IPs should not overlap so applying new IP addresses is the solution (44 votos)"
+        "text": "Correct Answer: A - IPs should not overlap so applying new IP addresses is the solution (44 votes)"
       },
       {
         "user": "TotoroChina",
-        "text": "Answer is C. https://cloud.google.com/network-connectivity/docs/router/how-to/advertising-custom-ip (37 votos)"
+        "text": "Answer is C. https://cloud.google.com/network-connectivity/docs/router/how-to/advertising-custom-ip (37 votes)"
       },
       {
         "user": "elenamatay",
-        "text": "You can't use Cloud NAT according to this documentation... Cloud NAT cannot apply to traffic sent to a next hop Cloud VPN tunnel... (17 votos)"
+        "text": "You can't use Cloud NAT according to this documentation... Cloud NAT cannot apply to traffic sent to a next hop Cloud VPN tunnel... (17 votes)"
       },
       {
         "user": "imgcp",
-        "text": "B is NOT correct. Cloud NAT is specifically used for translating the IP address of outbound packets destined to the Internet... (13 votos)"
+        "text": "B is NOT correct. Cloud NAT is specifically used for translating the IP address of outbound packets destined to the Internet... (13 votes)"
       },
       {
         "user": "RKS_2021",
-        "text": "Answer is B https://cloud.google.com/architecture/best-practices-vpc-design (10 votos)"
+        "text": "Answer is B https://cloud.google.com/architecture/best-practices-vpc-design (10 votes)"
       },
       {
         "user": "zanfo",
-        "text": "A is not correct... if you apply VPN with BGP, the actual IP address will be propagated... B is correct with custom route (9 votos)"
+        "text": "A is not correct... if you apply VPN with BGP, the actual IP address will be propagated... B is correct with custom route (9 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7763,27 +7763,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "TotoroChina",
-        "text": "Answer is B, it only requires zonal resiliency. Regional persistent disk is a storage option that provides synchronous replication of data between two zones in a region... (53 votos)"
+        "text": "Answer is B, it only requires zonal resiliency. Regional persistent disk is a storage option that provides synchronous replication of data between two zones in a region... (53 votes)"
       },
       {
         "user": "Ssoumya",
-        "text": "Answer is B (14 votos)"
+        "text": "Answer is B (14 votes)"
       },
       {
         "user": "windsor_43",
-        "text": "The answer is B. Just had my exam today with a pass, this question was in the exam. (5 votos)"
+        "text": "The answer is B. Just had my exam today with a pass, this question was in the exam. (5 votes)"
       },
       {
         "user": "AmitRBS",
-        "text": "B. Agree, clearly it's B. Focus on keyword 'zone' (4 votos)"
+        "text": "B. Agree, clearly it's B. Focus on keyword 'zone' (4 votes)"
       },
       {
         "user": "convers39",
-        "text": "Can you use the regional persistent disk in a different region? (3 votos)"
+        "text": "Can you use the regional persistent disk in a different region? (3 votes)"
       },
       {
         "user": "CosminCiuc",
-        "text": "If it is a regional persistent disk created in region A... how am I going to use a regional disk from region A in another region? I do not think it is possible. So answer D should be excluded... (2 votos)"
+        "text": "If it is a regional persistent disk created in region A... how am I going to use a regional disk from region A in another region? I do not think it is possible. So answer D should be excluded... (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7819,27 +7819,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "XDevX",
-        "text": "IMHO the correct answer is D, opportunistic mode, not C proactive mode. The requirement is not to update any running instances... (60 votos)"
+        "text": "IMHO the correct answer is D, opportunistic mode, not C proactive mode. The requirement is not to update any running instances... (60 votes)"
       },
       {
         "user": "victory108",
-        "text": "D. Start a new rolling update. Select the Opportunistic update mode. (12 votos)"
+        "text": "D. Start a new rolling update. Select the Opportunistic update mode. (12 votes)"
       },
       {
         "user": "shashii82",
-        "text": "Option C... Proactive update mode... allows you to roll out the update gradually without affecting the currently running instances. (4 votos)"
+        "text": "Option C... Proactive update mode... allows you to roll out the update gradually without affecting the currently running instances. (4 votes)"
       },
       {
         "user": "kip21",
-        "text": "D - Correct. Managed instance groups support two types of update... The MIG applies an opportunistic update only when you manually initiate it or when new instances are created. (3 votos)"
+        "text": "D - Correct. Managed instance groups support two types of update... The MIG applies an opportunistic update only when you manually initiate it or when new instances are created. (3 votes)"
       },
       {
         "user": "thewalker",
-        "text": "Argues for C by pasting documentation. (3 votos)"
+        "text": "Argues for C by pasting documentation. (3 votes)"
       },
       {
         "user": "spuyol",
-        "text": "Selected answer: D. 'To prevent any possible impact to the application, you don't want to update any running instances' - this is automatically achievable only by using opportunistic... (2 votos)"
+        "text": "Selected answer: D. 'To prevent any possible impact to the application, you don't want to update any running instances' - this is automatically achievable only by using opportunistic... (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7875,27 +7875,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "TotoroChina",
-        "text": "Should be A. For all Google Cloud services secured with VPC Service Controls, you can ensure that resources within a perimeter are accessed only from clients within authorized VPC networks... (73 votos)"
+        "text": "Should be A. For all Google Cloud services secured with VPC Service Controls, you can ensure that resources within a perimeter are accessed only from clients within authorized VPC networks... (73 votes)"
       },
       {
         "user": "XDevX",
-        "text": "IMHO C is wrong - the question is not to restrict access only for business hours but to restrict access to the office network. In my opinion the only realistic approach seems to be A (17 votos)"
+        "text": "IMHO C is wrong - the question is not to restrict access only for business hours but to restrict access to the office network. In my opinion the only realistic approach seems to be A (17 votes)"
       },
       {
         "user": "poseidon24",
-        "text": "Correct, this is about data exfiltration. (14 votos)"
+        "text": "Correct, this is about data exfiltration. (14 votes)"
       },
       {
         "user": "examch",
-        "text": "Selected Answer: A. A is the correct answer. (4 votos)"
+        "text": "Selected Answer: A. A is the correct answer. (4 votes)"
       },
       {
         "user": "cshubham173",
-        "text": "Selected Answer: A. For all Google Cloud services secured with VPC Service Controls... (2 votos)"
+        "text": "Selected Answer: A. For all Google Cloud services secured with VPC Service Controls... (2 votes)"
       },
       {
         "user": "Sivanaga",
-        "text": "Nice one, thank you (2 votos)"
+        "text": "Nice one, thank you (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7931,27 +7931,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "nohel",
-        "text": "Answer is B. When you create a firewall rule there is an option for firewall rule logging on/off. It is set to off by default... (37 votos)"
+        "text": "Answer is B. When you create a firewall rule there is an option for firewall rule logging on/off. It is set to off by default... (37 votes)"
       },
       {
         "user": "victory108",
-        "text": "B. Enable Firewall Rules Logging for the firewall rules you want to monitor. (15 votos)"
+        "text": "B. Enable Firewall Rules Logging for the firewall rules you want to monitor. (15 votes)"
       },
       {
         "user": "windsor_43",
-        "text": "The answer is B. Just had my exam today with a pass, this question was in the exam... (5 votos)"
+        "text": "The answer is B. Just had my exam today with a pass, this question was in the exam... (5 votes)"
       },
       {
         "user": "DrishaS4",
-        "text": "Selected Answer: B (2 votos)"
+        "text": "Selected Answer: B (2 votes)"
       },
       {
         "user": "tannV",
-        "text": "Answered B. Got this question! (2 votos)"
+        "text": "Answered B. Got this question! (2 votes)"
       },
       {
         "user": "Gino17m",
-        "text": "Selected Answer: B. Correct answer is B (2 votos)"
+        "text": "Selected Answer: B. Correct answer is B (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -7987,27 +7987,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "victory108",
-        "text": "D. Set an Organization Policy with a constraint on constraints/compute.vmExternalIpAccess. List the approved instances in the allowedValues list. (24 votos)"
+        "text": "D. Set an Organization Policy with a constraint on constraints/compute.vmExternalIpAccess. List the approved instances in the allowedValues list. (24 votes)"
       },
       {
         "user": "AnilKr",
-        "text": "Ans D... Using an Organization Policy, you can restrict external IP addresses to specific VM instances with constraints to control use of external IP addresses... (21 votos)"
+        "text": "Ans D... Using an Organization Policy, you can restrict external IP addresses to specific VM instances with constraints to control use of external IP addresses... (21 votes)"
       },
       {
         "user": "beehive",
-        "text": "D is the correct one. (3 votos)"
+        "text": "D is the correct one. (3 votes)"
       },
       {
         "user": "rascalbrick",
-        "text": "Showed on my exam. (2 votos)"
+        "text": "Showed on my exam. (2 votes)"
       },
       {
         "user": "JoeyCASD",
-        "text": "Vote for D (2 votos)"
+        "text": "Vote for D (2 votes)"
       },
       {
         "user": "2M",
-        "text": "Selected Answer: D (2 votos)"
+        "text": "Selected Answer: D (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8043,27 +8043,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "victory108",
-        "text": "C. 1. Set up Cloud VPN to provide private network connectivity... (33 votos)"
+        "text": "C. 1. Set up Cloud VPN to provide private network connectivity... (33 votes)"
       },
       {
         "user": "kopper2019",
-        "text": "Ans C... External replica promotion migration... In Cloud SQL, an easy way to accomplish the external replica promotion is to use the automated migration workflow. (23 votos)"
+        "text": "Ans C... External replica promotion migration... In Cloud SQL, an easy way to accomplish the external replica promotion is to use the automated migration workflow. (23 votes)"
       },
       {
         "user": "zr79",
-        "text": "Answer is C, we have a new service https://cloud.google.com/database-migration (7 votos)"
+        "text": "Answer is C, we have a new service https://cloud.google.com/database-migration (7 votes)"
       },
       {
         "user": "SureshbabuK",
-        "text": "Selected Answer: C. ExamTopics providing A as correct answer is causing confusion. (6 votos)"
+        "text": "Selected Answer: C. ExamTopics providing A as correct answer is causing confusion. (6 votes)"
       },
       {
         "user": "DRK8109",
-        "text": "mysqldump always causes long downtime. (4 votos)"
+        "text": "mysqldump always causes long downtime. (4 votes)"
       },
       {
         "user": "BiddlyBdoyng",
-        "text": "Option A, writing to two databases from the app :( Option C all the way... (2 votos)"
+        "text": "Option A, writing to two databases from the app :( Option C all the way... (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8099,27 +8099,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "pamepadero",
-        "text": "B is the answer. https://cloud.google.com/blog/products/it-ops/best-practices-for-optimizing-your-cloud-costs (40 votos)"
+        "text": "B is the answer. https://cloud.google.com/blog/products/it-ops/best-practices-for-optimizing-your-cloud-costs (40 votes)"
       },
       {
         "user": "kopper2019",
-        "text": "Ans B, assuming VMs don't need to be up after office hours. (26 votos)"
+        "text": "Ans B, assuming VMs don't need to be up after office hours. (26 votes)"
       },
       {
         "user": "rzygor",
-        "text": "Question says that dev/test are 'not critical', it doesn't mean that they are not needed at all... (20 votos)"
+        "text": "Question says that dev/test are 'not critical', it doesn't mean that they are not needed at all... (20 votes)"
       },
       {
         "user": "sgofficial",
-        "text": "Even the good CFO is telling us to leave the office after 5.00 and come next day to work :) (16 votos)"
+        "text": "Even the good CFO is telling us to leave the office after 5.00 and come next day to work :) (16 votes)"
       },
       {
         "user": "wooloo",
-        "text": "'Are only critical during office hours' does not mean it could be completely stopped. So may option C be correct? (6 votos)"
+        "text": "'Are only critical during office hours' does not mean it could be completely stopped. So may option C be correct? (6 votes)"
       },
       {
         "user": "werdy92",
-        "text": "Really wondering why not C... Not critical is not equivalent with not running at all. (5 votos)"
+        "text": "Really wondering why not C... Not critical is not equivalent with not running at all. (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8155,27 +8155,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "kopper2019",
-        "text": "A. App Engine (36 votos)"
+        "text": "A. App Engine (36 votes)"
       },
       {
         "user": "arsav",
-        "text": "Answer should be A as only with App Engine we have a default service account which allows the user to deploy the changes per project. For GKE we may have to configure additional permissions... (25 votos)"
+        "text": "Answer should be A as only with App Engine we have a default service account which allows the user to deploy the changes per project. For GKE we may have to configure additional permissions... (25 votes)"
       },
       {
         "user": "JohnWick2020",
-        "text": "Answer is A. By process of elimination you arrive at App Engine or GKE. Now the requirement is to minimize the operational overhead... On the IaaS to PaaS spectrum, this can only be App Engine! (3 votos)"
+        "text": "Answer is A. By process of elimination you arrive at App Engine or GKE. Now the requirement is to minimize the operational overhead... On the IaaS to PaaS spectrum, this can only be App Engine! (3 votes)"
       },
       {
         "user": "Atanu",
-        "text": "Selected Answer: A. 'You want to minimize the operational overhead of the solution' - this sentence is the key to go with Option A. GKE carries overhead as it's not purely PaaS. (3 votos)"
+        "text": "Selected Answer: A. 'You want to minimize the operational overhead of the solution' - this sentence is the key to go with Option A. GKE carries overhead as it's not purely PaaS. (3 votes)"
       },
       {
         "user": "jaisonPathiyil",
-        "text": "Are these answers really correct or misleading? (3 votos)"
+        "text": "Are these answers really correct or misleading? (3 votes)"
       },
       {
         "user": "Anandmrk",
-        "text": "Selected Answer: A. I did my exam today and saw this question. (3 votos)"
+        "text": "Selected Answer: A. I did my exam today and saw this question. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8211,27 +8211,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "milan74",
-        "text": "Argumenta por la opción B indicando que 'such information' se refiere a la información de salud, y DLP puede identificar esto. (86 votos)"
+        "text": "Argues for option B, stating that 'such information' refers to health information, and DLP can identify it. (86 votes)"
       },
       {
         "user": "XDevX",
-        "text": "IMHO A is the correct answer because it is easier to operate. The question is not how to mask data but just to delete data on request, so I don't think we have to use DLP just for the deletion of specific data. (37 votos)"
+        "text": "IMHO A is the correct answer because it is easier to operate. The question is not how to mask data but just to delete data on request, so I don't think we have to use DLP just for the deletion of specific data. (37 votes)"
       },
       {
         "user": "Ishu_awsguy",
-        "text": "There is no need of DLP. All the data is sensitive but only upon user request it needs deletion. So A should be the correct answer. (12 votos)"
+        "text": "There is no need of DLP. All the data is sensitive but only upon user request it needs deletion. So A should be the correct answer. (12 votes)"
       },
       {
         "user": "AmitAr",
-        "text": "(A) - Primary task is 'legislation requires you to delete'... and B is not deleting. Only A is deleting. (12 votos)"
+        "text": "(A) - Primary task is 'legislation requires you to delete'... and B is not deleting. Only A is deleting. (12 votes)"
       },
       {
         "user": "Arad",
-        "text": "A is the correct answer. B is only masking the data and then when a request is received, it identifies the record but it doesn't delete it. D is masking the ID. (12 votos)"
+        "text": "A is the correct answer. B is only masking the data and then when a request is received, it identifies the record but it doesn't delete it. D is masking the ID. (12 votes)"
       },
       {
         "user": "zanfo",
-        "text": "I want to delete all the information about the user, not only that identified by DLP... B is not correct! The correct is A (8 votos)"
+        "text": "I want to delete all the information about the user, not only that identified by DLP... B is not correct! The correct is A (8 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8272,27 +8272,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "kopper2019",
-        "text": "Ans) C and D. If you use Cloud SQL... you should enable automated backups and binary logging for your Cloud SQL instances. This allows you to perform a point-in-time recovery... (40 votos)"
+        "text": "Ans) C and D. If you use Cloud SQL... you should enable automated backups and binary logging for your Cloud SQL instances. This allows you to perform a point-in-time recovery... (40 votes)"
       },
       {
         "user": "victory108",
-        "text": "C. Binary logging, D. Automated backups (11 votos)"
+        "text": "C. Binary logging, D. Automated backups (11 votes)"
       },
       {
         "user": "odacir",
-        "text": "Cita la documentación que indica que para crear incluso una réplica se requiere habilitar automated backups y binary logging para el point-in-time recovery. (6 votos)"
+        "text": "Cites the documentation stating that creating even a single replica requires enabling automated backups and binary logging for point-in-time recovery. (6 votes)"
       },
       {
         "user": "HenkH",
-        "text": "And: a read replica won't help against 'catastrophic failures' like accidental deletions (5 votos)"
+        "text": "And: a read replica won't help against 'catastrophic failures' like accidental deletions (5 votes)"
       },
       {
         "user": "RVivek",
-        "text": "Catastrophic failure means a disaster like a zonal datacenter level failure or regional failure (4 votos)"
+        "text": "Catastrophic failure means a disaster like a zonal datacenter level failure or regional failure (4 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Explica cómo el binary log recupera cada transacción y el backup da el estado base, mientras que sharding es solo para rendimiento. (4 votos)"
+        "text": "Explains how the binary log recovers every transaction and the backup provides the base state, while sharding is only for performance. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8329,27 +8329,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "kopper2019",
-        "text": "Ans) A. (57 votos)"
+        "text": "Ans) A. (57 votes)"
       },
       {
         "user": "DiegoMDZ",
-        "text": "It's A for me... Create a dashboard for each incident?? I think D isn't a good choice... (31 votos)"
+        "text": "It's A for me... Create a dashboard for each incident?? I think D isn't a good choice... (31 votes)"
       },
       {
         "user": "hzaoui",
-        "text": "Cloud Monitoring provides predefined dashboards for monitoring GKE clusters, which facilitate an immediate and comprehensive view... As an SRE, utilizing these dashboards helps triage incidents quickly. (7 votos)"
+        "text": "Cloud Monitoring provides predefined dashboards for monitoring GKE clusters, which facilitate an immediate and comprehensive view... As an SRE, utilizing these dashboards helps triage incidents quickly. (7 votes)"
       },
       {
         "user": "mesodan",
-        "text": "A is correct. Option D is highly inefficient and time-consuming. Creating individual dashboards for every incident is impractical... (5 votos)"
+        "text": "A is correct. Option D is highly inefficient and time-consuming. Creating individual dashboards for every incident is impractical... (5 votes)"
       },
       {
         "user": "SSS987",
-        "text": "Menciona que no se pueden editar directamente los dashboards predefinidos, pero admite que crear un dashboard por incidente es demasiado ineficiente. (3 votos)"
+        "text": "Mentions that predefined dashboards can't be edited directly, but admits that creating a dashboard per incident is far too inefficient. (3 votes)"
       },
       {
         "user": "TopTalk",
-        "text": "Los dashboards predefinidos se pueden copiar y luego modificar. (3 votos)"
+        "text": "Predefined dashboards can be copied and then modified. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8385,27 +8385,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "VishalB",
-        "text": "Correct Answer: A. Each deployment to a service creates a revision... Once the new revision is deployed you can manage the traffic using the MANAGE TRAFFIC option inside the revision tab. (55 votos)"
+        "text": "Correct Answer: A. Each deployment to a service creates a revision... Once the new revision is deployed you can manage the traffic using the MANAGE TRAFFIC option inside the revision tab. (55 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The correct answer is A... Cloud Run for Anthos allows you to deploy new revisions of your application with a specific percentage of traffic, which allows you to perform a gradual rollout... (20 votos)"
+        "text": "The correct answer is A... Cloud Run for Anthos allows you to deploy new revisions of your application with a specific percentage of traffic, which allows you to perform a gradual rollout... (20 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Explica por qué B (muy compleja), C (despliegue automático de rama dev a producción) y D (Traffic Director no es necesario) son erróneas. (12 votos)"
+        "text": "Explains why B (too complex), C (automatic deployment from the dev branch to production) and D (Traffic Director isn't needed) are wrong. (12 votes)"
       },
       {
         "user": "zerg0",
-        "text": "Selected Answer: A. (4 votos)"
+        "text": "Selected Answer: A. (4 votes)"
       },
       {
         "user": "Gino17m",
-        "text": "Vota por A. (3 votos)"
+        "text": "Votes for A. (3 votes)"
       },
       {
         "user": "BigfootPanda",
-        "text": "Menciona C como estrategia, pero es refutado porque la rama de desarrollo no se lanza a producción así. (3 votos)"
+        "text": "Mentions C as a strategy, but is refuted because the development branch isn't released to production like that. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8424,7 +8424,7 @@ export const QUESTIONS = [
       "Wrong: Wiring continuous deployment from the development branch straight into production traffic splitting conflates environments and removes the deliberate evaluation step.",
       "Wrong: Traffic Director manages service mesh traffic for GKE and Compute Engine workloads; for Cloud Run, traffic splitting is already native."
     ],
-    "legacyNote": "Cloud Run for Anthos quedó integrado en GKE. La división de tráfico entre revisiones de Cloud Run funciona igual."
+    "legacyNote": "Cloud Run for Anthos has been folded into GKE. Traffic splitting between Cloud Run revisions works the same way."
   },
   {
     "id": 105,
@@ -8442,27 +8442,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "kopper2019",
-        "text": "Ans) D. Reason: high throughput via internal IPs (67 votos)"
+        "text": "Ans) D. Reason: high throughput via internal IPs (67 votes)"
       },
       {
         "user": "XDevX",
-        "text": "IMHO the correct answer is D. Reason: 'requires high throughput via internal IPs, while minimizing latency' - both are aspects you cannot guarantee using VPN traversing the internet. (23 votos)"
+        "text": "IMHO the correct answer is D. Reason: 'requires high throughput via internal IPs, while minimizing latency' - both are aspects you cannot guarantee using VPN traversing the internet. (23 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "A Cloud Dedicated Interconnect is a high-bandwidth, low-latency network connection... provides a direct physical connection... (4 votos)"
+        "text": "A Cloud Dedicated Interconnect is a high-bandwidth, low-latency network connection... provides a direct physical connection... (4 votes)"
       },
       {
         "user": "SureshbabuK",
-        "text": "High throughput connection: VPN no, Interconnect yes. Via internal IP addresses: VPN yes, Interconnect yes. Interconnect yes for both so D (3 votos)"
+        "text": "High throughput connection: VPN no, Interconnect yes. Via internal IP addresses: VPN yes, Interconnect yes. Interconnect yes for both so D (3 votes)"
       },
       {
         "user": "WFCheong",
-        "text": "Selected Answer: D. Reason: high throughput via internal IPs (3 votos)"
+        "text": "Selected Answer: D. Reason: high throughput via internal IPs (3 votes)"
       },
       {
         "user": "telp",
-        "text": "Dedicated Interconnect will provide a private network with 10 Gbps. (2 votos)"
+        "text": "Dedicated Interconnect will provide a private network with 10 Gbps. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8498,27 +8498,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "VishalB",
-        "text": "Correct Ans: D. Traffic is TCP so A and C are eliminated (HTTP LB does not support raw TCP). B: Filestore does not give full control and a MIG implies horizontal scaling, eliminated. D: unmanaged IG with Network LB and Regional PD fits perfectly. (64 votos)"
+        "text": "Correct Ans: D. Traffic is TCP so A and C are eliminated (HTTP LB does not support raw TCP). B: Filestore does not give full control and a MIG implies horizontal scaling, eliminated. D: unmanaged IG with Network LB and Regional PD fits perfectly. (64 votes)"
       },
       {
         "user": "kopper2019",
-        "text": "Ans) D, unmanaged instance group as the application does not support horizontal scaling and network load balancer as there is no mention of http traffic. (29 votos)"
+        "text": "Ans) D, unmanaged instance group as the application does not support horizontal scaling and network load balancer as there is no mention of http traffic. (29 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "An unmanaged instance group allows you to create and manage instances manually. This is appropriate for an app that does not support horizontal scaling... (22 votos)"
+        "text": "An unmanaged instance group allows you to create and manage instances manually. This is appropriate for an app that does not support horizontal scaling... (22 votes)"
       },
       {
         "user": "poseidon24",
-        "text": "Confirma que Filestore es para compartir archivos (NAS), y si múltiples instancias escriben a la vez, el requerimiento prohíbe su uso. (10 votos)"
+        "text": "Confirms that Filestore is for file sharing (NAS), and if multiple instances write at the same time, the requirement rules it out. (10 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Regional persistent disk... Network Load Balancer. (10 votos)"
+        "text": "Regional persistent disk... Network Load Balancer. (10 votes)"
       },
       {
         "user": "kimharsh",
-        "text": "Cuestiona que Unmanaged IG sea regional; otros responden que puedes crear 2 y agruparlos bajo el mismo backend del LB. (7 votos)"
+        "text": "Questions whether an Unmanaged IG is regional; others reply that you can create 2 and group them under the same LB backend. (7 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8554,27 +8554,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "kopper2019",
-        "text": "Ans) C. Migrate for Compute Engine organizes groups of VMs into Waves. After understanding the dependencies of your applications, create runbooks that contain groups of VMs and begin your migration! (38 votos)"
+        "text": "Ans) C. Migrate for Compute Engine organizes groups of VMs into Waves. After understanding the dependencies of your applications, create runbooks that contain groups of VMs and begin your migration! (38 votes)"
       },
       {
         "user": "technodev",
-        "text": "Selected Answer: C. I got this question in my exam. (15 votos)"
+        "text": "Selected Answer: C. I got this question in my exam. (15 votes)"
       },
       {
         "user": "atlasga",
-        "text": "When you are doing cloud migrations, you do migrations in 'waves'... Moving machines individually would break things... This is standard industry practice. (3 votos)"
+        "text": "When you are doing cloud migrations, you do migrations in 'waves'... Moving machines individually would break things... This is standard industry practice. (3 votes)"
       },
       {
         "user": "examch",
-        "text": "Detalla que desde Migrate for Compute Engine defines las VMs en waves, el orden, y ejecutas vía el RunBook generado. (2 votos)"
+        "text": "Details that in Migrate for Compute Engine you define the VMs in waves, the order, and run it through the generated RunBook. (2 votes)"
       },
       {
         "user": "8d31d36",
-        "text": "Votó por B pero fue refutado porque exportar discos consume muchísimo más tiempo. (2 votos)"
+        "text": "Voted for B but was refuted because exporting disks takes far more time. (2 votes)"
       },
       {
         "user": "AzureDP900",
-        "text": "C is right, it defines all logical steps to migrate on-premise to Google Cloud. (2 votos)"
+        "text": "C is right, it defines all logical steps to migrate on-premise to Google Cloud. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8610,27 +8610,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "exampanic",
-        "text": "I believe the answer is B. Pub/Sub doesn't provide guarantees about the order of message delivery. Strict message ordering can be achieved with buffering, often using Dataflow. (70 votos)"
+        "text": "I believe the answer is B. Pub/Sub doesn't provide guarantees about the order of message delivery. Strict message ordering can be achieved with buffering, often using Dataflow. (70 votes)"
       },
       {
         "user": "xhova",
-        "text": "B is the answer. Cloud SQL is only for storage... to get messages in order you need timestamps processed in Dataflow to arrange them before putting them in any storage volume. (28 votos)"
+        "text": "B is the answer. Cloud SQL is only for storage... to get messages in order you need timestamps processed in Dataflow to arrange them before putting them in any storage volume. (28 votes)"
       },
       {
         "user": "jask",
-        "text": "Answer is B. The question is talking about guaranteed-once FIFO delivery of data... we need Dataflow for deduplication of data. (14 votos)"
+        "text": "Answer is B. The question is talking about guaranteed-once FIFO delivery of data... we need Dataflow for deduplication of data. (14 votes)"
       },
       {
         "user": "TiagoM",
-        "text": "Apunta a que actualmente Pub/Sub sí soporta ordenamiento, pero para el examen sigue siendo B. (10 votos)"
+        "text": "Points out that Pub/Sub now does support ordering, but for the exam it's still B. (10 votes)"
       },
       {
         "user": "melono",
-        "text": "Pub/Sub supports exactly-once delivery, within a cloud region. The question states 'global', so it needs Dataflow (9 votos)"
+        "text": "Pub/Sub supports exactly-once delivery, within a cloud region. The question states 'global', so it needs Dataflow (9 votes)"
       },
       {
         "user": "emirhosseini",
-        "text": "Comparte el link de exactly-once delivery de Pub/Sub para decir que ya lo soporta. (9 votos)"
+        "text": "Shares the Pub/Sub exactly-once delivery link to say it's now supported. (9 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8650,7 +8650,7 @@ export const QUESTIONS = [
       "Wrong: Cloud SQL is a regional relational database, not a stream processing engine, and cannot reorder or deduplicate a global event stream."
     ],
     "resolvedBy": "gemini-2026-08",
-    "legacyNote": "Pub/Sub ya soporta ordering keys y exactly-once delivery, pero con alcance regional. Por eso, con un frontend global, Dataflow sigue siendo necesario."
+    "legacyNote": "Pub/Sub now supports ordering keys and exactly-once delivery, but with regional scope. That's why, with a global frontend, Dataflow is still needed."
   },
   {
     "id": 101,
@@ -8668,27 +8668,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "KouShikyou",
-        "text": "With option A, daily data would take 27 hours. My answer is B. (54 votos)"
+        "text": "With option A, daily data would take 27 hours. My answer is B. (54 votes)"
       },
       {
         "user": "wk",
-        "text": "Agree B. A 100 Mbps connection for 10 TB data transfer takes too long (21 votos)"
+        "text": "Agree B. A 100 Mbps connection for 10 TB data transfer takes too long (21 votes)"
       },
       {
         "user": "nitinz",
-        "text": "It is B (7 votos)"
+        "text": "It is B (7 votes)"
       },
       {
         "user": "9xnine",
-        "text": "Dedicated Interconnect will be a new connection and will not run over the existing internet connection. With Dedicated Interconnect the existing ISP becomes irrelevant. Answer is B. (6 votos)"
+        "text": "Dedicated Interconnect will be a new connection and will not run over the existing internet connection. With Dedicated Interconnect the existing ISP becomes irrelevant. Answer is B. (6 votes)"
       },
       {
         "user": "misho",
-        "text": "Even with 100 Mbps internet it's slow... transfer for 10 TB will take 2 days (5 votos)"
+        "text": "Even with 100 Mbps internet it's slow... transfer for 10 TB will take 2 days (5 votes)"
       },
       {
         "user": "bogd",
-        "text": "Explica que '100MB' es un error tipográfico en la pregunta para 100 Mbps. (5 votos)"
+        "text": "Explains that '100MB' is a typo in the question for 100 Mbps. (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8724,27 +8724,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "JoeShmoe",
-        "text": "Answer is B (32 votos)"
+        "text": "Answer is B (32 votes)"
       },
       {
         "user": "Smart",
-        "text": "B is correct. More appropriately: (adjunta enlace al documento 'reliable-task-scheduling-compute-engine') (30 votos)"
+        "text": "B is correct. More appropriately: (adjunta enlace al documento 'reliable-task-scheduling-compute-engine') (30 votes)"
       },
       {
         "user": "odacir",
-        "text": "Answer is B, but this question is outdated. Today the best practice for cron is Cloud Scheduler: a fully managed enterprise-grade cron job scheduler (22 votos)"
+        "text": "Answer is B, but this question is outdated. Today the best practice for cron is Cloud Scheduler: a fully managed enterprise-grade cron job scheduler (22 votes)"
       },
       {
         "user": "JPA210",
-        "text": "Clarifica que ahora usarías Cloud Scheduler en vez de App Engine, pero dentro del abanico de respuestas antiguas, la B marca el patrón correcto. (10 votos)"
+        "text": "Clarifies that today you'd use Cloud Scheduler instead of App Engine, but within the range of old answers, B shows the correct pattern. (10 votes)"
       },
       {
         "user": "beehive",
-        "text": "Answer is B. Another option is to pass messages from Cloud Scheduler to your Compute Engine instances using Pub/Sub. (8 votos)"
+        "text": "Answer is B. Another option is to pass messages from Cloud Scheduler to your Compute Engine instances using Pub/Sub. (8 votes)"
       },
       {
         "user": "rr4444",
-        "text": "Something feels missing/broken about this question... Cloud Scheduler is not mentioned... (6 votos)"
+        "text": "Something feels missing/broken about this question... Cloud Scheduler is not mentioned... (6 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8763,7 +8763,7 @@ export const QUESTIONS = [
       "Wrong: This has the same tight coupling problem, and it also requires operating a GKE cluster purely to run cron.",
       "Wrong: The Pub/Sub decoupling is right, but running and maintaining a GKE cluster solely as a cron scheduler is unnecessary cost and complexity."
     ],
-    "legacyNote": "Hoy usarías Cloud Scheduler en lugar del cron de App Engine. El patrón de desacoplar mediante Pub/Sub no cambia."
+    "legacyNote": "Today you'd use Cloud Scheduler instead of App Engine cron. The pattern of decoupling through Pub/Sub doesn't change."
   },
   {
     "id": 99,
@@ -8781,27 +8781,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "hiteshrup",
-        "text": "Dedicated es mejor que shared para rendimiento. La B es exagerada con el cron cada minuto. La A equilibra rendimiento y coste. (31 votos)"
+        "text": "Dedicated is better than shared for performance. B is overkill with the cron every minute. A balances performance and cost. (31 votes)"
       },
       {
         "user": "Eroc",
-        "text": "(Proporciona enlace a la documentación de Memcache de App Engine.) (24 votos)"
+        "text": "(Provides a link to the App Engine Memcache documentation.) (24 votes)"
       },
       {
         "user": "tartar",
-        "text": "A is ok. (11 votos)"
+        "text": "A is ok. (11 votes)"
       },
       {
         "user": "nitinz",
-        "text": "A is correct. (6 votos)"
+        "text": "A is correct. (6 votes)"
       },
       {
         "user": "ehgm",
-        "text": "Guardar todo en una única key (cached_queries) no es bueno por los límites de tamaño. Crear una key para cada hash de query es la manera correcta. (4 votos)"
+        "text": "Storing everything under a single key (cached_queries) isn't good because of size limits. Creating a key for each query hash is the right way. (4 votes)"
       },
       {
         "user": "victory108",
-        "text": "Selecciona A. (3 votos)"
+        "text": "Selects A. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8837,27 +8837,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AWS56",
-        "text": "Agree C. (24 votos)"
+        "text": "Agree C. (24 votes)"
       },
       {
         "user": "victory108",
-        "text": "C. Store the data in Cloud Storage and use lifecycle management to delete files when they expire. (4 votos)"
+        "text": "C. Store the data in Cloud Storage and use lifecycle management to delete files when they expire. (4 votes)"
       },
       {
         "user": "JoseCloudEng1994",
-        "text": "Tan pronto como escuchas 'borrado automático' = Cloud Storage Lifecycle. A Google no le gustan los scripts manuales si hay una función nativa. (1 voto)"
+        "text": "As soon as you hear 'automatic deletion' = Cloud Storage Lifecycle. Google doesn't like manual scripts if there's a native feature. (1 vote)"
       },
       {
         "user": "Peto12",
-        "text": "Because the requirement says 4 more years retention, not indefinitely. (1 voto)"
+        "text": "Because the requirement says 4 more years retention, not indefinitely. (1 vote)"
       },
       {
         "user": "gabrielzeven",
-        "text": "D suena a lo que yo haría en la vida real, pero C suena a la respuesta de examen correcta. (1 voto)"
+        "text": "D sounds like what I'd do in real life, but C sounds like the correct exam answer. (1 vote)"
       },
       {
         "user": "Abhi_ma_cdl_22",
-        "text": "C is the right answer. (1 voto)"
+        "text": "C is the right answer. (1 vote)"
       }
     ],
     "source": "gemini-validated",
@@ -8893,27 +8893,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "JoeShmoe",
-        "text": "It's D, create multi region buckets in Americas, Europe and Asia. (65 votos)"
+        "text": "It's D, create multi region buckets in Americas, Europe and Asia. (65 votes)"
       },
       {
         "user": "MeasService",
-        "text": "I would go with A. (36 votos)"
+        "text": "I would go with A. (36 votes)"
       },
       {
         "user": "AmitAr",
-        "text": "D is correct. 1 bucket in US, 1 in EU, 1 in Asia. (19 votos)"
+        "text": "D is correct. 1 bucket in US, 1 in EU, 1 in Asia. (19 votes)"
       },
       {
         "user": "MyPractice",
-        "text": "A should be the right answer, addressing the global users (usando CDN). (14 votos)"
+        "text": "A should be the right answer, addressing the global users (usando CDN). (14 votes)"
       },
       {
         "user": "xavi1",
-        "text": "D, porque una multi-región solo incluye ubicaciones de UN área (por ejemplo, US), no de todo el globo. (13 votos)"
+        "text": "D, because a multi-region only includes locations in ONE area (e.g., US), not across the whole globe. (13 votes)"
       },
       {
         "user": "turbo8p",
-        "text": "En la UI de bucket no puedes seleccionar el globo entero. Tienes que crear múltiples multi-region para dar soporte global real. (13 votos)"
+        "text": "In the bucket UI you can't select the entire globe. You have to create multiple multi-regions to provide real global support. (13 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8949,27 +8949,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "crypt0",
-        "text": "I think answer B is correct (link a la guía de Disaster Recovery). (54 votos)"
+        "text": "I think answer B is correct (link to the Disaster Recovery guide). (54 votes)"
       },
       {
         "user": "passnow",
-        "text": "Stackdriver es la herramienta recomendada por Google para monitorizar y depurar. Todos de acuerdo en que es B. (23 votos)"
+        "text": "Stackdriver is Google's recommended tool for monitoring and debugging. Everyone agrees it's B. (23 votes)"
       },
       {
         "user": "nitinz",
-        "text": "Es B, la mejor práctica de Google: nunca uses scripts, usa infraestructura como código. (12 votos)"
+        "text": "It's B, Google's best practice: never use scripts, use infrastructure as code. (12 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok. (11 votos)"
+        "text": "B is ok. (11 votes)"
       },
       {
         "user": "victory108",
-        "text": "Selecciona B. (4 votos)"
+        "text": "Selects B. (4 votes)"
       },
       {
         "user": "fraloca",
-        "text": "(Link a documentación de recuperación de desastres.) (2 votos)"
+        "text": "(Link to disaster recovery documentation.) (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -8988,7 +8988,7 @@ export const QUESTIONS = [
       "Wrong: Imperative gcloud scripts drift and are not idempotent, and audit logs alone cannot tell you whether the recovered application behaved correctly.",
       "Wrong: The monitoring half is right, but imperative scripts lack the state management and repeatability that DR testing depends on."
     ],
-    "legacyNote": "Deployment Manager está deprecado (hoy Infrastructure Manager o Terraform). El principio de IaC declarativa más observabilidad no cambia."
+    "legacyNote": "Deployment Manager is deprecated (today Infrastructure Manager or Terraform). The principle of declarative IaC plus observability doesn't change."
   },
   {
     "id": 95,
@@ -9006,27 +9006,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "bigob4ek",
-        "text": "La respuesta es B. Debes usar exponential backoff para reintentar tus peticiones al recibir códigos 5xx o 429. (44 votos)"
+        "text": "The answer is B. You should use exponential backoff to retry your requests when you receive 5xx or 429 codes. (44 votes)"
       },
       {
         "user": "Sbgani",
-        "text": "Explica cómo el algoritmo truncated exponential backoff ayuda a espaciar los reintentos para no colapsar la red. (13 votos)"
+        "text": "Explains how the truncated exponential backoff algorithm helps space out retries so as not to overwhelm the network. (13 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Los códigos 5xx y 429 indican problemas temporales de servicio o límites de tasa. El backoff es la práctica recomendada. (4 votos)"
+        "text": "5xx and 429 codes indicate temporary service problems or rate limits. Backoff is the recommended practice. (4 votes)"
       },
       {
         "user": "bnlcnd",
-        "text": "(Link a la documentación de retry strategy.) (2 votos)"
+        "text": "(Link to the retry strategy documentation.) (2 votes)"
       },
       {
         "user": "DrishaS4",
-        "text": "(Link a los JSON API status codes.) (2 votos)"
+        "text": "(Link to the JSON API status codes.) (2 votes)"
       },
       {
         "user": "MaxNRG",
-        "text": "429 es 'Too many requests'. Disminuye los reintentos usando backoff. (2 votos)"
+        "text": "429 is 'Too many requests'. Reduce retries using backoff. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9062,27 +9062,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "victory108",
-        "text": "Selecciona B. (14 votos)"
+        "text": "Selects B. (14 votes)"
       },
       {
         "user": "betiy",
-        "text": "URL paths sólo están soportados en HTTP(S) Load Balancing. (10 votos)"
+        "text": "URL paths are only supported in HTTP(S) Load Balancing. (10 votes)"
       },
       {
         "user": "examch",
-        "text": "HTTP(S) load balancers usan URL maps para enrutar los requests hacia diferentes backends basándose en el path. (8 votos)"
+        "text": "HTTP(S) load balancers use URL maps to route requests to different backends based on the path. (8 votes)"
       },
       {
         "user": "Sbgani",
-        "text": "URL maps se utilizan para enrutar basándose en host y path del URL. (5 votos)"
+        "text": "URL maps are used to route based on the URL's host and path. (5 votes)"
       },
       {
         "user": "bnlcnd",
-        "text": "B. Estaba confundido con la A, pero HTTP(S) Load Balancing ya es naturalmente global. (5 votos)"
+        "text": "B. I was confused by A, but HTTP(S) Load Balancing is already global by nature. (5 votes)"
       },
       {
         "user": "DrishaS4",
-        "text": "(Enlace a url-maps en HTTPS Load Balancing.) (4 votos)"
+        "text": "(Enlace a url-maps en HTTPS Load Balancing.) (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9118,27 +9118,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Smart",
-        "text": "El recurso Service LoadBalancer es L4 y no soporta L7. Se necesita Ingress. Correct answer is A. (47 votos)"
+        "text": "The Service LoadBalancer resource is L4 and doesn't support L7. You need Ingress. Correct answer is A. (47 votes)"
       },
       {
         "user": "Smart",
-        "text": "Ingress encapsula reglas para enrutar tráfico HTTP(S) externo. (42 votos)"
+        "text": "Ingress bundles rules for routing external HTTP(S) traffic. (42 votes)"
       },
       {
         "user": "crypt0",
-        "text": "¿Por qué no usar Ingress? (A). (30 votos)"
+        "text": "Why not use Ingress? (A). (30 votes)"
       },
       {
         "user": "jcmoranp",
-        "text": "Defendía la B. (14 votos)"
+        "text": "Argued for B. (14 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok. (9 votos)"
+        "text": "B is ok. (9 votes)"
       },
       {
         "user": "GopiSivanathan",
-        "text": "Service hace un NLB (L4), Ingress hace un HTTP(S) Load Balancer (L7). Debería ser A. (8 votos)"
+        "text": "Service creates an NLB (L4), Ingress creates an HTTP(S) Load Balancer (L7). It should be A. (8 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9174,27 +9174,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "ghadxx",
-        "text": "El rendimiento del modelo generalmente se basa en el volumen de sus datos de entrenamiento. Mientras más datos, mejor el modelo. Respuesta D. (21 votos)"
+        "text": "Model performance generally depends on the volume of its training data. The more data, the better the model. Answer D. (21 votes)"
       },
       {
         "user": "sgofficial",
-        "text": "A, B y C definen temas sobre rendimiento en hardware o sistemas, pero no los resultados/predicciones lógicas. Solo la data de entrenamiento dará mejores resultados. (6 votos)"
+        "text": "A, B and C deal with hardware or system performance, not with logical results/predictions. Only training data will give better results. (6 votes)"
       },
       {
         "user": "LoveT",
-        "text": "'Training data' es la clave de la opción D. (4 votos)"
+        "text": "'Training data' is the key to option D. (4 votes)"
       },
       {
         "user": "DrishaS4",
-        "text": "El modelo mejora con el input. (3 votos)"
+        "text": "The model improves with the input. (3 votes)"
       },
       {
         "user": "sivre",
-        "text": "Exportar métricas no correlaciona con mejorar el aprendizaje automático. (2 votos)"
+        "text": "Exporting metrics has nothing to do with improving machine learning. (2 votes)"
       },
       {
         "user": "kimharsh",
-        "text": "¿Qué haremos con las métricas del hardware? Eso no mejorará las predicciones. D es la más lógica. (2 votos)"
+        "text": "What will we do with hardware metrics? That won't improve the predictions. D is the most logical. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9213,7 +9213,7 @@ export const QUESTIONS = [
       "Wrong: Newer CPU architectures reduce compute time, which again is a performance concern rather than a quality one.",
       "Correct: Storing recommendations and their outcomes creates labelled training data, and retraining on that growing history is what improves results over time."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 91,
@@ -9231,27 +9231,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "wk",
-        "text": "Debería ser A. NO existe una regla implícita que deniegue el egress. La regla implícita de salida en GCP es 'allow egress'. (94 votos)"
+        "text": "It should be A. There is NO implied rule that denies egress. The implied egress rule in GCP is 'allow egress'. (94 votes)"
       },
       {
         "user": "p4",
-        "text": "Menciona cómo funciona la prioridad: números bajos tienen mayor prioridad (0 a 65535). Confirma la A. (13 votos)"
+        "text": "Mentions how priority works: lower numbers have higher priority (0 to 65535). Confirms A. (13 votes)"
       },
       {
         "user": "MeasService",
-        "text": "Agree, correct is A. (10 votos)"
+        "text": "Agree, correct is A. (10 votes)"
       },
       {
         "user": "mv2000",
-        "text": "Confirma que la pregunta salió en examen real. (6 votos)"
+        "text": "Confirms the question appeared in a real exam. (6 votes)"
       },
       {
         "user": "bnlcnd",
-        "text": "Las opciones C y D quedan descartadas porque GCP tiene implied allow egress e implied deny ingress. (5 votos)"
+        "text": "Options C and D are ruled out because GCP has implied allow egress and implied deny ingress. (5 votes)"
       },
       {
         "user": "MyPractice",
-        "text": "Implied allow egress, implied deny ingress. (3 votos)"
+        "text": "Implied allow egress, implied deny ingress. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9287,27 +9287,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "KouShikyou",
-        "text": "Creo que B es correcto. Porque GAE soporta version control y A/B testing nativo. (61 votos)"
+        "text": "I think B is correct. Because GAE natively supports version control and A/B testing. (61 votes)"
       },
       {
         "user": "ADVIT",
-        "text": "Solo se puede crear una única aplicación App Engine por proyecto. Por tanto es la B. (15 votos)"
+        "text": "You can only create a single App Engine application per project. So it's B. (15 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "El traffic splitting es una característica de App Engine que te permite hacer blue-green o canary deployment directamente con tu tráfico productivo al crear una nueva versión. (11 votos)"
+        "text": "Traffic splitting is an App Engine feature that lets you do blue-green or canary deployments directly with your production traffic when you create a new version. (11 votes)"
       },
       {
         "user": "MaxNRG",
-        "text": "Traffic splitting es funcionalidad central de App Engine para A/B testing. (6 votos)"
+        "text": "Traffic splitting is a core App Engine feature for A/B testing. (6 votes)"
       },
       {
         "user": "kumarp6",
-        "text": "Yes, B is correct. (5 votos)"
+        "text": "Yes, B is correct. (5 votes)"
       },
       {
         "user": "nitinz",
-        "text": "Only B works. (4 votos)"
+        "text": "Only B works. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9343,27 +9343,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "MeasService",
-        "text": "Does not agree with D. B is the nearest answer I feel! (43 votos)"
+        "text": "Does not agree with D. B is the nearest answer I feel! (43 votes)"
       },
       {
         "user": "shandy",
-        "text": "Admin and event logs are configured by default. VM System logs require a logging agent to be configured. So A is not valid. Answer is B (21 votos)"
+        "text": "Admin and event logs are configured by default. VM System logs require a logging agent to be configured. So A is not valid. Answer is B (21 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (12 votos)"
+        "text": "B is ok (12 votes)"
       },
       {
         "user": "KouShikyou",
-        "text": "Agree. (9 votos)"
+        "text": "Agree. (9 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "(Argumenta por la A.) (6 votos)"
+        "text": "(Argues for A.) (6 votes)"
       },
       {
         "user": "DrishaS4",
-        "text": "Selected Answer: B (enlace a la documentación de instalación del agente). (5 votos)"
+        "text": "Selected Answer: B (link to the agent installation documentation). (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9382,7 +9382,7 @@ export const QUESTIONS = [
       "Wrong: Running your own syslog server adds infrastructure to build, scale and maintain, duplicating a managed service.",
       "Wrong: An agent can only read the logs of the machine it runs on, so one instance cannot collect system logs from the rest of the fleet."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 88,
@@ -9400,27 +9400,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "shandy",
-        "text": "Option A is correct. (24 votos)"
+        "text": "Option A is correct. (24 votes)"
       },
       {
         "user": "gfhbox0083",
-        "text": "A, for sure. By default, Cloud CDN uses the complete request URL to build the cache key... To help optimize your cache hit ratio, you can use custom cache keys. (10 votos)"
+        "text": "A, for sure. By default, Cloud CDN uses the complete request URL to build the cache key... To help optimize your cache hit ratio, you can use custom cache keys. (10 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "A. Customize the cache keys to omit the protocol from the key. This will allow Cloud CDN to cache the same content under both HTTP and HTTPS... (8 votos)"
+        "text": "A. Customize the cache keys to omit the protocol from the key. This will allow Cloud CDN to cache the same content under both HTTP and HTTPS... (8 votes)"
       },
       {
         "user": "tartar",
-        "text": "A is ok (7 votos)"
+        "text": "A is ok (7 votes)"
       },
       {
         "user": "MestreCholas",
-        "text": "(Enlace a las mejores prácticas de hit ratio de Cloud CDN.) (7 votos)"
+        "text": "(Link to the Cloud CDN hit ratio best practices.) (7 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Omitting the protocol: customizing the cache keys to omit the protocol allows Cloud CDN to treat HTTP and HTTPS requests for the same content as identical... (5 votos)"
+        "text": "Omitting the protocol: customizing the cache keys to omit the protocol allows Cloud CDN to treat HTTP and HTTPS requests for the same content as identical... (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9456,27 +9456,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Eroc",
-        "text": "StatefulSets is a feature of Kubernetes... See the Google documentation for mention of hostnames... Answer A (59 votos)"
+        "text": "StatefulSets is a feature of Kubernetes... See the Google documentation for mention of hostnames... Answer A (59 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "A. StatefulSets. To ensure that a workload in Kubernetes has a consistent set of hostnames even after pod scaling and relaunches, you should use StatefulSets... (20 votos)"
+        "text": "A. StatefulSets. To ensure that a workload in Kubernetes has a consistent set of hostnames even after pod scaling and relaunches, you should use StatefulSets... (20 votes)"
       },
       {
         "user": "tartar",
-        "text": "A is ok (6 votos)"
+        "text": "A is ok (6 votes)"
       },
       {
         "user": "MaxNRG",
-        "text": "A - StatefulSets are suitable for deploying Kafka, MySQL, Redis, ZooKeeper, and other applications needing unique, persistent identities and stable hostnames. (6 votos)"
+        "text": "A - StatefulSets are suitable for deploying Kafka, MySQL, Redis, ZooKeeper, and other applications needing unique, persistent identities and stable hostnames. (6 votes)"
       },
       {
         "user": "Tamirm",
-        "text": "You are the best, thanks for all the hard work to explain (3 votos)"
+        "text": "You are the best, thanks for all the hard work to explain (3 votes)"
       },
       {
         "user": "Deepak31",
-        "text": "A StatefulSet is the Kubernetes controller used to run stateful applications as containers... (2 votos)"
+        "text": "A StatefulSet is the Kubernetes controller used to run stateful applications as containers... (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9512,27 +9512,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "OSNG",
-        "text": "B is correct. Why not others... Local SSD is non-persistent therefore cannot be used for session state... (114 votos)"
+        "text": "B is correct. Why not others... Local SSD is non-persistent therefore cannot be used for session state... (114 votes)"
       },
       {
         "user": "siumk",
-        "text": "IMHO answer is B: Memcache backed by Cloud Datastore... Compute Engine images can be stored in Cloud Storage. (17 votos)"
+        "text": "IMHO answer is B: Memcache backed by Cloud Datastore... Compute Engine images can be stored in Cloud Storage. (17 votes)"
       },
       {
         "user": "Ayzen",
-        "text": "The problem with B is that they are using SAN for data volumes of working VMs... All answers here are quite bad. But I would go with D... (10 votos)"
+        "text": "The problem with B is that they are using SAN for data volumes of working VMs... All answers here are quite bad. But I would go with D... (10 votes)"
       },
       {
         "user": "neversaynever",
-        "text": "Answer is D - boot volumes (not boot images) cannot come from Cloud Storage - so B is not the answer. (5 votos)"
+        "text": "Answer is D - boot volumes (not boot images) cannot come from Cloud Storage - so B is not the answer. (5 votes)"
       },
       {
         "user": "Deb2293",
-        "text": "(Comentario sobre no fiarse de herramientas de IA.) (5 votos)"
+        "text": "(Comment about not trusting AI tools.) (5 votes)"
       },
       {
         "user": "6721sora",
-        "text": "You rejected D with the same reason as C. But D is using Persistent Disk, not local SSD... (4 votos)"
+        "text": "You rejected D with the same reason as C. But D is using Persistent Disk, not local SSD... (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9568,27 +9568,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Sebatian",
-        "text": "It should be A. The question requires that users from each country can only view a specific dataset, so BigQuery dataViewer cannot be assigned at project level... (63 votos)"
+        "text": "It should be A. The question requires that users from each country can only view a specific dataset, so BigQuery dataViewer cannot be assigned at project level... (63 votes)"
       },
       {
         "user": "wk",
-        "text": "Should be C... (32 votos)"
+        "text": "Should be C... (32 votes)"
       },
       {
         "user": "Jack_in_Large",
-        "text": "Option C grants read permission to all datasets globally, which violates the request... So the correct answer is A. (32 votos)"
+        "text": "Option C grants read permission to all datasets globally, which violates the request... So the correct answer is A. (32 votes)"
       },
       {
         "user": "jits1984",
-        "text": "Should be C. dataViewer role can be applied to a table and a view. jobUser can be applied only at project level not at dataset level. (12 votos)"
+        "text": "Should be C. dataViewer role can be applied to a table and a view. jobUser can be applied only at project level not at dataset level. (12 votes)"
       },
       {
         "user": "BrunoTostes",
-        "text": "'When applied to a dataset..' you can apply the dataViewer role to a specific dataset. (9 votos)"
+        "text": "'When applied to a dataset..' you can apply the dataViewer role to a specific dataset. (9 votes)"
       },
       {
         "user": "JohnDohertyDoe",
-        "text": "A is the correct answer. Tested the two scenarios; with jobUser permissions it does not allow the user to see a dataset. (7 votos)"
+        "text": "A is the correct answer. Tested the two scenarios; with jobUser permissions it does not allow the user to see a dataset. (7 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9624,27 +9624,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "crypt0",
-        "text": "Why is it not answer B? (42 votos)"
+        "text": "Why is it not answer B? (42 votes)"
       },
       {
         "user": "JoeShmoe",
-        "text": "B - minimal start time means a pre-baked golden image (21 votos)"
+        "text": "B - minimal start time means a pre-baked golden image (21 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The correct answer is B. Create a custom VM image with all OS package dependencies... (15 votos)"
+        "text": "The correct answer is B. Create a custom VM image with all OS package dependencies... (15 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (12 votos)"
+        "text": "B is ok (12 votes)"
       },
       {
         "user": "Jos",
-        "text": "It is. (10 votos)"
+        "text": "It is. (10 votes)"
       },
       {
         "user": "kumarp6",
-        "text": "B is the answer. (6 votos)"
+        "text": "B is the answer. (6 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9663,7 +9663,7 @@ export const QUESTIONS = [
       "Wrong: Puppet would converge configuration after boot, adding the same installation delay to every new instance.",
       "Wrong: Ansible also configures the instance after it starts, so package installation still lengthens every startup."
     ],
-    "legacyNote": "Deployment Manager está deprecado; hoy usarías Infrastructure Manager o Terraform. El principio de la imagen pre-horneada no cambia."
+    "legacyNote": "Deployment Manager is deprecated; today you'd use Infrastructure Manager or Terraform. The principle of the pre-baked image doesn't change."
   },
   {
     "id": 83,
@@ -9681,27 +9681,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Googler2",
-        "text": "D - reasons: Cloud Audit Logs maintains audit logs for admin activity, data access and system events. BigQuery automatically sends to Cloud Audit Logs... (54 votos)"
+        "text": "D - reasons: Cloud Audit Logs maintains audit logs for admin activity, data access and system events. BigQuery automatically sends to Cloud Audit Logs... (54 votes)"
       },
       {
         "user": "Zarmi",
-        "text": "Answer is D (enlace a ejemplo de desglose de costes por identidad en auditoría). (27 votos)"
+        "text": "Answer is D (link to an example of cost breakdown by identity in audit logs). (27 votes)"
       },
       {
         "user": "GooglecloudArchitect",
-        "text": "D is right as you can get the monthly view of the query usage across all users and projects for auditing purposes. (10 votos)"
+        "text": "D is right as you can get the monthly view of the query usage across all users and projects for auditing purposes. (10 votes)"
       },
       {
         "user": "rajrocks171",
-        "text": "Option D. Cloud audit logs track all BigQuery jobs including who ran each query, when and how... (4 votos)"
+        "text": "Option D. Cloud audit logs track all BigQuery jobs including who ran each query, when and how... (4 votes)"
       },
       {
         "user": "heretolearnazure",
-        "text": "Answer is D (3 votos)"
+        "text": "Answer is D (3 votes)"
       },
       {
         "user": "BobbyFlash",
-        "text": "Nailed it (3 votos)"
+        "text": "Nailed it (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9737,27 +9737,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Kri_2525",
-        "text": "As per Google documentation... answer is C. A well-designed application should scale seamlessly... designed to withstand the unexpected. (66 votos)"
+        "text": "As per Google documentation... answer is C. A well-designed application should scale seamlessly... designed to withstand the unexpected. (66 votes)"
       },
       {
         "user": "vartiklis",
-        "text": "You're not testing authentication, you're testing the resilience of the authentication layer. 'A resilient app is one that continues to function despite failures of system components' (20 votos)"
+        "text": "You're not testing authentication, you're testing the resilience of the authentication layer. 'A resilient app is one that continues to function despite failures of system components' (20 votes)"
       },
       {
         "user": "KouShikyou",
-        "text": "Since the question is asking to do resilience testing, I prefer C. (16 votos)"
+        "text": "Since the question is asking to do resilience testing, I prefer C. (16 votes)"
       },
       {
         "user": "Jack_in_Large",
-        "text": "Shutting off all VMs in a zone is not a good approach for testing authentication (6 votos)"
+        "text": "Shutting off all VMs in a zone is not a good approach for testing authentication (6 votes)"
       },
       {
         "user": "elaineshi",
-        "text": "Agree, chaos testing is to shut down random instances. (4 votos)"
+        "text": "Agree, chaos testing is to shut down random instances. (4 votes)"
       },
       {
         "user": "hitmax87",
-        "text": "C is correct. It is not D because you are not designing the system, your goal is testing the existing system. (4 votos)"
+        "text": "C is correct. It is not D because you are not designing the system, your goal is testing the existing system. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9793,27 +9793,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Eroc",
-        "text": "Disabling and then discontinuing allows you to see the effects of not using the APIs... The question says only some are not time-critical which implies others are... this means preemptible VMs are good because they will secure a spot for scaling when needed. So I'm also going to choose B. (44 votos)"
+        "text": "Disabling and then discontinuing allows you to see the effects of not using the APIs... The question says only some are not time-critical which implies others are... this means preemptible VMs are good because they will secure a spot for scaling when needed. So I'm also going to choose B. (44 votes)"
       },
       {
         "user": "Karna",
-        "text": "They say that some (not all) of the batch workloads are not time critical which implies there are time critical batch workloads for which preemptible VMs are not appropriate, so going with D. (20 votos)"
+        "text": "They say that some (not all) of the batch workloads are not time critical which implies there are time critical batch workloads for which preemptible VMs are not appropriate, so going with D. (20 votes)"
       },
       {
         "user": "Musk",
-        "text": "If others are time-critical, preemptible does not fit. Answer is D. (11 votos)"
+        "text": "If others are time-critical, preemptible does not fit. Answer is D. (11 votes)"
       },
       {
         "user": "army234",
-        "text": "No mention of others in the question. In an exam it's important not to make individual assumptions and to focus on the information in the question. The key word here is 'not time-critical'. (7 votos)"
+        "text": "No mention of others in the question. In an exam it's important not to make individual assumptions and to focus on the information in the question. The key word here is 'not time-critical'. (7 votes)"
       },
       {
         "user": "minmin2020",
-        "text": "Assumption here is that cost is more important than the time critical batches, therefore use preemptible instances. Disable and discontinue is a better option. (4 votos)"
+        "text": "Assumption here is that cost is more important than the time critical batches, therefore use preemptible instances. Disable and discontinue is a better option. (4 votes)"
       },
       {
         "user": "Darahaas",
-        "text": "By taking the question just by the context that it sets, preemptible is what I choose. So it's B according to me. (3 votos)"
+        "text": "By taking the question just by the context that it sets, preemptible is what I choose. So it's B according to me. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9849,27 +9849,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "KouShikyou",
-        "text": "I think B is the correct answer. (44 votos)"
+        "text": "I think B is the correct answer. (44 votes)"
       },
       {
         "user": "MeasService",
-        "text": "Agree B is correct. Transfer Appliance is a physical appliance for transferring huge bulk of data, it does not fit into disaster recovery testing... (27 votos)"
+        "text": "Agree B is correct. Transfer Appliance is a physical appliance for transferring huge bulk of data, it does not fit into disaster recovery testing... (27 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (8 votos)"
+        "text": "B is ok (8 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The correct answer is B. Verify that Dedicated Interconnect can replicate files to GCP. Verify that Cloud VPN can establish a secure connection... (8 votos)"
+        "text": "The correct answer is B. Verify that Dedicated Interconnect can replicate files to GCP. Verify that Cloud VPN can establish a secure connection... (8 votes)"
       },
       {
         "user": "kumarp6",
-        "text": "It's quite fun to use Transfer Appliance for DR, I think the answer is B (6 votos)"
+        "text": "It's quite fun to use Transfer Appliance for DR, I think the answer is B (6 votes)"
       },
       {
         "user": "hitmax87",
-        "text": "I go to B, because direct peering anyway requires VPN connection if you want to get access to VPC. (4 votos)"
+        "text": "I go to B, because direct peering anyway requires VPN connection if you want to get access to VPC. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -9905,11 +9905,11 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Unfaithful",
-        "text": "Explica que el HPA crea réplicas de pods por carga, y si no hay espacio, el CA levanta nodos nuevos. Si la carga baja, HPA elimina pods y CA apaga nodos vacíos."
+        "text": "Explains that HPA creates pod replicas based on load, and if there's no room, the CA spins up new nodes. If the load drops, HPA removes pods and the CA shuts down empty nodes."
       },
       {
         "user": "natpilot",
-        "text": "Señala que la pregunta puede ser ambigua porque pide escalar 'nodos', pero la respuesta incluye escalar 'pods'."
+        "text": "Points out that the question may be ambiguous because it asks to scale 'nodes', but the answer includes scaling 'pods'."
       },
       {
         "user": "p4",
@@ -9917,15 +9917,15 @@ export const QUESTIONS = [
       },
       {
         "user": "ehgm",
-        "text": "Refuerza que nunca se debe tocar el MIG administrado por GKE (descarta B y D) y que maxSurge es para updates (descarta C y D)."
+        "text": "Stresses that you should never touch the GKE-managed MIG (rules out B and D) and that maxSurge is for updates (rules out C and D)."
       },
       {
         "user": "skywalker",
-        "text": "Muestra confusión sobre por qué se usa HPA si la pregunta habla de nodos."
+        "text": "Is confused about why HPA is used if the question is about nodes."
       },
       {
         "user": "6721sora",
-        "text": "Dice que A es incorrecta porque piensa que HPA solo escala pods, ignorando que la opción A también activa el Cluster Autoscaler."
+        "text": "Says A is incorrect because they think HPA only scales pods, ignoring that option A also enables the Cluster Autoscaler."
       }
     ],
     "source": "gemini-validated",
@@ -9961,27 +9961,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "KouShikyou",
-        "text": "Señala que con la opción A se eliminaría la tabla entera con todo su contenido."
+        "text": "Points out that with option A the entire table would be deleted along with all its contents."
       },
       {
         "user": "kumarp6",
-        "text": "Si usas la opción A, en el día 46 ya no tendrás tabla para tu aplicación."
+        "text": "If you use option A, on day 46 you won't have a table for your application anymore."
       },
       {
         "user": "aviv",
-        "text": "La partición por tiempo (B) es la respuesta correcta."
+        "text": "Time partitioning (B) is the correct answer."
       },
       {
         "user": "examch",
-        "text": "Aporta enlaces a la documentación oficial y explica que la bandera time_partitioning_expiration maneja esto de forma nativa sin borrar la tabla."
+        "text": "Provides links to the official documentation and explains that the time_partitioning_expiration flag handles this natively without deleting the table."
       },
       {
         "user": "MarcoEscanor",
-        "text": "Confirma el uso de tablas particionadas como la mejor práctica de optimización de almacenamiento."
+        "text": "Confirms that partitioned tables are the best practice for storage optimization."
       },
       {
         "user": "haroldbenites",
-        "text": "Proporciona un ejemplo de cómo se crearía esta partición (partition_expiration_days=45)."
+        "text": "Provides an example of how this partition would be created (partition_expiration_days=45)."
       }
     ],
     "source": "gemini-validated",
@@ -10017,27 +10017,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Googler2",
-        "text": "Desglosa por qué A, B y C son incorrectas, destacando que los VPN Gateways son objetos regionales."
+        "text": "Breaks down why A, B and C are incorrect, highlighting that VPN Gateways are regional objects."
       },
       {
         "user": "TaherShaker",
-        "text": "Confirma que aprobó el examen recientemente y que D es la respuesta que usó."
+        "text": "Confirms they passed the exam recently and that D is the answer they used."
       },
       {
         "user": "ccpmad",
-        "text": "Contrasta C y D, indicando que la opción D proporciona resiliencia regional real."
+        "text": "Contrasts C and D, stating that option D provides real regional resilience."
       },
       {
         "user": "salvo007",
-        "text": "Proporciona el comando gcloud compute vpn-gateways create demostrando que requiere un parámetro --region, probando que no son globales."
+        "text": "Provides the gcloud compute vpn-gateways create command, showing it requires a --region parameter, which proves they are not global."
       },
       {
         "user": "DrishaS4",
-        "text": "Reitera que Cloud VPN Gateway es un servicio regional."
+        "text": "Reiterates that Cloud VPN Gateway is a regional service."
       },
       {
         "user": "santoshchauhan",
-        "text": "Argumenta a favor de C por simplicidad, pero es corregido por otros usuarios."
+        "text": "Argues in favor of C for simplicity, but is corrected by other users."
       }
     ],
     "source": "gemini-validated",
@@ -10073,27 +10073,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AWS56",
-        "text": "Confirma A como correcta."
+        "text": "Confirms A as correct."
       },
       {
         "user": "JustJack21",
-        "text": "Bromea sobre la redacción de la pregunta, concluyendo que la mejor forma de autenticar es A."
+        "text": "Jokes about the wording of the question, concluding that the best way to authenticate is A."
       },
       {
         "user": "omermahgoub",
-        "text": "Ofrece una explicación detallada de por qué A es la recomendación nativa de Google y descarta B, C y D."
+        "text": "Offers a detailed explanation of why A is Google's native recommendation and rules out B, C and D."
       },
       {
         "user": "elenamatay",
-        "text": "Proporciona el enlace a la documentación de Pub/Sub que indica que las service accounts son recomendadas para casi todos los casos."
+        "text": "Provides the link to the Pub/Sub documentation stating that service accounts are recommended for almost every case."
       },
       {
         "user": "MaxNRG",
-        "text": "Refuerza que las cuentas de servicio están diseñadas exactamente para que procesos y aplicaciones llamen a las APIs de Google Cloud de forma segura."
+        "text": "Stresses that service accounts are designed precisely so processes and applications can call Google Cloud APIs securely."
       },
       {
         "user": "red_panda",
-        "text": "Destaca que es un proceso batch, por lo que usar una Cloud Function no tendría sentido."
+        "text": "Points out that it's a batch process, so using a Cloud Function wouldn't make sense."
       }
     ],
     "source": "gemini-validated",
@@ -10129,23 +10129,23 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jcmoranp",
-        "text": "Un post-mortem siempre incluye análisis de logs, la respuesta es C."
+        "text": "A post-mortem always includes log analysis, the answer is C."
       },
       {
         "user": "MaxNRG",
-        "text": "Explica que A y D son intentos inmediatos de arreglar un problema sin analizarlo, y que B es irrelevante porque el proxy no compila nada."
+        "text": "Explains that A and D are immediate attempts to fix a problem without analyzing it, and that B is irrelevant because the proxy doesn't compile anything."
       },
       {
         "user": "ashish_t",
-        "text": "Señala el error evidente en la opción B: ¿por qué necesitaría el rol Cloud Build Editor?"
+        "text": "Points out the obvious error in option B: why would it need the Cloud Build Editor role?"
       },
       {
         "user": "ale_brd_111",
-        "text": "Aclara que el nombre Stackdriver está obsoleto y ahora es Cloud Logging."
+        "text": "Clarifies that the Stackdriver name is obsolete and it's now Cloud Logging."
       },
       {
         "user": "AzureDP900",
-        "text": "Apunta que la opción C es el camino correcto para un Root Cause Analysis."
+        "text": "Points out that option C is the right path for a Root Cause Analysis."
       },
       {
         "user": "lovingsmart2000",
@@ -10168,7 +10168,7 @@ export const QUESTIONS = [
       "Correct: Reading the GKE and Cloud SQL logs establishes what actually failed, which is the necessary basis for a post-mortem.",
       "Wrong: Restoring a backup is a drastic, potentially data-losing action taken before any evidence implicates the data at all."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 74,
@@ -10186,27 +10186,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "gfhbox0083",
-        "text": "BigQuery para OLAP, Google Cloud Spanner para OLTP."
+        "text": "BigQuery for OLAP, Google Cloud Spanner for OLTP."
       },
       {
         "user": "lovingsmart2000",
-        "text": "Aclara que BigQuery sí es relacional, disipando dudas de otros usuarios."
+        "text": "Clarifies that BigQuery is indeed relational, clearing up other users' doubts."
       },
       {
         "user": "AdityaGupta",
-        "text": "Lista los 4 motivos por los que D es correcta: datos OLAP, relacional (SQL), cientos de TB, y analítica/reportería."
+        "text": "Lists the 4 reasons D is correct: OLAP data, relational (SQL), hundreds of TB, and analytics/reporting."
       },
       {
         "user": "Andre777",
-        "text": "Menciona las restricciones de capacidad: Cloud SQL soporta hasta ~64 TB, mientras que la pregunta exige cientos de TB."
+        "text": "Mentions the capacity limits: Cloud SQL supports up to ~64 TB, while the question requires hundreds of TB."
       },
       {
         "user": "alexandercamachop",
-        "text": "Analítica + cientos de TB + relacional = BigQuery. Si dijera alta disponibilidad global sería Spanner."
+        "text": "Analytics + hundreds of TB + relational = BigQuery. If it said global high availability it would be Spanner."
       },
       {
         "user": "Thornadoo",
-        "text": "Resumen útil: OLTP (Spanner, Cloud SQL), OLAP (BigQuery), NoSQL (Firestore, Bigtable)."
+        "text": "Useful summary: OLTP (Spanner, Cloud SQL), OLAP (BigQuery), NoSQL (Firestore, Bigtable)."
       }
     ],
     "source": "gemini-validated",
@@ -10242,27 +10242,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AdityaGupta",
-        "text": "Elimina C y D porque hablan de alertas para almacenamiento en lugar de habilitar el auto-incremento. Elimina B porque forzar 32 cores es ciego, y vota por A."
+        "text": "Eliminates C and D because they're about storage alerts instead of enabling auto-increase. Eliminates B because forcing 32 cores is blind, and votes for A."
       },
       {
         "user": "Charsoft",
-        "text": "Señala que el detalle '32-core' en las otras respuestas es un red herring."
+        "text": "Points out that the '32-core' detail in the other answers is a red herring."
       },
       {
         "user": "Ral17",
-        "text": "Menciona que Google tiene documentación antigua que recomienda sharding para escalar escrituras y lag, y cuestiona por qué se elegirían 32 cores al azar."
+        "text": "Mentions that Google has old documentation recommending sharding to scale writes and lag, and questions why you'd pick 32 cores at random."
       },
       {
         "user": "jay9114",
-        "text": "Comparte un enlace de Google Cloud Tutorials que demuestra cómo hacer sharding de MySQL con ProxySQL en Cloud SQL."
+        "text": "Shares a Google Cloud Tutorials link showing how to shard MySQL with ProxySQL on Cloud SQL."
       },
       {
         "user": "jfricker",
-        "text": "Argumenta a favor de D, pero es corregido por la falta de auto-crecimiento de almacenamiento."
+        "text": "Argues in favor of D, but is corrected because of the lack of automatic storage growth."
       },
       {
         "user": "Ishu_awsguy",
-        "text": "Apunta a la frase 'escalar a medida que aumenta el uso' (dinámico). Establecer 32 núcleos de entrada es estático."
+        "text": "Points to the phrase 'scale as usage increases' (dynamic). Setting 32 cores up front is static."
       }
     ],
     "source": "gemini-validated",
@@ -10281,7 +10281,7 @@ export const QUESTIONS = [
       "Wrong: Alerting and manually adding storage ignores the native automatic increase, and resizing the machine does not directly address replication lag.",
       "Wrong: Same manual storage handling, and it again relies on an arbitrary 32-core machine type as the remedy for lag."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 72,
@@ -10299,27 +10299,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "omermahgoub",
-        "text": "Detalla que para evitar depender de IPs en entornos de autoescalado, los network tags permiten especificar exactamente quién se comunica con quién a nivel de firewall."
+        "text": "Details that, to avoid depending on IPs in autoscaling environments, network tags let you specify exactly who talks to whom at the firewall level."
       },
       {
         "user": "alexandercamachop",
-        "text": "Destaca las palabras clave: 'paths and ports'. Esto nos dice que se requiere un firewall."
+        "text": "Highlights the keywords: 'paths and ports'. That tells us a firewall is required."
       },
       {
         "user": "SureshbabuK",
-        "text": "Confirma que el acceso a puertos específicos solo puede controlarse mediante reglas de firewall, y rechaza D."
+        "text": "Confirms that access to specific ports can only be controlled through firewall rules, and rejects D."
       },
       {
         "user": "MaxNRG",
-        "text": "Explica que las etiquetas son el reemplazo perfecto para las direcciones IP en entornos dinámicos."
+        "text": "Explains that tags are the perfect replacement for IP addresses in dynamic environments."
       },
       {
         "user": "medi01",
-        "text": "Pregunta cómo un firewall restringe 'paths' (rutas HTTP), lo cual requeriría un load balancer."
+        "text": "Asks how a firewall restricts 'paths' (HTTP routes), which would require a load balancer."
       },
       {
         "user": "AWS56",
-        "text": "Confirmación a favor de la opción B."
+        "text": "Confirmation in favor of option B."
       }
     ],
     "source": "gemini-validated",
@@ -10355,27 +10355,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "sdsdfasdf4",
-        "text": "Explica las dependencias: no puedes crear un MIG desde una imagen (necesitas plantilla). Por ende, el camino es disco, imagen, plantilla, MIG."
+        "text": "Explains the dependencies: you can't create a MIG from an image (you need a template). So the path is disk, image, template, MIG."
       },
       {
         "user": "6721sora",
-        "text": "Crear plantillas directamente desde instancias vivas copia la IP externa estática, por lo que crear una custom image limpia es el paso correcto."
+        "text": "Creating templates directly from live instances copies the static external IP, so creating a clean custom image is the right step."
       },
       {
         "user": "thewalker",
-        "text": "Aporta documentación de Google confirmando que los instance templates se crean con imágenes públicas o personalizadas."
+        "text": "Provides Google documentation confirming that instance templates are created from public or custom images."
       },
       {
         "user": "Deb2293",
-        "text": "Crear una imagen personalizada asegura que el entorno sea consistente, eliminando variabilidad entre instancias."
+        "text": "Creating a custom image ensures the environment is consistent, eliminating variability between instances."
       },
       {
         "user": "haroldbenites",
-        "text": "Un instance template no puede crearse desde un snapshot, solo desde una imagen."
+        "text": "An instance template can't be created from a snapshot, only from an image."
       },
       {
         "user": "vincy2202",
-        "text": "Enlace a la documentación sobre el uso de imágenes personalizadas en plantillas de instancias."
+        "text": "Link to the documentation on using custom images in instance templates."
       }
     ],
     "source": "gemini-validated",
@@ -10411,27 +10411,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "kimharsh",
-        "text": "Esta pregunta es muy antigua. Hoy no hay 'failover replica', simplemente configuramos HA. Aun así, el concepto detrás de D sigue siendo la respuesta."
+        "text": "This question is very old. Today there's no 'failover replica', we simply configure HA. Even so, the concept behind D is still the answer."
       },
       {
         "user": "GunjGupta",
-        "text": "Cloud SQL HA es regional. Para HA necesitamos una estrategia de failover en diferente zona, misma región."
+        "text": "Cloud SQL HA is regional. For HA we need a failover strategy in a different zone, same region."
       },
       {
         "user": "nwk",
-        "text": "Cita la documentación: 'Read replicas do not provide high availability. A primary instance cannot fail over to a read replica.'"
+        "text": "Cites the documentation: 'Read replicas do not provide high availability. A primary instance cannot fail over to a read replica.'"
       },
       {
         "user": "JoseCloudEng1994",
-        "text": "Explicación de por qué D es la respuesta arquitectónica correcta frente a DR cross-region."
+        "text": "Explanation of why D is the correct architectural answer versus cross-region DR."
       },
       {
         "user": "0verK0alafied",
-        "text": "Explica la configuración HA (instancia regional) donde todo se escribe de forma síncrona en discos persistentes en ambas zonas antes del commit."
+        "text": "Explains the HA configuration (regional instance) where everything is written synchronously to persistent disks in both zones before the commit."
       },
       {
         "user": "Gall",
-        "text": "Refuerza citando la nota de la documentación: 'Note: Read replicas do not provide failover capability.'"
+        "text": "Reinforces by quoting the documentation note: 'Note: Read replicas do not provide failover capability.'"
       }
     ],
     "source": "gemini-validated",
@@ -10450,7 +10450,7 @@ export const QUESTIONS = [
       "Wrong: Placing a read replica in another zone still gives no failover capability, only additional read capacity.",
       "Correct: A standby in another zone of the same region with synchronous replication and automatic failover is exactly Cloud SQL high availability."
     ],
-    "legacyNote": "Cloud SQL ya no usa el término «failover replica»: hoy simplemente se activa la alta disponibilidad, que aprovisiona el standby en otra zona de la misma región."
+    "legacyNote": "Cloud SQL no longer uses the term “failover replica”: today you simply enable high availability, which provisions the standby in another zone of the same region."
   },
   {
     "id": 69,
@@ -10468,27 +10468,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jcmoranp",
-        "text": "Think answer is B. C cannot be, you don't need to connect to the container to view logs, you connect to Stackdriver for this (34 votos)"
+        "text": "Think answer is B. C cannot be, you don't need to connect to the container to view logs, you connect to Stackdriver for this (34 votes)"
       },
       {
         "user": "crypt0",
-        "text": "Stackdriver Logging seems to be enabled by default for GKE... For container and system logs, GKE deploys a per-node logging agent that reads container logs... I would also go with B (13 votos)"
+        "text": "Stackdriver Logging seems to be enabled by default for GKE... For container and system logs, GKE deploys a per-node logging agent that reads container logs... I would also go with B (13 votes)"
       },
       {
         "user": "JoeShmoe",
-        "text": "B is correct. Serial console doesn't give you stdout (9 votos)"
+        "text": "B is correct. Serial console doesn't give you stdout (9 votes)"
       },
       {
         "user": "crypt0",
-        "text": "Answer B should be correct. (8 votos)"
+        "text": "Answer B should be correct. (8 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (7 votos)"
+        "text": "B is ok (7 votes)"
       },
       {
         "user": "nitinz",
-        "text": "B, Google wants you to use Stackdriver. (6 votos)"
+        "text": "B, Google wants you to use Stackdriver. (6 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -10507,7 +10507,7 @@ export const QUESTIONS = [
       "Wrong: A Pod restarting every two seconds cannot be attached to reliably, and the previous container's filesystem is gone before you connect.",
       "Wrong: Serial port logs capture VM boot and kernel output, not application stdout inside a container."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 68,
@@ -10525,27 +10525,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "KouShikyou",
-        "text": "According to the reference, my understanding is B is correct... If you need to create Google Accounts for your existing users, you can use Google Cloud Directory Sync to synchronize... (45 votos)"
+        "text": "According to the reference, my understanding is B is correct... If you need to create Google Accounts for your existing users, you can use Google Cloud Directory Sync to synchronize... (45 votes)"
       },
       {
         "user": "MeasService",
-        "text": "B is the nearest answer I feel! (25 votos)"
+        "text": "B is the nearest answer I feel! (25 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (9 votos)"
+        "text": "B is ok (9 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "B. Use Google Cloud Directory Sync to synchronize... This will allow users to use their existing Active Directory credentials to access Google Cloud resources, while still maintaining their on-premises... (8 votos)"
+        "text": "B. Use Google Cloud Directory Sync to synchronize... This will allow users to use their existing Active Directory credentials to access Google Cloud resources, while still maintaining their on-premises... (8 votes)"
       },
       {
         "user": "kumarp6",
-        "text": "B should be correct (5 votos)"
+        "text": "B should be correct (5 votes)"
       },
       {
         "user": "nitinz",
-        "text": "B, use GCDS. (5 votos)"
+        "text": "B, use GCDS. (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -10581,27 +10581,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jcmoranp",
-        "text": "C is correct, need 'IfNotPresent' when uploading to container registry (41 votos)"
+        "text": "C is correct, need 'IfNotPresent' when uploading to container registry (41 votes)"
       },
       {
         "user": "TosO",
-        "text": "C is the best choice. You can create a k8s cluster with just one node and use different namespaces for staging and production. In staging, you will test the changes (24 votos)"
+        "text": "C is the best choice. You can create a k8s cluster with just one node and use different namespaces for staging and production. In staging, you will test the changes (24 votes)"
       },
       {
         "user": "rajrocks171",
-        "text": "C is correct. Efficient resource usage, GKE schedules multiple pods per node maximizing CPU and memory utilization. Ideal for a small app... (4 votos)"
+        "text": "C is correct. Efficient resource usage, GKE schedules multiple pods per node maximizing CPU and memory utilization. Ideal for a small app... (4 votes)"
       },
       {
         "user": "medi01",
-        "text": "IfNotPresent won't pull a new version. (4 votos)"
+        "text": "IfNotPresent won't pull a new version. (4 votes)"
       },
       {
         "user": "Gall",
-        "text": "A is wrong as after the restart the script will be rerun... The load of the massive number of dependencies will take a lot of time... (3 votos)"
+        "text": "A is wrong as after the restart the script will be rerun... The load of the massive number of dependencies will take a lot of time... (3 votes)"
       },
       {
         "user": "AWS_Sam",
-        "text": "The correct answer is C. Because it is the only option that reliably tests the app in staging before it is applied to production. (3 votos)"
+        "text": "The correct answer is C. Because it is the only option that reliably tests the app in staging before it is applied to production. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -10637,27 +10637,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "suryalsp",
-        "text": "Ans is B. Data Studio cannot be used with Bigtable (34 votos)"
+        "text": "Ans is B. Data Studio cannot be used with Bigtable (34 votes)"
       },
       {
         "user": "kolcsarzs",
-        "text": "Correct is B (12 votos)"
+        "text": "Correct is B (12 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "B... Stackdriver allows you to collect and store custom metrics, as well as view and analyze them in real-time... (10 votos)"
+        "text": "B... Stackdriver allows you to collect and store custom metrics, as well as view and analyze them in real-time... (10 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Option A, storing time-series data in Bigtable and viewing it using Data Studio, would not be suitable... Data Studio is a visualization tool that is not designed for real-time... (9 votos)"
+        "text": "Option A, storing time-series data in Bigtable and viewing it using Data Studio, would not be suitable... Data Studio is a visualization tool that is not designed for real-time... (9 votes)"
       },
       {
         "user": "ErenYeager",
-        "text": "As of today you can (debate sobre soporte de Looker Studio). (7 votos)"
+        "text": "As of today you can (debate sobre soporte de Looker Studio). (7 votes)"
       },
       {
         "user": "Nirca",
-        "text": "Selected Answer: B. Bigtable has no connection to Data Studio. (6 votos)"
+        "text": "Selected Answer: B. Bigtable has no connection to Data Studio. (6 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -10676,7 +10676,7 @@ export const QUESTIONS = [
       "Wrong: Loading files every ten minutes is batch ingestion, which cannot meet a real-time, low-latency monitoring requirement.",
       "Wrong: Datastore is a transactional document database unsuited to high-volume metric ingestion, and a notebook is not a real-time dashboard."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 65,
@@ -10694,27 +10694,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "KouShikyou",
-        "text": "In the GCP document, the key could be configured in .boto. I didn't find information showing gsutil supports the flag --encryption-key. (48 votos)"
+        "text": "In the GCP document, the key could be configured in .boto. I didn't find information showing gsutil supports the flag --encryption-key. (48 votes)"
       },
       {
         "user": "Eroc",
-        "text": "I agree, A. (enlace a UsingEncryptionKeys) (18 votos)"
+        "text": "I agree, A. (enlace a UsingEncryptionKeys) (18 votes)"
       },
       {
         "user": "tartar",
-        "text": "A is ok (16 votos)"
+        "text": "A is ok (16 votes)"
       },
       {
         "user": "JaimeMS",
-        "text": "Option C is correct. You can upload a file using customer-supplied encryption with the command gcloud storage cp... (13 votos)"
+        "text": "Option C is correct. You can upload a file using customer-supplied encryption with the command gcloud storage cp... (13 votes)"
       },
       {
         "user": "ryaryarya",
-        "text": "Option C doesn't say 'use gcloud storage cp', it says 'use gsutil'. (9 votos)"
+        "text": "Option C doesn't say 'use gcloud storage cp', it says 'use gsutil'. (9 votes)"
       },
       {
         "user": "klayytech",
-        "text": "(Debatiendo D, ignorando que el flag no existe en gsutil.) (4 votos)"
+        "text": "(Debating D, ignoring that the flag doesn't exist in gsutil.) (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -10733,7 +10733,7 @@ export const QUESTIONS = [
       "Wrong: gsutil has no --encryption-key flag; the flag belongs to the newer gcloud storage commands, which the question does not use.",
       "Wrong: Encryption with customer-supplied keys is applied per object at upload time, not set on the bucket, and the flag again does not exist for gsutil."
     ],
-    "legacyNote": "gsutil no tiene flag --encryption-key, pero el comando moderno «gcloud storage» sí. La pregunta se refiere explícitamente a gsutil."
+    "legacyNote": "gsutil has no --encryption-key flag, but the modern “gcloud storage” command does. The question explicitly refers to gsutil."
   },
   {
     "id": 64,
@@ -10751,27 +10751,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "shashu07",
-        "text": "Correct Answer: A. Create the Key object for each entity and run a batch get operation... Such batch calls are faster than making separate calls for each individual entity because they incur the overhead for only one service call. (50 votos)"
+        "text": "Correct Answer: A. Create the Key object for each entity and run a batch get operation... Such batch calls are faster than making separate calls for each individual entity because they incur the overhead for only one service call. (50 votes)"
       },
       {
         "user": "AWS56",
-        "text": "Agree A (7 votos)"
+        "text": "Agree A (7 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "A... To minimize the overhead in operations performed by Cloud Datastore, you should use the batch get operation to retrieve multiple entities in a single API call. (6 votos)"
+        "text": "A... To minimize the overhead in operations performed by Cloud Datastore, you should use the batch get operation to retrieve multiple entities in a single API call. (6 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Option B, running multiple get operations, would require multiple API calls... Option C, using the identifiers to create a query filter, is generally more expensive than a get operation. (6 votos)"
+        "text": "Option B, running multiple get operations, would require multiple API calls... Option C, using the identifiers to create a query filter, is generally more expensive than a get operation. (6 votes)"
       },
       {
         "user": "de1001c",
-        "text": "Keep in mind that Datastore is discontinued, Firestore being the recommended alternative. (4 votos)"
+        "text": "Keep in mind that Datastore is discontinued, Firestore being the recommended alternative. (4 votes)"
       },
       {
         "user": "don_v",
-        "text": "I believe the correct answer is C... (3 votos)"
+        "text": "I believe the correct answer is C... (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -10790,7 +10790,7 @@ export const QUESTIONS = [
       "Wrong: A query consults indexes and is more expensive than a direct key lookup when the identifiers are already known.",
       "Wrong: This is the worst case, combining the index overhead of queries with one round trip per entity."
     ],
-    "legacyNote": "Datastore fue sustituido por Firestore en modo Datastore. El principio (lookup por clave y batch) no cambia."
+    "legacyNote": "Datastore was replaced by Firestore in Datastore mode. The principle (lookup by key and batching) doesn't change."
   },
   {
     "id": 63,
@@ -10808,27 +10808,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "abirroy",
-        "text": "A. Cloud Functions - managed service scales down to 0; B. Compute Engine - not a managed service; C. GKE - won't scale down to 0; D. App Engine flexible - managed service but won't scale down to 0 (30 votos)"
+        "text": "A. Cloud Functions - managed service scales down to 0; B. Compute Engine - not a managed service; C. GKE - won't scale down to 0; D. App Engine flexible - managed service but won't scale down to 0 (30 votes)"
       },
       {
         "user": "victory108",
-        "text": "A. Cloud Functions (11 votos)"
+        "text": "A. Cloud Functions (11 votes)"
       },
       {
         "user": "NiveusSol",
-        "text": "GKE is a managed service. (6 votos)"
+        "text": "GKE is a managed service. (6 votes)"
       },
       {
         "user": "vpatiltech",
-        "text": "Cloud Function is more for event driven computing. Flex always has 1 instance running. (6 votos)"
+        "text": "Cloud Function is more for event driven computing. Flex always has 1 instance running. (6 votes)"
       },
       {
         "user": "Toothpick",
-        "text": "The only correct answer here is Cloud Run which isn't listed... A can scale to zero... D Flex can't scale down to zero currently (4 votos)"
+        "text": "The only correct answer here is Cloud Run which isn't listed... A can scale to zero... D Flex can't scale down to zero currently (4 votes)"
       },
       {
         "user": "Bedmed",
-        "text": "Yes, but only Standard environment, not flexible environment (4 votos)"
+        "text": "Yes, but only Standard environment, not flexible environment (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -10847,7 +10847,7 @@ export const QUESTIONS = [
       "Wrong: GKE keeps node pools and a control plane running, so there is a continuous cost floor even with no workload traffic.",
       "Wrong: App Engine flexible requires at least one instance to remain running, so it cannot scale to zero."
     ],
-    "legacyNote": "Cloud Run sería la respuesta moderna a «escala a cero», pero no está entre las opciones."
+    "legacyNote": "Cloud Run would be the modern answer to “scale to zero”, but it isn't among the options."
   },
   {
     "id": 62,
@@ -10865,27 +10865,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "KouShikyou",
-        "text": "B is correct. (46 votos)"
+        "text": "B is correct. (46 votes)"
       },
       {
         "user": "mawsman",
-        "text": "I think it's B. 'You must perform the evaluation and create a skills gap plan which incorporates the business goal of cost optimization'... I think the only way to evaluate the skills gap in cost optimization is to make them get certified... Quickly pushing another project deadline would not help (21 votos)"
+        "text": "I think it's B. 'You must perform the evaluation and create a skills gap plan which incorporates the business goal of cost optimization'... I think the only way to evaluate the skills gap in cost optimization is to make them get certified... Quickly pushing another project deadline would not help (21 votes)"
       },
       {
         "user": "nitinz",
-        "text": "B, looks like a cooked up question. (10 votos)"
+        "text": "B, looks like a cooked up question. (10 votes)"
       },
       {
         "user": "passnow",
-        "text": "I would agree with you because the question says create a skills gap plan (4 votos)"
+        "text": "I would agree with you because the question says create a skills gap plan (4 votes)"
       },
       {
         "user": "maxdanny",
-        "text": "Training and certification based on specific job roles will ensure your team has the necessary skills... Upskilling them is a more cost-effective and sustainable solution than relying on external consultants. (4 votos)"
+        "text": "Training and certification based on specific job roles will ensure your team has the necessary skills... Upskilling them is a more cost-effective and sustainable solution than relying on external consultants. (4 votes)"
       },
       {
         "user": "piiizu",
-        "text": "In the long run, B is the right option I would recommend as an architect. This would reduce the skill gap, increase proficiency and ensure repeatability. (4 votos)"
+        "text": "In the long run, B is the right option I would recommend as an architect. This would reduce the skill gap, increase proficiency and ensure repeatability. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -10921,27 +10921,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "MeasService",
-        "text": "It has to be B. gcloud for creating the cluster and kubectl for creating the deployment (54 votos)"
+        "text": "It has to be B. gcloud for creating the cluster and kubectl for creating the deployment (54 votes)"
       },
       {
         "user": "KouShikyou",
-        "text": "May I ask why C is correct? I thought B was correct. (26 votos)"
+        "text": "May I ask why C is correct? I thought B was correct. (26 votes)"
       },
       {
         "user": "ghadxx",
-        "text": "Deployment Manager is used to automate the process of provisioning infrastructure... Meanwhile, kubectl is used to run commands against an already created cluster. (9 votos)"
+        "text": "Deployment Manager is used to automate the process of provisioning infrastructure... Meanwhile, kubectl is used to run commands against an already created cluster. (9 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (9 votos)"
+        "text": "B is ok (9 votes)"
       },
       {
         "user": "kumarp6",
-        "text": "B is correct, when you create nodes in GKE you use gcloud rather than kubectl... (4 votos)"
+        "text": "B is correct, when you create nodes in GKE you use gcloud rather than kubectl... (4 votes)"
       },
       {
         "user": "res3",
-        "text": "Yes, gcloud command to create a K8s cluster (enlace a la documentación). (4 votos)"
+        "text": "Yes, gcloud command to create a K8s cluster (link to the documentation). (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -10977,27 +10977,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "learningpv",
-        "text": "A seems correct. '...high availability (HA) configuration for Cloud SQL... reduces downtime, and your data continues to be available...' (66 votos)"
+        "text": "A seems correct. '...high availability (HA) configuration for Cloud SQL... reduces downtime, and your data continues to be available...' (66 votes)"
       },
       {
         "user": "SMS",
-        "text": "Answer is A. Cloud SQL supports SQL Server and selecting high availability provides automatic failover within a region. (32 votos)"
+        "text": "Answer is A. Cloud SQL supports SQL Server and selecting high availability provides automatic failover within a region. (32 votes)"
       },
       {
         "user": "diluviouniv",
-        "text": "But it says: you need to set up SQL Server (12 votos)"
+        "text": "But it says: you need to set up SQL Server (12 votes)"
       },
       {
         "user": "cetanx",
-        "text": "It is available, please see the Cloud SQL SQL Server high availability documentation. (11 votos)"
+        "text": "It is available, please see the Cloud SQL SQL Server high availability documentation. (11 votes)"
       },
       {
         "user": "DevOpsifier",
-        "text": "You said it yourself, 'this configuration reduces downtime', it doesn't remove it completely as required, so the correct answer is D... failover usually takes around 1-2 minutes, which might result in a brief downtime. (6 votos)"
+        "text": "You said it yourself, 'this configuration reduces downtime', it doesn't remove it completely as required, so the correct answer is D... failover usually takes around 1-2 minutes, which might result in a brief downtime. (6 votes)"
       },
       {
         "user": "learningpv",
-        "text": "HA was not available for MS SQL when the question was written. (5 votos)"
+        "text": "HA was not available for MS SQL when the question was written. (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11017,7 +11017,7 @@ export const QUESTIONS = [
       "Correct: Always On Availability Groups with nodes in different zones keeps a synchronized replica live, so a zone outage is survived with effectively no downtime."
     ],
     "resolvedBy": "gemini-2026-08",
-    "legacyNote": "Cloud SQL para SQL Server ya soporta alta disponibilidad, pero su failover tarda 1-2 minutos. El enunciado exige cero downtime, no downtime reducido."
+    "legacyNote": "Cloud SQL for SQL Server now supports high availability, but its failover takes 1-2 minutes. The question requires zero downtime, not reduced downtime."
   },
   {
     "id": 59,
@@ -11035,27 +11035,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AWS56",
-        "text": "Agree D (17 votos)"
+        "text": "Agree D (17 votes)"
       },
       {
         "user": "AshokC",
-        "text": "D - https://cloud.google.com/security/gdpr The GDPR lays out specific requirements for businesses... (16 votos)"
+        "text": "D - https://cloud.google.com/security/gdpr The GDPR lays out specific requirements for businesses... (16 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Option A: While it is true that Google has various certifications... Option B: Enabling the relevant GDPR compliance setting is not sufficient on its own. (10 votos)"
+        "text": "Option A: While it is true that Google has various certifications... Option B: Enabling the relevant GDPR compliance setting is not sufficient on its own. (10 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The correct answer is option D: Define a design for the security of data in your web application that meets GDPR requirements. (4 votos)"
+        "text": "The correct answer is option D: Define a design for the security of data in your web application that meets GDPR requirements. (4 votes)"
       },
       {
         "user": "bnlcnd",
-        "text": "There is really no real answer in the 4 choices. D is so generic that it cannot go wrong :) (4 votos)"
+        "text": "There is really no real answer in the 4 choices. D is so generic that it cannot go wrong :) (4 votes)"
       },
       {
         "user": "CloudGenious",
-        "text": "You should design your app such that it meets GDPR requirements. As a customer of Google Cloud, GDPR should be part of your protection strategy. So the answer is D. (3 votos)"
+        "text": "You should design your app such that it meets GDPR requirements. As a customer of Google Cloud, GDPR should be part of your protection strategy. So the answer is D. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11091,27 +11091,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jcmoranp",
-        "text": "Correct answer is B (44 votos)"
+        "text": "Correct answer is B (44 votes)"
       },
       {
         "user": "MyPractice",
-        "text": "Ans B. 'When should you use a signed URL? In some scenarios, you might not want to require your users to have a Google account...' (29 votos)"
+        "text": "Ans B. 'When should you use a signed URL? In some scenarios, you might not want to require your users to have a Google account...' (29 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (8 votos)"
+        "text": "B is ok (8 votes)"
       },
       {
         "user": "fussili",
-        "text": "The correct answer is B. A is not a good choice because it is not possible to set an expiration time for a password protected Cloud Storage bucket... (6 votos)"
+        "text": "The correct answer is B. A is not a good choice because it is not possible to set an expiration time for a password protected Cloud Storage bucket... (6 votes)"
       },
       {
         "user": "rishab86",
-        "text": "Answer B. A signed URL is a URL that provides limited permission and time to make a request... (4 votos)"
+        "text": "Answer B. A signed URL is a URL that provides limited permission and time to make a request... (4 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The correct answer is B: Have users upload the images to Cloud Storage using a signed URL that expires after 24 hours. (3 votos)"
+        "text": "The correct answer is B: Have users upload the images to Cloud Storage using a signed URL that expires after 24 hours. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11147,27 +11147,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "RitwickKumar",
-        "text": "Selected Answer: C. Both A and C are correct but using the principle of least privilege C is the most appropriate. BigQuery User allows the creation of new datasets... (29 votos)"
+        "text": "Selected Answer: C. Both A and C are correct but using the principle of least privilege C is the most appropriate. BigQuery User allows the creation of new datasets... (29 votes)"
       },
       {
         "user": "kimharsh",
-        "text": "Selected Answer: C. A is wrong because bq User permission will allow you to edit the dataset, which is something that we don't want... (21 votos)"
+        "text": "Selected Answer: C. A is wrong because bq User permission will allow you to edit the dataset, which is something that we don't want... (21 votes)"
       },
       {
         "user": "jay9114",
-        "text": "Selected Answer: C. Important statements: 1. All queries need to be billed to a single project... jobUser is the best role... (7 votos)"
+        "text": "Selected Answer: C. Important statements: 1. All queries need to be billed to a single project... jobUser is the best role... (7 votes)"
       },
       {
         "user": "victory108",
-        "text": "C. Add all users to a group. Grant the group the roles of BigQuery jobUser... (4 votos)"
+        "text": "C. Add all users to a group. Grant the group the roles of BigQuery jobUser... (4 votes)"
       },
       {
         "user": "SidsA",
-        "text": "Selected Answer: C. The roles/bigquery.jobUser role provides the permission to run jobs... does not provide permissions to create, update, or delete... (3 votos)"
+        "text": "Selected Answer: C. The roles/bigquery.jobUser role provides the permission to run jobs... does not provide permissions to create, update, or delete... (3 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The BigQuery Job User role and the BigQuery User role have similar permissions, but they differ in scope... (3 votos)"
+        "text": "The BigQuery Job User role and the BigQuery User role have similar permissions, but they differ in scope... (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11203,27 +11203,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "ffk",
-        "text": "A is correct. B is funny (47 votos)"
+        "text": "A is correct. B is funny (47 votes)"
       },
       {
         "user": "tartar",
-        "text": "A is ok (14 votos)"
+        "text": "A is ok (14 votes)"
       },
       {
         "user": "jcmoranp",
-        "text": "Correct is A (13 votos)"
+        "text": "Correct is A (13 votes)"
       },
       {
         "user": "roaming_panda",
-        "text": "Selected Answer: A. https://cloud.google.com/kubernetes-engine/docs/how-to/updating-apps says rolling updates and mentions the same command. So 100% A (9 votos)"
+        "text": "Selected Answer: A. https://cloud.google.com/kubernetes-engine/docs/how-to/updating-apps says rolling updates and mentions the same command. So 100% A (9 votes)"
       },
       {
         "user": "isa_pr",
-        "text": "It's A. As per K8s documentation: to update the image of the application to version 2, use the set image subcommand... (6 votos)"
+        "text": "It's A. As per K8s documentation: to update the image of the application to version 2, use the set image subcommand... (6 votes)"
       },
       {
         "user": "markus_de",
-        "text": "Selected Answer: A. Example from official Kubernetes docs (for NGINX): kubectl set image deployment/nginx-deployment... (5 votos)"
+        "text": "Selected Answer: A. Example from official Kubernetes docs (for NGINX): kubectl set image deployment/nginx-deployment... (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11259,27 +11259,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AshishK",
-        "text": "It should be A. Transfer Appliance lets you quickly and securely transfer large amounts of data... Transfer Appliance is recommended for data that exceeds 20 TB... (36 votos)"
+        "text": "It should be A. Transfer Appliance lets you quickly and securely transfer large amounts of data... Transfer Appliance is recommended for data that exceeds 20 TB... (36 votes)"
       },
       {
         "user": "KouShikyou",
-        "text": "Why not A? (30 votos)"
+        "text": "Why not A? (30 votes)"
       },
       {
         "user": "nitinz",
-        "text": "A, anything over 10 TB goes via appliance. (14 votos)"
+        "text": "A, anything over 10 TB goes via appliance. (14 votes)"
       },
       {
         "user": "Yahowmy",
-        "text": "To this date Transfer Appliance supported locations are only US, Canada, EU... What if data resides in another location? C is the most convenient for this scenario. (11 votos)"
+        "text": "To this date Transfer Appliance supported locations are only US, Canada, EU... What if data resides in another location? C is the most convenient for this scenario. (11 votes)"
       },
       {
         "user": "tartar",
-        "text": "A is ok (9 votos)"
+        "text": "A is ok (9 votes)"
       },
       {
         "user": "Ramheadhunter",
-        "text": "Why assume a scenario not provided in the question. We need to choose the best case scenario based on available information. So A should be good. (6 votos)"
+        "text": "Why assume a scenario not provided in the question. We need to choose the best case scenario based on available information. So A should be good. (6 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11298,7 +11298,7 @@ export const QUESTIONS = [
       "Wrong: Uploading 75 TB over the network with resumable transfers would take an impractically long time unless very large bandwidth were available, which is not stated.",
       "Wrong: Streaming transfers suit data produced continuously, not a one-time bulk move of 75 TB, and the bandwidth problem remains."
     ],
-    "legacyNote": "El Rehydrator ya no aparece con ese nombre en la documentación actual de Transfer Appliance, pero el flujo (cargar, enviar, ingerir en Cloud Storage) es el mismo."
+    "legacyNote": "The Rehydrator no longer appears under that name in the current Transfer Appliance documentation, but the flow (load, ship, ingest into Cloud Storage) is the same."
   },
   {
     "id": 54,
@@ -11316,27 +11316,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "zaki_b",
-        "text": "Internet access is not allowed so it should be A. (55 votos)"
+        "text": "Internet access is not allowed so it should be A. (55 votes)"
       },
       {
         "user": "KNG",
-        "text": "Should be A. Note: Even though the IP addresses for Google APIs and services are public, the traffic path remains within Google's network. (21 votos)"
+        "text": "Should be A. Note: Even though the IP addresses for Google APIs and services are public, the traffic path remains within Google's network. (21 votes)"
       },
       {
         "user": "tartar",
-        "text": "A is ok (10 votos)"
+        "text": "A is ok (10 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The correct answer is A... Configure the VM on a subnet with Private Google Access. This will allow the VM to access Google APIs without requiring a public IP address. (8 votos)"
+        "text": "The correct answer is A... Configure the VM on a subnet with Private Google Access. This will allow the VM to access Google APIs without requiring a public IP address. (8 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Option B is not a valid option, as it does not allow the VM to access the installation files without public internet access. (6 votos)"
+        "text": "Option B is not a valid option, as it does not allow the VM to access the installation files without public internet access. (6 votes)"
       },
       {
         "user": "ppandher",
-        "text": "Those who are opting for B, can you please explain how they will communicate with Cloud Storage without internet access and without Private Google Access enabled? (5 votos)"
+        "text": "Those who are opting for B, can you please explain how they will communicate with Cloud Storage without internet access and without Private Google Access enabled? (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11372,27 +11372,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "MyPractice",
-        "text": "Agree with D - 'When to choose the flexible environment: accesses the resources or services of your Google Cloud project that reside in the Compute Engine network.' (54 votos)"
+        "text": "Agree with D - 'When to choose the flexible environment: accesses the resources or services of your Google Cloud project that reside in the Compute Engine network.' (54 votes)"
       },
       {
         "user": "areza",
-        "text": "Because App Engine standard can't connect to an on-prem DB (31 votos)"
+        "text": "Because App Engine standard can't connect to an on-prem DB (31 votes)"
       },
       {
         "user": "jcmoranp",
-        "text": "Right is D (enlace a StackOverflow sobre App Engine y Cloud VPN). (18 votos)"
+        "text": "Right is D (enlace a StackOverflow sobre App Engine y Cloud VPN). (18 votes)"
       },
       {
         "user": "AWS56",
-        "text": "Why not B? (7 votos)"
+        "text": "Why not B? (7 votes)"
       },
       {
         "user": "VSMu",
-        "text": "Where does it say App Engine cannot connect to an on-prem DB? With Cloud VPN it should connect... (6 votos)"
+        "text": "Where does it say App Engine cannot connect to an on-prem DB? With Cloud VPN it should connect... (6 votes)"
       },
       {
         "user": "haroldbenites",
-        "text": "GCE and App Engine flexible are designed to connect to the VPC. With App Engine standard a proxy is needed. (5 votos)"
+        "text": "GCE and App Engine flexible are designed to connect to the VPC. With App Engine standard a proxy is needed. (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11428,27 +11428,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Eroc",
-        "text": "Groups are better for management than non-groups so A and B are eliminated. Keeping the instances in the same project will help maintain consistency, so C is better than D. (39 votos)"
+        "text": "Groups are better for management than non-groups so A and B are eliminated. Keeping the instances in the same project will help maintain consistency, so C is better than D. (39 votes)"
       },
       {
         "user": "nitinz",
-        "text": "C, because external LB needs an instance group. It can be managed or unmanaged. You cannot do external HTTP LB on instances. (15 votos)"
+        "text": "C, because external LB needs an instance group. It can be managed or unmanaged. You cannot do external HTTP LB on instances. (15 votes)"
       },
       {
         "user": "gigibit",
-        "text": "Yes, but why not choose a cost-effective solution like A? The question is just asking for a simple failover (13 votos)"
+        "text": "Yes, but why not choose a cost-effective solution like A? The question is just asking for a simple failover (13 votes)"
       },
       {
         "user": "n_nana",
-        "text": "Selected Answer: C. Google recommends using a MIG for zonal outages and multiple MIGs for regional outages (8 votos)"
+        "text": "Selected Answer: C. Google recommends using a MIG for zonal outages and multiple MIGs for regional outages (8 votes)"
       },
       {
         "user": "todos213",
-        "text": "In a real world situation, I'd choose A for a customer. The question doesn't mention performance to be enhanced or scalability. (6 votos)"
+        "text": "In a real world situation, I'd choose A for a customer. The question doesn't mention performance to be enhanced or scalability. (6 votes)"
       },
       {
         "user": "yilexar",
-        "text": "Now you can use a load balancer to route traffic to instance groups in different GCP projects. (6 votos)"
+        "text": "Now you can use a load balancer to route traffic to instance groups in different GCP projects. (6 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11484,27 +11484,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jcmoranp",
-        "text": "Correct A, you have to recreate the indexes (31 votos)"
+        "text": "Correct A, you have to recreate the indexes (31 votes)"
       },
       {
         "user": "Eroc",
-        "text": "A is incorrect because the command is actually gcloud datastore indexes create. (17 votos)"
+        "text": "A is incorrect because the command is actually gcloud datastore indexes create. (17 votes)"
       },
       {
         "user": "bogd",
-        "text": "It might have changed recently - I was able to find documentation mentioning 'datastore create-indexes'. (15 votos)"
+        "text": "It might have changed recently - I was able to find documentation mentioning 'datastore create-indexes'. (15 votes)"
       },
       {
         "user": "MestreCholas",
-        "text": "Selected Answer: A. To deploy new indexes to Cloud Datastore, you can use the gcloud datastore create-indexes command... (12 votos)"
+        "text": "Selected Answer: A. To deploy new indexes to Cloud Datastore, you can use the gcloud datastore create-indexes command... (12 votes)"
       },
       {
         "user": "tartar",
-        "text": "A is ok (11 votos)"
+        "text": "A is ok (11 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "To deploy new indexes to Cloud Datastore, you should use the gcloud datastore create-indexes command and point it to your configuration file. (7 votos)"
+        "text": "To deploy new indexes to Cloud Datastore, you should use the gcloud datastore create-indexes command and point it to your configuration file. (7 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11523,7 +11523,7 @@ export const QUESTIONS = [
       "Wrong: Datastore Admin does not accept a configuration file upload, and deleting existing indexes first is neither required nor advisable.",
       "Wrong: Index configuration is infrastructure state submitted through the API, not something sent to your application over HTTP."
     ],
-    "legacyNote": "El comando actual es «gcloud datastore indexes create». El mecanismo (apuntar al fichero YAML) es el mismo."
+    "legacyNote": "The current command is “gcloud datastore indexes create”. The mechanism (pointing to the YAML file) is the same."
   },
   {
     "id": 50,
@@ -11541,27 +11541,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "newbie2020",
-        "text": "Ans is C. 'Primary and secondary ranges can't conflict with on-premises IP ranges if you have connected your VPC network to another network with Cloud VPN...' (133 votos)"
+        "text": "Ans is C. 'Primary and secondary ranges can't conflict with on-premises IP ranges if you have connected your VPC network to another network with Cloud VPN...' (133 votes)"
       },
       {
         "user": "KouShikyou",
-        "text": "I think C is correct. (21 votos)"
+        "text": "I think C is correct. (21 votes)"
       },
       {
         "user": "Sundeepk",
-        "text": "From the above link - it clearly states 'Primary and secondary ranges for subnets cannot overlap...' (13 votos)"
+        "text": "From the above link - it clearly states 'Primary and secondary ranges for subnets cannot overlap...' (13 votes)"
       },
       {
         "user": "JoeShmoe",
-        "text": "Agree with C. Secondary IP range still can't overlap (10 votos)"
+        "text": "Agree with C. Secondary IP range still can't overlap (10 votes)"
       },
       {
         "user": "tartar",
-        "text": "C is ok (10 votos)"
+        "text": "C is ok (10 votes)"
       },
       {
         "user": "nitinz",
-        "text": "C, no brainer. You have on-prem to VPN to GCP; the only way this data flow works is non-overlapping subnets. (4 votos)"
+        "text": "C, no brainer. You have on-prem to VPN to GCP; the only way this data flow works is non-overlapping subnets. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11597,27 +11597,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "passnow",
-        "text": "The effective policy for a resource is the union of the policy set at that resource and the policy inherited from its parent. https://cloud.google.com/iam/docs/resource-hierarchy-access-control (35 votos)"
+        "text": "The effective policy for a resource is the union of the policy set at that resource and the policy inherited from its parent. https://cloud.google.com/iam/docs/resource-hierarchy-access-control (35 votes)"
       },
       {
         "user": "ghadxx",
-        "text": "You can set IAM policies at the level of the node, in addition to policies inherited from its parent. Hence, it is a union. (14 votos)"
+        "text": "You can set IAM policies at the level of the node, in addition to policies inherited from its parent. Hence, it is a union. (14 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: C. Union of policies: the effective policy at a particular node is the combination (union) of the policy set directly at that node and all the policies inherited from its parent folder and the organization. (5 votos)"
+        "text": "Selected Answer: C. Union of policies: the effective policy at a particular node is the combination (union) of the policy set directly at that node and all the policies inherited from its parent folder and the organization. (5 votes)"
       },
       {
         "user": "zr79",
-        "text": "English as a second language will struggle here. (5 votos)"
+        "text": "English as a second language will struggle here. (5 votes)"
       },
       {
         "user": "Di4sa",
-        "text": "Selected Answer: C. From Google docs: the effective allow policy for a resource is the union of the allow policy set at that resource and the allow policy inherited from its parent. (3 votos)"
+        "text": "Selected Answer: C. From Google docs: the effective allow policy for a resource is the union of the allow policy set at that resource and the allow policy inherited from its parent. (3 votes)"
       },
       {
         "user": "BiddlyBdoyng",
-        "text": "C: the permission is the sum of all the permissions you are given through the hierarchy; you cannot restrict once it is given at a higher level. (3 votos)"
+        "text": "C: the permission is the sum of all the permissions you are given through the hierarchy; you cannot restrict once it is given at a higher level. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11653,27 +11653,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "JohnWick2020",
-        "text": "Answer is B. Keynotes: 1 - on-premise data sources, 2 - unfit data, 3 - Google-recommended best practice to 'detect anomalies'. Dataprep out of the box provides fast exploration and anomaly detection... (65 votos)"
+        "text": "Answer is B. Keynotes: 1 - on-premise data sources, 2 - unfit data, 3 - Google-recommended best practice to 'detect anomalies'. Dataprep out of the box provides fast exploration and anomaly detection... (65 votes)"
       },
       {
         "user": "Eroc",
-        "text": "Both B and D work, because the question says 'Google's best practices' uploading the files first would keep the original copies stored. (12 votos)"
+        "text": "Both B and D work, because the question says 'Google's best practices' uploading the files first would keep the original copies stored. (12 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (9 votos)"
+        "text": "B is ok (9 votes)"
       },
       {
         "user": "Musk",
-        "text": "You can't connect Dataprep to your on-prem systems. You simply upload a file, but that is not connecting it to your systems. Because of that, I'd discard D and stay with B. (9 votos)"
+        "text": "You can't connect Dataprep to your on-prem systems. You simply upload a file, but that is not connecting it to your systems. Because of that, I'd discard D and stay with B. (9 votes)"
       },
       {
         "user": "nitinz",
-        "text": "B, Dataprep = visually explore, clean, and prepare data for analysis (7 votos)"
+        "text": "B, Dataprep = visually explore, clean, and prepare data for analysis (7 votes)"
       },
       {
         "user": "thewalker",
-        "text": "Dataprep does not have an integration for on-prem... So, clearly, the only option left is B. (4 votos)"
+        "text": "Dataprep does not have an integration for on-prem... So, clearly, the only option left is B. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11709,27 +11709,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "rishab86",
-        "text": "Clearly mentions GKE as PCI DSS-compliant but not all GCP services are PCI DSS-compliant so the answer is definitely C. (48 votos)"
+        "text": "Clearly mentions GKE as PCI DSS-compliant but not all GCP services are PCI DSS-compliant so the answer is definitely C. (48 votes)"
       },
       {
         "user": "Mikado211",
-        "text": "In 2022, GCP is now fully PCI-DSS compliant, so technically D is perfectly true. But you still have to check that your application is PCI-DSS compliant, so C is still the best answer. (8 votos)"
+        "text": "In 2022, GCP is now fully PCI-DSS compliant, so technically D is perfectly true. But you still have to check that your application is PCI-DSS compliant, so C is still the best answer. (8 votes)"
       },
       {
         "user": "aviratna",
-        "text": "C: GKE and Compute Engine are PCI DSS compliant while Cloud Functions and App Engine are not. (5 votos)"
+        "text": "C: GKE and Compute Engine are PCI DSS compliant while Cloud Functions and App Engine are not. (5 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The most accurate statement is option C: GKE and GCP provide the tools you need to build a PCI DSS-compliant environment. (4 votos)"
+        "text": "The most accurate statement is option C: GKE and GCP provide the tools you need to build a PCI DSS-compliant environment. (4 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "While GKE itself isn't inherently PCI DSS compliant, it provides the infrastructure and tools you need to build a compliant environment... (3 votos)"
+        "text": "While GKE itself isn't inherently PCI DSS compliant, it provides the infrastructure and tools you need to build a compliant environment... (3 votes)"
       },
       {
         "user": "MamthaSJ",
-        "text": "Answer is C (3 votos)"
+        "text": "Answer is C (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11765,27 +11765,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Narinder",
-        "text": "C is the correct answer. As per the requirement the Linux expert would need access to the VM to troubleshoot the issue. With health check enabled, the old VM will be terminated as soon as the health check fails... (99 votos)"
+        "text": "C is the correct answer. As per the requirement the Linux expert would need access to the VM to troubleshoot the issue. With health check enabled, the old VM will be terminated as soon as the health check fails... (99 votes)"
       },
       {
         "user": "KouShikyou",
-        "text": "C should be the correct answer. (39 votos)"
+        "text": "C should be the correct answer. (39 votes)"
       },
       {
         "user": "MestreCholas",
-        "text": "Disabling the health check for the instance group will prevent the managed instance group from automatically recreating the instances. Adding your colleague's SSH key will allow them to access. (6 votos)"
+        "text": "Disabling the health check for the instance group will prevent the managed instance group from automatically recreating the instances. Adding your colleague's SSH key will allow them to access. (6 votes)"
       },
       {
         "user": "JC0926",
-        "text": "To allow your colleague to access the VMs and troubleshoot the issue, you should disable the health check for the instance group. This will prevent the instance group from automatically removing and replacing unhealthy instances. (4 votos)"
+        "text": "To allow your colleague to access the VMs and troubleshoot the issue, you should disable the health check for the instance group. This will prevent the instance group from automatically removing and replacing unhealthy instances. (4 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Disabling the health check prevents the VMs from constantly restarting, allowing the expert to log in and investigate... (3 votos)"
+        "text": "Disabling the health check prevents the VMs from constantly restarting, allowing the expert to log in and investigate... (3 votes)"
       },
       {
         "user": "Flight1976",
-        "text": "C. Disable the health check for the instance group. Disabling health checks will prevent rebooting of the VMs. (4 votos)"
+        "text": "C. Disable the health check for the instance group. Disabling health checks will prevent rebooting of the VMs. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11821,27 +11821,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Googler2",
-        "text": "I believe the best answer is D, because tagging is a best practice recommended on Jenkins/Spinnaker to deploy the right code and prevent accidental push of wrong code to production environments. (61 votos)"
+        "text": "I believe the best answer is D, because tagging is a best practice recommended on Jenkins/Spinnaker to deploy the right code and prevent accidental push of wrong code to production environments. (61 votes)"
       },
       {
         "user": "Anish17",
-        "text": "I got this question in the real exam. This question states 'before deploying to production'. So I picked D. I passed the exam. (53 votos)"
+        "text": "I got this question in the real exam. This question states 'before deploying to production'. So I picked D. I passed the exam. (53 votes)"
       },
       {
         "user": "Ziegler",
-        "text": "Agreed with D as the right answer. (10 votos)"
+        "text": "Agreed with D as the right answer. (10 votes)"
       },
       {
         "user": "zr79",
-        "text": "(Comentario de humor del foro.) (10 votos)"
+        "text": "(Humorous forum comment.) (10 votes)"
       },
       {
         "user": "bnlcnd",
-        "text": "That resolved the puzzle :) (6 votos)"
+        "text": "That resolved the puzzle :) (6 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Clear separation of environments: using separate staging and production environments ensures that code changes are thoroughly tested before they reach your users. (3 votos)"
+        "text": "Clear separation of environments: using separate staging and production environments ensures that code changes are thoroughly tested before they reach your users. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11877,27 +11877,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "ehgm",
-        "text": "Sustained use are automatic discounts for running specific GCE instances a significant portion of the billing month... Committed is for workloads with predictable resource needs between 1 year or 3 years... (45 votos)"
+        "text": "Sustained use are automatic discounts for running specific GCE instances a significant portion of the billing month... Committed is for workloads with predictable resource needs between 1 year or 3 years... (45 votes)"
       },
       {
         "user": "crypt0",
-        "text": "I would choose B (40 votos)"
+        "text": "I would choose B (40 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (11 votos)"
+        "text": "B is ok (11 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Committed use discounts can help you save... but they require you to commit to a certain level of usage, which may not be suitable if you are unsure of your future demand. Providing training on service cost management can help your team... (9 votos)"
+        "text": "Committed use discounts can help you save... but they require you to commit to a certain level of usage, which may not be suitable if you are unsure of your future demand. Providing training on service cost management can help your team... (9 votes)"
       },
       {
         "user": "VishalB",
-        "text": "Answer B. Sustained use discounts are applied on incremental use after you reach certain usage thresholds. (5 votos)"
+        "text": "Answer B. Sustained use discounts are applied on incremental use after you reach certain usage thresholds. (5 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Sustained use discounts are automatically applied to your bill... beneficial for a startup that might have unpredictable usage patterns... (4 votos)"
+        "text": "Sustained use discounts are automatically applied to your bill... beneficial for a startup that might have unpredictable usage patterns... (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11933,27 +11933,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AWS56",
-        "text": "Cloud VPN supports up to 3 Gbps whereas Interconnect can support up to 100 Gbps... I'll go with A (45 votos)"
+        "text": "Cloud VPN supports up to 3 Gbps whereas Interconnect can support up to 100 Gbps... I'll go with A (45 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "Answer is A: Dedicated Interconnect allows you to create a dedicated, high-bandwidth network connection between your on-premises data center and Google Cloud. It is the recommended solution when you require a connection of at least 20 Gbps. (14 votos)"
+        "text": "Answer is A: Dedicated Interconnect allows you to create a dedicated, high-bandwidth network connection between your on-premises data center and Google Cloud. It is the recommended solution when you require a connection of at least 20 Gbps. (14 votes)"
       },
       {
         "user": "tartar",
-        "text": "A is ok (7 votos)"
+        "text": "A is ok (7 votes)"
       },
       {
         "user": "MJCLOUD",
-        "text": "Very nice answer, I think you meant 3 Gbps for Cloud VPN. (4 votos)"
+        "text": "Very nice answer, I think you meant 3 Gbps for Cloud VPN. (4 votes)"
       },
       {
         "user": "amxexam",
-        "text": "Let's go with option elimination. B max 3 Gbps, eliminate. C/D CDN is for egress traffic or static content hosting, hence eliminate. (3 votos)"
+        "text": "Let's go with option elimination. B max 3 Gbps, eliminate. C/D CDN is for egress traffic or static content hosting, hence eliminate. (3 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Dedicated Interconnect offers speeds of 10 Gbps up to 100 Gbps, meeting your requirement of at least 20 Gbps. (3 votos)"
+        "text": "Dedicated Interconnect offers speeds of 10 Gbps up to 100 Gbps, meeting your requirement of at least 20 Gbps. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -11989,27 +11989,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "ffk",
-        "text": "A is correct. Cloud Shell provisions 5 GB of free persistent disk storage mounted as your $HOME directory... All files you store in your home directory, including installed software, scripts and user configuration files, persist between sessions. (77 votos)"
+        "text": "A is correct. Cloud Shell provisions 5 GB of free persistent disk storage mounted as your $HOME directory... All files you store in your home directory, including installed software, scripts and user configuration files, persist between sessions. (77 votes)"
       },
       {
         "user": "Eroc",
-        "text": "Well, I just double checked and if they were referring to the PATH variable then /usr/local/bin is also a correct answer... (21 votos)"
+        "text": "Well, I just double checked and if they were referring to the PATH variable then /usr/local/bin is also a correct answer... (21 votes)"
       },
       {
         "user": "Jambalaja",
-        "text": "Maybe also to mention is that ~/bin is located in the $HOME directory (18 votos)"
+        "text": "Maybe also to mention is that ~/bin is located in the $HOME directory (18 votes)"
       },
       {
         "user": "zanfo",
-        "text": "The persistent disk in Cloud Shell is for $HOME (10 votos)"
+        "text": "The persistent disk in Cloud Shell is for $HOME (10 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Files placed in this directory are automatically added to your PATH environment variable... /usr/local/bin is a common directory for system-wide binaries, but in Cloud Shell only the home directory persists. (5 votos)"
+        "text": "Files placed in this directory are automatically added to your PATH environment variable... /usr/local/bin is a common directory for system-wide binaries, but in Cloud Shell only the home directory persists. (5 votes)"
       },
       {
         "user": "Flight1976",
-        "text": "1. When logging in to Cloud Shell for the first time, the ~/bin directory does not exist. 2. mkdir ~/bin. 3. After re-login to Cloud Shell, $PATH will automatically add ~/bin. So A is the correct answer (4 votos)"
+        "text": "1. When logging in to Cloud Shell for the first time, the ~/bin directory does not exist. 2. mkdir ~/bin. 3. After re-login to Cloud Shell, $PATH will automatically add ~/bin. So A is the correct answer (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12045,27 +12045,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AWS56",
-        "text": "C is the answer (23 votos)"
+        "text": "C is the answer (23 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The recommended approach is option C: de-identify the data with the Cloud Data Loss Prevention API. The DLP API allows you to automatically discover, classify, and redact sensitive data... (16 votos)"
+        "text": "The recommended approach is option C: de-identify the data with the Cloud Data Loss Prevention API. The DLP API allows you to automatically discover, classify, and redact sensitive data... (16 votes)"
       },
       {
         "user": "tartar",
-        "text": "C is ok (8 votos)"
+        "text": "C is ok (8 votes)"
       },
       {
         "user": "nitinz",
-        "text": "C, data sanitization = DLP (8 votos)"
+        "text": "C, data sanitization = DLP (8 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Accurate and comprehensive: the Cloud DLP API is specifically designed to identify and redact sensitive information like PII. It uses advanced techniques like machine learning... (3 votos)"
+        "text": "Accurate and comprehensive: the Cloud DLP API is specifically designed to identify and redact sensitive information like PII. It uses advanced techniques like machine learning... (3 votes)"
       },
       {
         "user": "sidhappy",
-        "text": "Effectively reduce data risk with de-identification methods like masking and tokenization https://cloud.google.com/dlp (3 votos)"
+        "text": "Effectively reduce data risk with de-identification methods like masking and tokenization https://cloud.google.com/dlp (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12102,27 +12102,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "mawsman",
-        "text": "It's latency issues. That won't be solved by adding another VPN tunnel. If it was just a throughput issue then VPN would do, however to improve latency you need to go layer 2. Answer is B (36 votos)"
+        "text": "It's latency issues. That won't be solved by adding another VPN tunnel. If it was just a throughput issue then VPN would do, however to improve latency you need to go layer 2. Answer is B (36 votes)"
       },
       {
         "user": "chiar",
-        "text": "I think B is correct. I think it is more reliable. (30 votos)"
+        "text": "I think B is correct. I think it is more reliable. (30 votes)"
       },
       {
         "user": "Demo_Helloworld",
-        "text": "We have something called HA VPN which uses 2 VPN connections at a time. As this question is old we didn't have this option... Now it's updated so the answer will be D. (6 votos)"
+        "text": "We have something called HA VPN which uses 2 VPN connections at a time. As this question is old we didn't have this option... Now it's updated so the answer will be D. (6 votes)"
       },
       {
         "user": "ashrafh",
-        "text": "So just to solve this issue we are going over a Dedicated Interconnect, imagine saying this to your project head. (4 votos)"
+        "text": "So just to solve this issue we are going over a Dedicated Interconnect, imagine saying this to your project head. (4 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Dedicated Interconnect provides a direct physical connection between your on-premises network and Google Cloud. This offers significantly lower latency... (3 votos)"
+        "text": "Dedicated Interconnect provides a direct physical connection between your on-premises network and Google Cloud. This offers significantly lower latency... (3 votes)"
       },
       {
         "user": "SandipGhosal",
-        "text": "I think the best option is E, using Pub/Sub. The main issue is 'a small amount of packet loss'... (3 votos)"
+        "text": "I think the best option is E, using Pub/Sub. The main issue is 'a small amount of packet loss'... (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12159,27 +12159,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "KouShikyou",
-        "text": "I am not sure about this one. D works if SSL client authentication is enabled. C works as well if the client encrypts the message with a private key and the server decrypts with the public key. I prefer C. (38 votos)"
+        "text": "I am not sure about this one. D works if SSL client authentication is enabled. C works as well if the client encrypts the message with a private key and the server decrypts with the public key. I prefer C. (38 votes)"
       },
       {
         "user": "Tobbe",
-        "text": "Best method which has been adopted for years is contacting an SSL provider and using a public certificate to encrypt the traffic between client and server. D is correct. (14 votos)"
+        "text": "Best method which has been adopted for years is contacting an SSL provider and using a public certificate to encrypt the traffic between client and server. D is correct. (14 votes)"
       },
       {
         "user": "Alekshar",
-        "text": "If you use the server's public certificate to encrypt your data you only ensure the right server is the only one to read you. But anyone can use the same encryption key as you did and pretend to be you... (6 votos)"
+        "text": "If you use the server's public certificate to encrypt your data you only ensure the right server is the only one to read you. But anyone can use the same encryption key as you did and pretend to be you... (6 votes)"
       },
       {
         "user": "JoeShmoe",
-        "text": "Agree with C (5 votos)"
+        "text": "Agree with C (5 votes)"
       },
       {
         "user": "asfar",
-        "text": "I agree with C on this one. (5 votos)"
+        "text": "I agree with C on this one. (5 votes)"
       },
       {
         "user": "PeppaPig",
-        "text": "SSL doesn't use the server's public key to encrypt data. SSL uses a separate session key for message encryption... (4 votos)"
+        "text": "SSL doesn't use the server's public key to encrypt data. SSL uses a separate session key for message encryption... (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12220,27 +12220,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Eroc",
-        "text": "Signing the JAR files grants it permissions. (enlace a la documentación de Oracle sobre signing) (24 votos)"
+        "text": "Signing the JAR files grants it permissions. (link to Oracle's documentation on signing) (24 votes)"
       },
       {
         "user": "nitinz",
-        "text": "B, SHA1 digest error is the first line in the error code. With Java errors, always focus on the first line in the error code. (19 votos)"
+        "text": "B, SHA1 digest error is the first line in the error code. With Java errors, always focus on the first line in the error code. (19 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The most likely cause of the error is that one of the JAR files in your application has been tampered with or is corrupt. The SHA1 digest error indicates that the JAR file's signature does not match the expected value... (15 votos)"
+        "text": "The most likely cause of the error is that one of the JAR files in your application has been tampered with or is corrupt. The SHA1 digest error indicates that the JAR file's signature does not match the expected value... (15 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (9 votos)"
+        "text": "B is ok (9 votes)"
       },
       {
         "user": "minmin2020",
-        "text": "OK B but how is this question related to a GCP exam? (7 votos)"
+        "text": "OK B but how is this question related to a GCP exam? (7 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: B. JAR signing and integrity: digitally signing your JAR files ensures their authenticity and integrity... (5 votos)"
+        "text": "Selected Answer: B. JAR signing and integrity: digitally signing your JAR files ensures their authenticity and integrity... (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12275,27 +12275,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AWS56",
-        "text": "https://cloud.google.com/docs/enterprise/best-practices-for-enterprise-organizations. I will stick with C (27 votos)"
+        "text": "https://cloud.google.com/docs/enterprise/best-practices-for-enterprise-organizations. I will stick with C (27 votes)"
       },
       {
         "user": "BiddlyBdoyng",
-        "text": "The reason it isn't D is that a department modelled as a project puts a massive constraint on the department that they can only have a single project; it's likely a department will want many projects. (7 votos)"
+        "text": "The reason it isn't D is that a department modelled as a project puts a massive constraint on the department that they can only have a single project; it's likely a department will want many projects. (7 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "1. Centralized control: a single organization provides a central point. 2. Independent department management: folders allow you to group projects. 3. Hierarchical structure... (4 votos)"
+        "text": "1. Centralized control: a single organization provides a central point. 2. Independent department management: folders allow you to group projects. 3. Hierarchical structure... (4 votes)"
       },
       {
         "user": "MarcoEscanor",
-        "text": "C. It's a best practice and I've done this with my previous and current company :) (3 votos)"
+        "text": "C. It's a best practice and I've done this with my previous and current company :) (3 votes)"
       },
       {
         "user": "victory108",
-        "text": "C. A single Organization with Folders for each department (3 votos)"
+        "text": "C. A single Organization with Folders for each department (3 votes)"
       },
       {
         "user": "AzureDP900",
-        "text": "C is the recommended approach (2 votos)"
+        "text": "C is the recommended approach (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12331,27 +12331,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "amxexam",
-        "text": "B. This revert will be logged in the source repo. Will go with this way although D is also correct... why manually do something which is automated. Hence B is better from a code lifecycle perspective. (78 votos)"
+        "text": "B. This revert will be logged in the source repo. Will go with this way although D is also correct... why manually do something which is automated. Hence B is better from a code lifecycle perspective. (78 votes)"
       },
       {
         "user": "ewredtrfygi",
-        "text": "Too many responses saying B is the answer... It's clearly D, MIG templates support versioning, they were created to solve this exact problem... (63 votos)"
+        "text": "Too many responses saying B is the answer... It's clearly D, MIG templates support versioning, they were created to solve this exact problem... (63 votes)"
       },
       {
         "user": "Meyucho",
-        "text": "If you change the template manually, why are you using pipelines? B is the best answer because it is automated! (7 votos)"
+        "text": "If you change the template manually, why are you using pipelines? B is the best answer because it is automated! (7 votes)"
       },
       {
         "user": "Bill831231",
-        "text": "Seems with that approach there will be a mismatch in the pipeline (4 votos)"
+        "text": "Seems with that approach there will be a mismatch in the pipeline (4 votes)"
       },
       {
         "user": "ashishdwi007",
-        "text": "Even if we go with whatever they try to ask, with the options available, B is safest. (3 votos)"
+        "text": "Even if we go with whatever they try to ask, with the options available, B is safest. (3 votes)"
       },
       {
         "user": "AmitAr",
-        "text": "B. The keyword is 'self-healing' not 'auto-healing'. (2 votos)"
+        "text": "B. The keyword is 'self-healing' not 'auto-healing'. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12392,27 +12392,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "rishab86",
-        "text": "Answer is A as they want to load logs for analytics and E for storing data in buckets for long term. (34 votos)"
+        "text": "Answer is A as they want to load logs for analytics and E for storing data in buckets for long term. (34 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "AE. E: upload log files into Google Cloud Storage. A: load logs into Google BigQuery. Other options may not provide the necessary functionality. (13 votos)"
+        "text": "AE. E: upload log files into Google Cloud Storage. A: load logs into Google BigQuery. Other options may not provide the necessary functionality. (13 votes)"
       },
       {
         "user": "AMohanty",
-        "text": "You don't do realtime log management on 100 TB data. You only perform analytics on it. So A for analytics, E for storage. (6 votos)"
+        "text": "You don't do realtime log management on 100 TB data. You only perform analytics on it. So A for analytics, E for storage. (6 votes)"
       },
       {
         "user": "andeu",
-        "text": "A is correct because BigQuery is the fully managed cloud data warehouse for analytics. E is correct because Cloud Storage provides the Coldline storage class to support long-term storage. (4 votos)"
+        "text": "A is correct because BigQuery is the fully managed cloud data warehouse for analytics. E is correct because Cloud Storage provides the Coldline storage class to support long-term storage. (4 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: AE. (3 votos)"
+        "text": "Selected Answer: AE. (3 votes)"
       },
       {
         "user": "CMata",
-        "text": "Selected Answer: AE. If you want to analyze those logs, BigQuery is recommended. For storing and backup, Cloud Storage is your option. (3 votos)"
+        "text": "Selected Answer: AE. If you want to analyze those logs, BigQuery is recommended. For storing and backup, Cloud Storage is your option. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12432,7 +12432,7 @@ export const QUESTIONS = [
       "Wrong: Bigtable serves low-latency key lookups at scale rather than ad hoc analytics, and it is expensive as a long-term archive.",
       "Correct: Cloud Storage with a cold storage class is the cheapest durable home for the long-term disaster recovery copy."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 34,
@@ -12456,27 +12456,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "rishab86",
-        "text": "ACE. A. Check logs. C. Check grub messages, remember a new kernel module was installed. E. Zoom into the time window when the problem happened. (48 votos)"
+        "text": "ACE. A. Check logs. C. Check grub messages, remember a new kernel module was installed. E. Zoom into the time window when the problem happened. (48 votes)"
       },
       {
         "user": "haroldbenites",
-        "text": "Go for A, B, E. C is when the VM is running... (12 votos)"
+        "text": "Go for A, B, E. C is when the VM is running... (12 votes)"
       },
       {
         "user": "Pokchok",
-        "text": "But the assumption you made is that Stackdriver was already installed on the VMs. What if it was not there? (3 votos)"
+        "text": "But the assumption you made is that Stackdriver was already installed on the VMs. What if it was not there? (3 votes)"
       },
       {
         "user": "Ishu_awsguy",
-        "text": "B vs C is the question. I vote for B, since activity logs have now been moved to audit logs... (3 votos)"
+        "text": "B vs C is the question. I vote for B, since activity logs have now been moved to audit logs... (3 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: ACE. The serial console provides access to the VM's output even if the system is unresponsive. This can be invaluable for capturing kernel panic messages... (3 votos)"
+        "text": "Selected Answer: ACE. The serial console provides access to the VM's output even if the system is unresponsive. This can be invaluable for capturing kernel panic messages... (3 votes)"
       },
       {
         "user": "CloudDom",
-        "text": "Selected Answer: ABE (3 votos)"
+        "text": "Selected Answer: ABE (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12498,7 +12498,7 @@ export const QUESTIONS = [
       "Wrong: Exporting an image and running it locally reproduces the environment but does not recover the evidence from the actual failed run."
     ],
     "resolvedBy": "gemini-2026-08",
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 33,
@@ -12516,27 +12516,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "shandy",
-        "text": "D. Refer to target filtering. https://cloud.google.com/solutions/best-practices-vpc-design (37 votos)"
+        "text": "D. Refer to target filtering. https://cloud.google.com/solutions/best-practices-vpc-design (37 votes)"
       },
       {
         "user": "amxexam",
-        "text": "Let's go with option elimination... D. Add tags to each tier and set up firewall rules to allow the desired traffic flow is the recommended way. Hence D (11 votos)"
+        "text": "Let's go with option elimination... D. Add tags to each tier and set up firewall rules to allow the desired traffic flow is the recommended way. Hence D (11 votes)"
       },
       {
         "user": "pepYash",
-        "text": "Thank you for the link. Precisely the target filtering section. (9 votos)"
+        "text": "Thank you for the link. Precisely the target filtering section. (9 votes)"
       },
       {
         "user": "tartar",
-        "text": "D is ok (8 votos)"
+        "text": "D is ok (8 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "It's D. By adding tags to each tier, you can identify the VMs that belong to each tier and create firewall rules that allow traffic between the tiers as needed... (5 votos)"
+        "text": "It's D. By adding tags to each tier, you can identify the VMs that belong to each tier and create firewall rules that allow traffic between the tiers as needed... (5 votes)"
       },
       {
         "user": "nitinz",
-        "text": "D, firewalls can be done on IP or network tags or service accounts in GCE. (4 votos)"
+        "text": "D, firewalls can be done on IP or network tags or service accounts in GCE. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12572,27 +12572,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Eroc",
-        "text": "https://cloud.google.com/compute/docs/shutdownscript ... So C (43 votos)"
+        "text": "https://cloud.google.com/compute/docs/shutdownscript ... So C (43 votes)"
       },
       {
         "user": "Gini",
-        "text": "I have doubts with answer C because the question states that 'you have created the instances' so C works too but the solution cannot apply to already created instances. D seems correct to me... (28 votos)"
+        "text": "I have doubts with answer C because the question states that 'you have created the instances' so C works too but the solution cannot apply to already created instances. D seems correct to me... (28 votes)"
       },
       {
         "user": "VishalB",
-        "text": "Since the instance is already created option C gets eliminated... (12 votos)"
+        "text": "Since the instance is already created option C gets eliminated... (12 votes)"
       },
       {
         "user": "pepYash",
-        "text": "Changed my mind. Preemptible VMs can be stopped and started anytime. With that flexibility, C is ok. (6 votos)"
+        "text": "Changed my mind. Preemptible VMs can be stopped and started anytime. With that flexibility, C is ok. (6 votes)"
       },
       {
         "user": "dsnaghxhinwtsvvmip",
-        "text": "xinetd makes answer D nonsense (5 votos)"
+        "text": "xinetd makes answer D nonsense (5 votes)"
       },
       {
         "user": "nitinz",
-        "text": "C, startup/shutdown script = metadata (4 votos)"
+        "text": "C, startup/shutdown script = metadata (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12611,7 +12611,7 @@ export const QUESTIONS = [
       "Correct: The shutdown-script metadata key is the native hook Compute Engine executes during the preemption grace period.",
       "Wrong: The URL form expects a Cloud Storage location for the script, and wrapping it in a xinetd service is unnecessary and incorrect."
     ],
-    "legacyNote": "Las preemptible VMs se llaman hoy Spot VMs. El mecanismo de shutdown-script vía metadata no cambia."
+    "legacyNote": "Preemptible VMs are now called Spot VMs. The shutdown-script-via-metadata mechanism doesn't change."
   },
   {
     "id": 31,
@@ -12629,27 +12629,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "rsamant",
-        "text": "It should be A. Helm is needed for 'deploy application bundles using dynamic templates'. Load balancing should be part of GKE already (70 votos)"
+        "text": "It should be A. Helm is needed for 'deploy application bundles using dynamic templates'. Load balancing should be part of GKE already (70 votes)"
       },
       {
         "user": "victory108",
-        "text": "D. Google Kubernetes Engine, Jenkins, and Cloud Load Balancing (43 votos)"
+        "text": "D. Google Kubernetes Engine, Jenkins, and Cloud Load Balancing (43 votes)"
       },
       {
         "user": "ashish_t",
-        "text": "It's clear that GKE LB can handle 'route network traffic to specific services based on URL'. So no need for Cloud Load Balancing. Helm satisfies 'deploy application bundles using dynamic templates' and no other option satisfies point 5. So the correct answer should be A (17 votos)"
+        "text": "It's clear that GKE LB can handle 'route network traffic to specific services based on URL'. So no need for Cloud Load Balancing. Helm satisfies 'deploy application bundles using dynamic templates' and no other option satisfies point 5. So the correct answer should be A (17 votes)"
       },
       {
         "user": "poseidon24",
-        "text": "Not for 'based on URL', that is the difference. (11 votos)"
+        "text": "Not for 'based on URL', that is the difference. (11 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: A. Open-source technology: Kubernetes Engine, Jenkins, and Helm. Deploy application bundles using dynamic templates: Helm uses charts... (11 votos)"
+        "text": "Selected Answer: A. Open-source technology: Kubernetes Engine, Jenkins, and Helm. Deploy application bundles using dynamic templates: Helm uses charts... (11 votes)"
       },
       {
         "user": "kahinah",
-        "text": "Option D directly meets every requirement... (5 votos)"
+        "text": "Option D directly meets every requirement... (5 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12691,27 +12691,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "victory108",
-        "text": "E. Cloud Deployment Manager can be used to permanently delete cloud resources. F. Cloud Deployment Manager only supports automation of Google Cloud resources (80 votos)"
+        "text": "E. Cloud Deployment Manager can be used to permanently delete cloud resources. F. Cloud Deployment Manager only supports automation of Google Cloud resources (80 votes)"
       },
       {
         "user": "AK2020",
-        "text": "C and F make sense to me (43 votos)"
+        "text": "C and F make sense to me (43 votes)"
       },
       {
         "user": "poseidon24",
-        "text": "Yup, E + F. In GCP documentation it states as a warning note that deletions made through Deployment Manager scripts cannot be undone; if devs are not well trained, human errors can impact business (14 votos)"
+        "text": "Yup, E + F. In GCP documentation it states as a warning note that deletions made through Deployment Manager scripts cannot be undone; if devs are not well trained, human errors can impact business (14 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: CF. F: only supports automation of Google Cloud, indeed this is a business risk for a multi-cloud strategy. C: unfamiliar to the company's engineers (7 votos)"
+        "text": "Selected Answer: CF. F: only supports automation of Google Cloud, indeed this is a business risk for a multi-cloud strategy. C: unfamiliar to the company's engineers (7 votes)"
       },
       {
         "user": "Gregwaw",
-        "text": "F is not a risk, it is a limitation of the solution... (5 votos)"
+        "text": "F is not a risk, it is a limitation of the solution... (5 votes)"
       },
       {
         "user": "Beetlesnail",
-        "text": "Going against the grain here but I strongly believe it's B and C... (3 votos)"
+        "text": "Going against the grain here but I strongly believe it's B and C... (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12733,7 +12733,7 @@ export const QUESTIONS = [
       "Correct: Supporting only Google Cloud resources creates vendor lock-in, which limits future strategic flexibility and wastes the investment if the company moves."
     ],
     "resolvedBy": "gemini-2026-08",
-    "legacyNote": "Deployment Manager está deprecado; Google recomienda hoy Infrastructure Manager o Terraform. Los riesgos de negocio que evalúa la pregunta siguen siendo válidos."
+    "legacyNote": "Deployment Manager is deprecated; Google now recommends Infrastructure Manager or Terraform. The business risks the question evaluates are still valid."
   },
   {
     "id": 29,
@@ -12751,27 +12751,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Eroc",
-        "text": "Google Secret Manager was designed explicitly for this purpose. (34 votos)"
+        "text": "Google Secret Manager was designed explicitly for this purpose. (34 votes)"
       },
       {
         "user": "shandy",
-        "text": "C is the answer, since key management systems generate, use, rotate, encrypt, and destroy cryptographic keys and manage permissions to those keys... (14 votos)"
+        "text": "C is the answer, since key management systems generate, use, rotate, encrypt, and destroy cryptographic keys and manage permissions to those keys... (14 votes)"
       },
       {
         "user": "tartar",
-        "text": "C is ok (7 votos)"
+        "text": "C is ok (7 votes)"
       },
       {
         "user": "nitinz",
-        "text": "C, microservices = GKE = Kubernetes = secrets. (6 votos)"
+        "text": "C, microservices = GKE = Kubernetes = secrets. (6 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "C. In a secret management system... Secret Manager is a secure and convenient storage system for API keys, passwords, and other sensitive data... (4 votos)"
+        "text": "C. In a secret management system... Secret Manager is a secure and convenient storage system for API keys, passwords, and other sensitive data... (4 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: C. Centralized and secure storage, access control, rotation and auditing, integration. (3 votos)"
+        "text": "Selected Answer: C. Centralized and secure storage, access control, rotation and auditing, integration. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12807,27 +12807,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "ghitesh",
-        "text": "B. https://cloud.google.com/iam/docs/roles-audit-logging#scenario_external_auditors (100 votos)"
+        "text": "B. https://cloud.google.com/iam/docs/roles-audit-logging#scenario_external_auditors (100 votes)"
       },
       {
         "user": "jcmoranp",
-        "text": "Think B is better. Export to BigQuery and restrict access to queries with ACLs to auditors (38 votos)"
+        "text": "Think B is better. Export to BigQuery and restrict access to queries with ACLs to auditors (38 votes)"
       },
       {
         "user": "tartar",
-        "text": "Sorry, changed my view. B is the recommended practice (14 votos)"
+        "text": "Sorry, changed my view. B is the recommended practice (14 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: B. Comprehensive audit trail, powerful analysis, granular access control. (4 votos)"
+        "text": "Selected Answer: B. Comprehensive audit trail, powerful analysis, granular access control. (4 votes)"
       },
       {
         "user": "TheCloudBoy77",
-        "text": "B makes more sense after reading it. (4 votos)"
+        "text": "B makes more sense after reading it. (4 votes)"
       },
       {
         "user": "ramjisriram",
-        "text": "Selected Answer: B. The key clue from the question is 'streamline and expedite the analysis'. How can you expect streamlined analysis capabilities from Cloud Storage? BigQuery has the analytics... (4 votos)"
+        "text": "Selected Answer: B. The key clue from the question is 'streamline and expedite the analysis'. How can you expect streamlined analysis capabilities from Cloud Storage? BigQuery has the analytics... (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12846,7 +12846,7 @@ export const QUESTIONS = [
       "Wrong: Moving logs into Cloud SQL through custom functions adds code to maintain and a database poorly suited to log-scale analysis.",
       "Wrong: A bucket stores the logs cheaply but offers no query capability, so auditors would have to extract and load them elsewhere before analysing."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 27,
@@ -12864,27 +12864,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AWS56",
-        "text": "A is the one (29 votos)"
+        "text": "A is the one (29 votes)"
       },
       {
         "user": "amxexam",
-        "text": "Let's go with option elimination: A. Dedicated Interconnect, secured, fast connection, hence the choice. This will allow a private connection from GCP to the data centre... (19 votos)"
+        "text": "Let's go with option elimination: A. Dedicated Interconnect, secured, fast connection, hence the choice. This will allow a private connection from GCP to the data centre... (19 votes)"
       },
       {
         "user": "tartar",
-        "text": "A is ok (8 votos)"
+        "text": "A is ok (8 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: A. High bandwidth and reliability, private address space, security. (6 votos)"
+        "text": "Selected Answer: A. High bandwidth and reliability, private address space, security. (6 votes)"
       },
       {
         "user": "Robert0",
-        "text": "Selected Answer: B. Interconnect is incredibly expensive and the use case does not justify it... (5 votos)"
+        "text": "Selected Answer: B. Interconnect is incredibly expensive and the use case does not justify it... (5 votes)"
       },
       {
         "user": "ramjisriram",
-        "text": "Selected Answer: A. The key clue is 'replication requires private address space communication'. VPN is public, encrypted and slower. (3 votos)"
+        "text": "Selected Answer: A. The key clue is 'replication requires private address space communication'. VPN is public, encrypted and slower. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12920,27 +12920,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "JoeShmoe",
-        "text": "D is correct and best practice for long term log storage (152 votos)"
+        "text": "D is correct and best practice for long term log storage (152 votes)"
       },
       {
         "user": "MeasService",
-        "text": "A and C can be quickly ruled out because neither is a solution for the requirement 'retained for 5 years'... Between B and D, the difference is where to store... D is the better choice... (75 votos)"
+        "text": "A and C can be quickly ruled out because neither is a solution for the requirement 'retained for 5 years'... Between B and D, the difference is where to store... D is the better choice... (75 votes)"
       },
       {
         "user": "AndreUanKenobi",
-        "text": "For archival purposes, the customer should use Cloud Storage. BigQuery is a data warehouse, and could eventually import data from Cloud Storage if necessary. (22 votos)"
+        "text": "For archival purposes, the customer should use Cloud Storage. BigQuery is a data warehouse, and could eventually import data from Cloud Storage if necessary. (22 votes)"
       },
       {
         "user": "trainor",
-        "text": "The question is about metrics, not logs. I'd go for B. (18 votos)"
+        "text": "The question is about metrics, not logs. I'd go for B. (18 votes)"
       },
       {
         "user": "anjuagrawal",
-        "text": "Due to long term storage, Cloud Storage is a better answer than BigQuery (14 votos)"
+        "text": "Due to long term storage, Cloud Storage is a better answer than BigQuery (14 votes)"
       },
       {
         "user": "jvale",
-        "text": "BigQuery long term storage cost: $0.020 per GB. Cloud Storage archive cost: $0.0012 per GB... (11 votos)"
+        "text": "BigQuery long term storage cost: $0.020 per GB. Cloud Storage archive cost: $0.0012 per GB... (11 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -12959,7 +12959,7 @@ export const QUESTIONS = [
       "Wrong: Default monitoring retention is far shorter than five years, so the requirement would simply not be met.",
       "Correct: Exporting to Cloud Storage with a cold storage class retains the metrics durably for five years at the lowest cost, and they can be loaded for analysis if ever needed."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 25,
@@ -12977,27 +12977,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Narigdo",
-        "text": "Answer is D (103 votos)"
+        "text": "Answer is D (103 votes)"
       },
       {
         "user": "Eroc",
-        "text": "Routinely scheduled failovers would allow the team to test the failover when it is not required. This would make sure it is working when it is required. (45 votos)"
+        "text": "Routinely scheduled failovers would allow the team to test the failover when it is not required. This would make sure it is working when it is required. (45 votes)"
       },
       {
         "user": "Jos",
-        "text": "Yep, +1 for D (20 votos)"
+        "text": "Yep, +1 for D (20 votes)"
       },
       {
         "user": "Shariq",
-        "text": "Exactly how do you know the optimal size? It will be a guess. The answer should be D (9 votos)"
+        "text": "Exactly how do you know the optimal size? It will be a guess. The answer should be D (9 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: D. Proactive testing, confidence in failover, improved recovery time. (3 votos)"
+        "text": "Selected Answer: D. Proactive testing, confidence in failover, improved recovery time. (3 votes)"
       },
       {
         "user": "james2033",
-        "text": "Selected Answer: D. A: simply switching database does not solve the promotion mechanism. B: larger instances improve performance but don't address the failover mechanism. C: snapshots are for backups. (3 votos)"
+        "text": "Selected Answer: D. A: simply switching database does not solve the promotion mechanism. B: larger instances improve performance but don't address the failover mechanism. C: snapshots are for backups. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13033,27 +13033,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "euclid",
-        "text": "D is correct! (23 votos)"
+        "text": "D is correct! (23 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "D. Instrument your application with Stackdriver Trace... Stackdriver Trace is a distributed tracing system that allows you to understand the relationships between requests and the various microservices... (11 votos)"
+        "text": "D. Instrument your application with Stackdriver Trace... Stackdriver Trace is a distributed tracing system that allows you to understand the relationships between requests and the various microservices... (11 votes)"
       },
       {
         "user": "tartar",
-        "text": "D is ok (9 votos)"
+        "text": "D is ok (9 votes)"
       },
       {
         "user": "nitinz",
-        "text": "D, trace is just for latency testing. (4 votos)"
+        "text": "D, trace is just for latency testing. (4 votes)"
       },
       {
         "user": "Robert0",
-        "text": "Selected Answer: D. This question is not updated. It is now referred to as Cloud Trace as part of the Google Cloud Operations suite (4 votos)"
+        "text": "Selected Answer: D. This question is not updated. It is now referred to as Cloud Trace as part of the Google Cloud Operations suite (4 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: D. Distributed tracing, detailed breakdown, visualization. (3 votos)"
+        "text": "Selected Answer: D. Distributed tracing, detailed breakdown, visualization. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13072,7 +13072,7 @@ export const QUESTIONS = [
       "Wrong: Monitoring shows when overall latency is elevated, not which service within an individual slow request consumed the time.",
       "Correct: Cloud Trace records a span per service for each request, so the waterfall view shows directly which service took longest."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 23,
@@ -13090,27 +13090,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "ghitesh",
-        "text": "Question statement: 'You want to adjust your test and deployment procedures to avoid this problem in the future.' So based on this, I think option C is correct... (88 votos)"
+        "text": "Question statement: 'You want to adjust your test and deployment procedures to avoid this problem in the future.' So based on this, I think option C is correct... (88 votes)"
       },
       {
         "user": "Eroc",
-        "text": "A wouldn't prevent the bugs... B would help with root-cause analysis... C would test the performance... D would allow you to test the new code against smaller user sets... (39 votos)"
+        "text": "A wouldn't prevent the bugs... B would help with root-cause analysis... C would test the performance... D would allow you to test the new code against smaller user sets... (39 votes)"
       },
       {
         "user": "VedaSW",
-        "text": "C. Increase the load... As you have pointed out, I do not see C covering 'deployment procedures'... So, the only option that covers test and deployment is D (canary deployment). (20 votos)"
+        "text": "C. Increase the load... As you have pointed out, I do not see C covering 'deployment procedures'... So, the only option that covers test and deployment is D (canary deployment). (20 votes)"
       },
       {
         "user": "RegisFTM",
-        "text": "I don't see how D would help to detect performance bugs. C looks more adequate. (19 votos)"
+        "text": "I don't see how D would help to detect performance bugs. C looks more adequate. (19 votes)"
       },
       {
         "user": "Sreekey",
-        "text": "The question is about the performance of the existing code that they did not detect in test environments. In order to test the performance they should increase the load in the test environment and hence answer C. (18 votos)"
+        "text": "The question is about the performance of the existing code that they did not detect in test environments. In order to test the performance they should increase the load in the test environment and hence answer C. (18 votes)"
       },
       {
         "user": "nitinz",
-        "text": "D, canary rollout (7 votos)"
+        "text": "D, canary rollout (7 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13157,27 +13157,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "aviratna",
-        "text": "C & E: C: the smaller the base image with minimum dependencies the faster the container will start. E: Docker image build uses caching... (62 votos)"
+        "text": "C & E: C: the smaller the base image with minimum dependencies the faster the container will start. E: Docker image build uses caching... (62 votes)"
       },
       {
         "user": "vincy2202",
-        "text": "C & E are the correct answers. Kindly refer to the Docker guide to Dockerfile best practices. (12 votos)"
+        "text": "C & E are the correct answers. Kindly refer to the Docker guide to Dockerfile best practices. (12 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "C & E. Using a slimmed-down base image like Alpine Linux can help reduce the size of your Docker image... copying the source code after installing the package dependencies can help reduce the image build time... (7 votos)"
+        "text": "C & E. Using a slimmed-down base image like Alpine Linux can help reduce the size of your Docker image... copying the source code after installing the package dependencies can help reduce the image build time... (7 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: CE. (4 votos)"
+        "text": "Selected Answer: CE. (4 votes)"
       },
       {
         "user": "nickcin77",
-        "text": "C&E. C - use small images. E - try to make expensive steps appear near the beginning of the Dockerfile... (3 votos)"
+        "text": "C&E. C - use small images. E - try to make expensive steps appear near the beginning of the Dockerfile... (3 votes)"
       },
       {
         "user": "alekonko",
-        "text": "Selected Answer: CE. C: using a smaller image decreases pull time. E: optimize build time using the previous cached layer image. (2 votos)"
+        "text": "Selected Answer: CE. C: using a smaller image decreases pull time. E: optimize build time using the previous cached layer image. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13214,27 +13214,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jcmoranp",
-        "text": "Resilience test is not about load, it is about terminating resources and the service not being affected. I think it's B. The best for resilience is to introduce chaos in the infrastructure (95 votos)"
+        "text": "Resilience test is not about load, it is about terminating resources and the service not being affected. I think it's B. The best for resilience is to introduce chaos in the infrastructure (95 votes)"
       },
       {
         "user": "OSNG",
-        "text": "Will go with A. Reason: 1. The SLA in question is about availability. 2. It's a user-feedback portal and the type of user input is going to be similar... (63 votos)"
+        "text": "Will go with A. Reason: 1. The SLA in question is about availability. 2. It's a user-feedback portal and the type of user input is going to be similar... (63 votes)"
       },
       {
         "user": "rockstar9622",
-        "text": "I agree with jcmoranp, B is correct. See the scalable and resilient apps guidance on testing your resilience. (20 votos)"
+        "text": "I agree with jcmoranp, B is correct. See the scalable and resilient apps guidance on testing your resilience. (20 votes)"
       },
       {
         "user": "JC0926",
-        "text": "Selected Answer: B. By creating synthetic random user input and replaying the load, you can simulate the expected increased user traffic and trigger the autoscale logic... (5 votos)"
+        "text": "Selected Answer: B. By creating synthetic random user input and replaying the load, you can simulate the expected increased user traffic and trigger the autoscale logic... (5 votes)"
       },
       {
         "user": "lisabisa",
-        "text": "Selected Answer: B. We need to do 1. load testing and 2. reliability test (failover redundancy). B does both (4 votos)"
+        "text": "Selected Answer: B. We need to do 1. load testing and 2. reliability test (failover redundancy). B does both (4 votes)"
       },
       {
         "user": "roaming_panda",
-        "text": "Selected Answer: B. chaos == checking resilience (4 votos)"
+        "text": "Selected Answer: B. chaos == checking resilience (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13271,27 +13271,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "victory108",
-        "text": "C. Google Cloud Bigtable (12 votos)"
+        "text": "C. Google Cloud Bigtable (12 votes)"
       },
       {
         "user": "zr79",
-        "text": "Real-time, IoT, time series and huge writes are some of the keywords to look for with Bigtable (4 votos)"
+        "text": "Real-time, IoT, time series and huge writes are some of the keywords to look for with Bigtable (4 votes)"
       },
       {
         "user": "khadar",
-        "text": "I too got this question in my 10-09-22 exam with similar options and the result was a pass (4 votos)"
+        "text": "I too got this question in my 10-09-22 exam with similar options and the result was a pass (4 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: C. High write throughput, low latency, time-series data, scalability. (3 votos)"
+        "text": "Selected Answer: C. High write throughput, low latency, time-series data, scalability. (3 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "To optimize the performance of an accurate, real-time, weather-charting application it would be most appropriate to store the data in a distributed, horizontally scalable NoSQL database such as Google Cloud Bigtable... (3 votos)"
+        "text": "To optimize the performance of an accurate, real-time, weather-charting application it would be most appropriate to store the data in a distributed, horizontally scalable NoSQL database such as Google Cloud Bigtable... (3 votes)"
       },
       {
         "user": "FabPanda",
-        "text": "Selected Answer: C. Cloud Bigtable is the right solution, providing high throughput, low latency and scalability for time series data such as this case. (2 votos)"
+        "text": "Selected Answer: C. Cloud Bigtable is the right solution, providing high throughput, low latency and scalability for time series data such as this case. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13328,27 +13328,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "shandy",
-        "text": "Answer is C because persistent disk performance is based on the total persistent disk capacity attached to an instance and the number of vCPUs that the instance has. Incrementing the persistent disk capacity will increment its throughput and IOPS... (73 votos)"
+        "text": "Answer is C because persistent disk performance is based on the total persistent disk capacity attached to an instance and the number of vCPUs that the instance has. Incrementing the persistent disk capacity will increment its throughput and IOPS... (73 votes)"
       },
       {
         "user": "Eroc",
-        "text": "Assuming that the database is approaching its hardware limits, both options A and C would improve performance... So C beats A. (37 votos)"
+        "text": "Assuming that the database is approaching its hardware limits, both options A and C would improve performance... So C beats A. (37 votes)"
       },
       {
         "user": "Matro71",
-        "text": "The IOPS on SSD on GCP increase with the size. (12 votos)"
+        "text": "The IOPS on SSD on GCP increase with the size. (12 votes)"
       },
       {
         "user": "tartar",
-        "text": "C is ok. (8 votos)"
+        "text": "C is ok. (8 votes)"
       },
       {
         "user": "JPA210",
-        "text": "I see most people here replying C, but I do not think that the size of the disk brings much gain in performance. (4 votos)"
+        "text": "I see most people here replying C, but I do not think that the size of the disk brings much gain in performance. (4 votes)"
       },
       {
         "user": "eka_nostra",
-        "text": "Selected Answer: C. Increasing disk size will also increase its performance. https://cloud.google.com/compute/docs/disks/performance (4 votos)"
+        "text": "Selected Answer: C. Increasing disk size will also increase its performance. https://cloud.google.com/compute/docs/disks/performance (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13385,27 +13385,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AWS56",
-        "text": "'B. Google Cloud Dataproc' is the answer (19 votos)"
+        "text": "'B. Google Cloud Dataproc' is the answer (19 votes)"
       },
       {
         "user": "VinayakBudapanahalli",
-        "text": "Dataproc is a managed Spark and Hadoop service that lets you take advantage of open source data tools for batch processing, querying, streaming, and machine learning... (16 votos)"
+        "text": "Dataproc is a managed Spark and Hadoop service that lets you take advantage of open source data tools for batch processing, querying, streaming, and machine learning... (16 votes)"
       },
       {
         "user": "eka_nostra",
-        "text": "Selected Answer: B. Dataflow for data stream and batch. Dataproc for data processing with Apache Spark and Hadoop... (3 votos)"
+        "text": "Selected Answer: B. Dataflow for data stream and batch. Dataproc for data processing with Apache Spark and Hadoop... (3 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: B. Managed Hadoop and Spark, scalability, minimal operations work, code compatibility. (2 votos)"
+        "text": "Selected Answer: B. Managed Hadoop and Spark, scalability, minimal operations work, code compatibility. (2 votes)"
       },
       {
         "user": "alekonko",
-        "text": "Selected Answer: B. Dataproc is the Hadoop/Spark managed service in GCP (2 votos)"
+        "text": "Selected Answer: B. Dataproc is the Hadoop/Spark managed service in GCP (2 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "To scale the number and size of Apache Spark and Hadoop jobs you should consider using Google Cloud Dataproc, option B. (2 votos)"
+        "text": "To scale the number and size of Apache Spark and Hadoop jobs you should consider using Google Cloud Dataproc, option B. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13441,27 +13441,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Eroc",
-        "text": "All four are correct answers... JSON is slightly faster than XML... So choose B. (37 votos)"
+        "text": "All four are correct answers... JSON is slightly faster than XML... So choose B. (37 votes)"
       },
       {
         "user": "ghitesh",
-        "text": "gsutil command takes only JSON as input for lifecycle management. In case of the API, both XML and JSON can be used. (32 votos)"
+        "text": "gsutil command takes only JSON as input for lifecycle management. In case of the API, both XML and JSON can be used. (32 votes)"
       },
       {
         "user": "clouddude",
-        "text": "I'll go with B. A is not reasonable because lifecycle policies are not written in XML. B is reasonable and is cloud native... (17 votos)"
+        "text": "I'll go with B. A is not reasonable because lifecycle policies are not written in XML. B is reasonable and is cloud native... (17 votes)"
       },
       {
         "user": "nitinz",
-        "text": "B is correct. Policy = JSON format. No matter if it's AWS or GCP. (11 votos)"
+        "text": "B is correct. Policy = JSON format. No matter if it's AWS or GCP. (11 votes)"
       },
       {
         "user": "tartar",
-        "text": "B is ok (8 votos)"
+        "text": "B is ok (8 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "To remove backup files older than 90 days from a Cloud Storage bucket and optimize ongoing Cloud Storage spend, you should consider writing a lifecycle management rule in JSON... (3 votos)"
+        "text": "To remove backup files older than 90 days from a Cloud Storage bucket and optimize ongoing Cloud Storage spend, you should consider writing a lifecycle management rule in JSON... (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13480,7 +13480,7 @@ export const QUESTIONS = [
       "Wrong: A cron script needs a machine to run on and repeated listing API calls, adding cost and maintenance for something the service does natively.",
       "Wrong: Same problem, and the non-recursive listing would also miss objects in nested prefixes."
     ],
-    "legacyNote": "El comando actual es «gcloud storage buckets update --lifecycle-file». El formato sigue siendo JSON."
+    "legacyNote": "The current command is “gcloud storage buckets update --lifecycle-file”. The format is still JSON."
   },
   {
     "id": 16,
@@ -13498,27 +13498,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "victory108",
-        "text": "B. Google Cloud Bigtable (12 votos)"
+        "text": "B. Google Cloud Bigtable (12 votes)"
       },
       {
         "user": "jeff001",
-        "text": "B, Bigtable due to the IoT-like requirements (10 votos)"
+        "text": "B, Bigtable due to the IoT-like requirements (10 votes)"
       },
       {
         "user": "fff2e69",
-        "text": "Selected Answer: B. Google Cloud Bigtable is well-suited for handling high-throughput, low-latency workloads like clickstream data. It is optimized for analytics on time-series... (4 votos)"
+        "text": "Selected Answer: B. Google Cloud Bigtable is well-suited for handling high-throughput, low-latency workloads like clickstream data. It is optimized for analytics on time-series... (4 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: B. High throughput for clickstream data, scalability, low latency, integration with BigQuery. (4 votos)"
+        "text": "Selected Answer: B. High throughput for clickstream data, scalability, low latency, integration with BigQuery. (4 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "For storing click-data streamed in at a rate of 6,000 clicks per minute, with bursts of up to 8,500 clicks per second, option B. (4 votos)"
+        "text": "For storing click-data streamed in at a rate of 6,000 clicks per minute, with bursts of up to 8,500 clicks per second, option B. (4 votes)"
       },
       {
         "user": "upliftinghut",
-        "text": "Selected Answer: C. Bigtable if it needs real time but here the need for analysis is not urgent, so Google Cloud Storage. (3 votos)"
+        "text": "Selected Answer: C. Bigtable if it needs real time but here the need for analysis is not urgent, so Google Cloud Storage. (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13555,27 +13555,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "AD2AD4",
-        "text": "Final decision to go with option A. I have done a PCI DSS audit for my project and that's the best suited case. 100% sure to use tokenised data instead of the actual card number (48 votos)"
+        "text": "Final decision to go with option A. I have done a PCI DSS audit for my project and that's the best suited case. 100% sure to use tokenised data instead of the actual card number (48 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "To minimize the scope of PCI compliance while still allowing for the analysis of transactional data, you should consider using a tokenizer service and storing only tokenized data, as described in option A. (41 votos)"
+        "text": "To minimize the scope of PCI compliance while still allowing for the analysis of transactional data, you should consider using a tokenizer service and storing only tokenized data, as described in option A. (41 votes)"
       },
       {
         "user": "Arimaverick",
-        "text": "Analyzing transactions does not require the credit card number I guess... So the CC can be tokenized. So the answer should be A. (6 votos)"
+        "text": "Analyzing transactions does not require the credit card number I guess... So the CC can be tokenized. So the answer should be A. (6 votes)"
       },
       {
         "user": "oxfordcommaa",
-        "text": "Man, this is an amazing answer. (5 votos)"
+        "text": "Man, this is an amazing answer. (5 votes)"
       },
       {
         "user": "Musk",
-        "text": "But with A you cannot extract statistics. That is the second requirement. (4 votos)"
+        "text": "But with A you cannot extract statistics. That is the second requirement. (4 votes)"
       },
       {
         "user": "KjChen",
-        "text": "Selected Answer: A. https://cloud.google.com/architecture/tokenizing-sensitive-cardholder-data-for-pci-dss (4 votos)"
+        "text": "Selected Answer: A. https://cloud.google.com/architecture/tokenizing-sensitive-cardholder-data-for-pci-dss (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13613,27 +13613,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "TosO",
-        "text": "A is the correct answer because the question says 'with minimum downtime' (28 votos)"
+        "text": "A is the correct answer because the question says 'with minimum downtime' (28 votes)"
       },
       {
         "user": "passnow",
-        "text": "Least amount of downtime is the key phrase. Everything there is correct but I believe it's only A that fits that requirement (14 votos)"
+        "text": "Least amount of downtime is the key phrase. Everything there is correct but I believe it's only A that fits that requirement (14 votes)"
       },
       {
         "user": "AdityaGupta",
-        "text": "Selected Answer: A. In Google you can dynamically resize the persistent disk while the VM is running... To resize an ext4 file system in Linux, you can use the resize2fs command. (8 votos)"
+        "text": "Selected Answer: A. In Google you can dynamically resize the persistent disk while the VM is running... To resize an ext4 file system in Linux, you can use the resize2fs command. (8 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: A. Online resizing: GCP allows you to increase persistent disk size while attached to a running VM. resize2fs extends the file system while mounted. (4 votos)"
+        "text": "Selected Answer: A. Online resizing: GCP allows you to increase persistent disk size while attached to a running VM. resize2fs extends the file system while mounted. (4 votes)"
       },
       {
         "user": "blackhawk86",
-        "text": "Selected Answer: A. According to the documentation, A is the right answer. https://cloud.google.com/compute/docs/disks/resize-persistent-disk (4 votos)"
+        "text": "Selected Answer: A. According to the documentation, A is the right answer. https://cloud.google.com/compute/docs/disks/resize-persistent-disk (4 votes)"
       },
       {
         "user": "alekonko",
-        "text": "Selected Answer: A. A is correct, resizing a disk doesn't require reboot or downtime (3 votos)"
+        "text": "Selected Answer: A. A is correct, resizing a disk doesn't require reboot or downtime (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13670,27 +13670,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "TosO",
-        "text": "C is the answer (28 votos)"
+        "text": "C is the answer (28 votes)"
       },
       {
         "user": "MyPractice",
-        "text": "Key word: this behavior was not reported before the update. A - not correct; B - new code update caused an issue; C - I agree with C; D - requires downtime and live prod affected. (20 votos)"
+        "text": "Key word: this behavior was not reported before the update. A - not correct; B - new code update caused an issue; C - I agree with C; D - requires downtime and live prod affected. (20 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: C. Prioritize user experience: rolling back quickly minimizes user impact. Controlled environment. Powerful diagnostic tools. (5 votos)"
+        "text": "Selected Answer: C. Prioritize user experience: rolling back quickly minimizes user impact. Controlled environment. Powerful diagnostic tools. (5 votes)"
       },
       {
         "user": "JC0926",
-        "text": "Option C is also a valid strategy... However, the reason why option D may be a better approach is that it allows for investigation during a quieter period... (3 votos)"
+        "text": "Option C is also a valid strategy... However, the reason why option D may be a better approach is that it allows for investigation during a quieter period... (3 votes)"
       },
       {
         "user": "jrisl1991",
-        "text": "Selected Answer: C. While D may be 'better' in case this is an issue that only occurs in production, keeping the disruption at minimum is best practice. (2 votos)"
+        "text": "Selected Answer: C. While D may be 'better' in case this is an issue that only occurs in production, keeping the disruption at minimum is best practice. (2 votes)"
       },
       {
         "user": "frankryuu",
-        "text": "Selected Answer: C. (2 votos)"
+        "text": "Selected Answer: C. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13709,7 +13709,7 @@ export const QUESTIONS = [
       "Correct: Roll back to restore user experience straight away, then reproduce and diagnose with tracing and logs in a non-production environment.",
       "Wrong: Redeploying the known-bad release, even at a quiet time, deliberately re-exposes real users to a thirty-second load time."
     ],
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 12,
@@ -13727,27 +13727,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Eroc",
-        "text": "All four options can accomplish what the question asks... I'd guess Google wants you to select B (40 votos)"
+        "text": "All four options can accomplish what the question asks... I'd guess Google wants you to select B (40 votes)"
       },
       {
         "user": "2g",
-        "text": "Answer: B (6 votos)"
+        "text": "Answer: B (6 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Selected Answer: B. Unified batch and stream processing: Dataflow is a fully managed service designed for both batch and stream data processing. No existing code... (6 votos)"
+        "text": "Selected Answer: B. Unified batch and stream processing: Dataflow is a fully managed service designed for both batch and stream data processing. No existing code... (6 votes)"
       },
       {
         "user": "BiddlyBdoyng",
-        "text": "The word analysis throws me off. Wonder if the question is just written incorrectly here? I'd say Dataflow is a key tool... (5 votos)"
+        "text": "The word analysis throws me off. Wonder if the question is just written incorrectly here? I'd say Dataflow is a key tool... (5 votes)"
       },
       {
         "user": "Singapore123",
-        "text": "Selected Answer: B. Unified processing: Google Cloud Dataflow is designed to handle both batch and stream processing in a unified manner. (4 votos)"
+        "text": "Selected Answer: B. Unified processing: Google Cloud Dataflow is designed to handle both batch and stream processing in a unified manner. (4 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "To analyze a data stream and optimize operations you should consider using Google Cloud Dataflow, a fully-managed, cloud-native data processing service... (3 votos)"
+        "text": "To analyze a data stream and optimize operations you should consider using Google Cloud Dataflow, a fully-managed, cloud-native data processing service... (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13783,27 +13783,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "gcp_aws",
-        "text": "The correct answer is B. GCDS only copies the usernames, not the passwords. And moreover there are strict security requirements for the passwords. Not allowed to copy them onto Google. Federation helps resolve this issue. (82 votos)"
+        "text": "The correct answer is B. GCDS only copies the usernames, not the passwords. And moreover there are strict security requirements for the passwords. Not allowed to copy them onto Google. Federation helps resolve this issue. (82 votes)"
       },
       {
         "user": "Eroc",
-        "text": "A will synchronise passwords between on-premises and GCP... choose C (22 votos)"
+        "text": "A will synchronise passwords between on-premises and GCP... choose C (22 votes)"
       },
       {
         "user": "cetanx",
-        "text": "GCDS syncs user accounts and some other LDAP attributes but not the passwords. With hybrid connectivity to GCP, SAML federation is the preferred method. Answer should be B. (16 votos)"
+        "text": "GCDS syncs user accounts and some other LDAP attributes but not the passwords. With hybrid connectivity to GCP, SAML federation is the preferred method. Answer should be B. (16 votes)"
       },
       {
         "user": "ExamTopicsFan",
-        "text": "Only in B does the password not get copied to GCP. (11 votos)"
+        "text": "Only in B does the password not get copied to GCP. (11 votes)"
       },
       {
         "user": "hafid",
-        "text": "You mistake GCDS for GSPS. From the Google site: GSPS won't sync an Active Directory password with a Google Account until it's changed. (9 votos)"
+        "text": "You mistake GCDS for GSPS. From the Google site: GSPS won't sync an Active Directory password with a Google Account until it's changed. (9 votes)"
       },
       {
         "user": "Neferith",
-        "text": "(Enlace a documentación sobre sincronización de contraseñas.) (8 votos)"
+        "text": "(Link to documentation on password synchronization.) (8 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13839,27 +13839,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "kalschi",
-        "text": "A - if the client library was not installed, the Python script wouldn't run. Since the question states the script reports 'cannot connect', the client library must have been installed. So prefer C. Service account is Google Cloud's best practice. (102 votos)"
+        "text": "A - if the client library was not installed, the Python script wouldn't run. Since the question states the script reports 'cannot connect', the client library must have been installed. So prefer C. Service account is Google Cloud's best practice. (102 votes)"
       },
       {
         "user": "cloudguy1",
-        "text": "B doesn't make any sense. Why would you create a whole new VM just because of a permission issue? C is the most appropriate answer... (37 votos)"
+        "text": "B doesn't make any sense. Why would you create a whole new VM just because of a permission issue? C is the most appropriate answer... (37 votes)"
       },
       {
         "user": "tartar",
-        "text": "Sorry, B is ok. You can create a service account, add the user to the service account... You still need to enable the BigQuery scope... (16 votos)"
+        "text": "Sorry, B is ok. You can create a service account, add the user to the service account... You still need to enable the BigQuery scope... (16 votes)"
       },
       {
         "user": "KouShikyou",
-        "text": "Why not B? It looks better to me. (14 votos)"
+        "text": "Why not B? It looks better to me. (14 votes)"
       },
       {
         "user": "tartar",
-        "text": "C is ok (11 votos)"
+        "text": "C is ok (11 votes)"
       },
       {
         "user": "techalik",
-        "text": "Configure the Python API to use a service account with relevant BigQuery access enabled is the right answer. https://cloud.google.com/iam/docs/service-accounts (6 votos)"
+        "text": "Configure the Python API to use a service account with relevant BigQuery access enabled is the right answer. https://cloud.google.com/iam/docs/service-accounts (6 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13895,27 +13895,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Eroc",
-        "text": "A and B wouldn't turn the VMs on or off, they would just prevent traffic. C would turn them off if the health check is configured to terminate the VM if it fails. D is the start of a pseudo health check without any logic. Correct answer: C (38 votos)"
+        "text": "A and B wouldn't turn the VMs on or off, they would just prevent traffic. C would turn them off if the health check is configured to terminate the VM if it fails. D is the start of a pseudo health check without any logic. Correct answer: C (38 votes)"
       },
       {
         "user": "tartar",
-        "text": "C is ok (14 votos)"
+        "text": "C is ok (14 votes)"
       },
       {
         "user": "TheCloudBoy77",
-        "text": "C. Ensure that a firewall rule exists to allow load balancer health checks to reach the instances in the instance group >> correct. If health check traffic is blocked, instances will be marked unhealthy and will be restarted. (7 votos)"
+        "text": "C. Ensure that a firewall rule exists to allow load balancer health checks to reach the instances in the instance group >> correct. If health check traffic is blocked, instances will be marked unhealthy and will be restarted. (7 votes)"
       },
       {
         "user": "nitinz",
-        "text": "C because terminated and relaunch means something wrong with the health check. (6 votos)"
+        "text": "C because terminated and relaunch means something wrong with the health check. (6 votes)"
       },
       {
         "user": "minmin2020",
-        "text": "Selected Answer: C. (3 votos)"
+        "text": "Selected Answer: C. (3 votes)"
       },
       {
         "user": "Upender_PDE",
-        "text": "Selected Answer: C. Google HTTP(S) load balancers perform health checks from specific IP ranges. You must allow traffic from these IP ranges to your backend VMs: 35.191.0.0/16, 130.211.0.0/22. If not allowed: health checks fail, instances are continuously recreated. (2 votos)"
+        "text": "Selected Answer: C. Google HTTP(S) load balancers perform health checks from specific IP ranges. You must allow traffic from these IP ranges to your backend VMs: 35.191.0.0/16, 130.211.0.0/22. If not allowed: health checks fail, instances are continuously recreated. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -13951,27 +13951,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "clouddude",
-        "text": "I'll go with B. This is time series data. We also have no idea what kinds of data are being captured so it doesn't appear structured. A does not seem reasonable because a flat file is not easy to query and analyze... D seems unreasonable because there is no such Google database type. (35 votos)"
+        "text": "I'll go with B. This is time series data. We also have no idea what kinds of data are being captured so it doesn't appear structured. A does not seem reasonable because a flat file is not easy to query and analyze... D seems unreasonable because there is no such Google database type. (35 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Answer is B. High volume and velocity of data: 1000 rooms reporting data every second... NoSQL databases are designed to handle this kind of volume and speed efficiently. (3 votos)"
+        "text": "Answer is B. High volume and velocity of data: 1000 rooms reporting data every second... NoSQL databases are designed to handle this kind of volume and speed efficiently. (3 votes)"
       },
       {
         "user": "Deb2293",
-        "text": "This will be time-series data. The best DB would be Bigtable (also sensorID can be used in the row key for faster retrieval). (3 votos)"
+        "text": "This will be time-series data. The best DB would be Bigtable (also sensorID can be used in the row key for faster retrieval). (3 votes)"
       },
       {
         "user": "ashishdwi007",
-        "text": "With frequencies of data (per second), the best case would be using Pub/Sub and NoSQL. Relational DB, blobstore and flat file are not good for near realtime data. (2 votos)"
+        "text": "With frequencies of data (per second), the best case would be using Pub/Sub and NoSQL. Relational DB, blobstore and flat file are not good for near realtime data. (2 votes)"
       },
       {
         "user": "hzaoui",
-        "text": "Selected Answer: C. Relational database... Structure: it provides a well-defined schema... (2 votos)"
+        "text": "Selected Answer: C. Relational database... Structure: it provides a well-defined schema... (2 votes)"
       },
       {
         "user": "BiddlyBdoyng",
-        "text": "The requirement to join the data to other data sets implies RDBMS... (2 votos)"
+        "text": "The requirement to join the data to other data sets implies RDBMS... (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -14012,27 +14012,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "rishab86",
-        "text": "A and D look correct as per the gcloud set-disk-auto-delete and billing export documentation. (24 votos)"
+        "text": "A and D look correct as per the gcloud set-disk-auto-delete and billing export documentation. (24 votes)"
       },
       {
         "user": "kopper2019",
-        "text": "A and D are OK (6 votos)"
+        "text": "A and D are OK (6 votes)"
       },
       {
         "user": "RKS_2021",
-        "text": "--no-auto-delete flag does not have an effect on the state of the application. I believe D and F are the correct answers. (4 votos)"
+        "text": "--no-auto-delete flag does not have an effect on the state of the application. I believe D and F are the correct answers. (4 votes)"
       },
       {
         "user": "AdityaGupta",
-        "text": "A is correct, use of persistent disk means the data is preserved even after restart. --no-auto-delete means the persistent disk won't be deleted when the VM is deleted. D is correct because the second part of the question asks for a billing report for the finance department. (4 votos)"
+        "text": "A is correct, use of persistent disk means the data is preserved even after restart. --no-auto-delete means the persistent disk won't be deleted when the VM is deleted. D is correct because the second part of the question asks for a billing report for the finance department. (4 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Answer is A & D. When you stop a VM, you only pay for the persistent disks attached to it... D. Use Google BigQuery billing export and labels to associate cost to groups: cost visibility. (3 votos)"
+        "text": "Answer is A & D. When you stop a VM, you only pay for the persistent disks attached to it... D. Use Google BigQuery billing export and labels to associate cost to groups: cost visibility. (3 votes)"
       },
       {
         "user": "kshlgpt",
-        "text": "DF. This is the question in the Google practice test. (2 votos)"
+        "text": "DF. This is the question in the Google practice test. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -14075,27 +14075,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "JustJack21",
-        "text": "D and E are pointless in this context. C is certainly a good practice. Now between A and B: blue-green deployment gradually transfers user traffic... While both are useful, B suggests 'replacing QA' with canary releases, which is not good. QA got the issue down by 80%. Hence A and C (71 votos)"
+        "text": "D and E are pointless in this context. C is certainly a good practice. Now between A and B: blue-green deployment gradually transfers user traffic... While both are useful, B suggests 'replacing QA' with canary releases, which is not good. QA got the issue down by 80%. Hence A and C (71 votes)"
       },
       {
         "user": "jdpinto",
-        "text": "A & C for me (35 votos)"
+        "text": "A & C for me (35 votes)"
       },
       {
         "user": "halifax",
-        "text": "Fragmenting the monolithic platform into microservices would take a few months to a few years. This is a long-term solution. (3 votos)"
+        "text": "Fragmenting the monolithic platform into microservices would take a few months to a few years. This is a long-term solution. (3 votes)"
       },
       {
         "user": "29d063d",
-        "text": "A. Introduce a green-blue deployment model: this allows for an instantaneous, non-disruptive rollback by flipping traffic back to the known good environment... (2 votos)"
+        "text": "A. Introduce a green-blue deployment model: this allows for an instantaneous, non-disruptive rollback by flipping traffic back to the known good environment... (2 votes)"
       },
       {
         "user": "Vzl",
-        "text": "We reduce the number of unplanned rollbacks of erroneous production deployments. Both blue-green and canary deployment help. (2 votos)"
+        "text": "We reduce the number of unplanned rollbacks of erroneous production deployments. Both blue-green and canary deployment help. (2 votes)"
       },
       {
         "user": "ast3citos",
-        "text": "You either use blue-green or canary. QA has already reduced rollbacks by 80%. Undoing what's working is not ideal... (2 votos)"
+        "text": "You either use blue-green or canary. QA has already reduced rollbacks by 80%. Undoing what's working is not ideal... (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -14132,27 +14132,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "dummyemailforexam",
-        "text": "A. This is a GCP exam. They will always promote their services. Not a third party solution. (130 votos)"
+        "text": "A. This is a GCP exam. They will always promote their services. Not a third party solution. (130 votes)"
       },
       {
         "user": "MeasService",
-        "text": "C should be the correct answer here (65 votos)"
+        "text": "C should be the correct answer here (65 votes)"
       },
       {
         "user": "tartar",
-        "text": "I would love to choose B, but need to keep my job. (16 votos)"
+        "text": "I would love to choose B, but need to keep my job. (16 votes)"
       },
       {
         "user": "jrisl1991",
-        "text": "Couldn't disagree more. There are multiple cloud-based solutions that involve parties in and out of GCP, and for an architect it's a very risky decision to simply ask them to install that if we don't know what they need. A solutions architect will always have to consider requirements before proposing any solution. (13 votos)"
+        "text": "Couldn't disagree more. There are multiple cloud-based solutions that involve parties in and out of GCP, and for an architect it's a very risky decision to simply ask them to install that if we don't know what they need. A solutions architect will always have to consider requirements before proposing any solution. (13 votes)"
       },
       {
         "user": "tartar",
-        "text": "C is ok (10 votos)"
+        "text": "C is ok (10 votes)"
       },
       {
         "user": "Moophoop",
-        "text": "Requirements before solutions. (8 votos)"
+        "text": "Requirements before solutions. (8 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -14172,7 +14172,7 @@ export const QUESTIONS = [
       "Wrong: Upgrading the incumbent assumes the existing tool is the right foundation, which is precisely what the team is questioning."
     ],
     "resolvedBy": "gemini-2026-08",
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 4,
@@ -14196,27 +14196,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "jackdbd",
-        "text": "It's A. App Engine spins up new containers automatically according to the load. During peak traffic, HTTP requests originated by the same user could be served by different containers. Given that the variable sessions is recreated for each container, it might store different data. The problem here is that this Flask app is stateful. A solution would be to store the session in some database (e.g. Firestore, Memorystore). (128 votos)"
+        "text": "It's A. App Engine spins up new containers automatically according to the load. During peak traffic, HTTP requests originated by the same user could be served by different containers. Given that the variable sessions is recreated for each container, it might store different data. The problem here is that this Flask app is stateful. A solution would be to store the session in some database (e.g. Firestore, Memorystore). (128 votes)"
       },
       {
         "user": "JoeShmoe",
-        "text": "A is correct (29 votos)"
+        "text": "A is correct (29 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "The issue is about session consistency. App Engine spins up a new container if there's a need, and based on the code the session is stored locally, so there's no consistency between containers... (16 votos)"
+        "text": "The issue is about session consistency. App Engine spins up a new container if there's a need, and based on the code the session is stored locally, so there's no consistency between containers... (16 votes)"
       },
       {
         "user": "Badri9898",
-        "text": "The sessions variable is only stored in memory on the instance that handles the request, and it is not shared between instances. (8 votos)"
+        "text": "The sessions variable is only stored in memory on the instance that handles the request, and it is not shared between instances. (8 votes)"
       },
       {
         "user": "Ekramy_Elnaggar",
-        "text": "Answer is A. App Engine automatically scales your application by creating multiple instances to handle incoming traffic. Each instance runs independently and has its own memory space... (6 votos)"
+        "text": "Answer is A. App Engine automatically scales your application by creating multiple instances to handle incoming traffic. Each instance runs independently and has its own memory space... (6 votes)"
       },
       {
         "user": "omermahgoub",
-        "text": "A. In this code, the session variable is defined as a local dictionary within the Flask application. (4 votos)"
+        "text": "A. In this code, the session variable is defined as a local dictionary within the Flask application. (4 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -14258,27 +14258,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "NapoleonBorntoparty",
-        "text": "This is talking about the APPLICATION not the infrastructure, therefore I believe we should focus on the app side: 1. port the app to App Engine, 2. add monitoring, 3. use a CI/CD workflow. So A, C and E for me (81 votos)"
+        "text": "This is talking about the APPLICATION not the infrastructure, therefore I believe we should focus on the app side: 1. port the app to App Engine, 2. add monitoring, 3. use a CI/CD workflow. So A, C and E for me (81 votes)"
       },
       {
         "user": "amxexam",
-        "text": "Let's go with option elimination... A and C are must-have. B and E are good to have, but E has more importance. Hence ACE (17 votos)"
+        "text": "Let's go with option elimination... A and C are must-have. B and E are good to have, but E has more importance. Hence ACE (17 votes)"
       },
       {
         "user": "segkhachat",
-        "text": "The person asking you for a recommendation is the operations manager, so it can be related to infrastructure (5 votos)"
+        "text": "The person asking you for a recommendation is the operations manager, so it can be related to infrastructure (5 votes)"
       },
       {
         "user": "Ishu_awsguy",
-        "text": "I would say A C D. (2 votos)"
+        "text": "I would say A C D. (2 votes)"
       },
       {
         "user": "ast3citos",
-        "text": "A is not... This is a refactoring/re-platforming step, not a universal practice. While beneficial, the initial migration might focus on lift-and-shift to Compute Engine or GKE first. This is a strategic choice, not a recommended practice for all migrations. (2 votos)"
+        "text": "A is not... This is a refactoring/re-platforming step, not a universal practice. While beneficial, the initial migration might focus on lift-and-shift to Compute Engine or GKE first. This is a strategic choice, not a recommended practice for all migrations. (2 votes)"
       },
       {
         "user": "apb98",
-        "text": "CDE for me. C, because it's a recommended practice to monitor the application after migration. D, because using tools like Terraform or Deployment Manager is a key best practice. E, because automating testing and integration is a core part of any modern cloud migration strategy. (2 votos)"
+        "text": "CDE for me. C, because it's a recommended practice to monitor the application after migration. D, because using tools like Terraform or Deployment Manager is a key best practice. E, because automating testing and integration is a core part of any modern cloud migration strategy. (2 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -14300,7 +14300,7 @@ export const QUESTIONS = [
       "Wrong: Swapping a relational database for NoSQL forces a data model rewrite and is a specific design decision, not a general recommendation."
     ],
     "resolvedBy": "gemini-2026-08",
-    "legacyNote": "Stackdriver es hoy Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace y Cloud Profiler."
+    "legacyNote": "Stackdriver is now Google Cloud Observability: Cloud Logging, Cloud Monitoring, Cloud Trace and Cloud Profiler."
   },
   {
     "id": 2,
@@ -14318,27 +14318,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "Eroc",
-        "text": "BigQuery was designed with this in mind, according to numerous Google presentations and videos. Cloud Datastore is a NoSQL database. Cloud Storage does not have a SQL interface. The previous two sentences eliminate options C and D. So I'd pick A. (45 votos)"
+        "text": "BigQuery was designed with this in mind, according to numerous Google presentations and videos. Cloud Datastore is a NoSQL database. Cloud Storage does not have a SQL interface. The previous two sentences eliminate options C and D. So I'd pick A. (45 votes)"
       },
       {
         "user": "tartar",
-        "text": "A is ok (16 votos)"
+        "text": "A is ok (16 votes)"
       },
       {
         "user": "clouddude",
-        "text": "I'll go with A because BigQuery is usually meant for analytics. B isn't correct because Cloud SQL does not scale to that volume. C isn't correct because Cloud Storage does not provide a standard SQL mechanism. (15 votos)"
+        "text": "I'll go with A because BigQuery is usually meant for analytics. B isn't correct because Cloud SQL does not scale to that volume. C isn't correct because Cloud Storage does not provide a standard SQL mechanism. (15 votes)"
       },
       {
         "user": "kinghin",
-        "text": "B is not correct because the Cloud SQL storage limit doesn't fit the requirement. (15 votos)"
+        "text": "B is not correct because the Cloud SQL storage limit doesn't fit the requirement. (15 votes)"
       },
       {
         "user": "zr79",
-        "text": "Cloud SQL does not scale to that magnitude, also Cloud SQL is not meant for OLAP. Answer is BigQuery (5 votos)"
+        "text": "Cloud SQL does not scale to that magnitude, also Cloud SQL is not meant for OLAP. Answer is BigQuery (5 votes)"
       },
       {
         "user": "Sib09",
-        "text": "Cloud SQL supports TB not PB of data (3 votos)"
+        "text": "Cloud SQL supports TB not PB of data (3 votes)"
       }
     ],
     "source": "gemini-validated",
@@ -14374,27 +14374,27 @@ export const QUESTIONS = [
     "discussion": [
       {
         "user": "shandy",
-        "text": "D is the answer because an HTTP(S) load balancer can direct traffic reaching a single IP to different backends based on the incoming URL. A is not correct because configuring a new load balancer would require new or different SSL and DNS records which conflicts with the requirements. B is not correct because it goes against the requirements... C is not correct because it is not a requirement to decommission the implementation behind the old API. (116 votos)"
+        "text": "D is the answer because an HTTP(S) load balancer can direct traffic reaching a single IP to different backends based on the incoming URL. A is not correct because configuring a new load balancer would require new or different SSL and DNS records which conflicts with the requirements. B is not correct because it goes against the requirements... C is not correct because it is not a requirement to decommission the implementation behind the old API. (116 votes)"
       },
       {
         "user": "AWS56",
-        "text": "Agreed, the answer is D (20 votos)"
+        "text": "Agreed, the answer is D (20 votes)"
       },
       {
         "user": "Arnabbabu",
-        "text": "(Comentario sobre la vigencia del banco de preguntas.) (9 votos)"
+        "text": "(Comment on how current the question bank is.) (9 votes)"
       },
       {
         "user": "WakandaF",
-        "text": "(Pregunta sobre el examen de renovación.) (6 votos)"
+        "text": "(Question about the renewal exam.) (6 votes)"
       },
       {
         "user": "AzureDP900",
-        "text": "D is right (4 votos)"
+        "text": "D is right (4 votes)"
       },
       {
         "user": "ToiToi",
-        "text": "(Comentario sobre la actualización del examen.) (4 votos)"
+        "text": "(Comment on the exam update.) (4 votes)"
       }
     ],
     "source": "gemini-validated",

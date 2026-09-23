@@ -43,7 +43,7 @@ export default function CertPicker() {
               letterSpacing: 1,
             }}
           >
-            Elige certificación
+            Choose a certification
           </div>
         </div>
 
@@ -92,7 +92,7 @@ export default function CertPicker() {
                     fontFamily: "var(--font-mono)",
                   }}
                 >
-                  {cert.brand} · {cert.mock.count} preguntas ·{" "}
+                  {cert.brand} · {cert.mock.count} questions ·{" "}
                   {Math.round(cert.mock.durationSec / 60)} min · {cert.passPercent}%
                 </span>
                 {formatDumpDate(cert.questionsDumpedAt) && (
@@ -105,7 +105,7 @@ export default function CertPicker() {
                       fontFamily: "var(--font-mono)",
                     }}
                   >
-                    Preguntas volcadas el {formatDumpDate(cert.questionsDumpedAt)}
+                    Questions dumped on {formatDumpDate(cert.questionsDumpedAt)}
                   </span>
                 )}
               </span>
@@ -136,7 +136,7 @@ export default function CertPicker() {
             lineHeight: 1.6,
           }}
         >
-          El progreso se guarda por separado para cada certificación.
+          Progress is saved separately for each certification.
         </div>
       </div>
     </div>

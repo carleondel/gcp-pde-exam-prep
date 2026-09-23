@@ -28,10 +28,10 @@ const BANK = Array.from({ length: 80 }, (_, i) => ({
   id: i + 1,
   topic: "BigQuery",
   difficulty: 2,
-  question: `Pregunta numero ${i + 1}`,
+  question: `Question number ${i + 1}`,
   options: [CORRECT, "B. incorrecta", "C. otra", "D. otra mas"],
   correct: 0,
-  explanation: "Explicacion de la respuesta.",
+  explanation: "Answer explanation.",
   discussion: [],
   sourceQuestionNumber: i + 1,
 }));
@@ -64,17 +64,17 @@ function clickButton(pattern) {
   fireEvent.click(button);
 }
 
-const openMockView = () => clickButton(/^◷Simulacro/);
+const openMockView = () => clickButton(/^◷Mock exam/);
 
 function startMock() {
   openMockView();
-  clickButton(/^Iniciar simulacro$/);
+  clickButton(/^Start mock exam$/);
 }
 
 /** Answers the question on screen and saves it. Mocks give no feedback. */
 function answerCurrent(option = CORRECT) {
   fireEvent.click(screen.getByText(option));
-  clickButton(/^Guardar y continuar/);
+  clickButton(/^Save and continue/);
 }
 
 /** Reads the countdown chip ("119:58") back as a number of seconds. */
@@ -103,7 +103,7 @@ describe("the mock exam, wired into the app", () => {
       startMock();
 
       expect(screen.getByText(`1/${MOCK_COUNT}`)).toBeTruthy();
-      expect(findButton(/^Guardar y continuar/)).toBeTruthy();
+      expect(findButton(/^Save and continue/)).toBeTruthy();
     });
 
     it("starts the clock at the full duration", () => {
@@ -193,7 +193,7 @@ describe("the mock exam, wired into the app", () => {
 
       // Graded straight to the result screen rather than handed back with a
       // countdown that has already run out.
-      expect(screen.getByText("Revisión")).toBeTruthy();
+      expect(screen.getByText("Review")).toBeTruthy();
       expect(activeMock()).toBeNull();
 
       const [entry] = storage().loadProgress().mockHistory;
@@ -213,10 +213,10 @@ describe("the mock exam, wired into the app", () => {
 
       // Leaving a mock through the menu keeps it: unlike cancelling, it is
       // not a decision to throw the attempt away.
-      clickButton(/^← Menú$/);
+      clickButton(/^← Menu$/);
       expect(activeMock()).not.toBeNull();
 
-      clickButton(/^Continuar simulacro activo$/);
+      clickButton(/^Continue active mock exam$/);
 
       expect(screen.getByText(`3/${MOCK_COUNT}`)).toBeTruthy();
       expect(Object.keys(activeMock().answersByQuestionId)).toHaveLength(2);
@@ -225,7 +225,7 @@ describe("the mock exam, wired into the app", () => {
     it("offers nothing to resume when no attempt is in flight", () => {
       render(<AppContent allQuestions={BANK} />);
       openMockView();
-      expect(findButton(/^Continuar simulacro activo$/)).toBeFalsy();
+      expect(findButton(/^Continue active mock exam$/)).toBeFalsy();
     });
   });
 
@@ -236,12 +236,12 @@ describe("the mock exam, wired into the app", () => {
       startMock();
       answerCurrent();
 
-      clickButton(/^Cancelar$/);
+      clickButton(/^Cancel$/);
 
       expect(activeMock()).toBeNull();
       expect(storage().loadProgress().mockHistory).toHaveLength(0);
       // Back on the menu, on the mock view it was started from.
-      expect(findButton(/^Iniciar simulacro$/)).toBeTruthy();
+      expect(findButton(/^Start mock exam$/)).toBeTruthy();
     });
 
     it("keeps the attempt when the confirmation is declined", () => {
@@ -249,7 +249,7 @@ describe("the mock exam, wired into the app", () => {
       render(<AppContent allQuestions={BANK} />);
       startMock();
 
-      clickButton(/^Cancelar$/);
+      clickButton(/^Cancel$/);
 
       expect(activeMock()).not.toBeNull();
       expect(screen.getByText(`1/${MOCK_COUNT}`)).toBeTruthy();
@@ -268,7 +268,7 @@ describe("the mock exam, wired into the app", () => {
         answerCurrent();
       }
 
-      expect(screen.getByText("Revisión")).toBeTruthy();
+      expect(screen.getByText("Review")).toBeTruthy();
       expect(activeMock()).toBeNull();
 
       const progress = storage().loadProgress();
@@ -293,9 +293,9 @@ describe("the mock exam, wired into the app", () => {
 
       // Returns to the mock view it was started from, so the history is
       // already on screen.
-      clickButton(/^Volver al menú$/);
+      clickButton(/^Back to menu$/);
 
-      expect(screen.getByText(/100% Apto/)).toBeTruthy();
+      expect(screen.getByText(/100% Pass/)).toBeTruthy();
     });
 
     it("starts a fresh attempt straight from the result screen", () => {
@@ -305,7 +305,7 @@ describe("the mock exam, wired into the app", () => {
         answerCurrent();
       }
 
-      clickButton(/^Nuevo simulacro$/);
+      clickButton(/^New mock exam$/);
 
       expect(screen.getByText(`1/${MOCK_COUNT}`)).toBeTruthy();
       const second = activeMock();
@@ -337,7 +337,7 @@ describe("the mock exam, wired into the app", () => {
 
       render(<AppContent allQuestions={BANK} />);
 
-      expect(screen.getByText("Bloques de estudio")).toBeTruthy();
+      expect(screen.getByText("Study blocks")).toBeTruthy();
       expect(activeMock()).toBeNull();
       expect(activeMock("gcp-pca")).toEqual(pcaMock);
     });

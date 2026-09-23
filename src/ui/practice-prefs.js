@@ -15,29 +15,29 @@ export const DEFAULT_PRACTICE_LIMIT = 20;
 
 export const PRACTICE_SOURCE_META = {
   topics: {
-    label: "Por dominio",
-    helper: "Selecciona los dominios que quieres cubrir.",
-    empty: "Selecciona temas.",
+    label: "By domain",
+    helper: "Select the domains you want to cover.",
+    empty: "Select topics.",
   },
   recent: {
-    label: "Recientes",
-    helper: "Prioriza ExamTopics reciente con las últimas incorporaciones.",
-    empty: "Aún no hay preguntas recientes importadas.",
+    label: "Recent",
+    helper: "Prioritizes the latest ExamTopics additions.",
+    empty: "No recent questions imported yet.",
   },
   wrong: {
-    label: "Solo fallos",
-    helper: "Repasa solo lo que más te cuesta.",
-    empty: "Aún no hay fallos guardados.",
+    label: "Mistakes only",
+    helper: "Review only what you struggle with most.",
+    empty: "No saved mistakes yet.",
   },
   bookmarks: {
-    label: "Marcadas",
-    helper: "Retoma preguntas reservadas para revisión.",
-    empty: "Aún no hay preguntas marcadas.",
+    label: "Bookmarked",
+    helper: "Revisit questions saved for review.",
+    empty: "No bookmarked questions yet.",
   },
   weak: {
-    label: "Peor rendimiento",
-    helper: "Enfócate en los temas con peor acierto.",
-    empty: "Se activa tras 5 respuestas por tema.",
+    label: "Weakest areas",
+    helper: "Focus on the topics with the lowest accuracy.",
+    empty: "Unlocks after 5 answers per topic.",
   },
 };
 

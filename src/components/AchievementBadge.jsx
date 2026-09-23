@@ -14,19 +14,15 @@ export default function AchievementBadge({ achievement, unlocked, progressLabel 
   // Un logro secreto no revela ni nombre ni condición mientras esté
   // bloqueado; al conseguirlo se comporta como cualquier otro.
   const hidden = achievement.secret && !unlocked;
-  const title = hidden ? "Logro oculto" : achievement.name;
-  const body = hidden ? "Sigue jugando para descubrirlo." : achievement.desc;
+  const title = hidden ? "Hidden achievement" : achievement.name;
+  const body = hidden ? "Keep playing to discover it." : achievement.desc;
   const face = hidden ? "❓" : unlocked ? achievement.icon : "🔒";
 
   const accent = achievement.platinum ? "var(--signal-info)" : "var(--accent-300)";
   const accentSoft = achievement.platinum ? "var(--info-soft)" : "var(--accent-soft)";
   const accentLine = achievement.platinum ? "var(--signal-info)" : "var(--accent-medium)";
 
-  const status = unlocked
-    ? "Conseguido"
-    : progressLabel
-      ? `${progressLabel} conseguidos`
-      : "Bloqueado";
+  const status = unlocked ? "Unlocked" : progressLabel ? `${progressLabel} unlocked` : "Locked";
 
   return (
     <div
@@ -35,7 +31,7 @@ export default function AchievementBadge({ achievement, unlocked, progressLabel 
       onFocus={show}
       onBlur={hide}
       tabIndex={0}
-      aria-label={`${title}: ${body}${unlocked ? "" : " (bloqueado)"}`}
+      aria-label={`${title}: ${body}${unlocked ? "" : " (locked)"}`}
       style={{
         position: "relative",
         width: 34,

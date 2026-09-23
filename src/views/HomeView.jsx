@@ -49,7 +49,7 @@ function SummaryCards({
             fontFamily: "var(--font-mono)",
           }}
         >
-          Rango
+          Rank
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8 }}>
           <div
@@ -108,7 +108,7 @@ function SummaryCards({
             fontFamily: "var(--font-mono)",
           }}
         >
-          Siguiente rango
+          Next rank
         </div>
         {rank.next ? (
           <>
@@ -149,12 +149,12 @@ function SummaryCards({
                 fontFamily: "var(--font-mono)",
               }}
             >
-              {rank.next.minXP - xp} XP restantes
+              {rank.next.minXP - xp} XP to go
             </div>
           </>
         ) : (
           <div style={{ marginTop: 8, fontSize: 14, color: "var(--highlight)", fontWeight: 700 }}>
-            Rango máximo alcanzado.
+            Maximum rank reached.
           </div>
         )}
       </div>
@@ -176,7 +176,7 @@ function SummaryCards({
             fontFamily: "var(--font-mono)",
           }}
         >
-          Inventario
+          Inventory
         </div>
         <div
           style={{
@@ -190,7 +190,7 @@ function SummaryCards({
           {inventoryCount}
         </div>
         <div style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)" }}>
-          {achievementCount} logros desbloqueados
+          {achievementCount} achievements unlocked
         </div>
       </div>
       <div
@@ -211,7 +211,7 @@ function SummaryCards({
             fontFamily: "var(--font-mono)",
           }}
         >
-          Peor rendimiento
+          Weakest area
         </div>
         {weakestTopic ? (
           <>
@@ -254,14 +254,14 @@ function SummaryCards({
                 cursor: "pointer",
               }}
             >
-              Cargar bloque
+              Load set
             </button>
           </>
         ) : (
           <div
             style={{ marginTop: 8, fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5 }}
           >
-            Se mostrará cuando haya suficientes respuestas.
+            Shown once there are enough answers.
           </div>
         )}
       </div>
@@ -301,10 +301,10 @@ function NextAction({ action, onRun }) {
               fontFamily: "var(--font-heading)",
             }}
           >
-            Continuar Bloque {action.blockNumber}
+            Continue Block {action.blockNumber}
           </div>
           <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>
-            Tu bloque actual esta a medias.
+            Your current block is half done.
           </div>
         </div>
         <button
@@ -321,7 +321,7 @@ function NextAction({ action, onRun }) {
             fontFamily: "var(--font-mono)",
           }}
         >
-          Continuar
+          Continue
         </button>
       </div>
     );
@@ -352,13 +352,13 @@ function NextAction({ action, onRun }) {
               fontFamily: "var(--font-heading)",
             }}
           >
-            {action.hasRounds ? "Repetir" : "Empezar"} Bloque {action.blockNumber}{" "}
+            {action.hasRounds ? "Repeat" : "Start"} Block {action.blockNumber}{" "}
             <span style={{ color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>
               {action.label}
             </span>
           </div>
           <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>
-            Siguiente bloque sugerido.
+            Next suggested block.
           </div>
         </div>
         <button
@@ -375,7 +375,7 @@ function NextAction({ action, onRun }) {
             fontFamily: "var(--font-mono)",
           }}
         >
-          {action.hasRounds ? "Repetir" : "Empezar"}
+          {action.hasRounds ? "Repeat" : "Start"}
         </button>
       </div>
     );
@@ -405,10 +405,10 @@ function NextAction({ action, onRun }) {
             fontFamily: "var(--font-heading)",
           }}
         >
-          Reforzar {action.short}
+          Reinforce {action.short}
         </div>
         <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>
-          Tu dominio mas flojo: {action.accuracy}% con {action.total} intentos.
+          Your weakest domain: {action.accuracy}% over {action.total} attempts.
         </div>
       </div>
       <button
@@ -425,7 +425,7 @@ function NextAction({ action, onRun }) {
           fontFamily: "var(--font-mono)",
         }}
       >
-        Practicar
+        Practice
       </button>
     </div>
   );
@@ -445,7 +445,7 @@ function DomainProgress({ domains, certShort }) {
           fontFamily: "var(--font-mono)",
         }}
       >
-        Dominios {certShort}
+        {certShort} domains
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {domains.map((domain) => {
@@ -550,7 +550,7 @@ function DomainProgress({ domains, certShort }) {
                       fontFamily: "var(--font-mono)",
                     }}
                   >
-                    pocos datos
+                    low data
                   </span>
                 )}
                 {!lowData && pct < 70 && (
@@ -585,7 +585,7 @@ function BlockGrid({ blocks, onPick }) {
           <button
             key={block.blockIndex}
             onClick={() => onPick(block)}
-            title={`Bloque ${block.blockIndex + 1}${rounds ? ` · ${rounds} vuelta${rounds > 1 ? "s" : ""}` : " · sin empezar"}${mastered ? " · dominado" : ""}`}
+            title={`Block ${block.blockIndex + 1}${rounds ? ` · ${rounds} round${rounds > 1 ? "s" : ""}` : " · not started"}${mastered ? " · mastered" : ""}`}
             style={{
               padding: "8px 4px",
               borderRadius: "var(--radius-sm)",
@@ -613,7 +613,7 @@ function BlockGrid({ blocks, onPick }) {
               {blockProgress ? `${blockProgress.lastPercent}%` : "—"}
             </div>
             <div style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 1 }}>
-              {rounds ? `v${rounds}` : "—"}
+              {rounds ? `r${rounds}` : "—"}
             </div>
           </button>
         );
@@ -655,7 +655,7 @@ function DailyCards({ daily, onStartDaily }) {
               fontFamily: "var(--font-mono)",
             }}
           >
-            Racha diaria
+            Daily streak
           </div>
           <div
             style={{
@@ -669,7 +669,7 @@ function DailyCards({ daily, onStartDaily }) {
             <span style={{ color: "var(--accent-300)", fontFamily: "var(--font-mono)" }}>
               {daily.current}
             </span>{" "}
-            {daily.current === 1 ? "día" : "días"}
+            {daily.current === 1 ? "day" : "days"}
           </div>
         </div>
         <div style={{ textAlign: "right" }}>
@@ -682,7 +682,7 @@ function DailyCards({ daily, onStartDaily }) {
               fontFamily: "var(--font-mono)",
             }}
           >
-            Récord
+            Best
           </div>
           <div
             style={{
@@ -720,12 +720,12 @@ function DailyCards({ daily, onStartDaily }) {
               fontFamily: "var(--font-mono)",
             }}
           >
-            Reto diario
+            Daily challenge
           </div>
           <div
             style={{ marginTop: 6, fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}
           >
-            {daily.done ? "Completado" : `${daily.questionCount} preguntas · +${daily.bonusXp} XP`}
+            {daily.done ? "Completed" : `${daily.questionCount} questions · +${daily.bonusXp} XP`}
           </div>
         </div>
         {!daily.done && (
@@ -743,7 +743,7 @@ function DailyCards({ daily, onStartDaily }) {
               fontFamily: "var(--font-mono)",
             }}
           >
-            Iniciar reto
+            Start challenge
           </button>
         )}
       </div>
@@ -816,7 +816,7 @@ export default function HomeView({
                   fontFamily: "var(--font-heading)",
                 }}
               >
-                Práctica rápida
+                Quick practice
               </div>
               <div
                 style={{
@@ -826,7 +826,7 @@ export default function HomeView({
                   fontFamily: "var(--font-mono)",
                 }}
               >
-                {shortcuts.practice.count} preguntas · {shortcuts.practice.sourceLabel}
+                {shortcuts.practice.count} questions · {shortcuts.practice.sourceLabel}
               </div>
             </button>
 
@@ -857,7 +857,7 @@ export default function HomeView({
                   fontFamily: "var(--font-heading)",
                 }}
               >
-                Repasar fallos
+                Review mistakes
               </div>
               <div
                 style={{
@@ -867,7 +867,7 @@ export default function HomeView({
                   fontFamily: "var(--font-mono)",
                 }}
               >
-                {shortcuts.wrong.count > 0 ? `${shortcuts.wrong.count} pendientes` : "Sin fallos"}
+                {shortcuts.wrong.count > 0 ? `${shortcuts.wrong.count} pending` : "No mistakes"}
               </div>
             </button>
 
@@ -896,7 +896,7 @@ export default function HomeView({
                   fontFamily: "var(--font-heading)",
                 }}
               >
-                Simulacro
+                Mock exam
               </div>
               <div
                 style={{
@@ -906,7 +906,7 @@ export default function HomeView({
                   fontFamily: "var(--font-mono)",
                 }}
               >
-                {shortcuts.mock.questionCount} preguntas ·{" "}
+                {shortcuts.mock.questionCount} questions ·{" "}
                 {Math.round(shortcuts.mock.durationSec / 60)} min
               </div>
             </button>
@@ -934,7 +934,7 @@ export default function HomeView({
                 padding: 0,
               }}
             >
-              Sesión a medida →
+              Custom session →
             </button>
             <button
               onClick={() => onNavigate("progress")}
@@ -948,7 +948,7 @@ export default function HomeView({
                 padding: 0,
               }}
             >
-              Inventario y logros →
+              Inventory & achievements →
             </button>
           </div>
         </div>
@@ -974,7 +974,7 @@ export default function HomeView({
                   fontFamily: "var(--font-mono)",
                 }}
               >
-                Bloques de estudio
+                Study blocks
               </div>
               <button
                 onClick={() => onNavigate("blocks")}
@@ -989,7 +989,7 @@ export default function HomeView({
                   padding: 0,
                 }}
               >
-                Ver todos →
+                See all →
               </button>
             </div>
             <BlockGrid blocks={blocks} onPick={onPickBlock} />

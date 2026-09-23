@@ -23,7 +23,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
   const [totalDmgDealt, setTotalDmgDealt] = useState(0);
   const [totalDmgTaken, setTotalDmgTaken] = useState(0);
   const [lastEvent, setLastEvent] = useState(
-    "Acierta para golpear. Si el jefe sobrevive, contraataca.",
+    "Answer correctly to strike. If the boss survives, it counterattacks.",
   );
 
   const enraged = bossHp > 0 && bossHp / dragon.hp < dragon.enrageThreshold;
@@ -60,7 +60,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
       if (newBossHp <= 0) {
         const finalDmg = totalDmgDealt + dmg;
         const finalTaken = totalDmgTaken;
-        setLastEvent(`Acierto: ${dmg} dano. Victoria.`);
+        setLastEvent(`Hit: ${dmg} damage. Victory.`);
         setTimeout(() => {
           setPhase("result");
           onComplete({
@@ -75,7 +75,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
       } else {
         const counterMult = enraged ? dragon.enrageMultiplier : 1;
         const counterDmg = Math.round(randomInRange(dragon.counterRange) * counterMult);
-        setLastEvent(`Acierto: ${dmg} dano. ${dragon.name} contraataca por ${counterDmg}.`);
+        setLastEvent(`Hit: ${dmg} damage. ${dragon.name} counterattacks for ${counterDmg}.`);
         setTimeout(() => {
           setHp((h) => {
             const newHp = Math.max(0, h - counterDmg);
@@ -104,7 +104,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
       const newHp = Math.max(0, hp - bossDmg);
       setHp(newHp);
       setTotalDmgTaken((d) => d + bossDmg);
-      setLastEvent(`Fallo: ${dragon.name} golpea por ${bossDmg}.`);
+      setLastEvent(`Miss: ${dragon.name} strikes for ${bossDmg}.`);
       if (newHp <= 0) {
         setTimeout(() => {
           setPhase("result");
@@ -211,8 +211,8 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
             </span>
           </div>
           <p style={{ color: "var(--text-secondary)", fontSize: 13, margin: "0 0 24px" }}>
-            Acierto: {dragon.dmgRange[0]}-{dragon.dmgRange[1]} dano. Contraataque:{" "}
-            {dragon.counterRange[0]}-{dragon.counterRange[1]}. Fallo: {dragon.wrongDmgRange[0]}-
+            Hit: {dragon.dmgRange[0]}-{dragon.dmgRange[1]} damage. Counterattack:{" "}
+            {dragon.counterRange[0]}-{dragon.counterRange[1]}. Miss: {dragon.wrongDmgRange[0]}-
             {dragon.wrongDmgRange[1]}.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
@@ -231,7 +231,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
                 fontFamily: "var(--font-mono)",
               }}
             >
-              LUCHAR
+              FIGHT
             </button>
             <button
               onClick={onClose}
@@ -247,7 +247,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
                 fontFamily: "var(--font-mono)",
               }}
             >
-              SALTAR
+              SKIP
             </button>
           </div>
         </div>
@@ -281,7 +281,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
               fontFamily: "var(--font-heading)",
             }}
           >
-            {won ? "VICTORIA" : "DERROTA"}
+            {won ? "VICTORY" : "DEFEAT"}
           </h2>
           <p
             style={{
@@ -304,9 +304,9 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
               fontFamily: "var(--font-mono)",
             }}
           >
-            <span>{turn} turnos</span>
+            <span>{turn} turns</span>
             <span>{totalDmgDealt} dmg</span>
-            <span>{totalDmgTaken} recibido</span>
+            <span>{totalDmgTaken} taken</span>
           </div>
           {won && wrongCount === 0 && (
             <div
@@ -326,9 +326,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
             </div>
           )}
           <p style={{ color: "var(--text-secondary)", fontSize: 14, margin: "0 0 20px" }}>
-            {won
-              ? `+${dragon.xpReward} XP de recompensa`
-              : "El dragon te ha vencido. Intenta de nuevo."}
+            {won ? `+${dragon.xpReward} XP reward` : "The dragon defeated you. Try again."}
           </p>
           <button
             onClick={onClose}
@@ -343,7 +341,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
               cursor: "pointer",
             }}
           >
-            Continuar
+            Continue
           </button>
         </div>
       </div>
@@ -365,8 +363,8 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
     >
       <button
         onClick={onClose}
-        title="Saltar batalla"
-        aria-label="Saltar batalla"
+        title="Skip battle"
+        aria-label="Skip battle"
         style={{
           position: "absolute",
           top: 14,
@@ -412,7 +410,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
               animation: "pulse 0.8s infinite",
             }}
           >
-            FURIOSO
+            ENRAGED
           </div>
         )}
         <div style={{ maxWidth: 300, margin: "8px auto" }}>
@@ -462,7 +460,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
               fontFamily: "var(--font-mono)",
             }}
           >
-            Turno {turn + 1}
+            Turn {turn + 1}
           </span>
           <span
             style={{
@@ -584,7 +582,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
             fontFamily: "var(--font-mono)",
           }}
         >
-          {"\u2694\uFE0F"} {canAttack ? "ATACAR" : isMulti ? `ELIGE ${neededAnswers}` : "ATACAR"}
+          {"\u2694\uFE0F"} {canAttack ? "ATTACK" : isMulti ? `PICK ${neededAnswers}` : "ATTACK"}
         </button>
       </div>
       <div style={{ maxWidth: 300, margin: "16px auto 0" }}>
@@ -596,7 +594,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
             marginBottom: 3,
           }}
         >
-          <span style={{ color: "var(--signal-correct)", fontWeight: 700 }}>Tu HP</span>
+          <span style={{ color: "var(--signal-correct)", fontWeight: 700 }}>Your HP</span>
           <span style={{ color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>
             {hp}/{dragon.playerHp}
           </span>

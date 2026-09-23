@@ -36,7 +36,7 @@ export function AchievementPopup({ achievement, onClose }) {
             fontFamily: "var(--font-mono)",
           }}
         >
-          Logro desbloqueado
+          Achievement unlocked
         </div>
         <div
           style={{

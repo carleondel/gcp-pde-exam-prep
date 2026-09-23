@@ -125,12 +125,12 @@ export function usePracticeConfig({
 
     if (!nextTopics.size) {
       nextTopics = new Set(topics);
-      nextMessage = "Ajustamos los temas a los disponibles actualmente.";
+      nextMessage = "Topics adjusted to the ones currently available.";
     }
 
     if (nextSource !== "topics" && practiceSourceCounts[nextSource] === 0) {
       nextSource = "topics";
-      nextMessage = "Volvimos a Temas porque esa fuente ya no tiene preguntas disponibles.";
+      nextMessage = "Switched back to topics because that source has no questions available.";
     }
 
     const nextMax =
@@ -146,7 +146,7 @@ export function usePracticeConfig({
 
     if (nextMax > 0 && nextLimit > nextMax) {
       nextLimit = nextMax;
-      nextMessage = `Ajustado a ${nextMax} por disponibilidad actual.`;
+      nextMessage = `Adjusted to ${nextMax} based on current availability.`;
     }
 
     if (nextMax > 0 && nextLimit < 1) {

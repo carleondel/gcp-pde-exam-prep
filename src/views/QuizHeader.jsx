@@ -55,7 +55,7 @@ export default function QuizHeader({
               fontFamily: "var(--font-mono)",
             }}
           >
-            ← Menú
+            ← Menu
           </button>
           <div
             style={{
@@ -79,7 +79,7 @@ export default function QuizHeader({
                 fontFamily: "var(--font-mono)",
               }}
             >
-              {mode === "mock" ? "Simulacro" : mode === "blocks" ? "Bloques" : "Practicar"}
+              {mode === "mock" ? "Mock exam" : mode === "blocks" ? "Blocks" : "Practice"}
             </span>
             {mode === "blocks" && blockMeta && (
               <span

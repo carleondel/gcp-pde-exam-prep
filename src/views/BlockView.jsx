@@ -7,7 +7,7 @@ import {
 import { formatDuration, getPercentTone } from "../ui/formatting.js";
 
 /**
- * The "Bloques de estudio" tab: the whole track at a glance, the selected
+ * The "Study blocks" tab: the whole track at a glance, the selected
  * block in detail, and the per-round history.
  *
  * It never sees progress. Whatever a block has scored is asked for through
@@ -88,7 +88,7 @@ export default function BlockView({
               fontFamily: "var(--font-mono)",
             }}
           >
-            Bloques
+            Blocks
           </div>
           <div
             style={{
@@ -98,12 +98,12 @@ export default function BlockView({
               fontFamily: "var(--font-heading)",
             }}
           >
-            Rondas fijas de estudio
+            Fixed study rounds
           </div>
           <div
             style={{ marginTop: 6, fontSize: 14, color: "var(--text-secondary)", maxWidth: 720 }}
           >
-            Orden descendente estable, vueltas por bloque y continuidad aunque recargues la página.
+            Stable descending order, rounds per block, and continuity even if you reload the page.
           </div>
         </div>
         <div style={{ display: "flex", gap: "var(--space-sm)", flexWrap: "wrap" }}>
@@ -122,7 +122,7 @@ export default function BlockView({
                 fontFamily: "var(--font-mono)",
               }}
             >
-              Continuar B{savedBlockIndex + 1}
+              Continue B{savedBlockIndex + 1}
             </button>
           )}
           {BLOCK_SIZE_PRESETS.map((size) => (
@@ -145,7 +145,7 @@ export default function BlockView({
                 fontFamily: "var(--font-mono)",
               }}
             >
-              {size} preguntas
+              {size} questions
             </button>
           ))}
         </div>
@@ -189,8 +189,8 @@ export default function BlockView({
                   }}
                 >
                   {selectedBlock.blockIndex === suggestedBlock?.blockIndex
-                    ? "Bloque sugerido"
-                    : "Bloque seleccionado"}
+                    ? "Suggested block"
+                    : "Selected block"}
                 </div>
                 <div
                   style={{
@@ -200,7 +200,7 @@ export default function BlockView({
                     fontFamily: "var(--font-heading)",
                   }}
                 >
-                  Bloque {selectedBlock.blockIndex + 1}{" "}
+                  Block {selectedBlock.blockIndex + 1}{" "}
                   <span style={{ color: "var(--primary-400)", fontFamily: "var(--font-mono)" }}>
                     {selectedBlock.label}
                   </span>
@@ -240,7 +240,7 @@ export default function BlockView({
               }}
             >
               <div>
-                <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Preguntas</div>
+                <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Questions</div>
                 <div
                   style={{
                     marginTop: 4,
@@ -253,7 +253,7 @@ export default function BlockView({
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Vueltas</div>
+                <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Rounds</div>
                 <div
                   style={{
                     marginTop: 4,
@@ -266,7 +266,7 @@ export default function BlockView({
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Último %</div>
+                <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Last %</div>
                 <div
                   style={{
                     marginTop: 4,
@@ -280,7 +280,7 @@ export default function BlockView({
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Mejor %</div>
+                <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Best %</div>
                 <div
                   style={{
                     marginTop: 4,
@@ -311,7 +311,7 @@ export default function BlockView({
                     fontFamily: "var(--font-mono)",
                   }}
                 >
-                  Continuar
+                  Continue
                 </button>
               ) : (
                 <button
@@ -329,8 +329,8 @@ export default function BlockView({
                   }}
                 >
                   {selectedBlockRounds.length
-                    ? `Repetir vuelta ${selectedBlockRounds.length + 1}`
-                    : "Empezar bloque"}
+                    ? `Repeat round ${selectedBlockRounds.length + 1}`
+                    : "Start block"}
                 </button>
               )}
               {selectedBlock.blockIndex < blocks.length - 1 && (
@@ -348,7 +348,7 @@ export default function BlockView({
                     fontFamily: "var(--font-mono)",
                   }}
                 >
-                  Siguiente bloque
+                  Next block
                 </button>
               )}
               {selectedBlock.blockIndex > 0 && (
@@ -366,7 +366,7 @@ export default function BlockView({
                     fontFamily: "var(--font-mono)",
                   }}
                 >
-                  Bloque anterior
+                  Previous block
                 </button>
               )}
             </div>
@@ -391,7 +391,7 @@ export default function BlockView({
                   marginBottom: 10,
                 }}
               >
-                Global por vuelta
+                Overall by round
               </div>
               {roundStats.length ? (
                 <div
@@ -422,7 +422,7 @@ export default function BlockView({
                             fontFamily: "var(--font-mono)",
                           }}
                         >
-                          Vuelta {roundStat.roundNumber}
+                          Round {roundStat.roundNumber}
                         </div>
                         <div
                           style={{
@@ -443,7 +443,7 @@ export default function BlockView({
                             fontFamily: "var(--font-mono)",
                           }}
                         >
-                          {roundStat.completedBlocks}/{blocks.length} bloques
+                          {roundStat.completedBlocks}/{blocks.length} blocks
                         </div>
                       </div>
                     );
@@ -451,7 +451,7 @@ export default function BlockView({
                 </div>
               ) : (
                 <div style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                  El % global por vuelta aparecerá en cuanto completes bloques de este track.
+                  The overall % per round will appear once you complete blocks in this track.
                 </div>
               )}
             </div>
@@ -466,7 +466,7 @@ export default function BlockView({
                 marginBottom: 12,
               }}
             >
-              Últimas vueltas
+              Latest rounds
             </div>
             {selectedBlockRounds.length ? (
               selectedBlockRounds
@@ -496,12 +496,12 @@ export default function BlockView({
                               fontFamily: "var(--font-heading)",
                             }}
                           >
-                            Vuelta {round.roundNumber}
+                            Round {round.roundNumber}
                           </div>
                           <div
                             style={{ marginTop: 4, fontSize: 12, color: "var(--text-secondary)" }}
                           >
-                            {new Date(round.finishedAt).toLocaleString("es-ES")}
+                            {new Date(round.finishedAt).toLocaleString("en-US")}
                           </div>
                         </div>
                         <div style={{ textAlign: "right" }}>
@@ -533,7 +533,7 @@ export default function BlockView({
                 )
             ) : (
               <div style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6 }}>
-                Todavía no hay vueltas registradas para este bloque.
+                No rounds recorded for this block yet.
               </div>
             )}
           </div>
@@ -602,7 +602,7 @@ export default function BlockView({
                 }}
               >
                 <span style={{ fontSize: 13, fontWeight: 800, fontFamily: "var(--font-heading)" }}>
-                  Bloque {block.blockIndex + 1}
+                  Block {block.blockIndex + 1}
                 </span>
                 <span
                   style={{

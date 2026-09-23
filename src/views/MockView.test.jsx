@@ -5,8 +5,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import MockView from "./MockView.jsx";
 
 const distribution = [
-  { id: 1, short: "D1 Diseño", target: 25 },
-  { id: 2, short: "D2 Operación", target: 25 },
+  { id: 1, short: "D1 Design", target: 25 },
+  { id: 2, short: "D2 Operations", target: 25 },
 ];
 
 const render_ = (props = {}) =>
@@ -35,10 +35,10 @@ describe("MockView", () => {
   it("shows the active certification's fixed exam shape", () => {
     render_();
 
-    expect(screen.getByText("50 preguntas · 120 min")).toBeTruthy();
-    expect(screen.getByText(/70\s*% para aprobar\./)).toBeTruthy();
-    expect(screen.getByText("Distribución oficial PDE")).toBeTruthy();
-    expect(screen.getByText(/D1 Diseño 25/)).toBeTruthy();
+    expect(screen.getByText("50 questions · 120 min")).toBeTruthy();
+    expect(screen.getByText(/70\s*% to pass\./)).toBeTruthy();
+    expect(screen.getByText("Official PDE distribution")).toBeTruthy();
+    expect(screen.getByText(/D1 Design 25/)).toBeTruthy();
   });
 
   it("passes the current checkbox value to the caller", () => {
@@ -54,7 +54,7 @@ describe("MockView", () => {
     const onStart = vi.fn();
     render_({ onStart });
 
-    fireEvent.click(screen.getByText("Iniciar simulacro"));
+    fireEvent.click(screen.getByText("Start mock exam"));
 
     expect(onStart).toHaveBeenCalledTimes(1);
   });
@@ -62,7 +62,7 @@ describe("MockView", () => {
   it("only offers continuation when an attempt exists", () => {
     const onContinue = vi.fn();
     const { rerender } = render_({ onContinue });
-    expect(screen.queryByText("Continuar simulacro activo")).toBeNull();
+    expect(screen.queryByText("Continue active mock exam")).toBeNull();
 
     rerender(
       <MockView
@@ -79,7 +79,7 @@ describe("MockView", () => {
         history={[]}
       />,
     );
-    fireEvent.click(screen.getByText("Continuar simulacro activo"));
+    fireEvent.click(screen.getByText("Continue active mock exam"));
 
     expect(onContinue).toHaveBeenCalledTimes(1);
   });
@@ -92,8 +92,8 @@ describe("MockView", () => {
       ],
     });
 
-    expect(screen.getByText("Historial")).toBeTruthy();
-    expect(screen.getByText("90% Apto")).toBeTruthy();
+    expect(screen.getByText("History")).toBeTruthy();
+    expect(screen.getByText("90% Pass")).toBeTruthy();
     expect(screen.getByText(/80%/)).toBeTruthy();
   });
 });

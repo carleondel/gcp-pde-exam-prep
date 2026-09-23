@@ -28,12 +28,12 @@ describe("sameSet", () => {
 
 describe("formatPracticeBadge", () => {
   it("uses the singular for exactly one", () => {
-    expect(formatPracticeBadge(1, "tema", "temas")).toBe("1 tema");
+    expect(formatPracticeBadge(1, "topic", "topics")).toBe("1 topic");
   });
 
   it("uses the plural for anything else, zero included", () => {
-    expect(formatPracticeBadge(3, "tema", "temas")).toBe("3 temas");
-    expect(formatPracticeBadge(0, "tema", "temas")).toBe("0 temas");
+    expect(formatPracticeBadge(3, "topic", "topics")).toBe("3 topics");
+    expect(formatPracticeBadge(0, "topic", "topics")).toBe("0 topics");
   });
 
   it("falls back to the singular when no plural is given", () => {

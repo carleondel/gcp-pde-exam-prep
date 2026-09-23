@@ -161,7 +161,7 @@ describe("usePracticeConfig", () => {
       createStorage("gcp-pca").savePracticePrefs({ source: "wrong", limit: 10 });
       const { seen } = mountConfig({ wrongQuestions: [] });
       expect(seen.api.practiceSource).toBe("topics");
-      expect(seen.api.practiceMessage).toContain("Volvimos a Temas");
+      expect(seen.api.practiceMessage).toContain("Switched back to topics");
     });
 
     it("keeps a stored source that still has questions", () => {

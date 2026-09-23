@@ -10,7 +10,7 @@ const manifest = {
   brand: "Google Cloud",
   logoPath,
   disclaimer:
-    "Herramienta de estudio independiente, no afiliada ni patrocinada por Google LLC. Google Cloud y su logotipo se usan aquí solo como referencia visual para el examen.",
+    "Independent study tool, not affiliated with or sponsored by Google LLC. Google Cloud and its logo are used here only as a visual reference for the exam.",
   // Fecha del volcado del banco de preguntas (importBatch examtopics-2026-08).
   // No es la fecha del fichero: es cuándo se dio el banco por bueno.
   questionsDumpedAt: "2026-08-17",

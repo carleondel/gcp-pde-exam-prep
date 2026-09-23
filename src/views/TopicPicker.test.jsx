@@ -64,7 +64,7 @@ describe("TopicPicker", () => {
       render_({
         groups: [{ ...GROUPS[0], topics: [entry("Architecture", { total: 4, correct: 3 })] }],
       });
-      expect(screen.getByTitle("Architecture: 4 intentos · 10 preguntas")).toBeTruthy();
+      expect(screen.getByTitle("Architecture: 4 attempts · 10 questions")).toBeTruthy();
     });
 
     it("reports accuracy once there are ten attempts", () => {
@@ -76,7 +76,7 @@ describe("TopicPicker", () => {
           },
         ],
       });
-      expect(screen.getByTitle("Architecture: 7/10 correctas · 10 preguntas")).toBeTruthy();
+      expect(screen.getByTitle("Architecture: 7/10 correct · 10 questions")).toBeTruthy();
       expect(screen.getByText("70%")).toBeTruthy();
     });
 
@@ -144,13 +144,13 @@ describe("TopicPicker", () => {
     it("offers to clear the selection when everything is picked", () => {
       const onToggleAll = vi.fn();
       render_({ allSelected: true, onToggleAll });
-      fireEvent.click(screen.getByText("Deseleccionar todo"));
+      fireEvent.click(screen.getByText("Deselect all"));
       expect(onToggleAll).toHaveBeenCalledTimes(1);
     });
 
     it("offers to pick everything when nothing is", () => {
       render_({ allSelected: false });
-      expect(screen.getByText("Seleccionar todo")).toBeTruthy();
+      expect(screen.getByText("Select all")).toBeTruthy();
     });
   });
 });

@@ -102,10 +102,10 @@ const {
 } = createStorage(ACTIVE_CERT.id);
 
 const MENU_VIEW_LABELS = {
-  blocks: "Bloques de estudio",
-  practice: "Sesión a medida",
-  mock: "Simulacro",
-  progress: "Inventario y logros",
+  blocks: "Study blocks",
+  practice: "Custom session",
+  mock: "Mock exam",
+  progress: "Inventory & achievements",
 };
 
 function normalizeSessionUi(session) {
@@ -344,47 +344,47 @@ export function AppContent({ allQuestions }) {
     ready,
   });
   const maxPresetLabel =
-    maxPracticeCount > 0 ? `Máximo disponible (${maxPracticeCount})` : "Máximo disponible";
+    maxPracticeCount > 0 ? `Max available (${maxPracticeCount})` : "Max available";
   const practiceSummary = useMemo(() => {
     if (practiceSource === "recent") {
       return {
-        title: "Recientes",
+        title: "Recent",
         subtitle: recentQuestions.length
-          ? "Bloque priorizado con las preguntas más nuevas importadas."
+          ? "Set prioritized with the newest imported questions."
           : PRACTICE_SOURCE_META.recent.empty,
-        badge: formatPracticeBadge(recentQuestions.length, "pregunta", "preguntas"),
+        badge: formatPracticeBadge(recentQuestions.length, "question", "questions"),
       };
     }
     if (practiceSource === "wrong") {
       return {
-        title: "Solo fallos",
-        subtitle: "Repaso directo sobre preguntas falladas.",
-        badge: formatPracticeBadge(progress.wrongQuestionIds.length, "error", "errores"),
+        title: "Mistakes only",
+        subtitle: "Direct review of missed questions.",
+        badge: formatPracticeBadge(progress.wrongQuestionIds.length, "mistake", "mistakes"),
       };
     }
     if (practiceSource === "bookmarks") {
       return {
-        title: "Marcadas",
-        subtitle: "Vuelve a las preguntas reservadas para repaso.",
-        badge: formatPracticeBadge(progress.bookmarks.length, "marcada", "marcadas"),
+        title: "Bookmarked",
+        subtitle: "Go back to the questions saved for review.",
+        badge: formatPracticeBadge(progress.bookmarks.length, "bookmark", "bookmarks"),
       };
     }
     if (practiceSource === "weak") {
       return {
-        title: "Peor rendimiento",
+        title: "Weakest areas",
         subtitle: weakTopics.length
-          ? "Carga automática de las áreas con menor acierto."
+          ? "Automatically loads the areas with the lowest accuracy."
           : PRACTICE_SOURCE_META.weak.empty,
-        badge: formatPracticeBadge(weakTopics.length, "tema", "temas"),
+        badge: formatPracticeBadge(weakTopics.length, "topic", "topics"),
       };
     }
     return {
-      title: "Por dominio",
+      title: "By domain",
       subtitle:
         selectedTopics.size === topics.length
-          ? "Banco completo listo para práctica."
-          : "Sesión filtrada por dominio.",
-      badge: formatPracticeBadge(selectedTopics.size, "tema", "temas"),
+          ? "Full bank ready for practice."
+          : "Session filtered by domain.",
+      badge: formatPracticeBadge(selectedTopics.size, "topic", "topics"),
     };
   }, [
     practiceSource,
@@ -787,7 +787,7 @@ export function AppContent({ allQuestions }) {
       if (source === "recent") setPracticeOrder("recent-desc");
       setPracticeMessage(
         nextCount > 0
-          ? `${PRACTICE_SOURCE_META[source].label} cargado.`
+          ? `${PRACTICE_SOURCE_META[source].label} loaded.`
           : PRACTICE_SOURCE_META[source].empty,
       );
       // The setters come from usePracticeConfig's useState calls, so React
@@ -999,7 +999,7 @@ export function AppContent({ allQuestions }) {
     if (session?.mode !== "mock") return;
     if (
       !window.confirm(
-        "¿Cancelar simulacro? Se descartará el progreso y no se registrará en el historial.",
+        "Cancel the mock exam? Progress will be discarded and it will not be recorded in the history.",
       )
     )
       return;
@@ -1064,7 +1064,7 @@ export function AppContent({ allQuestions }) {
     (size) => {
       setBlockTrackSize(size);
       setSelectedBlockIndex(0);
-      setBlockMessage(`Track de ${size} preguntas cargado.`);
+      setBlockMessage(`${size}-question track loaded.`);
     },
     [setBlockMessage, setBlockTrackSize, setSelectedBlockIndex],
   );
@@ -1122,7 +1122,7 @@ export function AppContent({ allQuestions }) {
       setPracticeSource("topics");
       setPracticeMessage(
         entry.questionCount < 5
-          ? `${entry.topic}: solo ${entry.questionCount} preguntas disponibles.`
+          ? `${entry.topic}: only ${entry.questionCount} questions available.`
           : "",
       );
     },
@@ -1134,7 +1134,7 @@ export function AppContent({ allQuestions }) {
     (entry) => {
       setSelectedTopics(new Set(entry.rawTopics));
       setPracticeSource("topics");
-      setPracticeMessage(`Solo ${entry.topic}.`);
+      setPracticeMessage(`Only ${entry.topic}.`);
     },
     [setPracticeMessage, setPracticeSource, setSelectedTopics],
   );
@@ -1147,7 +1147,7 @@ export function AppContent({ allQuestions }) {
     (source) => {
       if (source === "topics") {
         setPracticeSource("topics");
-        setPracticeMessage("Selecciona temas y cantidad.");
+        setPracticeMessage("Select topics and count.");
         return;
       }
       setPracticeSourcePreset(source);
@@ -1184,7 +1184,7 @@ export function AppContent({ allQuestions }) {
       setPracticeLimit(nextValue);
       setPracticeMessage(
         nextValue > maxPracticeCount && maxPracticeCount > 0
-          ? `Máximo disponible: ${maxPracticeCount}`
+          ? `Max available: ${maxPracticeCount}`
           : "",
       );
     },
@@ -1250,7 +1250,7 @@ export function AppContent({ allQuestions }) {
     );
     setSelectedTopics(new Set(domainTopics));
     setPracticeSource("topics");
-    setPracticeMessage(`Cargados temas de ${weakestDomain.short}.`);
+    setPracticeMessage(`Loaded ${weakestDomain.short} topics.`);
     setMenuView("practice");
   }, [
     continueSavedBlock,
@@ -1312,8 +1312,8 @@ export function AppContent({ allQuestions }) {
     if (session?.mode === "practice" && session.answered > 0 && session.status !== "finished") {
       const message =
         session.meta?.source === "blocks"
-          ? "¿Salir del bloque? La vuelta no se registrará todavía, pero podrás continuarla después."
-          : "¿Salir de la sesión? Se perderá el progreso de esta práctica.";
+          ? "Leave the block? The round will not be recorded yet, but you can continue it later."
+          : "Leave the session? Progress from this practice will be lost.";
       if (!window.confirm(message)) return;
     }
     setScreen("menu");
@@ -1329,7 +1329,7 @@ export function AppContent({ allQuestions }) {
       };
       setSavedBlockSession(pausedSession);
       setBlockMessage(
-        `Bloque ${session.meta.blockStudy.label} pausado en ${session.currentIndex + 1}/${session.questions.length}.`,
+        `Block ${session.meta.blockStudy.label} paused at ${session.currentIndex + 1}/${session.questions.length}.`,
       );
       setSession(null);
     } else if (session?.mode === "practice" || session?.status === "finished") {
@@ -1720,7 +1720,7 @@ export function AppContent({ allQuestions }) {
           animation: "fadeIn var(--duration-fast) var(--ease-out)",
         }}
       >
-        Preparando simulador...
+        Preparing simulator...
       </div>
     );
   }
@@ -1734,27 +1734,27 @@ export function AppContent({ allQuestions }) {
     const practiceSourceOptions = [
       {
         key: "topics",
-        badge: formatPracticeBadge(selectedTopics.size, "tema", "temas"),
+        badge: formatPracticeBadge(selectedTopics.size, "topic", "topics"),
         disabled: false,
       },
       {
         key: "recent",
-        badge: formatPracticeBadge(practiceSourceCounts.recent, "reciente", "recientes"),
+        badge: formatPracticeBadge(practiceSourceCounts.recent, "recent", "recent"),
         disabled: practiceSourceCounts.recent === 0,
       },
       {
         key: "wrong",
-        badge: formatPracticeBadge(progress.wrongQuestionIds.length, "error", "errores"),
+        badge: formatPracticeBadge(progress.wrongQuestionIds.length, "mistake", "mistakes"),
         disabled: practiceSourceCounts.wrong === 0,
       },
       {
         key: "bookmarks",
-        badge: formatPracticeBadge(progress.bookmarks.length, "favorita", "favoritas"),
+        badge: formatPracticeBadge(progress.bookmarks.length, "bookmark", "bookmarks"),
         disabled: practiceSourceCounts.bookmarks === 0,
       },
       {
         key: "weak",
-        badge: formatPracticeBadge(weakTopics.length, "tema", "temas"),
+        badge: formatPracticeBadge(weakTopics.length, "topic", "topics"),
         disabled: practiceSourceCounts.weak === 0,
       },
     ];
@@ -1781,15 +1781,15 @@ export function AppContent({ allQuestions }) {
         count: effectivePracticeLimit,
         sourceLabel: PRACTICE_SOURCE_META[practiceSource].label,
         title: hasPracticeQuestions
-          ? `${PRACTICE_SOURCE_META[practiceSource].label} · ${effectivePracticeLimit} preguntas`
-          : "No hay preguntas para la configuración guardada",
+          ? `${PRACTICE_SOURCE_META[practiceSource].label} · ${effectivePracticeLimit} questions`
+          : "No questions for the saved configuration",
       },
       wrong: {
         count: practiceSourceCounts.wrong,
         title:
           practiceSourceCounts.wrong === 0
-            ? "Aún no hay fallos guardados"
-            : "Repasar solo las preguntas falladas",
+            ? "No saved mistakes yet"
+            : "Review only the questions you missed",
       },
       mock: { questionCount: MOCK_QUESTION_COUNT, durationSec: MOCK_DURATION_SEC },
     };
@@ -1806,8 +1806,8 @@ export function AppContent({ allQuestions }) {
       bonusXp: DAILY_CHALLENGE_BONUS_XP,
     };
     const practiceCtaLabel = hasPracticeQuestions
-      ? `Iniciar práctica · ${effectivePracticeLimit} preguntas`
-      : "Configura la práctica";
+      ? `Start practice · ${effectivePracticeLimit} questions`
+      : "Set up your practice";
     return (
       <div
         style={{
@@ -1858,7 +1858,7 @@ export function AppContent({ allQuestions }) {
                   />
                   <button
                     onClick={openCertPicker}
-                    title="Cambiar de certificación"
+                    title="Switch certification"
                     style={{
                       border: "none",
                       background: "transparent",
@@ -1872,7 +1872,7 @@ export function AppContent({ allQuestions }) {
                       padding: 0,
                     }}
                   >
-                    Cambiar
+                    Switch
                   </button>
                 </>
               )}
@@ -1907,10 +1907,10 @@ export function AppContent({ allQuestions }) {
                 fontFamily: "var(--font-mono)",
               }}
             >
-              {allQuestions.length} preguntas
+              {allQuestions.length} questions
               {QUESTIONS_DUMPED_ON && (
-                <span title="Fecha en la que se volcó por última vez el banco de preguntas desde la fuente original.">
-                  {" · "}último volcado {QUESTIONS_DUMPED_ON}
+                <span title="Date the question bank was last dumped from the original source.">
+                  {" · "}last dump {QUESTIONS_DUMPED_ON}
                 </span>
               )}
             </p>
@@ -1942,7 +1942,7 @@ export function AppContent({ allQuestions }) {
                   fontFamily: "var(--font-mono)",
                 }}
               >
-                <span aria-hidden="true">←</span> Inicio
+                <span aria-hidden="true">←</span> Home
               </button>
               <span
                 style={{
@@ -2086,9 +2086,7 @@ export function AppContent({ allQuestions }) {
             </div>
             <button
               onClick={() => {
-                if (
-                  window.confirm("¿Restablecer todo el progreso? Esta acción no se puede deshacer.")
-                ) {
+                if (window.confirm("Reset all progress? This action cannot be undone.")) {
                   resetProgress();
                   setSavedMockSession(null);
                   clearActiveMock();
@@ -2103,7 +2101,7 @@ export function AppContent({ allQuestions }) {
                 textDecoration: "underline",
               }}
             >
-              Restablecer progreso
+              Reset progress
             </button>
           </div>
         </div>
@@ -2254,7 +2252,7 @@ function CertApp() {
   if (error) {
     return (
       <div style={{ padding: 32, fontFamily: "var(--font-mono)", color: "var(--text-secondary)" }}>
-        Error cargando preguntas: {String(error?.message ?? error)}
+        Error loading questions: {String(error?.message ?? error)}
       </div>
     );
   }
@@ -2262,7 +2260,7 @@ function CertApp() {
   if (!allQuestions) {
     return (
       <div style={{ padding: 32, fontFamily: "var(--font-mono)", color: "var(--text-secondary)" }}>
-        Cargando {ACTIVE_CERT.short}…
+        Loading {ACTIVE_CERT.short}…
       </div>
     );
   }

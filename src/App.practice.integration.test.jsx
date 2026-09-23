@@ -30,15 +30,15 @@ const BANK = [
   ...Array.from({ length: 4 }, (_, i) => ({ id: i + 39, topic: "Dataflow/BigQuery" })),
 ].map((q) => ({
   // The newest six of the bank are flagged as recent imports, which is what
-  // the "Recientes" source draws from — it is about the import date, not
+  // the "Recent" source draws from — it is about the import date, not
   // about what has been answered lately.
   isRecent: q.id > 36,
   ...q,
   difficulty: 2,
-  question: `Pregunta numero ${q.id}`,
+  question: `Question number ${q.id}`,
   options: [CORRECT, "B. incorrecta", "C. otra", "D. otra mas"],
   correct: 0,
-  explanation: "Explicacion de la respuesta.",
+  explanation: "Answer explanation.",
   discussion: [],
   sourceQuestionNumber: q.id,
 }));
@@ -73,7 +73,7 @@ function clickButton(pattern) {
   fireEvent.click(button);
 }
 
-const openPractice = () => clickButton(/^Sesión a medida →$/);
+const openPractice = () => clickButton(/^Custom session →$/);
 const progressCounter = () => screen.getByText(/^\d+\/\d+$/).textContent;
 
 /**
@@ -83,14 +83,14 @@ const progressCounter = () => screen.getByText(/^\d+\/\d+$/).textContent;
  */
 function failTwoQuestions() {
   clickButton(/^10$/);
-  clickButton(/^Iniciar práctica/);
+  clickButton(/^Start practice/);
   for (let i = 0; i < 2; i += 1) {
     fireEvent.click(screen.getByText("B. incorrecta"));
-    clickButton(/^Comprobar/);
-    clickButton(/^(Siguiente|Ver resultados) \(Enter\)$/);
+    clickButton(/^Check/);
+    clickButton(/^(Next|See results) \(Enter\)$/);
   }
   vi.spyOn(window, "confirm").mockReturnValue(true);
-  clickButton(/^← Menú$/);
+  clickButton(/^← Menu$/);
 }
 
 describe("custom practice, wired into the app", () => {
@@ -111,16 +111,16 @@ describe("custom practice, wired into the app", () => {
       render(<AppContent allQuestions={BANK} />);
       openPractice();
 
-      expect(screen.getByText("Temas por dominio")).toBeTruthy();
-      expect(screen.getByText(`Máximo disponible (${BANK.length})`)).toBeTruthy();
+      expect(screen.getByText("Topics by domain")).toBeTruthy();
+      expect(screen.getByText(`Max available (${BANK.length})`)).toBeTruthy();
     });
 
     it("launches the number of questions the button advertises", () => {
       render(<AppContent allQuestions={BANK} />);
       openPractice();
 
-      const cta = findButton(/^Iniciar práctica · \d+ preguntas/);
-      const advertised = Number(cta.textContent.match(/(\d+) preguntas/)[1]);
+      const cta = findButton(/^Start practice · \d+ questions/);
+      const advertised = Number(cta.textContent.match(/(\d+) questions/)[1]);
       fireEvent.click(cta);
 
       expect(progressCounter()).toBe(`1/${advertised}`);
@@ -133,44 +133,46 @@ describe("custom practice, wired into the app", () => {
       openPractice();
 
       clickButton(/^10$/);
-      expect(findButton(/^Iniciar práctica · 10 preguntas/)).toBeTruthy();
+      expect(findButton(/^Start practice · 10 questions/)).toBeTruthy();
 
-      clickButton(/^Iniciar práctica/);
+      clickButton(/^Start practice/);
       expect(progressCounter()).toBe("1/10");
     });
 
     it("uses a hand-typed count and keeps it after a remount", () => {
       const first = render(<AppContent allQuestions={BANK} />);
       openPractice();
-      clickButton(/^Personalizar$/);
+      clickButton(/^Customize$/);
       fireEvent.change(screen.getByRole("spinbutton"), { target: { value: "7" } });
-      expect(findButton(/^Iniciar práctica · 7 preguntas/)).toBeTruthy();
+      expect(findButton(/^Start practice · 7 questions/)).toBeTruthy();
       first.unmount();
 
       render(<AppContent allQuestions={BANK} />);
       openPractice();
       // A count that is not a preset reopens its own input on return.
       expect(screen.getByRole("spinbutton").value).toBe("7");
-      expect(findButton(/^Iniciar práctica · 7 preguntas/)).toBeTruthy();
+      expect(findButton(/^Start practice · 7 questions/)).toBeTruthy();
     });
 
     it("warns when the typed count is more than the pool holds", () => {
       render(<AppContent allQuestions={BANK} />);
       openPractice();
-      clickButton(/^Personalizar$/);
+      clickButton(/^Customize$/);
       fireEvent.change(screen.getByRole("spinbutton"), { target: { value: "500" } });
 
       // The warning is transient: the settings hook clamps the stored count
       // on the next pass and reports the clamp instead.
-      expect(screen.getByText(`Ajustado a ${BANK.length} por disponibilidad actual.`)).toBeTruthy();
+      expect(
+        screen.getByText(`Adjusted to ${BANK.length} based on current availability.`),
+      ).toBeTruthy();
       // Clamped for the launch even though the field keeps what was typed.
-      expect(findButton(new RegExp(`^Iniciar práctica · ${BANK.length} preguntas`))).toBeTruthy();
+      expect(findButton(new RegExp(`^Start practice · ${BANK.length} questions`))).toBeTruthy();
     });
 
     it("closes the custom input when a preset is chosen instead", () => {
       render(<AppContent allQuestions={BANK} />);
       openPractice();
-      clickButton(/^Personalizar$/);
+      clickButton(/^Customize$/);
       expect(screen.queryByRole("spinbutton")).toBeTruthy();
 
       clickButton(/^30$/);
@@ -188,9 +190,9 @@ describe("custom practice, wired into the app", () => {
       clickButton(/^10$/);
       fireEvent.doubleClick(screen.getByTitle(/^Dataflow:/));
 
-      expect(screen.getByText("Solo Dataflow.")).toBeTruthy();
+      expect(screen.getByText("Only Dataflow.")).toBeTruthy();
       // Both raw topics behind the chip, not just the one it is named after.
-      expect(screen.getByText("Máximo disponible (12)")).toBeTruthy();
+      expect(screen.getByText("Max available (12)")).toBeTruthy();
       expect(storage().loadPracticePrefs().topics.sort()).toEqual([
         "Dataflow",
         "Dataflow/BigQuery",
@@ -204,8 +206,8 @@ describe("custom practice, wired into the app", () => {
 
       // The saved count of 20 no longer fits, so it is clamped to the pool
       // and says so rather than launching something else than advertised.
-      expect(screen.getByText("Ajustado a 12 por disponibilidad actual.")).toBeTruthy();
-      clickButton(/^Iniciar práctica/);
+      expect(screen.getByText("Adjusted to 12 based on current availability.")).toBeTruthy();
+      clickButton(/^Start practice/);
 
       expect(progressCounter()).toBe("1/12");
       expect(screen.getByText("Dataflow")).toBeTruthy();
@@ -217,24 +219,24 @@ describe("custom practice, wired into the app", () => {
 
       fireEvent.click(screen.getByTitle(/^Dataflow:/));
       // Turning the chip off drops both raw topics behind it at once.
-      expect(screen.getByText("Máximo disponible (30)")).toBeTruthy();
+      expect(screen.getByText("Max available (30)")).toBeTruthy();
 
       fireEvent.click(screen.getByTitle(/^Dataflow:/));
-      expect(screen.getByText(`Máximo disponible (${BANK.length})`)).toBeTruthy();
+      expect(screen.getByText(`Max available (${BANK.length})`)).toBeTruthy();
     });
 
     it("refuses to start with nothing selected", () => {
       render(<AppContent allQuestions={BANK} />);
       openPractice();
 
-      clickButton(/^Deseleccionar todo$/);
+      clickButton(/^Deselect all$/);
 
       // Emptying the selection is reconciled straight back to everything
       // rather than leaving a session that cannot run — so the button is
       // still the one that clears, and the whole bank is still available.
-      expect(screen.getByText("Ajustamos los temas a los disponibles actualmente.")).toBeTruthy();
-      expect(screen.getByText("Deseleccionar todo")).toBeTruthy();
-      expect(screen.getByText(`Máximo disponible (${BANK.length})`)).toBeTruthy();
+      expect(screen.getByText("Topics adjusted to the ones currently available.")).toBeTruthy();
+      expect(screen.getByText("Deselect all")).toBeTruthy();
+      expect(screen.getByText(`Max available (${BANK.length})`)).toBeTruthy();
     });
   });
 
@@ -243,7 +245,7 @@ describe("custom practice, wired into the app", () => {
       render(<AppContent allQuestions={BANK} />);
       openPractice();
 
-      const wrong = buttons().find((b) => /^Solo fallos/.test(b.textContent));
+      const wrong = buttons().find((b) => /^Mistakes only/.test(b.textContent));
       expect(wrong.disabled).toBe(true);
     });
 
@@ -252,13 +254,13 @@ describe("custom practice, wired into the app", () => {
       openPractice();
       failTwoQuestions();
 
-      clickButton(/^Solo fallos/);
+      clickButton(/^Mistakes only/);
       // Announced as loaded, not as clamped: picking a derived source sizes
       // the session to it on the spot instead of leaving that to reconciliation.
-      expect(screen.getByText("Solo fallos cargado.")).toBeTruthy();
-      expect(findButton(/^Iniciar práctica · 2 preguntas/)).toBeTruthy();
+      expect(screen.getByText("Mistakes only loaded.")).toBeTruthy();
+      expect(findButton(/^Start practice · 2 questions/)).toBeTruthy();
 
-      clickButton(/^Iniciar práctica/);
+      clickButton(/^Start practice/);
       expect(progressCounter()).toBe("1/2");
     });
 
@@ -266,10 +268,10 @@ describe("custom practice, wired into the app", () => {
       render(<AppContent allQuestions={BANK} />);
       openPractice();
 
-      clickButton(/^Recientes/);
+      clickButton(/^Recent/);
 
       // Recency is the point of that source, so the order follows it.
-      expect(screen.getByText("Recientes cargado.")).toBeTruthy();
+      expect(screen.getByText("Recent loaded.")).toBeTruthy();
       expect(storage().loadPracticePrefs().order).toBe("recent-desc");
     });
 
@@ -279,11 +281,11 @@ describe("custom practice, wired into the app", () => {
       failTwoQuestions();
 
       // A derived source hides the topic picker and offers the way back.
-      clickButton(/^Solo fallos/);
-      expect(screen.queryByText("Temas por dominio")).toBeNull();
+      clickButton(/^Mistakes only/);
+      expect(screen.queryByText("Topics by domain")).toBeNull();
 
-      clickButton(/^Volver a dominio$/);
-      expect(screen.getByText("Temas por dominio")).toBeTruthy();
+      clickButton(/^Back to domains$/);
+      expect(screen.getByText("Topics by domain")).toBeTruthy();
     });
   });
 
@@ -291,7 +293,7 @@ describe("custom practice, wired into the app", () => {
     const startTen = () => {
       openPractice();
       clickButton(/^10$/);
-      clickButton(/^Iniciar práctica/);
+      clickButton(/^Start practice/);
     };
 
     it("marks a question and keeps it for the bookmarks source", () => {
@@ -319,13 +321,13 @@ describe("custom practice, wired into the app", () => {
       startTen();
 
       // Nothing is selected yet, so there is nothing to check.
-      expect(findButton(/^Comprobar/).disabled).toBe(true);
+      expect(findButton(/^Check/).disabled).toBe(true);
 
       fireEvent.keyDown(window, { key: "1" });
-      expect(findButton(/^Comprobar/).disabled).toBe(false);
+      expect(findButton(/^Check/).disabled).toBe(false);
 
       fireEvent.keyDown(window, { key: "Enter" });
-      expect(screen.getByText(/Explicacion de la respuesta/)).toBeTruthy();
+      expect(screen.getByText(/Answer explanation/)).toBeTruthy();
     });
 
     it("moves to the next question with Enter once the answer is shown", () => {
@@ -349,7 +351,7 @@ describe("custom practice, wired into the app", () => {
 
       clickButton(/^💡$/);
 
-      expect(screen.getByText(/Pista:/)).toBeTruthy();
+      expect(screen.getByText(/Hint:/)).toBeTruthy();
       expect(storage().loadProgress().inventory.hints).toBe(1);
       expect(storage().loadProgress().stats.powerupsUsed).toBe(1);
     });
@@ -364,7 +366,7 @@ describe("custom practice, wired into the app", () => {
 
       clickButton(/^✂️$/);
 
-      expect(screen.getAllByText("Opción eliminada")).toHaveLength(2);
+      expect(screen.getAllByText("Option removed")).toHaveLength(2);
       // Never the right one, and the button is gone once it is spent.
       expect(screen.getByText(CORRECT)).toBeTruthy();
       expect(findButton(/^✂️$/)).toBeFalsy();
@@ -380,7 +382,7 @@ describe("custom practice, wired into the app", () => {
       expect(findButton(/^💡$/)).toBeTruthy();
 
       fireEvent.click(screen.getByText(CORRECT));
-      clickButton(/^Comprobar/);
+      clickButton(/^Check/);
 
       expect(findButton(/^💡$/)).toBeFalsy();
     });
@@ -401,33 +403,33 @@ describe("custom practice, wired into the app", () => {
       render(<AppContent allQuestions={BANK} />);
       startTen();
       fireEvent.click(screen.getByText(CORRECT));
-      clickButton(/^Comprobar/);
-      expect(screen.getByText("Correcto")).toBeTruthy();
+      clickButton(/^Check/);
+      expect(screen.getByText("Correct")).toBeTruthy();
 
       fireEvent.click(screen.getByText("B. incorrecta"));
 
       // The question is settled: picking again must not re-judge it.
-      expect(screen.getByText("Correcto")).toBeTruthy();
-      expect(screen.getByText("Correctas 1/1")).toBeTruthy();
+      expect(screen.getByText("Correct")).toBeTruthy();
+      expect(screen.getByText("Correct 1/1")).toBeTruthy();
     });
 
     it("offers the results instead of another question on the last one", () => {
       render(<AppContent allQuestions={BANK} />);
       openPractice();
-      clickButton(/^Personalizar$/);
+      clickButton(/^Customize$/);
       fireEvent.change(screen.getByRole("spinbutton"), { target: { value: "2" } });
-      clickButton(/^Iniciar práctica/);
+      clickButton(/^Start practice/);
 
       fireEvent.click(screen.getByText(CORRECT));
-      clickButton(/^Comprobar/);
-      expect(findButton(/^Siguiente \(Enter\)$/)).toBeTruthy();
-      clickButton(/^Siguiente \(Enter\)$/);
+      clickButton(/^Check/);
+      expect(findButton(/^Next \(Enter\)$/)).toBeTruthy();
+      clickButton(/^Next \(Enter\)$/);
 
       fireEvent.click(screen.getByText(CORRECT));
-      clickButton(/^Comprobar/);
+      clickButton(/^Check/);
 
-      expect(findButton(/^Ver resultados \(Enter\)$/)).toBeTruthy();
-      expect(findButton(/^Siguiente \(Enter\)$/)).toBeFalsy();
+      expect(findButton(/^See results \(Enter\)$/)).toBeTruthy();
+      expect(findButton(/^Next \(Enter\)$/)).toBeFalsy();
     });
 
     /** XP is scaled down past 5,000 total — gamification.js XP_TIERS. */
@@ -436,18 +438,18 @@ describe("custom practice, wired into the app", () => {
       render(<AppContent allQuestions={BANK} />);
       openPractice();
       clickButton(/^10$/);
-      clickButton(/^Iniciar práctica/);
+      clickButton(/^Start practice/);
 
       // Still under 5,000, so this one is worth its full 78.
       fireEvent.click(screen.getByText(CORRECT));
-      clickButton(/^Comprobar/);
+      clickButton(/^Check/);
       expect(screen.getAllByText("+78 XP").length).toBeGreaterThan(0);
       expect(storage().loadProgress().xp).toBeGreaterThanOrEqual(5000);
-      clickButton(/^(Siguiente|Ver resultados) \(Enter\)$/);
+      clickButton(/^(Next|See results) \(Enter\)$/);
 
       // Over it now, so the next one is 86 raw at three quarters, not 86 flat.
       fireEvent.click(screen.getByText(CORRECT));
-      clickButton(/^Comprobar/);
+      clickButton(/^Check/);
       expect(screen.getAllByText("+65 XP").length).toBeGreaterThan(0);
       expect(screen.queryByText("+86 XP")).toBeNull();
     });
@@ -471,19 +473,19 @@ describe("custom practice, wired into the app", () => {
       render(<AppContent allQuestions={BANK} />);
       openPractice();
       clickButton(/^10$/);
-      clickButton(/^Iniciar práctica/);
+      clickButton(/^Start practice/);
 
       // 0.2 picks the common chest tier and stays clear of every reward
       // threshold in rollPracticeRewards, so the run stays deterministic.
       Math.random.mockReturnValue(0.2);
 
       clickButton(/^📦$/);
-      clickButton(/^ABRIR COFRE$/);
-      clickButton(/^Recoger$/);
+      clickButton(/^OPEN CHEST$/);
+      clickButton(/^Collect$/);
       expect(storage().loadProgress().xp).toBe(5050);
 
       fireEvent.click(screen.getByText(CORRECT));
-      clickButton(/^Comprobar/);
+      clickButton(/^Check/);
 
       // 78 raw at three quarters. Scored against the stale 4,950 it was 78.
       expect(screen.getAllByText("+59 XP").length).toBeGreaterThan(0);
@@ -495,13 +497,13 @@ describe("custom practice, wired into the app", () => {
       startTen();
 
       fireEvent.click(screen.getByText(CORRECT));
-      clickButton(/^Comprobar/);
-      expect(screen.getByText("Correctas 1/1")).toBeTruthy();
-      clickButton(/^(Siguiente|Ver resultados) \(Enter\)$/);
+      clickButton(/^Check/);
+      expect(screen.getByText("Correct 1/1")).toBeTruthy();
+      clickButton(/^(Next|See results) \(Enter\)$/);
 
       fireEvent.click(screen.getByText("B. incorrecta"));
-      clickButton(/^Comprobar/);
-      expect(screen.getByText("Correctas 1/2")).toBeTruthy();
+      clickButton(/^Check/);
+      expect(screen.getByText("Correct 1/2")).toBeTruthy();
     });
   });
 
@@ -514,7 +516,7 @@ describe("custom practice, wired into the app", () => {
         question: "Elige dos",
         options: [CORRECT, "B. tambien correcta", "C. otra", "D. otra mas"],
         correct: [0, 1],
-        explanation: "Explicacion de la respuesta.",
+        explanation: "Answer explanation.",
         discussion: [],
         sourceQuestionNumber: 900,
       },
@@ -523,20 +525,20 @@ describe("custom practice, wired into the app", () => {
 
     const startMulti = () => {
       openPractice();
-      clickButton(/^Secuencial$/);
+      clickButton(/^Sequential$/);
       clickButton(/^10$/);
-      clickButton(/^Iniciar práctica/);
+      clickButton(/^Start practice/);
     };
 
     it("says how many answers are still needed", () => {
       render(<AppContent allQuestions={MULTI} />);
       startMulti();
 
-      expect(screen.getByText("Multi respuesta")).toBeTruthy();
-      expect(findButton(/^Comprobar \(0\/2\)/)).toBeTruthy();
+      expect(screen.getByText("Multiple answers")).toBeTruthy();
+      expect(findButton(/^Check \(0\/2\)/)).toBeTruthy();
 
       fireEvent.click(screen.getByText(CORRECT));
-      expect(findButton(/^Comprobar \(1\/2\)/)).toBeTruthy();
+      expect(findButton(/^Check \(1\/2\)/)).toBeTruthy();
     });
 
     it("will not check until every answer is picked", () => {
@@ -544,10 +546,10 @@ describe("custom practice, wired into the app", () => {
       startMulti();
 
       fireEvent.click(screen.getByText(CORRECT));
-      expect(findButton(/^Comprobar/).disabled).toBe(true);
+      expect(findButton(/^Check/).disabled).toBe(true);
 
       fireEvent.click(screen.getByText("B. tambien correcta"));
-      expect(findButton(/^Comprobar \(2\/2\)/).disabled).toBe(false);
+      expect(findButton(/^Check \(2\/2\)/).disabled).toBe(false);
     });
 
     it("lets a pick be taken back", () => {
@@ -557,7 +559,7 @@ describe("custom practice, wired into the app", () => {
       fireEvent.click(screen.getByText(CORRECT));
       fireEvent.click(screen.getByText(CORRECT));
 
-      expect(findButton(/^Comprobar \(0\/2\)/)).toBeTruthy();
+      expect(findButton(/^Check \(0\/2\)/)).toBeTruthy();
     });
 
     it("counts both answers as one correct question", () => {
@@ -566,9 +568,9 @@ describe("custom practice, wired into the app", () => {
 
       fireEvent.click(screen.getByText(CORRECT));
       fireEvent.click(screen.getByText("B. tambien correcta"));
-      clickButton(/^Comprobar/);
+      clickButton(/^Check/);
 
-      expect(screen.getByText("Correctas 1/1")).toBeTruthy();
+      expect(screen.getByText("Correct 1/1")).toBeTruthy();
     });
   });
 
@@ -576,7 +578,7 @@ describe("custom practice, wired into the app", () => {
     it("remembers the order across a remount", () => {
       const first = render(<AppContent allQuestions={BANK} />);
       openPractice();
-      clickButton(/^Secuencial$/);
+      clickButton(/^Sequential$/);
       expect(storage().loadPracticePrefs().order).toBe("sequential");
       first.unmount();
 
@@ -588,11 +590,11 @@ describe("custom practice, wired into the app", () => {
     it("runs a sequential session in bank order", () => {
       render(<AppContent allQuestions={BANK} />);
       openPractice();
-      clickButton(/^Secuencial$/);
+      clickButton(/^Sequential$/);
       clickButton(/^10$/);
-      clickButton(/^Iniciar práctica/);
+      clickButton(/^Start practice/);
 
-      expect(screen.getByText("Pregunta numero 1")).toBeTruthy();
+      expect(screen.getByText("Question number 1")).toBeTruthy();
     });
   });
 });

@@ -3552,7 +3552,7 @@ export const QUESTIONS = [
       },
       {
         "user": "aquevedos91",
-        "text": "deberia ser la C, debido a que siempre es mejor escoger los servicios de google"
+        "text": "It should be C, because it's always better to choose Google's services"
       }
     ],
     "source": "examprepper",
@@ -7074,7 +7074,7 @@ export const QUESTIONS = [
       },
       {
         "user": "joelcaro",
-        "text": "Opción D: Modify ETL job to load the data into both the current and another backup region\nEvaluación:\nAjustar el ETL para escribir en dos tablas (una en la región principal y otra en una región de respaldo) asegura que los datos estén disponibles en ambas ubicaciones casi en tiempo real.\nEsto garantiza un RPO de menos de 24 horas, ya que las actualizaciones intradía se reflejan en ambas regiones.\nAunque podría aumentar los costos de almacenamiento por duplicar los datos, es la solución más efectiva y directa para proteger contra fallos regionales."
+        "text": "Option D: Modify ETL job to load the data into both the current and another backup region\nAssessment:\nAdjusting the ETL to write to two tables (one in the primary region and another in a backup region) ensures the data is available in both locations in near real time.\nThis guarantees an RPO of less than 24 hours, since intraday updates are reflected in both regions.\nAlthough it could increase storage costs by duplicating the data, it is the most effective and direct solution to protect against regional failures."
       }
     ],
     "source": "merged",
@@ -7084,7 +7084,7 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Opción D: Modify ETL job to load the data into both the current and another backup region\nEvaluación:\nAjustar el ETL para escribir en dos tablas (una en la región principal y otra en una región de respaldo) asegura que los datos estén disponibles en ambas ubicaciones casi en tiem",
+    "discussionSummary": "Option D: Modify ETL job to load the data into both the current and another backup region\nAssessment:\nAdjusting the ETL to write to two tables (one in the primary region and another in a backup region) ensures the data is available in both locations in near real ti",
     "conceptSummary": "Cost-effective BigQuery cross-region disaster recovery for a 24-hour RPO.",
     "correctRationale": "Exporting BigQuery data to a multi-region Cloud Storage bucket provides resilience against a single region failure. Because Cloud Storage cold storage is significantly cheaper than BigQuery active storage, a daily scheduled export easily meets the <24-hour RPO requirement while keeping costs at an absolute minimum.",
     "optionRationales": [
@@ -13423,7 +13423,7 @@ export const QUESTIONS = [
       },
       {
         "user": "joelcaro",
-        "text": "Opción D: Modify ETL job to load the data into both the current and another backup region\nEvaluación:\nAjustar el ETL para escribir en dos tablas (una en la región principal y otra en una región de respaldo) asegura que los datos estén disponibles en ambas ubicaciones casi en tiempo real.\nEsto garantiza un RPO de menos de 24 horas, ya que las actualizaciones intradía se reflejan en ambas regiones.\nAunque podría aumentar los costos de almacenamiento por duplicar los datos, es la solución más ef..."
+        "text": "Option D: Modify ETL job to load the data into both the current and another backup region\nAssessment:\nAdjusting the ETL to write to two tables (one in the primary region and another in a backup region) ensures the data is available in both locations in near real time.\nThis guarantees an RPO of less than 24 hours, since intraday updates are reflected in both regions.\nAlthough it could increase storage costs by duplicating the data, it is the most eff..."
       },
       {
         "user": "22c1725",
@@ -17745,7 +17745,7 @@ export const QUESTIONS = [
       "D. Create Google Groups for access levels, assign developers to groups, and grant the groups the appropriate IAM roles on each project."
     ],
     "correct": 3,
-    "explanation": "Respuesta sugerida: D.",
+    "explanation": "Suggested answer: D.",
     "discussion": [],
     "source": "merged",
     "sourceExam": "professional-data-engineer",
@@ -17754,7 +17754,7 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "low",
     "conflict": false,
-    "discussionSummary": "Respuesta sugerida: D.",
+    "discussionSummary": "Suggested answer: D.",
     "conceptSummary": "Managing environment-based IAM access across Google Cloud projects at scale.",
     "correctRationale": "Google's recommended practice for managing IAM at scale is to use Google Groups. By assigning users to logical groups (e.g., developers, viewers) and granting IAM roles to those groups at the project level, you decouple identity management from access management, making it much easier to onboard, offboard, and audit permissions securely.",
     "optionRationales": [
@@ -17776,7 +17776,7 @@ export const QUESTIONS = [
       "D. Increase your project’s BigQuery API request quota."
     ],
     "correct": 0,
-    "explanation": "Respuesta sugerida: A.",
+    "explanation": "Suggested answer: A.",
     "discussion": [],
     "source": "merged",
     "sourceExam": "professional-data-engineer",
@@ -17785,7 +17785,7 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "low",
     "conflict": false,
-    "discussionSummary": "Respuesta sugerida: A.",
+    "discussionSummary": "Suggested answer: A.",
     "conceptSummary": "Resolving 'Resources exceeded' errors for complex, high-volume BigQuery queries.",
     "correctRationale": "BigQuery on-demand pricing uses a shared pool of slots with a soft cap (typically 2,000 concurrent slots per project). If a complex terabyte-scale query hits the 'Resources exceeded' error, it means the shared pool cannot allocate enough compute to shuffle the data. Moving to slot reservations (capacity pricing) allows you to guarantee a dedicated, larger number of slots for the heavy query.",
     "optionRationales": [
@@ -17807,7 +17807,7 @@ export const QUESTIONS = [
       "D. Index each word from the documents into a search engine to enable keyword-based search."
     ],
     "correct": 2,
-    "explanation": "Respuesta sugerida: C.",
+    "explanation": "Suggested answer: C.",
     "discussion": [],
     "source": "merged",
     "sourceExam": "professional-data-engineer",
@@ -17816,7 +17816,7 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "low",
     "conflict": false,
-    "discussionSummary": "Respuesta sugerida: C.",
+    "discussionSummary": "Suggested answer: C.",
     "conceptSummary": "Preparing unstructured text data for Retrieval-Augmented Generation (RAG) systems using embeddings.",
     "correctRationale": "RAG systems rely on vector databases to perform semantic search, which requires unstructured text to be transformed into numerical embeddings (high-dimensional vectors). These embeddings capture the contextual and semantic meaning of the text, allowing the system to retrieve documents that are conceptually relevant to a user's prompt.",
     "optionRationales": [
@@ -17878,7 +17878,7 @@ export const QUESTIONS = [
       "D. Replicate the buckets to a different region with lower storage costs and configure an Object Lifecycle Management rule to delete objects after seven years."
     ],
     "correct": 1,
-    "explanation": "Respuesta sugerida: B.",
+    "explanation": "Suggested answer: B.",
     "discussion": [],
     "source": "merged",
     "sourceExam": "professional-data-engineer",
@@ -17887,7 +17887,7 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "low",
     "conflict": false,
-    "discussionSummary": "Respuesta sugerida: B.",
+    "discussionSummary": "Suggested answer: B.",
     "conceptSummary": "Managing Cloud Storage costs over time using Object Lifecycle Management.",
     "correctRationale": "Cloud Storage Object Lifecycle Management (OLM) is the native, free mechanism to automatically transition data to colder, cheaper storage classes or delete data based on age. Transitioning 2-year-old unaccessed data to the Archive class drastically lowers storage costs, and setting a deletion rule at 7 years meets the compliance requirement perfectly.",
     "optionRationales": [
@@ -17909,7 +17909,7 @@ export const QUESTIONS = [
       "D. Partition the table by the event date column and cluster the table by user ID column."
     ],
     "correct": 3,
-    "explanation": "Respuesta sugerida: D.",
+    "explanation": "Suggested answer: D.",
     "discussion": [],
     "source": "merged",
     "sourceExam": "professional-data-engineer",
@@ -17918,7 +17918,7 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-04",
     "confidence": "low",
     "conflict": false,
-    "discussionSummary": "Respuesta sugerida: D.",
+    "discussionSummary": "Suggested answer: D.",
     "conceptSummary": "Optimizing BigQuery table structure with partitioning and clustering for specific query patterns.",
     "correctRationale": "Partitioning by a date or timestamp column is the standard way to limit bytes billed for time-series queries, matching the requirement to 'query by specific event date ranges'. Clustering is ideal for high-cardinality fields like UUIDs, allowing BigQuery to efficiently sort and filter data within each date partition.",
     "optionRationales": [

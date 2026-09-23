@@ -24,7 +24,7 @@ const QUESTION = {
   id: 1,
   topic: "BigQuery",
   difficulty: 2,
-  question: "Pregunta",
+  question: "Question",
   options: ["A", "B", "C", "D"],
   correct: 0,
   explanation: "e.",
@@ -55,7 +55,7 @@ describe("skipping a reward", () => {
 
   it.each(cases)("%s offers a way out", (_name, renderReward) => {
     render(renderReward({ onComplete: () => {}, onClose: () => {} }));
-    expect(screen.getByText("SALTAR")).toBeTruthy();
+    expect(screen.getByText("SKIP")).toBeTruthy();
   });
 
   it.each(cases)("%s closes without paying out when skipped", (_name, renderReward) => {
@@ -63,7 +63,7 @@ describe("skipping a reward", () => {
     const onClose = vi.fn();
     render(renderReward({ onComplete, onClose }));
 
-    fireEvent.click(screen.getByText("SALTAR"));
+    fireEvent.click(screen.getByText("SKIP"));
 
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(onComplete).not.toHaveBeenCalled();
@@ -71,11 +71,11 @@ describe("skipping a reward", () => {
 
   it("stops offering to skip the chest once it is open", () => {
     render(<MysteryChest onComplete={() => {}} onClose={() => {}} />);
-    fireEvent.click(screen.getByText("ABRIR COFRE"));
+    fireEvent.click(screen.getByText("OPEN CHEST"));
 
     // The prize is on screen now, so the way out is to take it.
-    expect(screen.queryByText("SALTAR")).toBeNull();
-    expect(screen.getByText("Recoger")).toBeTruthy();
+    expect(screen.queryByText("SKIP")).toBeNull();
+    expect(screen.getByText("Collect")).toBeTruthy();
   });
 
   it("takes the chest prize when it is opened rather than skipped", () => {
@@ -83,8 +83,8 @@ describe("skipping a reward", () => {
     const onClose = vi.fn();
     render(<MysteryChest onComplete={onComplete} onClose={onClose} />);
 
-    fireEvent.click(screen.getByText("ABRIR COFRE"));
-    fireEvent.click(screen.getByText("Recoger"));
+    fireEvent.click(screen.getByText("OPEN CHEST"));
+    fireEvent.click(screen.getByText("Collect"));
 
     expect(onComplete).toHaveBeenCalledTimes(1);
     expect(onClose).toHaveBeenCalledTimes(1);

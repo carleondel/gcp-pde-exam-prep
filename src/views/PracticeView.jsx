@@ -1,7 +1,7 @@
 import { PRACTICE_PRESETS, PRACTICE_SOURCE_META } from "../ui/practice-prefs.js";
 
 /**
- * The "Sesión a medida" tab: where a practice session is configured before it
+ * The "Custom session" tab: where a practice session is configured before it
  * is launched — which pool it draws from, in what order, and how many.
  *
  * The topic picker arrives as a node rather than as its own six props. It is
@@ -63,7 +63,7 @@ export default function PracticeView({
               fontFamily: "var(--font-mono)",
             }}
           >
-            Practicar
+            Practice
           </div>
           <div
             style={{
@@ -73,10 +73,10 @@ export default function PracticeView({
               fontFamily: "var(--font-heading)",
             }}
           >
-            Sesión a medida
+            Custom session
           </div>
           <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 6 }}>
-            Control directo de fuente, orden y cantidad.
+            Direct control over source, order and count.
           </div>
         </div>
         <div
@@ -90,7 +90,7 @@ export default function PracticeView({
             fontFamily: "var(--font-mono)",
           }}
         >
-          Feedback inmediato
+          Instant feedback
         </div>
       </div>
       <div style={{ marginBottom: 16 }}>
@@ -104,7 +104,7 @@ export default function PracticeView({
             fontFamily: "var(--font-mono)",
           }}
         >
-          Fuente
+          Source
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
           {sourceOptions.map((option) => {
@@ -193,10 +193,10 @@ export default function PracticeView({
               fontFamily: "var(--font-mono)",
             }}
           >
-            Orden
+            Order
           </div>
           <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>
-            {source === "topics" ? "Configurable" : "Aplicado al bloque cargado"}
+            {source === "topics" ? "Configurable" : "Applied to the loaded set"}
           </div>
         </div>
         <div style={{ display: "flex", gap: "var(--space-sm)" }}>
@@ -220,10 +220,10 @@ export default function PracticeView({
               }}
             >
               {option === "random"
-                ? "Mezclado"
+                ? "Shuffled"
                 : option === "sequential"
-                  ? "Secuencial"
-                  : "Más recientes"}
+                  ? "Sequential"
+                  : "Most recent"}
             </button>
           ))}
         </div>
@@ -284,7 +284,7 @@ export default function PracticeView({
                 cursor: "pointer",
               }}
             >
-              Volver a dominio
+              Back to domains
             </button>
           </div>
         </div>
@@ -308,7 +308,7 @@ export default function PracticeView({
               fontFamily: "var(--font-mono)",
             }}
           >
-            Cantidad
+            Count
           </div>
           <button
             onClick={onToggleCustomLimit}
@@ -321,7 +321,7 @@ export default function PracticeView({
               cursor: "pointer",
             }}
           >
-            {showCustomLimit ? "Ocultar personalización" : "Personalizar"}
+            {showCustomLimit ? "Hide custom" : "Customize"}
           </button>
         </div>
         <div
@@ -413,7 +413,7 @@ export default function PracticeView({
               }}
             />
             <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-              Se ajusta automáticamente al máximo disponible.
+              Automatically capped at the maximum available.
             </span>
           </div>
         )}
@@ -438,7 +438,7 @@ export default function PracticeView({
             fontFamily: "var(--font-mono)",
           }}
         >
-          Resumen
+          Summary
         </div>
         <div
           style={{
@@ -448,7 +448,7 @@ export default function PracticeView({
           }}
         >
           <div>
-            <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Fuente</div>
+            <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Source</div>
             <div
               style={{
                 marginTop: 4,
@@ -462,7 +462,7 @@ export default function PracticeView({
             </div>
           </div>
           <div>
-            <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Disponibles</div>
+            <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Available</div>
             <div
               style={{
                 marginTop: 4,
@@ -476,7 +476,7 @@ export default function PracticeView({
             </div>
           </div>
           <div>
-            <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Lanzarás</div>
+            <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>You will launch</div>
             <div
               style={{
                 marginTop: 4,
@@ -551,7 +551,7 @@ export default function PracticeView({
       <div
         style={{ marginTop: 10, fontSize: 12, color: "var(--text-tertiary)", textAlign: "center" }}
       >
-        Ayudas y progreso activo solo en práctica.
+        Aids and progress tracking are only active in practice.
       </div>
     </div>
   );

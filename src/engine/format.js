@@ -1,20 +1,7 @@
-const MONTHS_ES = [
-  "ene",
-  "feb",
-  "mar",
-  "abr",
-  "may",
-  "jun",
-  "jul",
-  "ago",
-  "sep",
-  "oct",
-  "nov",
-  "dic",
-];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /**
- * Formats the manifest's questionsDumpedAt ("YYYY-MM-DD") as "17 ago 2026".
+ * Formats the manifest's questionsDumpedAt ("YYYY-MM-DD") as "17 Aug 2026".
  *
  * Parsed by hand rather than with `new Date(iso)`, which reads a bare
  * date string as UTC midnight and then renders it in local time — west
@@ -29,7 +16,7 @@ export function formatDumpDate(iso) {
   if (!match) return null;
 
   const [, year, month, day] = match;
-  const monthName = MONTHS_ES[Number(month) - 1];
+  const monthName = MONTHS[Number(month) - 1];
   if (!monthName) return null;
 
   return `${Number(day)} ${monthName} ${year}`;
