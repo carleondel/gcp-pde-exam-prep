@@ -56,6 +56,29 @@ function hasStorage() {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 }
 
+let writeListener = null;
+
+/**
+ * Registers a callback fired after every write or removal, with the key and
+ * the parsed value (null on removal). localStorage stays the synchronous
+ * source the hooks read from; the cloud sync mirrors it through this.
+ */
+export function setStorageWriteListener(listener) {
+  writeListener = listener;
+}
+
+function writeItem(key, value) {
+  if (!hasStorage()) return;
+  window.localStorage.setItem(key, JSON.stringify(value));
+  writeListener?.(key, value);
+}
+
+function removeItem(key) {
+  if (!hasStorage()) return;
+  window.localStorage.removeItem(key);
+  writeListener?.(key, null);
+}
+
 function safeParse(raw) {
   try {
     return raw ? JSON.parse(raw) : null;
@@ -165,8 +188,7 @@ export function createStorage(certId) {
     },
 
     saveProgress(progress) {
-      if (!hasStorage()) return;
-      window.localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+      writeItem(PROGRESS_KEY, progress);
     },
 
     loadActiveMock() {
@@ -175,13 +197,11 @@ export function createStorage(certId) {
     },
 
     saveActiveMock(session) {
-      if (!hasStorage()) return;
-      window.localStorage.setItem(ACTIVE_MOCK_KEY, JSON.stringify(session));
+      writeItem(ACTIVE_MOCK_KEY, session);
     },
 
     clearActiveMock() {
-      if (!hasStorage()) return;
-      window.localStorage.removeItem(ACTIVE_MOCK_KEY);
+      removeItem(ACTIVE_MOCK_KEY);
     },
 
     loadPracticePrefs() {
@@ -190,8 +210,7 @@ export function createStorage(certId) {
     },
 
     savePracticePrefs(preferences) {
-      if (!hasStorage()) return;
-      window.localStorage.setItem(PRACTICE_PREFS_KEY, JSON.stringify(preferences));
+      writeItem(PRACTICE_PREFS_KEY, preferences);
     },
 
     loadBlockPrefs() {
@@ -200,8 +219,7 @@ export function createStorage(certId) {
     },
 
     saveBlockPrefs(preferences) {
-      if (!hasStorage()) return;
-      window.localStorage.setItem(BLOCK_PREFS_KEY, JSON.stringify(preferences));
+      writeItem(BLOCK_PREFS_KEY, preferences);
     },
 
     loadActiveBlockSession() {
@@ -210,13 +228,11 @@ export function createStorage(certId) {
     },
 
     saveActiveBlockSession(session) {
-      if (!hasStorage()) return;
-      window.localStorage.setItem(ACTIVE_BLOCK_SESSION_KEY, JSON.stringify(session));
+      writeItem(ACTIVE_BLOCK_SESSION_KEY, session);
     },
 
     clearActiveBlockSession() {
-      if (!hasStorage()) return;
-      window.localStorage.removeItem(ACTIVE_BLOCK_SESSION_KEY);
+      removeItem(ACTIVE_BLOCK_SESSION_KEY);
     },
   };
 }

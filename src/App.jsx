@@ -64,6 +64,8 @@ import { useProgress } from "./hooks/useProgress.js";
 import { formatDumpDate } from "./engine/format.js";
 import { formatPracticeBadge } from "./ui/formatting.js";
 import { PRACTICE_SOURCE_META, sanitizeBlockSize } from "./ui/practice-prefs.js";
+import AuthGate from "./cloud/AuthGate.jsx";
+import { TRIAL_QUESTION_COUNT, useAuth } from "./cloud/auth-context.js";
 
 const CERT_ID_FROM_URL = new URLSearchParams(window.location.search).get("cert");
 const NEEDS_CERT_PICK = !isKnownCertId(CERT_ID_FROM_URL) && CERT_LIST.length > 1;
@@ -2232,8 +2234,13 @@ export function AppContent({ allQuestions }) {
 }
 
 function CertApp() {
+  const { trial } = useAuth();
   const [allQuestions, setAllQuestions] = useState(null);
   const [error, setError] = useState(null);
+  const availableQuestions = useMemo(
+    () => (trial && allQuestions ? allQuestions.slice(0, TRIAL_QUESTION_COUNT) : allQuestions),
+    [allQuestions, trial],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -2257,7 +2264,7 @@ function CertApp() {
     );
   }
 
-  if (!allQuestions) {
+  if (!availableQuestions) {
     return (
       <div style={{ padding: 32, fontFamily: "var(--font-mono)", color: "var(--text-secondary)" }}>
         Loading {ACTIVE_CERT.short}…
@@ -2265,12 +2272,11 @@ function CertApp() {
     );
   }
 
-  return <AppContent allQuestions={allQuestions} />;
+  return <AppContent allQuestions={availableQuestions} />;
 }
 
 function App() {
-  if (NEEDS_CERT_PICK) return <CertPicker />;
-  return <CertApp />;
+  return <AuthGate>{NEEDS_CERT_PICK ? <CertPicker /> : <CertApp />}</AuthGate>;
 }
 
 export default App;

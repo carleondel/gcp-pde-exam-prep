@@ -139,6 +139,61 @@ Rebuilding survives because the data never leaves the browser — but only
 if you come back on the same origin, which is the port caveat above. There
 is no export yet, so treat the browser profile as the backup.
 
+## Web version: login and cloud progress
+
+With `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` set, the
+app asks for an account before it opens, and each account's progress
+follows it across browsers and devices. Without them it runs local-only
+as described above; tests and Docker work that way.
+
+- **Sign-in options:** Google, GitHub, email + password, or a magic link.
+  Password reset is also supported.
+- **Trial mode:** you can try it without an account. A guest gets the
+  first 20 questions of each cert, and their progress stays in the
+  browser. The limit is only a client-side filter, so it is not a
+  paywall; that needs the question bank served from the backend.
+- **Sync:** `localStorage` stays the cache the app reads from, and every
+  key in the table above is mirrored to one row of `public.user_state`,
+  debounced. On sign-in the account's rows win. Progress made before the
+  account existed (or during the trial) is uploaded for any key the
+  account lacks, so signing up keeps it. Writes not yet confirmed are kept
+  locally and pushed on the next visit. Signing out clears the local copy.
+  Code: [src/cloud/](src/cloud/).
+
+### Setting it up
+
+1. **Supabase.** Create a project. In the SQL editor, run
+   [supabase/migrations/20260923000000_user_state.sql](supabase/migrations/20260923000000_user_state.sql).
+   It creates the table with row level security, so users can only
+   read and write their own rows.
+2. **Auth URLs.** Go to Supabase → Authentication → URL Configuration.
+   Set _Site URL_ to the production URL. Add `http://localhost:5173/**`
+   and `https://*-<vercel-team>.vercel.app/**` (preview deploys) to the
+   redirect URLs.
+3. **Google sign-in.** In Google Cloud console → APIs & Services →
+   Credentials, create an OAuth client ID of type _Web application_.
+   Its authorised redirect URI is
+   `https://<project-ref>.supabase.co/auth/v1/callback`. Paste the
+   client ID and secret into Supabase → Authentication → Providers →
+   Google.
+4. **GitHub sign-in.** Go to GitHub → Settings → Developer settings →
+   OAuth Apps → New OAuth App. The authorization callback URL is the
+   same Supabase callback. Paste the client ID and secret into
+   Supabase → Authentication → Providers → GitHub.
+5. **Email.** Email + password and magic links work out of the box.
+   Supabase's built-in mailer is rate-limited, though, so configure
+   custom SMTP (Resend, Postmark, SES…) before real users arrive.
+6. **Local.** Run `cp .env.example .env.local`, fill in both values,
+   then `npm run dev`.
+7. **Vercel.** Import the GitHub repo; [vercel.json](vercel.json) sets
+   up the Vite build. Add both `VITE_SUPABASE_*` variables for
+   Production and Preview. Every push to `main` deploys, and every PR
+   gets a preview URL.
+
+The publishable key is meant to be public; row level security is what
+protects the data. Never put the secret / `service_role` key in a
+`VITE_` variable: anything with that prefix ships to the browser.
+
 ## Selecting a certification
 
 With more than one cert registered, opening the app without a `cert`

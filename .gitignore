@@ -6,6 +6,10 @@ yarn-debug.log*
 yarn-error.log*
 .DS_Store
 .claude
+.env
+.env.*
+!.env.example
+.vercel
 
 # Source question dumps
 raw.md
