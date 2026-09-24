@@ -9,7 +9,7 @@
       (function () {
         var s = location.search;
         var h = location.hash;
-        if (/[?&](cert|code|error)=/.test(s) || /access_token|error_description/.test(h)) {
+        if (/[?&](cert|code|error|redeem)=/.test(s) || /access_token|error_description/.test(h)) {
           location.replace("/app/" + s + h);
         }
       })();

@@ -5,6 +5,7 @@ import { AuthContext, LOCAL_AUTH, TRIAL_QUESTION_COUNT } from "./auth-context.js
 import FeedbackButton from "./FeedbackButton.jsx";
 import LoginScreen, { AuthShell, NewPasswordScreen } from "./LoginScreen.jsx";
 import { supabase } from "./supabase.js";
+import { captureRedeemCode, loadAccess, redeemPendingCode } from "./access.js";
 import { createCloudSync } from "./sync.js";
 
 const CERT_IDS = CERT_LIST.map((cert) => cert.id);
@@ -71,6 +72,9 @@ function CloudAuthGate({ client, children }) {
     return window.sessionStorage.getItem(TRIAL_FLAG_KEY) === "1";
   });
   const syncRef = useRef(null);
+  const [pendingCode] = useState(() => captureRedeemCode());
+  const [access, setAccess] = useState(null);
+  const [notice, setNotice] = useState(null);
 
   useEffect(() => {
     client.auth.getSession().then(({ data }) => setSession(data.session));
@@ -119,6 +123,20 @@ function CloudAuthGate({ client, children }) {
     };
   }, [client, userId]);
 
+  const synced = syncState === "ready" || syncState === "offline";
+  useEffect(() => {
+    if (!userId || !synced) return undefined;
+    let cancelled = false;
+    redeemPendingCode(client)
+      .then((message) => !cancelled && message && setNotice(message))
+      .catch(() => {})
+      .then(() => loadAccess(client, userId))
+      .then((grant) => !cancelled && setAccess(grant));
+    return () => {
+      cancelled = true;
+    };
+  }, [client, userId, synced]);
+
   const startTrial = useCallback(() => {
     window.sessionStorage.setItem(TRIAL_FLAG_KEY, "1");
     setTrial(true);
@@ -140,9 +158,9 @@ function CloudAuthGate({ client, children }) {
   }, [client]);
 
   const auth = useMemo(() => {
-    if (user) return { mode: "cloud", user, trial: false, signOut };
-    return { mode: "trial", user: null, trial: true, exitTrial };
-  }, [user, signOut, exitTrial]);
+    if (user) return { mode: "cloud", user, trial: false, access, signOut };
+    return { mode: "trial", user: null, trial: true, access: null, exitTrial };
+  }, [user, access, signOut, exitTrial]);
 
   if (session === undefined) return <StatusScreen text="Loading…" />;
   if (recovering) {
@@ -158,7 +176,7 @@ function CloudAuthGate({ client, children }) {
         />
       );
     }
-    if (syncState !== "ready" && syncState !== "offline") {
+    if (!synced) {
       return <StatusScreen text="Syncing your progress…" />;
     }
     return (
@@ -174,6 +192,25 @@ function CloudAuthGate({ client, children }) {
           >
             {user.email}
           </span>
+          {access && (
+            <span
+              title={
+                access.expires_at
+                  ? `Free access until ${new Date(access.expires_at).toLocaleDateString("en-US")}`
+                  : "Free access"
+              }
+              style={{
+                padding: "2px 8px",
+                borderRadius: "var(--radius-pill)",
+                background: "var(--accent-soft)",
+                color: "var(--accent-300)",
+                fontWeight: 800,
+                textTransform: "uppercase",
+              }}
+            >
+              {access.plan === "exam_pass" ? "Exam Pass" : access.plan}
+            </span>
+          )}
           {syncState === "offline" && (
             <span title="Changes are saved on this device and sync when you are back online.">
               · offline
@@ -184,12 +221,28 @@ function CloudAuthGate({ client, children }) {
             Sign out
           </button>
         </div>
+        {notice && (
+          <div
+            role="status"
+            style={{
+              ...barStyle,
+              justifyContent: "center",
+              color: notice.ok ? "var(--signal-correct)" : "var(--signal-wrong)",
+            }}
+          >
+            <span>{notice.text}</span>
+            <button type="button" style={barButtonStyle} onClick={() => setNotice(null)}>
+              Dismiss
+            </button>
+          </div>
+        )}
         <Fragment key={appVersion}>{children}</Fragment>
       </AuthContext.Provider>
     );
   }
 
-  if (trial) {
+  // A redeem link needs an account, so it skips the trial and asks to sign in.
+  if (trial && !pendingCode) {
     return (
       <AuthContext.Provider value={auth}>
         <div style={{ ...barStyle, justifyContent: "center", color: "var(--accent-300)" }}>
@@ -207,5 +260,11 @@ function CloudAuthGate({ client, children }) {
     );
   }
 
-  return <LoginScreen client={client} onStartTrial={startTrial} />;
+  return (
+    <LoginScreen
+      client={client}
+      onStartTrial={startTrial}
+      subtitle={pendingCode ? "Sign in or create an account to redeem your code" : undefined}
+    />
+  );
 }
