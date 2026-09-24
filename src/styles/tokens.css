@@ -59,6 +59,11 @@
   --space-3xl: 32px;
   --space-4xl: 48px;
 
+  /* Responsive padding: full size on desktop, tighter on phones */
+  --pad-page-x: clamp(12px, 4vw, 20px);
+  --pad-card: clamp(14px, 4vw, 24px);
+  --pad-panel: clamp(12px, 3.5vw, 20px);
+
   /* Radii */
   --radius-sm: 10px;
   --radius-md: 12px;

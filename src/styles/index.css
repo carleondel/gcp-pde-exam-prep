@@ -38,6 +38,9 @@ body {
   color: var(--text-primary);
   font-family: var(--font-body);
   text-rendering: optimizeLegibility;
+  overflow-wrap: break-word;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button,

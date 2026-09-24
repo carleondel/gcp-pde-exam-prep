@@ -62,7 +62,7 @@ export default function BlockView({
         background: "linear-gradient(180deg, rgba(15, 191, 163, 0.14), rgba(6, 15, 25, 0.92))",
         border: "1px solid var(--primary-medium)",
         borderRadius: "var(--radius-2xl)",
-        padding: 24,
+        padding: "var(--pad-card)",
         marginBottom: 18,
         boxShadow: "var(--shadow-elevated)",
       }}
@@ -92,7 +92,7 @@ export default function BlockView({
           </div>
           <div
             style={{
-              fontSize: 30,
+              fontSize: "clamp(24px, 6.5vw, 30px)",
               fontWeight: 900,
               marginTop: 4,
               fontFamily: "var(--font-heading)",
@@ -155,7 +155,7 @@ export default function BlockView({
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "minmax(0, 1.3fr) minmax(280px, 0.9fr)",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))",
             gap: 14,
             marginBottom: 18,
           }}
@@ -165,7 +165,7 @@ export default function BlockView({
               background: "var(--gradient-panel-strong)",
               border: "1px solid var(--surface-line)",
               borderRadius: "var(--radius-xl)",
-              padding: 20,
+              padding: "var(--pad-panel)",
             }}
           >
             <div
@@ -195,7 +195,7 @@ export default function BlockView({
                 <div
                   style={{
                     marginTop: 6,
-                    fontSize: 26,
+                    fontSize: "clamp(21px, 5.5vw, 26px)",
                     fontWeight: 900,
                     fontFamily: "var(--font-heading)",
                   }}
@@ -377,7 +377,7 @@ export default function BlockView({
               background: "var(--gradient-panel)",
               border: "1px solid var(--surface-line)",
               borderRadius: "var(--radius-xl)",
-              padding: 20,
+              padding: "var(--pad-panel)",
             }}
           >
             <div style={{ marginBottom: 16 }}>
@@ -543,7 +543,7 @@ export default function BlockView({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(min(136px, 100%), 1fr))",
           gap: 10,
         }}
       >
