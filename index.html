@@ -2,17 +2,344 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script>
+      // Links from before the landing existed (and auth callbacks aimed at
+      // the old root) carry app state in the URL: send them to the app.
+      (function () {
+        var s = location.search;
+        var h = location.hash;
+        if (/[?&](cert|code|error)=/.test(s) || /access_token|error_description/.test(h)) {
+          location.replace("/app/" + s + h);
+        }
+      })();
+    </script>
+    <title>DataForge · Google Cloud certification practice</title>
+    <meta
+      name="description"
+      content="Prepare for the Google Cloud Professional Data Engineer and Cloud Architect exams with practice questions, explanations for every option, timed mock exams and progress synced across devices."
+    />
+    <meta name="theme-color" content="#0f1520" />
+    <link rel="canonical" href="https://dataforge-inky.vercel.app/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DataForge" />
+    <meta property="og:title" content="DataForge · Google Cloud certification practice" />
+    <meta
+      property="og:description"
+      content="Practice questions with explanations, timed mock exams and progress that follows you across devices. Free while in beta."
+    />
+    <meta property="og:url" content="https://dataforge-inky.vercel.app/" />
+    <meta property="og:image" content="https://dataforge-inky.vercel.app/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <title>Exam Prep</title>
+    <link rel="stylesheet" href="/src/landing/landing.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <header class="nav">
+      <div class="wrap nav-inner">
+        <a class="brand" href="/" aria-label="DataForge home">
+          <img src="/favicon.svg" alt="" width="28" height="28" />
+          <span>DataForge</span>
+        </a>
+        <nav class="nav-links" aria-label="Main">
+          <a href="#certifications">Certifications</a>
+          <a href="#features">Features</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <div class="nav-cta">
+          <a class="btn btn-ghost btn-sm" href="/app/">Sign in</a>
+          <a class="btn btn-primary btn-sm hide-xs" href="/app/?trial=1">Try free</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <span class="pill">Free while in beta</span>
+            <h1>Pass your Google&nbsp;Cloud certification, one question at a time.</h1>
+            <p class="lead">
+              Practice questions with an explanation for every option, timed mock exams weighted
+              like the real thing, and a study loop that makes you want to come back tomorrow.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary btn-lg" href="/app/?trial=1">Try 20 questions free</a>
+              <a class="btn btn-ghost btn-lg" href="/app/">Create an account</a>
+            </div>
+            <p class="fine">No credit card. Sign in with Google, GitHub or email.</p>
+          </div>
+          <div class="hero-shot">
+            <div class="frame frame-desktop">
+              <div class="frame-bar"><i></i><i></i><i></i></div>
+              <img
+                src="/landing/app-home.jpg"
+                alt="DataForge dashboard with rank, domain scores and study blocks"
+                width="1600"
+                height="1000"
+              />
+            </div>
+            <div class="frame frame-phone">
+              <img
+                src="/landing/app-mobile.jpg"
+                alt="A practice question answered on a phone, with the explanation"
+                width="560"
+                height="1211"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="At a glance">
+        <div class="wrap stats-grid">
+          <div><strong>613</strong><span>practice questions</span></div>
+          <div><strong>2</strong><span>Google Cloud certifications</span></div>
+          <div><strong>11</strong><span>exam domains covered</span></div>
+          <div><strong>Every</strong><span>option explained</span></div>
+        </div>
+      </section>
+
+      <section id="certifications" class="section">
+        <div class="wrap">
+          <p class="eyebrow">Certifications</p>
+          <h2>Pick your exam</h2>
+          <div class="cards cards-3">
+            <a class="card cert" href="/app/?cert=gcp-pde">
+              <span class="tag">PDE</span>
+              <h3>Professional Data Engineer</h3>
+              <p>
+                BigQuery, Dataflow, Pub/Sub, Dataproc, storage design, security and ML pipelines.
+              </p>
+              <ul class="meta">
+                <li>333 questions</li>
+                <li>5 domains</li>
+                <li>50-question mock · 2 h</li>
+              </ul>
+              <span class="link">Start practising →</span>
+            </a>
+            <a class="card cert" href="/app/?cert=gcp-pca">
+              <span class="tag tag-amber">PCA</span>
+              <h3>Professional Cloud Architect</h3>
+              <p>
+                Solution design, reliability, security and migrations, including the official case
+                studies.
+              </p>
+              <ul class="meta">
+                <li>280 questions</li>
+                <li>6 domains</li>
+                <li>4 case studies</li>
+              </ul>
+              <span class="link">Start practising →</span>
+            </a>
+            <div class="card cert cert-soon">
+              <span class="tag tag-muted">Soon</span>
+              <h3>More certifications</h3>
+              <p>
+                New exams are added behind the same engine. Tell us which one you are preparing
+                next.
+              </p>
+              <a
+                class="link"
+                href="mailto:carleondel@gmail.com?subject=DataForge%20certification%20request"
+                >Request one →</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section section-alt">
+        <div class="wrap">
+          <p class="eyebrow">Features</p>
+          <h2>Everything you need, nothing you don't</h2>
+          <div class="cards cards-3">
+            <div class="card feature">
+              <span class="icon" aria-hidden="true">▦</span>
+              <h3>Study blocks</h3>
+              <p>
+                Work through the whole bank in fixed rounds. Repeat a block until it is mastered and
+                pick up exactly where you left off.
+              </p>
+            </div>
+            <div class="card feature">
+              <span class="icon" aria-hidden="true">◷</span>
+              <h3>Realistic mock exams</h3>
+              <p>
+                Timed exams with the question count, duration and domain weighting of the real test,
+                with a pass line to beat.
+              </p>
+            </div>
+            <div class="card feature">
+              <span class="icon" aria-hidden="true">✓</span>
+              <h3>Every option explained</h3>
+              <p>
+                Learn why the right answer is right and why each distractor is wrong, not just which
+                letter to pick.
+              </p>
+            </div>
+            <div class="card feature">
+              <span class="icon" aria-hidden="true">◎</span>
+              <h3>Target your weak spots</h3>
+              <p>
+                Per-domain accuracy shows where you stand. Load your weakest topics or your mistakes
+                into a session in one tap.
+              </p>
+            </div>
+            <div class="card feature">
+              <span class="icon" aria-hidden="true">⚡</span>
+              <h3>A reason to come back</h3>
+              <p>
+                XP, ranks, streaks, a daily challenge and the occasional boss battle keep the habit
+                going. Every reward can be skipped.
+              </p>
+            </div>
+            <div class="card feature">
+              <span class="icon" aria-hidden="true">⇄</span>
+              <h3>Synced everywhere</h3>
+              <p>
+                Start on your laptop, finish a block on your phone. Your progress is saved to your
+                account as you go.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap split">
+          <div>
+            <p class="eyebrow">Learn the why</p>
+            <h2>Feedback that teaches</h2>
+            <p class="lead">
+              Answer, then see the reasoning behind the correct option and a rationale for each of
+              the others. Bookmark the tricky ones and they come back in your review.
+            </p>
+            <ul class="checks">
+              <li>Instant feedback in practice, exam conditions in mocks</li>
+              <li>Multiple-answer questions handled like the real exam</li>
+              <li>Keyboard shortcuts for fast drilling on desktop</li>
+            </ul>
+          </div>
+          <div class="frame frame-desktop">
+            <div class="frame-bar"><i></i><i></i><i></i></div>
+            <img
+              src="/landing/app-question.jpg"
+              alt="An answered question showing the explanation and per-option rationales"
+              width="1400"
+              height="1050"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-alt">
+        <div class="wrap">
+          <p class="eyebrow">How it works</p>
+          <h2>From zero to exam-ready</h2>
+          <ol class="steps">
+            <li>
+              <span>1</span>
+              <h3>Try it</h3>
+              <p>Answer 20 questions without an account to see if it clicks.</p>
+            </li>
+            <li>
+              <span>2</span>
+              <h3>Create your account</h3>
+              <p>Sign in with Google, GitHub or email. Your trial progress comes with you.</p>
+            </li>
+            <li>
+              <span>3</span>
+              <h3>Study a little every day</h3>
+              <p>Blocks to cover the bank, mocks to check you are ready, reviews for mistakes.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="faq" class="section">
+        <div class="wrap narrow">
+          <p class="eyebrow">FAQ</p>
+          <h2>Questions</h2>
+          <details>
+            <summary>Is DataForge free?</summary>
+            <p>
+              Yes, everything is free while the app is in beta. Paid plans for individuals and teams
+              will come later; anything you unlock during the beta stays yours.
+            </p>
+          </details>
+          <details>
+            <summary>Do I need an account?</summary>
+            <p>
+              You can try 20 questions per certification without one. An account unlocks the full
+              question bank and saves your progress across devices.
+            </p>
+          </details>
+          <details>
+            <summary>Does it work on my phone?</summary>
+            <p>
+              Yes. Open it in your mobile browser and use “Add to Home Screen” to launch it like an
+              app. A native app is on the roadmap.
+            </p>
+          </details>
+          <details>
+            <summary>Is DataForge affiliated with Google?</summary>
+            <p>
+              No. DataForge is an independent study tool and is not affiliated with, sponsored by or
+              endorsed by Google LLC.
+            </p>
+          </details>
+          <details>
+            <summary>I found a mistake in a question. What do I do?</summary>
+            <p>
+              Email <a href="mailto:carleondel@gmail.com">carleondel@gmail.com</a> with the question
+              and what looks wrong. Corrections ship quickly.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <section class="section cta">
+        <div class="wrap cta-inner">
+          <h2>Your next certification starts today</h2>
+          <p class="lead">Twenty questions, no account, two minutes.</p>
+          <a class="btn btn-primary btn-lg" href="/app/?trial=1">Try it free</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer-inner">
+        <div>
+          <a class="brand" href="/">
+            <img src="/favicon.svg" alt="" width="22" height="22" />
+            <span>DataForge</span>
+          </a>
+          <p class="fine">
+            Independent study tool, not affiliated with or endorsed by Google LLC. Google Cloud is a
+            trademark of Google LLC.
+          </p>
+        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="/app/">Open the app</a>
+          <a href="/privacy/">Privacy</a>
+          <a href="/terms/">Terms</a>
+          <a href="mailto:carleondel@gmail.com">Contact</a>
+        </nav>
+      </div>
+      <div class="wrap fine copyright">© 2026 DataForge</div>
+    </footer>
   </body>
 </html>

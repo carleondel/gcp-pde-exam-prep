@@ -89,6 +89,26 @@ export function AuthShell({ subtitle, children }) {
           </div>
         </div>
         {children}
+        <nav
+          aria-label="DataForge"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "var(--space-lg)",
+            marginTop: "var(--space-2xl)",
+            fontSize: 12,
+          }}
+        >
+          {[
+            ["/", "Home"],
+            ["/privacy/", "Privacy"],
+            ["/terms/", "Terms"],
+          ].map(([href, label]) => (
+            <a key={href} href={href} style={{ color: "var(--text-muted)" }}>
+              {label}
+            </a>
+          ))}
+        </nav>
       </div>
     </div>
   );
