@@ -66,6 +66,7 @@ import { formatPracticeBadge } from "./ui/formatting.js";
 import { PRACTICE_SOURCE_META, sanitizeBlockSize } from "./ui/practice-prefs.js";
 import AuthGate from "./cloud/AuthGate.jsx";
 import { TRIAL_QUESTION_COUNT, useAuth } from "./cloud/auth-context.js";
+import { setFeedbackContext } from "./cloud/feedback-context.js";
 
 const CERT_ID_FROM_URL = new URLSearchParams(window.location.search).get("cert");
 const NEEDS_CERT_PICK = !isKnownCertId(CERT_ID_FROM_URL) && CERT_LIST.length > 1;
@@ -410,6 +411,10 @@ export function AppContent({ allQuestions }) {
   }, [session, questionMap]);
 
   const currentQuestion = session ? currentQuestions[session.currentIndex] : null;
+  const feedbackQuestionId = screen === "quiz" ? (currentQuestion?.id ?? null) : null;
+  useEffect(() => {
+    setFeedbackContext({ certId: ACTIVE_CERT.id, questionId: feedbackQuestionId });
+  }, [feedbackQuestionId]);
   const practiceMode = session?.mode === "practice";
   const blockMode = practiceMode && session?.meta?.source === "blocks";
   const blockSessionMeta = blockMode ? session.meta.blockStudy : null;
