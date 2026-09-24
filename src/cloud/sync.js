@@ -51,6 +51,7 @@ export function createCloudSync({
   let timer = null;
   let inFlight = null;
   let running = false;
+  let seen = new Map();
 
   const persistPending = () => {
     if (pending.size) storage.setItem(PENDING_KEY, JSON.stringify(Object.fromEntries(pending)));
@@ -63,10 +64,12 @@ export function createCloudSync({
       .map(([key, value]) => ({ user_id: userId, key, value }));
     const deletes = entries.filter(([, value]) => value === null).map(([key]) => key);
     if (upserts.length) {
-      const { error } = await client
+      const { data, error } = await client
         .from(USER_STATE_TABLE)
-        .upsert(upserts, { onConflict: "user_id,key" });
+        .upsert(upserts, { onConflict: "user_id,key" })
+        .select("key, updated_at");
       if (error) throw error;
+      data.forEach((row) => seen.set(row.key, row.updated_at));
     }
     if (deletes.length) {
       const { error } = await client
@@ -75,6 +78,29 @@ export function createCloudSync({
         .eq("user_id", userId)
         .in("key", deletes);
       if (error) throw error;
+      deletes.forEach((key) => seen.delete(key));
+    }
+  }
+
+  async function pull() {
+    const { data, error } = await client
+      .from(USER_STATE_TABLE)
+      .select("key, value, updated_at")
+      .eq("user_id", userId);
+    if (error) throw error;
+    return data;
+  }
+
+  /** Makes the local cache match the account, and remembers what it saw. */
+  function applyRemote(rows) {
+    const remote = new Map(rows.map((row) => [row.key, row]));
+    for (const key of listSyncedKeys(storage, certIds)) {
+      if (!remote.has(key)) storage.removeItem(key);
+    }
+    seen = new Map();
+    for (const [key, row] of remote) {
+      storage.setItem(key, JSON.stringify(row.value));
+      seen.set(key, row.updated_at);
     }
   }
 
@@ -119,34 +145,80 @@ export function createCloudSync({
     pending = new Map();
   }
 
+  function listen() {
+    running = true;
+    setStorageWriteListener(record);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("online", flushQuietly);
+  }
+
+  /**
+   * Resolves to { offline: true } when the account could not be reached but
+   * this browser already holds the user's own cache: the app runs on it and
+   * pushes the changes once the connection is back. Rejects only when there
+   * is nothing trustworthy to show.
+   */
   async function start() {
     const owner = storage.getItem(OWNER_KEY);
     const ownsCache = owner === userId;
     if (owner && !ownsCache) clearLocal();
     if (!ownsCache) pending = new Map();
-    if (ownsCache && pending.size) await flush();
 
-    const { data, error } = await client
-      .from(USER_STATE_TABLE)
-      .select("key, value")
-      .eq("user_id", userId);
-    if (error) throw error;
-
-    const remote = new Map(data.map((row) => [row.key, row.value]));
-    for (const key of listSyncedKeys(storage, certIds)) {
-      if (remote.has(key)) continue;
-      if (ownsCache) storage.removeItem(key);
-      else pending.set(key, readJson(storage, key));
+    let rows;
+    try {
+      if (ownsCache && pending.size) await flush();
+      rows = await pull();
+    } catch (error) {
+      if (!ownsCache) throw error;
+      listen();
+      return { offline: true };
     }
-    for (const [key, value] of remote) storage.setItem(key, JSON.stringify(value));
+
+    const remoteKeys = new Set(rows.map((row) => row.key));
+    if (!ownsCache) {
+      for (const key of listSyncedKeys(storage, certIds)) {
+        if (!remoteKeys.has(key)) pending.set(key, readJson(storage, key));
+      }
+    }
+    const imported = new Map(pending);
+    applyRemote(rows);
+    for (const [key, value] of imported) storage.setItem(key, JSON.stringify(value));
     storage.setItem(OWNER_KEY, userId);
     persistPending();
-    if (pending.size) await flush();
+    listen();
+    if (pending.size) await flushQuietly();
+    return { offline: false };
+  }
 
-    running = true;
-    setStorageWriteListener(record);
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    window.addEventListener("online", flushQuietly);
+  /**
+   * Checks whether another device changed the account since this one last
+   * synced, and if so pulls it into the local cache. Resolves to true when
+   * the cache changed, so the caller can re-mount the app on fresh data.
+   *
+   * Without this, a tab left open on a phone keeps its old progress in
+   * memory, and its next save would overwrite what was studied elsewhere.
+   * Local changes not yet pushed win: the check is skipped while any are
+   * pending.
+   */
+  async function refresh() {
+    if (!running || pending.size || inFlight) return false;
+    try {
+      const { data, error } = await client
+        .from(USER_STATE_TABLE)
+        .select("key, updated_at")
+        .eq("user_id", userId);
+      if (error) throw error;
+      const changed =
+        data.length !== seen.size || data.some((row) => seen.get(row.key) !== row.updated_at);
+      if (!changed) return false;
+      const rows = await pull();
+      if (pending.size || inFlight) return false;
+      applyRemote(rows);
+      return true;
+    } catch (error) {
+      console.warn("Could not check for changes from other devices:", error);
+      return false;
+    }
   }
 
   async function stop({ clear = false } = {}) {
@@ -160,5 +232,5 @@ export function createCloudSync({
     if (clear) clearLocal();
   }
 
-  return { start, stop, flush };
+  return { start, stop, flush, refresh };
 }

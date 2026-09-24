@@ -26,30 +26,58 @@ function installStorage() {
   return { store, api };
 }
 
-/** Just enough of the supabase-js query builder, backed by a Map. */
+/**
+ * Just enough of the supabase-js query builder, backed by a Map. Each write
+ * bumps a fake updated_at so change detection has something to compare.
+ */
 function fakeClient(rows = new Map()) {
   const calls = [];
-  return {
+  const stamps = new Map();
+  let clock = 0;
+  const stamp = (id) => stamps.get(id) ?? stamps.set(id, `t${++clock}`).get(id);
+  const client = {
     rows,
     calls,
+    offline: false,
+    /** Simulates another device writing a key. */
+    remoteWrite(key, value) {
+      rows.set(`${USER}|${key}`, value);
+      stamps.set(`${USER}|${key}`, `t${++clock}`);
+    },
     from() {
+      const fail = async () => ({ data: null, error: new Error("offline") });
       return {
-        select: () => ({
-          eq: async (_col, userId) => ({
-            data: [...rows.entries()]
-              .filter(([k]) => k.startsWith(`${userId}|`))
-              .map(([k, value]) => ({ key: k.split("|")[1], value })),
-            error: null,
-          }),
+        select: (cols) => ({
+          eq: async (_col, userId) => {
+            if (client.offline) return fail();
+            calls.push(["select", cols]);
+            return {
+              data: [...rows.entries()]
+                .filter(([k]) => k.startsWith(`${userId}|`))
+                .map(([k, value]) => ({ key: k.split("|")[1], value, updated_at: stamp(k) })),
+              error: null,
+            };
+          },
         }),
-        upsert: async (records) => {
-          calls.push(["upsert", records.map((r) => r.key)]);
-          records.forEach((r) => rows.set(`${r.user_id}|${r.key}`, r.value));
-          return { error: null };
-        },
+        upsert: (records) => ({
+          select: async () => {
+            if (client.offline) return fail();
+            calls.push(["upsert", records.map((r) => r.key)]);
+            return {
+              data: records.map((r) => {
+                const id = `${r.user_id}|${r.key}`;
+                rows.set(id, r.value);
+                stamps.set(id, `t${++clock}`);
+                return { key: r.key, updated_at: stamps.get(id) };
+              }),
+              error: null,
+            };
+          },
+        }),
         delete: () => ({
           eq: (_col, userId) => ({
             in: async (_c, keys) => {
+              if (client.offline) return fail();
               calls.push(["delete", keys]);
               keys.forEach((k) => rows.delete(`${userId}|${k}`));
               return { error: null };
@@ -59,7 +87,10 @@ function fakeClient(rows = new Map()) {
       };
     },
   };
+  return client;
 }
+
+const writes = (client) => client.calls.filter(([op]) => op !== "select");
 
 describe("createCloudSync", () => {
   let store;
@@ -91,7 +122,7 @@ describe("createCloudSync", () => {
     await createCloudSync({ client, userId: USER, certIds: CERT_IDS }).start();
 
     expect(JSON.parse(store.get("gcp-pde.progress.v2"))).toEqual({ xp: 9000 });
-    expect(client.calls).toEqual([]);
+    expect(writes(client)).toEqual([]);
   });
 
   it("drops its own stale keys that the account no longer has", async () => {
@@ -102,7 +133,7 @@ describe("createCloudSync", () => {
     await createCloudSync({ client, userId: USER, certIds: CERT_IDS }).start();
 
     expect(store.has("gcp-pde.activeMock.v2")).toBe(false);
-    expect(client.calls).toEqual([]);
+    expect(writes(client)).toEqual([]);
   });
 
   it("never hands another user's cache to the account signing in", async () => {
@@ -129,7 +160,7 @@ describe("createCloudSync", () => {
     expect(JSON.parse(store.get(PENDING_KEY))["gcp-pca.progress.v2"].xp).toBe(2);
 
     await vi.advanceTimersByTimeAsync(150);
-    expect(client.calls).toEqual([["upsert", ["gcp-pca.progress.v2", "gcp-pca.activeMock.v2"]]]);
+    expect(writes(client)).toEqual([["upsert", ["gcp-pca.progress.v2", "gcp-pca.activeMock.v2"]]]);
     expect(client.rows.get(`${USER}|gcp-pca.progress.v2`).xp).toBe(2);
     expect(store.has(PENDING_KEY)).toBe(false);
 
@@ -155,17 +186,84 @@ describe("createCloudSync", () => {
     const client = fakeClient();
     const sync = createCloudSync({ client, userId: USER, certIds: CERT_IDS, delayMs: 10_000 });
     await sync.start();
-    const realFrom = client.from.bind(client);
-    client.from = () => ({ ...realFrom(), upsert: async () => ({ error: new Error("offline") }) });
+    client.offline = true;
 
     createStorage("gcp-pde").saveProgress({ ...EMPTY_PROGRESS, xp: 5 });
     await expect(sync.flush()).rejects.toThrow("offline");
     expect(store.has(PENDING_KEY)).toBe(true);
 
-    client.from = realFrom;
+    client.offline = false;
     await sync.flush();
     expect(client.rows.get(`${USER}|gcp-pde.progress.v2`).xp).toBe(5);
     await sync.stop();
+  });
+
+  it("picks up progress saved on another device when asked to refresh", async () => {
+    const client = fakeClient(new Map([[`${USER}|gcp-pde.progress.v2`, { xp: 10 }]]));
+    const sync = createCloudSync({ client, userId: USER, certIds: CERT_IDS });
+    await sync.start();
+
+    expect(await sync.refresh()).toBe(false);
+
+    client.remoteWrite("gcp-pde.progress.v2", { xp: 99 });
+    expect(await sync.refresh()).toBe(true);
+    expect(JSON.parse(store.get("gcp-pde.progress.v2"))).toEqual({ xp: 99 });
+    expect(await sync.refresh()).toBe(false);
+    await sync.stop();
+  });
+
+  it("does not count its own writes as changes from elsewhere", async () => {
+    const client = fakeClient();
+    const sync = createCloudSync({ client, userId: USER, certIds: CERT_IDS, delayMs: 10_000 });
+    await sync.start();
+
+    createStorage("gcp-pde").saveProgress({ ...EMPTY_PROGRESS, xp: 7 });
+    expect(await sync.refresh()).toBe(false);
+    await sync.flush();
+
+    expect(await sync.refresh()).toBe(false);
+    expect(JSON.parse(store.get("gcp-pde.progress.v2")).xp).toBe(7);
+    await sync.stop();
+  });
+
+  it("keeps unsent local changes instead of refreshing over them", async () => {
+    const client = fakeClient(new Map([[`${USER}|gcp-pde.progress.v2`, { xp: 1 }]]));
+    const sync = createCloudSync({ client, userId: USER, certIds: CERT_IDS, delayMs: 10_000 });
+    await sync.start();
+
+    createStorage("gcp-pde").saveProgress({ ...EMPTY_PROGRESS, xp: 50 });
+    client.remoteWrite("gcp-pde.progress.v2", { xp: 2 });
+
+    expect(await sync.refresh()).toBe(false);
+    expect(JSON.parse(store.get("gcp-pde.progress.v2")).xp).toBe(50);
+    await sync.stop();
+  });
+
+  it("runs on its own cache when the account cannot be reached", async () => {
+    store.set(OWNER_KEY, USER);
+    store.set("gcp-pde.progress.v2", JSON.stringify({ xp: 30 }));
+    const client = fakeClient();
+    client.offline = true;
+    const sync = createCloudSync({ client, userId: USER, certIds: CERT_IDS, delayMs: 10_000 });
+
+    expect(await sync.start()).toEqual({ offline: true });
+    expect(JSON.parse(store.get("gcp-pde.progress.v2"))).toEqual({ xp: 30 });
+
+    createStorage("gcp-pde").saveProgress({ ...EMPTY_PROGRESS, xp: 31 });
+    client.offline = false;
+    await sync.flush();
+    expect(client.rows.get(`${USER}|gcp-pde.progress.v2`).xp).toBe(31);
+    await sync.stop();
+  });
+
+  it("refuses to start offline without a cache of its own", async () => {
+    store.set("gcp-pde.progress.v2", JSON.stringify({ xp: 30 }));
+    const client = fakeClient();
+    client.offline = true;
+
+    await expect(
+      createCloudSync({ client, userId: USER, certIds: CERT_IDS }).start(),
+    ).rejects.toThrow("offline");
   });
 
   it("clears the local cache on sign out", async () => {
