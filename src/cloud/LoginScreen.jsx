@@ -155,7 +155,7 @@ function Divider({ label }) {
   );
 }
 
-export default function LoginScreen({ client, onStartTrial }) {
+export default function LoginScreen({ client, onStartTrial, subtitle }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -222,7 +222,7 @@ export default function LoginScreen({ client, onStartTrial }) {
     });
 
   return (
-    <AuthShell subtitle="Sign in to save your progress">
+    <AuthShell subtitle={subtitle ?? "Sign in to save your progress"}>
       <Message message={message} />
 
       <div style={{ display: "grid", gap: "var(--space-md)" }}>

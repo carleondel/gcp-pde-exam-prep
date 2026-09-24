@@ -182,6 +182,23 @@ as described above; tests and Docker work that way.
   `public.feedback` with the question on screen attached, and fall back to
   email if sending fails.
 
+### Complimentary access codes
+
+To give someone free access, create a code in the Supabase SQL editor:
+
+```sql
+insert into public.access_grants (code, note, plan, expires_at)
+values ('DF-ABCD-EFGH', 'Ana (friend)', 'pro', null);  -- null = never expires
+```
+
+Then send them `https://<site>/app/?redeem=DF-ABCD-EFGH`. The code is kept
+through sign-in or sign-up, redeemed once with `redeem_access_code()`, and
+tied to that account; the top bar shows the plan. To see who redeemed what:
+`select code, note, redeemed_by, redeemed_at from public.access_grants;`.
+Keep real codes out of the repo. There is no billing yet, so a grant only
+shows up as a badge for now; the paywall should honour
+`loadAccess()` in [src/cloud/access.js](src/cloud/access.js).
+
 ### Setting it up
 
 1. **Supabase.** Create a project. In the SQL editor, run every file in
@@ -193,6 +210,7 @@ as described above; tests and Docker work that way.
      in Table Editor.
    - `waitlist` holds the early-bird sign-ups from the pricing section of
      the landing page. It uses the same insert-only rule.
+   - `access_grants` holds complimentary access codes; see below.
 2. **Auth URLs.** Go to Supabase → Authentication → URL Configuration.
    Set _Site URL_ to the production URL. Add `http://localhost:5173/**`
    and `https://*-<vercel-team>.vercel.app/**` (preview deploys) to the
