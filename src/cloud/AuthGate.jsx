@@ -90,9 +90,16 @@ function CloudAuthGate({ client, children }) {
 
   useEffect(() => {
     if (!userId) return undefined;
-    const sync = createCloudSync({ client, userId, certIds: CERT_IDS });
-    syncRef.current = sync;
     let cancelled = false;
+    // Another device, or an import, changed the account while this tab was
+    // open: re-mount on the fresh data instead of overwriting it.
+    const remount = () => {
+      if (cancelled) return;
+      setSyncState("ready");
+      setAppVersion((version) => version + 1);
+    };
+    const sync = createCloudSync({ client, userId, certIds: CERT_IDS, onRemoteChange: remount });
+    syncRef.current = sync;
     setSyncState("syncing");
     sync
       .start()
@@ -106,11 +113,7 @@ function CloudAuthGate({ client, children }) {
     // and re-mount the app so it hydrates from it instead of saving over it.
     const onVisible = () => {
       if (document.visibilityState !== "visible") return;
-      sync.refresh().then((changed) => {
-        if (cancelled || !changed) return;
-        setSyncState("ready");
-        setAppVersion((version) => version + 1);
-      });
+      sync.refresh().then((changed) => changed && remount());
     };
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("online", onVisible);
