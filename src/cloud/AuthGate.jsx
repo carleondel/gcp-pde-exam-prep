@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { CERT_LIST } from "../certs/index.js";
 import { AuthContext, LOCAL_AUTH, TRIAL_QUESTION_COUNT } from "./auth-context.js";
@@ -62,6 +62,7 @@ function CloudAuthGate({ client, children }) {
   const [session, setSession] = useState(undefined);
   const [recovering, setRecovering] = useState(false);
   const [syncState, setSyncState] = useState("idle");
+  const [appVersion, setAppVersion] = useState(0);
   const [trial, setTrial] = useState(() => {
     if (new URLSearchParams(window.location.search).get("trial") === "1") {
       window.sessionStorage.setItem(TRIAL_FLAG_KEY, "1");
@@ -90,13 +91,28 @@ function CloudAuthGate({ client, children }) {
     setSyncState("syncing");
     sync
       .start()
-      .then(() => !cancelled && setSyncState("ready"))
+      .then(({ offline }) => !cancelled && setSyncState(offline ? "offline" : "ready"))
       .catch((error) => {
         console.error("Could not load your progress:", error);
         if (!cancelled) setSyncState("error");
       });
+
+    // Coming back to the tab: pick up what was studied on another device,
+    // and re-mount the app so it hydrates from it instead of saving over it.
+    const onVisible = () => {
+      if (document.visibilityState !== "visible") return;
+      sync.refresh().then((changed) => {
+        if (cancelled || !changed) return;
+        setSyncState("ready");
+        setAppVersion((version) => version + 1);
+      });
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("online", onVisible);
     return () => {
       cancelled = true;
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("online", onVisible);
       sync.stop();
       if (syncRef.current === sync) syncRef.current = null;
     };
@@ -141,16 +157,32 @@ function CloudAuthGate({ client, children }) {
         />
       );
     }
-    if (syncState !== "ready") return <StatusScreen text="Syncing your progress…" />;
+    if (syncState !== "ready" && syncState !== "offline") {
+      return <StatusScreen text="Syncing your progress…" />;
+    }
     return (
       <AuthContext.Provider value={auth}>
         <div style={barStyle}>
-          <span>{user.email}</span>
+          <span
+            style={{
+              minWidth: 0,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {user.email}
+          </span>
+          {syncState === "offline" && (
+            <span title="Changes are saved on this device and sync when you are back online.">
+              · offline
+            </span>
+          )}
           <button type="button" style={barButtonStyle} onClick={signOut}>
             Sign out
           </button>
         </div>
-        {children}
+        <Fragment key={appVersion}>{children}</Fragment>
       </AuthContext.Provider>
     );
   }
