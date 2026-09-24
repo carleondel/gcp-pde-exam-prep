@@ -115,6 +115,15 @@ describe("the mock exam, wired into the app", () => {
       expect(Math.abs(readCountdown() - MOCK_DURATION_SEC)).toBeLessThanOrEqual(3);
     });
 
+    it("shrinks to the bank, with the clock scaled to match, when the bank is smaller", () => {
+      render(<AppContent allQuestions={BANK.slice(0, 20)} />);
+      startMock();
+
+      expect(screen.getByText("1/20")).toBeTruthy();
+      const expected = Math.round((MOCK_DURATION_SEC * 20) / MOCK_COUNT);
+      expect(Math.abs(readCountdown() - expected)).toBeLessThanOrEqual(3);
+    });
+
     it("records the attempt as in flight as soon as it starts", () => {
       render(<AppContent allQuestions={BANK} />);
       startMock();

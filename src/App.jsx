@@ -203,6 +203,10 @@ export function AppContent({ allQuestions }) {
     [allQuestions],
   );
   const topicCounts = useMemo(() => buildTopicCounts(allQuestions), [allQuestions]);
+  // A bank smaller than the exam (the trial) gets a proportionally shorter
+  // mock rather than one that promises 50 questions and delivers 20.
+  const mockQuestionCount = Math.min(MOCK_QUESTION_COUNT, allQuestions.length);
+  const mockDurationSec = Math.round((MOCK_DURATION_SEC * mockQuestionCount) / MOCK_QUESTION_COUNT);
   const [ready, setReady] = useState(false);
   const [screen, setScreen] = useState("menu");
   // Sub-vista del menú: la portada muestra acciones y progreso, y cada
@@ -336,8 +340,8 @@ export function AppContent({ allQuestions }) {
     updateProgress,
     session,
     now,
-    questionCount: MOCK_QUESTION_COUNT,
-    durationSec: MOCK_DURATION_SEC,
+    questionCount: mockQuestionCount,
+    durationSec: mockDurationSec,
     passPercent: PASS_PERCENT,
     examDomains: ACTIVE_CERT.examDomains,
     topicMap: ACTIVE_CERT.topicMap,
@@ -1796,7 +1800,7 @@ export function AppContent({ allQuestions }) {
             ? "No saved mistakes yet"
             : "Review only the questions you missed",
       },
-      mock: { questionCount: MOCK_QUESTION_COUNT, durationSec: MOCK_DURATION_SEC },
+      mock: { questionCount: mockQuestionCount, durationSec: mockDurationSec },
     };
     const homeBlockGrid = {
       list: visibleBlocks,
@@ -2063,14 +2067,11 @@ export function AppContent({ allQuestions }) {
 
               {menuView === "mock" && (
                 <MockView
-                  questionCount={MOCK_QUESTION_COUNT}
-                  durationSec={MOCK_DURATION_SEC}
+                  questionCount={mockQuestionCount}
+                  durationSec={mockDurationSec}
                   passPercent={PASS_PERCENT}
                   certShort={ACTIVE_CERT.short}
-                  distribution={computeMockDistribution(
-                    MOCK_QUESTION_COUNT,
-                    ACTIVE_CERT.examDomains,
-                  )}
+                  distribution={computeMockDistribution(mockQuestionCount, ACTIVE_CERT.examDomains)}
                   preferRecent={mockPreferRecent}
                   onPreferRecentChange={setMockPreferRecent}
                   onStart={startMock}
