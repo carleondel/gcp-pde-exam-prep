@@ -2,6 +2,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "rea
 
 import { CERT_LIST } from "../certs/index.js";
 import { AuthContext, LOCAL_AUTH, TRIAL_QUESTION_COUNT } from "./auth-context.js";
+import FeedbackButton from "./FeedbackButton.jsx";
 import LoginScreen, { AuthShell, NewPasswordScreen } from "./LoginScreen.jsx";
 import { supabase } from "./supabase.js";
 import { createCloudSync } from "./sync.js";
@@ -178,6 +179,7 @@ function CloudAuthGate({ client, children }) {
               · offline
             </span>
           )}
+          <FeedbackButton client={client} user={user} style={barButtonStyle} />
           <button type="button" style={barButtonStyle} onClick={signOut}>
             Sign out
           </button>
@@ -195,6 +197,7 @@ function CloudAuthGate({ client, children }) {
             Trial mode · {TRIAL_QUESTION_COUNT} questions per certification. Create an account to
             unlock every question and keep your progress.
           </span>
+          <FeedbackButton client={client} user={null} style={barButtonStyle} />
           <button type="button" style={barButtonStyle} onClick={exitTrial}>
             Sign up
           </button>

@@ -173,14 +173,24 @@ as described above; tests and Docker work that way.
   account existed (or during the trial) is uploaded for any key the
   account lacks, so signing up keeps it. Writes not yet confirmed are kept
   locally and pushed on the next visit. Signing out clears the local copy.
-  Code: [src/cloud/](src/cloud/).
+  Returning to the tab checks the rows' `updated_at` values. If another
+  device has saved since, the app pulls the new data and re-mounts, so it
+  does not save stale in-memory progress over it. If the account cannot be
+  reached, the app runs on this browser's own cache and pushes the changes
+  once it is back online. Code: [src/cloud/](src/cloud/).
+- **Feedback:** the top bar has a **Feedback** button. Reports go to
+  `public.feedback` with the question on screen attached, and fall back to
+  email if sending fails.
 
 ### Setting it up
 
-1. **Supabase.** Create a project. In the SQL editor, run
-   [supabase/migrations/20260923000000_user_state.sql](supabase/migrations/20260923000000_user_state.sql).
-   It creates the table with row level security, so users can only
-   read and write their own rows.
+1. **Supabase.** Create a project. In the SQL editor, run every file in
+   [supabase/migrations/](supabase/migrations/), oldest first:
+   - `user_state` holds progress. Row level security lets users read and
+     write only their own rows.
+   - `feedback` holds reports sent from the in-app **Feedback** button.
+     Anyone can insert and nobody can read through the API; you read it
+     in Table Editor.
 2. **Auth URLs.** Go to Supabase → Authentication → URL Configuration.
    Set _Site URL_ to the production URL. Add `http://localhost:5173/**`
    and `https://*-<vercel-team>.vercel.app/**` (preview deploys) to the
