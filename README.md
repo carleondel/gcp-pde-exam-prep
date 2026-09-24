@@ -1,20 +1,32 @@
-# Exam Prep
+# DataForge
 
-Local-first study app for IT certifications. Practice mode, timed mocks,
+**Live: [dataforge-inky.vercel.app](https://dataforge-inky.vercel.app)** ·
+[Open the app](https://dataforge-inky.vercel.app/app/) ·
+[Try 20 questions without an account](https://dataforge-inky.vercel.app/app/?trial=1)
+
+Study app for IT certifications. Practice mode, timed mocks,
 block-by-block study, daily challenge, and a small gamification layer
 (XP, ranks, achievements, boss battles, mystery chests).
 
 **Your progress is saved as you go and is still there when you come
-back.** Close the tab, quit the browser, restart the machine — XP,
-streaks, block history and a half-finished mock all survive, with no
-account and no server involved. See
-[where progress is stored](#where-progress-is-stored).
+back.** On the web version it is tied to your account (Google, GitHub or
+email), so it follows you from your laptop to your phone. Run locally
+without Supabase configured, it lives in the browser with no account and
+no server involved. See [where progress is stored](#where-progress-is-stored)
+and [the web version](#web-version-login-and-cloud-progress).
 
 Originally built to prepare for the **Google Cloud Professional Data
 Engineer (PDE)** exam, then refactored into a multi-cert architecture.
 It now ships two certifications behind the same engine, with an in-app
 selector to switch between them; progress is tracked separately for
 each.
+
+| URL         | What                                                           | Source                                                 |
+| ----------- | -------------------------------------------------------------- | ------------------------------------------------------ |
+| `/`         | Landing page                                                   | [index.html](index.html), [src/landing/](src/landing/) |
+| `/app/`     | The study app (sign-in, trial mode, `?cert=gcp-pde`/`gcp-pca`) | [app/index.html](app/index.html), [src/](src/)         |
+| `/privacy/` | Privacy policy                                                 | [privacy/index.html](privacy/index.html)               |
+| `/terms/`   | Terms of service                                               | [terms/index.html](terms/index.html)                   |
 
 > Independent study tool, not affiliated with or sponsored by any
 > certification authority. Brand names and logos are used solely as
@@ -52,9 +64,12 @@ id; see the manifest contract further down.
 
 ## Stack
 
-- React 18 + Vite
-- No router, no state library, no CSS framework — `localStorage` for
-  persistence
+- React 18 + Vite, built as a multi-page app (static landing and legal
+  pages, React app under `/app/`)
+- No router, no state library, no CSS framework. `localStorage` for
+  persistence, mirrored to Supabase when it is configured
+- Supabase for auth and cloud progress, Vercel for hosting (deploys on
+  every push to `main`)
 - Optional Docker deployment behind nginx
 
 ## Running the app
@@ -66,7 +81,7 @@ warning about saved progress below.
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173
+npm run dev          # landing at http://localhost:5173, app at /app/
 ```
 
 Vite dev server with hot module replacement: edits appear without a

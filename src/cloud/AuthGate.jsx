@@ -62,7 +62,12 @@ function CloudAuthGate({ client, children }) {
   const [session, setSession] = useState(undefined);
   const [recovering, setRecovering] = useState(false);
   const [syncState, setSyncState] = useState("idle");
-  const [trial, setTrial] = useState(() => window.sessionStorage.getItem(TRIAL_FLAG_KEY) === "1");
+  const [trial, setTrial] = useState(() => {
+    if (new URLSearchParams(window.location.search).get("trial") === "1") {
+      window.sessionStorage.setItem(TRIAL_FLAG_KEY, "1");
+    }
+    return window.sessionStorage.getItem(TRIAL_FLAG_KEY) === "1";
+  });
   const syncRef = useRef(null);
 
   useEffect(() => {
@@ -104,6 +109,9 @@ function CloudAuthGate({ client, children }) {
 
   const exitTrial = useCallback(() => {
     window.sessionStorage.removeItem(TRIAL_FLAG_KEY);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("trial");
+    window.history.replaceState(null, "", url);
     setTrial(false);
   }, []);
 
