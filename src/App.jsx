@@ -1938,9 +1938,23 @@ export function AppContent({ allQuestions }) {
             >
               {allQuestions.length} questions
               {QUESTIONS_DUMPED_ON && (
-                <span title="Date the question bank was last updated.">
-                  {" · "}updated {QUESTIONS_DUMPED_ON}
-                </span>
+                <>
+                  {" · "}
+                  <span
+                    title="Date the question bank was last updated."
+                    style={{
+                      display: "inline-block",
+                      padding: "2px 10px",
+                      borderRadius: "var(--radius-pill)",
+                      background: "var(--correct-soft)",
+                      color: "var(--signal-correct)",
+                      fontSize: 13,
+                      fontWeight: 700,
+                    }}
+                  >
+                    ✓ Updated {QUESTIONS_DUMPED_ON}
+                  </span>
+                </>
               )}
             </p>
           </div>

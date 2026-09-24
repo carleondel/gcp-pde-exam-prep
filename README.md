@@ -23,7 +23,7 @@ each.
 
 | URL         | What                                                           | Source                                                 |
 | ----------- | -------------------------------------------------------------- | ------------------------------------------------------ |
-| `/`         | Landing page                                                   | [index.html](index.html), [src/landing/](src/landing/) |
+| `/`         | Landing page with pricing and the early-bird list              | [index.html](index.html), [src/landing/](src/landing/) |
 | `/app/`     | The study app (sign-in, trial mode, `?cert=gcp-pde`/`gcp-pca`) | [app/index.html](app/index.html), [src/](src/)         |
 | `/privacy/` | Privacy policy                                                 | [privacy/index.html](privacy/index.html)               |
 | `/terms/`   | Terms of service                                               | [terms/index.html](terms/index.html)                   |
@@ -191,6 +191,8 @@ as described above; tests and Docker work that way.
    - `feedback` holds reports sent from the in-app **Feedback** button.
      Anyone can insert and nobody can read through the API; you read it
      in Table Editor.
+   - `waitlist` holds the early-bird sign-ups from the pricing section of
+     the landing page. It uses the same insert-only rule.
 2. **Auth URLs.** Go to Supabase → Authentication → URL Configuration.
    Set _Site URL_ to the production URL. Add `http://localhost:5173/**`
    and `https://*-<vercel-team>.vercel.app/**` (preview deploys) to the

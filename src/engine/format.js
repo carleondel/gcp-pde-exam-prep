@@ -12,7 +12,8 @@ export function toLocalDateString(date = new Date()) {
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /**
- * Formats the manifest's questionsDumpedAt ("YYYY-MM-DD") as "17 Aug 2026".
+ * Formats the manifest's questionsDumpedAt ("YYYY-MM-DD") as "Aug 17, 2026"
+ * (en-US).
  *
  * Parsed by hand rather than with `new Date(iso)`, which reads a bare
  * date string as UTC midnight and then renders it in local time — west
@@ -30,5 +31,5 @@ export function formatDumpDate(iso) {
   const monthName = MONTHS[Number(month) - 1];
   if (!monthName) return null;
 
-  return `${Number(day)} ${monthName} ${year}`;
+  return `${monthName} ${Number(day)}, ${year}`;
 }
