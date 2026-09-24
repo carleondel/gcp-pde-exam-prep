@@ -26,7 +26,7 @@ function SummaryCards({
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fit, minmax(min(150px, 100%), 1fr))",
         gap: "var(--space-md)",
         marginBottom: 16,
       }}
@@ -463,7 +463,7 @@ function DomainProgress({ domains, certShort }) {
               key={domain.id}
               style={{
                 display: "grid",
-                gridTemplateColumns: "140px 1fr auto",
+                gridTemplateColumns: "minmax(88px, 140px) 1fr auto",
                 alignItems: "center",
                 gap: 10,
               }}
@@ -628,7 +628,7 @@ function DailyCards({ daily, onStartDaily }) {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
         gap: "var(--space-md)",
         marginBottom: 18,
       }}
@@ -773,7 +773,7 @@ export default function HomeView({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
           gap: 18,
           marginBottom: 18,
           alignItems: "start",

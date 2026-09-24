@@ -30,7 +30,7 @@ export default function ProgressView({ inventory, unlockedAchievements }) {
         background: "var(--gradient-panel)",
         border: "1px solid var(--surface-line)",
         borderRadius: "var(--radius-2xl)",
-        padding: 20,
+        padding: "var(--pad-panel)",
       }}
     >
       <div

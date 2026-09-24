@@ -40,7 +40,7 @@ export default function PracticeView({
         background: "var(--gradient-panel-strong)",
         border: "1px solid var(--primary-medium)",
         borderRadius: "var(--radius-2xl)",
-        padding: 24,
+        padding: "var(--pad-card)",
         boxShadow: "var(--shadow-elevated), var(--shadow-glow)",
       }}
     >
@@ -49,6 +49,8 @@ export default function PracticeView({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "var(--space-md)",
           marginBottom: 16,
         }}
       >
@@ -67,7 +69,7 @@ export default function PracticeView({
           </div>
           <div
             style={{
-              fontSize: 28,
+              fontSize: "clamp(23px, 6vw, 28px)",
               fontWeight: 800,
               marginTop: 4,
               fontFamily: "var(--font-heading)",
@@ -106,7 +108,13 @@ export default function PracticeView({
         >
           Source
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))",
+            gap: 10,
+          }}
+        >
           {sourceOptions.map((option) => {
             const active = source === option.key;
             return (
@@ -135,7 +143,8 @@ export default function PracticeView({
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    gap: "var(--space-md)",
+                    flexWrap: "wrap",
+                    gap: "var(--space-sm)",
                     marginBottom: 6,
                   }}
                 >

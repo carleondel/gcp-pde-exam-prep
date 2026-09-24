@@ -42,7 +42,14 @@ export default function QuizView({
   onCancelMock,
 }) {
   return (
-    <div ref={scrollRef} style={{ maxWidth: 920, margin: "0 auto", padding: "24px 20px 40px" }}>
+    <div
+      ref={scrollRef}
+      style={{
+        maxWidth: 920,
+        margin: "0 auto",
+        padding: "clamp(14px, 4vw, 24px) var(--pad-page-x) 40px",
+      }}
+    >
       {session.mode !== "mock" && (
         <div
           style={{
@@ -423,7 +430,7 @@ export default function QuizView({
           background: "var(--gradient-panel)",
           borderRadius: "var(--radius-2xl)",
           border: "1px solid var(--surface-line)",
-          padding: 24,
+          padding: "var(--pad-card)",
           boxShadow: "var(--shadow-elevated)",
         }}
       >
@@ -473,9 +480,9 @@ export default function QuizView({
         <div
           style={{
             marginBottom: 18,
-            fontSize: 19,
+            fontSize: "clamp(16px, 4.3vw, 19px)",
             fontWeight: 700,
-            lineHeight: 1.6,
+            lineHeight: 1.55,
             color: "var(--text-primary)",
             whiteSpace: "pre-line",
           }}
@@ -875,10 +882,11 @@ export default function QuizView({
                     </div>
                     <div
                       style={{
-                        marginLeft: 34,
+                        marginLeft: "clamp(0px, 6vw, 34px)",
                         fontSize: 12,
                         color: "var(--text-secondary)",
                         lineHeight: 1.55,
+                        overflowWrap: "anywhere",
                       }}
                     >
                       {entry.text}

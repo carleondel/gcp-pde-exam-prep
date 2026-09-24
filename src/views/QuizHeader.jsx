@@ -32,7 +32,7 @@ export default function QuizHeader({
         backdropFilter: "blur(14px)",
       }}
     >
-      <div style={{ maxWidth: 920, margin: "0 auto", padding: "12px 20px" }}>
+      <div style={{ maxWidth: 920, margin: "0 auto", padding: "10px var(--pad-page-x)" }}>
         <div
           style={{
             display: "flex",
@@ -155,7 +155,7 @@ export default function QuizHeader({
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div
-            style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", minWidth: 132 }}
+            style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)", minWidth: 0 }}
           >
             <span style={{ fontSize: 20 }}>{rank.current.icon}</span>
             <div>
@@ -195,7 +195,7 @@ export default function QuizHeader({
           </div>
           <div
             style={{
-              minWidth: 100,
+              minWidth: 44,
               textAlign: "right",
               fontSize: 12,
               color: "var(--text-primary)",

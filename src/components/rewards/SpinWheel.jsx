@@ -133,7 +133,7 @@ export function SpinWheel({ onComplete, onClose }) {
         style={{
           background: "var(--gradient-panel-strong)",
           borderRadius: "var(--radius-2xl)",
-          padding: 32,
+          padding: "clamp(18px, 5vw, 32px)",
           textAlign: "center",
           border: "2px solid var(--accent-medium)",
           maxWidth: 420,

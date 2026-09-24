@@ -63,7 +63,13 @@ export default function ResultView({
       }}
     >
       <Confetti active={result.mode === "mock" ? summary.passed : summary.percent >= 80} />
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 20px 56px" }}>
+      <div
+        style={{
+          maxWidth: 900,
+          margin: "0 auto",
+          padding: "clamp(20px, 5vw, 40px) var(--pad-page-x) 56px",
+        }}
+      >
         <div style={{ textAlign: "center", marginBottom: 24 }}>
           <div
             style={{
@@ -107,7 +113,7 @@ export default function ResultView({
           <h2
             style={{
               margin: "0 0 8px",
-              fontSize: 34,
+              fontSize: "clamp(26px, 7vw, 34px)",
               fontWeight: 900,
               fontFamily: "var(--font-heading)",
             }}
@@ -284,7 +290,7 @@ export default function ResultView({
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))",
             gap: 14,
             marginBottom: 18,
           }}
@@ -293,7 +299,7 @@ export default function ResultView({
             style={{
               background: "var(--gradient-panel)",
               borderRadius: "var(--radius-xl)",
-              padding: 20,
+              padding: "var(--pad-panel)",
               border: "1px solid var(--surface-line)",
             }}
           >
@@ -358,7 +364,7 @@ export default function ResultView({
             style={{
               background: "var(--gradient-panel)",
               borderRadius: "var(--radius-xl)",
-              padding: 20,
+              padding: "var(--pad-panel)",
               border: "1px solid var(--surface-line)",
               maxHeight: 420,
               overflowY: "auto",

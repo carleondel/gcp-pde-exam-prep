@@ -24,7 +24,7 @@ export default function CertPicker() {
           <h1
             style={{
               margin: "0 0 8px",
-              fontSize: 40,
+              fontSize: "clamp(32px, 9vw, 40px)",
               lineHeight: 1.05,
               fontWeight: 900,
               letterSpacing: -1.2,
@@ -57,7 +57,7 @@ export default function CertPicker() {
                 alignItems: "center",
                 gap: "var(--space-md)",
                 textAlign: "left",
-                padding: "18px 20px",
+                padding: "16px clamp(14px, 4vw, 20px)",
                 borderRadius: "var(--radius-2xl)",
                 border: "1px solid var(--surface-line)",
                 background: "var(--gradient-panel)",
@@ -70,7 +70,14 @@ export default function CertPicker() {
               <img
                 src={cert.logoPath}
                 alt={cert.brand}
-                style={{ height: 32, width: "auto", opacity: 0.92, flexShrink: 0 }}
+                style={{
+                  height: "clamp(18px, 5vw, 32px)",
+                  width: "auto",
+                  maxWidth: "30%",
+                  objectFit: "contain",
+                  opacity: 0.92,
+                  flexShrink: 1,
+                }}
               />
               <span style={{ flex: 1, minWidth: 0 }}>
                 <span
@@ -105,7 +112,7 @@ export default function CertPicker() {
                       fontFamily: "var(--font-mono)",
                     }}
                   >
-                    Questions dumped on {formatDumpDate(cert.questionsDumpedAt)}
+                    Updated {formatDumpDate(cert.questionsDumpedAt)}
                   </span>
                 )}
               </span>

@@ -80,7 +80,7 @@ export default function MockView({
           background: "var(--gradient-panel)",
           border: "1px solid var(--accent-medium)",
           borderRadius: "var(--radius-2xl)",
-          padding: 24,
+          padding: "var(--pad-card)",
           boxShadow: "var(--shadow-card)",
         }}
       >
@@ -248,7 +248,7 @@ export default function MockView({
             background: "var(--gradient-panel)",
             border: "1px solid var(--surface-line)",
             borderRadius: "var(--radius-2xl)",
-            padding: 20,
+            padding: "var(--pad-panel)",
           }}
         >
           <div

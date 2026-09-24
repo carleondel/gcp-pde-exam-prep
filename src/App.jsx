@@ -1823,15 +1823,23 @@ export function AppContent({ allQuestions }) {
         }}
       >
         {showAch && <AchievementPopup achievement={showAch} onClose={() => setShowAch(null)} />}
-        <div style={{ maxWidth: 1080, margin: "0 auto", padding: "36px 20px 56px" }}>
+        <div
+          style={{
+            maxWidth: 1080,
+            margin: "0 auto",
+            padding: "clamp(20px, 5vw, 36px) var(--pad-page-x) 56px",
+          }}
+        >
           <div style={{ textAlign: "center", marginBottom: 26 }}>
             <div
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 14,
-                padding: "12px 18px",
-                borderRadius: "var(--radius-pill)",
+                justifyContent: "center",
+                gap: "clamp(8px, 2.5vw, 14px)",
+                maxWidth: "100%",
+                padding: "10px clamp(12px, 3.5vw, 18px)",
+                borderRadius: "var(--radius-xl)",
                 marginBottom: 18,
                 background: "var(--surface-panel-muted)",
                 border: "1px solid var(--surface-line)",
@@ -1841,12 +1849,19 @@ export function AppContent({ allQuestions }) {
               <img
                 src={ACTIVE_CERT.logoPath}
                 alt={ACTIVE_CERT.brand}
-                style={{ height: 24, width: "auto", opacity: 0.92 }}
+                style={{
+                  height: "clamp(18px, 5vw, 24px)",
+                  width: "auto",
+                  opacity: 0.92,
+                  flexShrink: 0,
+                }}
               />
               <span style={{ width: 1, height: 18, background: "var(--surface-line-strong)" }} />
               <span
                 style={{
-                  fontSize: 12,
+                  minWidth: 0,
+                  fontSize: "clamp(10px, 2.8vw, 12px)",
+                  lineHeight: 1.3,
                   color: "var(--text-primary)",
                   letterSpacing: 1,
                   textTransform: "uppercase",
@@ -1885,7 +1900,7 @@ export function AppContent({ allQuestions }) {
             <h1
               style={{
                 margin: "0 0 8px",
-                fontSize: 44,
+                fontSize: "clamp(34px, 9vw, 44px)",
                 lineHeight: 1.02,
                 fontWeight: 900,
                 letterSpacing: -1.4,
@@ -1914,8 +1929,8 @@ export function AppContent({ allQuestions }) {
             >
               {allQuestions.length} questions
               {QUESTIONS_DUMPED_ON && (
-                <span title="Date the question bank was last dumped from the original source.">
-                  {" · "}last dump {QUESTIONS_DUMPED_ON}
+                <span title="Date the question bank was last updated.">
+                  {" · "}updated {QUESTIONS_DUMPED_ON}
                 </span>
               )}
             </p>
