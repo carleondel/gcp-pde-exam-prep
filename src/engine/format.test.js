@@ -3,24 +3,24 @@ import { describe, expect, it } from "vitest";
 import { formatDumpDate } from "./format.js";
 
 describe("formatDumpDate", () => {
-  it("formats an ISO date in Spanish", () => {
-    expect(formatDumpDate("2026-08-17")).toBe("17 Aug 2026");
+  it("formats an ISO date in US English", () => {
+    expect(formatDumpDate("2026-08-17")).toBe("Aug 17, 2026");
   });
 
   it("drops the leading zero from the day", () => {
-    expect(formatDumpDate("2026-04-05")).toBe("5 Apr 2026");
+    expect(formatDumpDate("2026-04-05")).toBe("Apr 5, 2026");
   });
 
   it("handles the first and last month", () => {
-    expect(formatDumpDate("2026-01-01")).toBe("1 Jan 2026");
-    expect(formatDumpDate("2026-12-31")).toBe("31 Dec 2026");
+    expect(formatDumpDate("2026-01-01")).toBe("Jan 1, 2026");
+    expect(formatDumpDate("2026-12-31")).toBe("Dec 31, 2026");
   });
 
   it("does not shift the date by a day", () => {
     // new Date("2026-01-01") is UTC midnight; rendered in a timezone west
     // of Greenwich that is still 31 December. Parsing by hand is the whole
     // reason this helper exists, so the guard is worth pinning down.
-    expect(formatDumpDate("2026-01-01")).toContain("1 Jan");
+    expect(formatDumpDate("2026-01-01")).toContain("Jan 1,");
     expect(formatDumpDate("2026-01-01")).not.toContain("dic");
   });
 
@@ -43,6 +43,6 @@ describe("formatDumpDate", () => {
   });
 
   it("tolerates surrounding whitespace", () => {
-    expect(formatDumpDate("  2026-08-17 ")).toBe("17 Aug 2026");
+    expect(formatDumpDate("  2026-08-17 ")).toBe("Aug 17, 2026");
   });
 });

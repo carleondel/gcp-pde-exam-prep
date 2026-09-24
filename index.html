@@ -54,6 +54,7 @@
         <nav class="nav-links" aria-label="Main">
           <a href="#certifications">Certifications</a>
           <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
           <a href="#faq">FAQ</a>
         </nav>
         <div class="nav-cta">
@@ -67,7 +68,10 @@
       <section class="hero">
         <div class="wrap hero-grid">
           <div class="hero-copy">
-            <span class="pill">Free while in beta</span>
+            <div class="pills">
+              <span class="pill pill-green">✓ Questions updated {{LATEST_UPDATE_MONTH}}</span>
+              <span class="pill">Free while in beta</span>
+            </div>
             <h1>Pass your Google&nbsp;Cloud certification, one question at a time.</h1>
             <p class="lead">
               Practice questions with an explanation for every option, timed mock exams weighted
@@ -104,10 +108,10 @@
 
       <section class="stats" aria-label="At a glance">
         <div class="wrap stats-grid">
-          <div><strong>613</strong><span>practice questions</span></div>
+          <div><strong>{{TOTAL_QUESTIONS}}</strong><span>practice questions</span></div>
           <div><strong>2</strong><span>Google Cloud certifications</span></div>
           <div><strong>11</strong><span>exam domains covered</span></div>
-          <div><strong>Every</strong><span>option explained</span></div>
+          <div><strong>{{LATEST_UPDATE_MONTH}}</strong><span>last question update</span></div>
         </div>
       </section>
 
@@ -122,12 +126,13 @@
               <p>
                 BigQuery, Dataflow, Pub/Sub, Dataproc, storage design, security and ML pipelines.
               </p>
+              <p class="updated">✓ Updated {{GCP_PDE_UPDATED}}</p>
               <ul class="meta">
-                <li>333 questions</li>
+                <li>{{GCP_PDE_COUNT}} questions</li>
                 <li>5 domains</li>
                 <li>50-question mock · 2 h</li>
               </ul>
-              <span class="link">Start practising →</span>
+              <span class="link">Start practicing →</span>
             </a>
             <a class="card cert" href="/app/?cert=gcp-pca">
               <span class="tag tag-amber">PCA</span>
@@ -136,12 +141,13 @@
                 Solution design, reliability, security and migrations, including the official case
                 studies.
               </p>
+              <p class="updated">✓ Updated {{GCP_PCA_UPDATED}}</p>
               <ul class="meta">
-                <li>280 questions</li>
+                <li>{{GCP_PCA_COUNT}} questions</li>
                 <li>6 domains</li>
                 <li>4 case studies</li>
               </ul>
-              <span class="link">Start practising →</span>
+              <span class="link">Start practicing →</span>
             </a>
             <div class="card cert cert-soon">
               <span class="tag tag-muted">Soon</span>
@@ -230,6 +236,7 @@
               <li>Instant feedback in practice, exam conditions in mocks</li>
               <li>Multiple-answer questions handled like the real exam</li>
               <li>Keyboard shortcuts for fast drilling on desktop</li>
+              <li>A question bank kept current, with the update date on every exam</li>
             </ul>
           </div>
           <div class="frame frame-desktop">
@@ -269,6 +276,94 @@
         </div>
       </section>
 
+      <section id="pricing" class="section section-alt">
+        <div class="wrap">
+          <p class="eyebrow">Pricing</p>
+          <h2>Simple pricing. Free during the beta.</h2>
+          <p class="lead pricing-lead">
+            Everything is free while DataForge is in beta. Join the early-bird list to lock in
+            <strong>40% off for life</strong> when paid plans launch.
+          </p>
+          <div class="plans">
+            <div class="plan">
+              <h3>Free</h3>
+              <p class="price"><strong>$0</strong></p>
+              <p class="price-note">No credit card</p>
+              <ul class="checks">
+                <li>20 questions per certification</li>
+                <li>Progress synced across devices</li>
+                <li>Daily challenge and streaks</li>
+              </ul>
+              <a class="btn btn-ghost" href="/app/?trial=1">Start free</a>
+            </div>
+            <div class="plan">
+              <h3>Exam Pass</h3>
+              <p class="price"><strong>$39</strong> <span>one-time</span></p>
+              <p class="price-note">90 days · one certification</p>
+              <ul class="checks">
+                <li>Every question for your exam</li>
+                <li>Unlimited timed mock exams</li>
+                <li>Explanations for every option</li>
+                <li>Updates included while your pass is active</li>
+              </ul>
+              <button type="button" class="btn btn-ghost" data-plan="exam_pass">
+                Get early-bird price
+              </button>
+            </div>
+            <div class="plan plan-featured">
+              <span class="plan-badge">Best value</span>
+              <h3>Pro</h3>
+              <p class="price"><strong>$24</strong> <span>/ month</span></p>
+              <p class="price-note">or $179 / year (save 38%)</p>
+              <ul class="checks">
+                <li>Every certification, new ones included</li>
+                <li>Everything in Exam Pass</li>
+                <li>Cancel anytime</li>
+              </ul>
+              <button type="button" class="btn btn-primary" data-plan="pro">
+                Get early-bird price
+              </button>
+            </div>
+            <div class="plan">
+              <h3>Teams</h3>
+              <p class="price"><strong>$19</strong> <span>/ seat / month</span></p>
+              <p class="price-note">Billed annually · 5+ seats</p>
+              <ul class="checks">
+                <li>Pro for everyone on the team</li>
+                <li>Team progress dashboard</li>
+                <li>Invites and a single invoice</li>
+              </ul>
+              <button type="button" class="btn btn-ghost" data-plan="teams">Talk to us</button>
+            </div>
+          </div>
+
+          <form class="waitlist" data-waitlist>
+            <div>
+              <h3>Join the early-bird list</h3>
+              <p>40% off for life on any paid plan. One email when it launches, nothing else.</p>
+            </div>
+            <div class="waitlist-fields">
+              <input
+                type="email"
+                name="email"
+                required
+                autocomplete="email"
+                placeholder="you@company.com"
+                aria-label="Email"
+              />
+              <select name="plan" aria-label="Plan">
+                <option value="pro">Pro</option>
+                <option value="exam_pass">Exam Pass</option>
+                <option value="teams">Teams</option>
+              </select>
+              <button type="submit" class="btn btn-primary">Join</button>
+            </div>
+            <p class="waitlist-status" data-status aria-live="polite"></p>
+          </form>
+          <p class="fine pricing-fine">Prices in USD. Taxes may apply.</p>
+        </div>
+      </section>
+
       <section id="faq" class="section">
         <div class="wrap narrow">
           <p class="eyebrow">FAQ</p>
@@ -276,8 +371,18 @@
           <details>
             <summary>Is DataForge free?</summary>
             <p>
-              Yes, everything is free while the app is in beta. Paid plans for individuals and teams
-              will come later; anything you unlock during the beta stays yours.
+              Yes, everything is free while the app is in beta. Paid plans will follow (see
+              <a href="#pricing">pricing</a>). Join the early-bird list and you keep 40% off for
+              life.
+            </p>
+          </details>
+          <details>
+            <summary>How up to date are the questions?</summary>
+            <p>
+              The question bank is reviewed and refreshed as the exams change. The Professional Data
+              Engineer bank was last updated on {{GCP_PDE_UPDATED}} and the Professional Cloud
+              Architect bank on {{GCP_PCA_UPDATED}}. The app shows the date on every exam, and
+              questions that no longer match the current exam are flagged as outdated.
             </p>
           </details>
           <details>
@@ -341,5 +446,6 @@
       </div>
       <div class="wrap fine copyright">© 2026 DataForge</div>
     </footer>
+    <script type="module" src="/src/landing/landing.js"></script>
   </body>
 </html>
