@@ -309,6 +309,14 @@ describe("the home screen, wired into the app", () => {
       expect(screen.getByText("1 achievements unlocked")).toBeTruthy();
     });
 
+    it("does not announce achievements that were already unlocked", () => {
+      storage().saveProgress({ ...EMPTY_PROGRESS, achievements: ["first_blood", "streak3"] });
+
+      render(<AppContent allQuestions={BANK} />);
+
+      expect(screen.queryByText("Achievement unlocked")).toBeNull();
+    });
+
     it("loads the weakest topics into a practice session", () => {
       storage().saveProgress({
         ...EMPTY_PROGRESS,

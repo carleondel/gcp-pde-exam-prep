@@ -208,7 +208,7 @@ export function AppContent({ allQuestions }) {
   // Sub-vista del menú: la portada muestra acciones y progreso, y cada
   // configurador vive en su propia vista para no competir con ellos.
   const [menuView, setMenuView] = useState("home");
-  const { progress, updateProgress, resetProgress, hydrateProgress } = useProgress({
+  const { progress, updateProgress, resetProgress, hydrateProgress, hydrated } = useProgress({
     emptyProgress: EMPTY_PROGRESS,
     loadProgress,
     saveProgress,
@@ -633,6 +633,9 @@ export function AppContent({ allQuestions }) {
   ]);
 
   useEffect(() => {
+    // Before hydration progress is still the empty initial state; comparing
+    // against it would announce every stored achievement as new on load.
+    if (!hydrated) return;
     const previous = previousAchievementsRef.current;
     if (progress.achievements.length > previous.length) {
       const unlockedId = progress.achievements.find(
@@ -644,7 +647,7 @@ export function AppContent({ allQuestions }) {
       }
     }
     previousAchievementsRef.current = progress.achievements;
-  }, [progress.achievements]);
+  }, [hydrated, progress.achievements]);
 
   useEffect(() => {
     const handleKey = (event) => {
