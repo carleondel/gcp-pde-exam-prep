@@ -1,10 +1,11 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   completeDailyChallenge,
   createStorage,
   EMPTY_PROGRESS,
   getTodayString,
+  getYesterdayString,
   isDailyChallengeCompleted,
   updateDailyStreak,
 } from "./storage.js";
@@ -162,14 +163,33 @@ describe("daily streak", () => {
   });
 
   it("extends the streak when the last activity was yesterday", () => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const iso = yesterday.toISOString().slice(0, 10);
+    const iso = getYesterdayString();
     const progress = {
       ...EMPTY_PROGRESS,
       dailyStreak: { current: 4, best: 4, lastDate: iso },
     };
     expect(updateDailyStreak(progress).dailyStreak.current).toBe(5);
+  });
+
+  it("uses the local calendar day, not the UTC one", () => {
+    const tz = process.env.TZ;
+    process.env.TZ = "Europe/Madrid";
+    vi.useFakeTimers();
+    try {
+      // 00:30 in Madrid is still 22:30 the previous day in UTC.
+      vi.setSystemTime(new Date(2026, 8, 24, 0, 30));
+      expect(getTodayString()).toBe("2026-09-24");
+      expect(getYesterdayString()).toBe("2026-09-23");
+
+      const progress = {
+        ...EMPTY_PROGRESS,
+        dailyStreak: { current: 4, best: 4, lastDate: "2026-09-23" },
+      };
+      expect(updateDailyStreak(progress).dailyStreak.current).toBe(5);
+    } finally {
+      vi.useRealTimers();
+      process.env.TZ = tz;
+    }
   });
 
   it("keeps the record when the current streak is broken", () => {

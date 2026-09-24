@@ -1,5 +1,6 @@
 import { xpDiminishingFactor } from "../data/gamification.js";
 import { getQuestionOrderNumber } from "./block-study.js";
+import { toLocalDateString } from "./format.js";
 
 export const WEAK_TOPIC_WINDOW = 10;
 export const WEAK_TOPIC_MIN = 5;
@@ -273,7 +274,7 @@ export const DAILY_CHALLENGE_COUNT = 5;
 export const DAILY_CHALLENGE_BONUS_XP = 150;
 
 export function buildDailyChallengeQuestions(allQuestions) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toLocalDateString();
   let seed = 0;
   for (let i = 0; i < today.length; i++) seed = ((seed << 5) - seed + today.charCodeAt(i)) | 0;
   const seededRandom = (max) => {

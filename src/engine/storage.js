@@ -1,3 +1,4 @@
+import { toLocalDateString } from "./format.js";
 import { MOCK_HISTORY_LIMIT } from "./quiz-engine";
 
 export const EMPTY_PROGRESS = {
@@ -96,13 +97,13 @@ function sanitizeObject(value) {
 }
 
 export function getTodayString() {
-  return new Date().toISOString().slice(0, 10);
+  return toLocalDateString();
 }
 
 export function getYesterdayString() {
   const d = new Date();
   d.setDate(d.getDate() - 1);
-  return d.toISOString().slice(0, 10);
+  return toLocalDateString(d);
 }
 
 export function updateDailyStreak(progress) {

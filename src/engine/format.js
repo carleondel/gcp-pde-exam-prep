@@ -1,3 +1,14 @@
+/**
+ * "YYYY-MM-DD" for the user's local calendar day. Not toISOString(), which
+ * is UTC: in Spain that still says "yesterday" until 01:00 or 02:00, and
+ * streaks and the daily challenge would roll over at the wrong time.
+ */
+export function toLocalDateString(date = new Date()) {
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /**
