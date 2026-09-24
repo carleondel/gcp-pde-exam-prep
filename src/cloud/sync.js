@@ -46,6 +46,7 @@ export function createCloudSync({
   certIds,
   storage = window.localStorage,
   delayMs = FLUSH_DELAY_MS,
+  onRemoteChange,
 }) {
   let pending = new Map(Object.entries(readJson(storage, PENDING_KEY) || {}));
   let timer = null;
@@ -104,6 +105,38 @@ export function createCloudSync({
     }
   }
 
+  /** Keys another writer (a device, an admin import) changed since we last synced them. */
+  async function findStaleKeys(keys) {
+    const { data, error } = await client
+      .from(USER_STATE_TABLE)
+      .select("key, updated_at")
+      .eq("user_id", userId)
+      .in("key", keys);
+    if (error) throw error;
+    return data.filter((row) => seen.has(row.key) && seen.get(row.key) !== row.updated_at);
+  }
+
+  /**
+   * Pushes the batch, unless the account moved on underneath this tab. Then
+   * the local changes were made on stale data: pushing them would silently
+   * throw away the newer version, so they are dropped instead and the
+   * account's state is adopted and announced for the app to re-mount on.
+   */
+  async function pushUnlessStale(batch) {
+    if (running && seen.size) {
+      const stale = await findStaleKeys([...batch.keys()]);
+      if (stale.length) {
+        const rows = await pull();
+        pending = new Map();
+        persistPending();
+        applyRemote(rows);
+        onRemoteChange?.();
+        return;
+      }
+    }
+    await push([...batch]);
+  }
+
   async function flush() {
     clearTimeout(timer);
     timer = null;
@@ -111,7 +144,7 @@ export function createCloudSync({
     if (!pending.size) return;
 
     const batch = new Map(pending);
-    inFlight = push([...batch]);
+    inFlight = pushUnlessStale(batch);
     try {
       await inFlight;
       for (const [key, value] of batch) {

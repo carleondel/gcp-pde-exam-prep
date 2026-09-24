@@ -48,14 +48,21 @@ function fakeClient(rows = new Map()) {
       const fail = async () => ({ data: null, error: new Error("offline") });
       return {
         select: (cols) => ({
-          eq: async (_col, userId) => {
-            if (client.offline) return fail();
-            calls.push(["select", cols]);
+          eq: (_col, userId) => {
+            const run = (keys) => {
+              if (client.offline) return { data: null, error: new Error("offline") };
+              calls.push(["select", cols]);
+              return {
+                data: [...rows.entries()]
+                  .filter(([k]) => k.startsWith(`${userId}|`))
+                  .map(([k, value]) => ({ key: k.split("|")[1], value, updated_at: stamp(k) }))
+                  .filter((row) => !keys || keys.includes(row.key)),
+                error: null,
+              };
+            };
             return {
-              data: [...rows.entries()]
-                .filter(([k]) => k.startsWith(`${userId}|`))
-                .map(([k, value]) => ({ key: k.split("|")[1], value, updated_at: stamp(k) })),
-              error: null,
+              then: (resolve, reject) => Promise.resolve(run(null)).then(resolve, reject),
+              in: async (_c, keys) => run(keys),
             };
           },
         }),
@@ -264,6 +271,36 @@ describe("createCloudSync", () => {
     await expect(
       createCloudSync({ client, userId: USER, certIds: CERT_IDS }).start(),
     ).rejects.toThrow("offline");
+  });
+
+  it("never overwrites a change made elsewhere while this tab stayed open", async () => {
+    const onRemoteChange = vi.fn();
+    const client = fakeClient(new Map([[`${USER}|gcp-pde.progress.v2`, { xp: 0 }]]));
+    const sync = createCloudSync({
+      client,
+      userId: USER,
+      certIds: CERT_IDS,
+      delayMs: 10_000,
+      onRemoteChange,
+    });
+    await sync.start();
+
+    // An admin import lands while the tab is open and visible...
+    client.remoteWrite("gcp-pde.progress.v2", { xp: 5738 });
+    // ...and the stale tab then saves its in-memory progress.
+    createStorage("gcp-pde").saveProgress({ ...EMPTY_PROGRESS, xp: 8 });
+    await sync.flush();
+
+    expect(client.rows.get(`${USER}|gcp-pde.progress.v2`)).toEqual({ xp: 5738 });
+    expect(JSON.parse(store.get("gcp-pde.progress.v2"))).toEqual({ xp: 5738 });
+    expect(store.has(PENDING_KEY)).toBe(false);
+    expect(onRemoteChange).toHaveBeenCalledTimes(1);
+
+    // Once adopted, normal saves go through again.
+    createStorage("gcp-pde").saveProgress({ ...EMPTY_PROGRESS, xp: 5746 });
+    await sync.flush();
+    expect(client.rows.get(`${USER}|gcp-pde.progress.v2`).xp).toBe(5746);
+    await sync.stop();
   });
 
   it("clears the local cache on sign out", async () => {
