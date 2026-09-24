@@ -23,6 +23,16 @@ export function RemotionRoot() {
         height={1080}
         defaultProps={{ variant: "teaser" }}
       />
+      {/* 9:16 for social feeds. No progress bar: the platforms draw their own. */}
+      <Composition
+        id="Vertical"
+        component={Promo}
+        durationInFrames={totalFrames("vertical")}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ variant: "vertical" }}
+      />
     </>
   );
 }

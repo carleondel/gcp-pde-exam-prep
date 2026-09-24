@@ -2,10 +2,10 @@ import { interpolate, random, spring, useCurrentFrame, useVideoConfig } from "re
 import { C, F, COPY, panel } from "../theme.js";
 import { Scene, Rise, CountUp, Title, Kicker } from "../components/common.jsx";
 
-const LEVEL_UP = 52; // frame the XP bar tops out and the rank flips
+export const LEVEL_UP = 52; // frame the XP bar tops out and the rank flips
 
 /** Confetti burst reused from the app's reward moments, in miniature. */
-function Sparks() {
+export function Sparks() {
   const frame = useCurrentFrame();
   const t = frame - LEVEL_UP;
   if (t < 0 || t > 55) return null;

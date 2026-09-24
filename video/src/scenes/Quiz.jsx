@@ -5,8 +5,12 @@ import { Scene, Rise, Kicker } from "../components/common.jsx";
 const LETTERS = ["A", "B", "C", "D"];
 const PICK = 74; // frame the answer is committed and graded
 
-/** One option row, which knows three states: idle, graded correct, faded out. */
-function Option({ text, index, delay }) {
+/**
+ * One option row, which knows three states: idle, graded correct, faded out.
+ * `scale` enlarges type and spacing together for the vertical cut, which is
+ * watched on a phone.
+ */
+export function Option({ text, index, delay, scale = 1 }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const isCorrect = index === COPY.quiz.correct;
@@ -26,10 +30,10 @@ function Option({ text, index, delay }) {
         transform: `translateY(${(1 - s) * 20}px)`,
         display: "flex",
         alignItems: "center",
-        gap: 18,
-        padding: "18px 22px",
-        marginTop: 12,
-        borderRadius: 13,
+        gap: 18 * scale,
+        padding: `${18 * scale}px ${22 * scale}px`,
+        marginTop: 12 * scale,
+        borderRadius: 13 * scale,
         border: graded
           ? `1px solid rgba(45,212,160,${0.35 + 0.55 * grade})`
           : `1px solid ${C.line}`,
@@ -41,11 +45,11 @@ function Option({ text, index, delay }) {
         style={{
           fontFamily: F.mono,
           fontWeight: 700,
-          fontSize: 21,
-          width: 40,
-          height: 40,
+          fontSize: 21 * scale,
+          width: 40 * scale,
+          height: 40 * scale,
           flexShrink: 0,
-          borderRadius: 9,
+          borderRadius: 9 * scale,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -55,18 +59,27 @@ function Option({ text, index, delay }) {
       >
         {LETTERS[index]}
       </div>
-      <div style={{ fontFamily: F.body, fontSize: 24, lineHeight: 1.35, color: C.textPrimary }}>
+      <div
+        style={{
+          fontFamily: F.body,
+          fontSize: 24 * scale,
+          lineHeight: 1.35,
+          color: C.textPrimary,
+        }}
+      >
         {text}
       </div>
       {graded ? (
-        <div style={{ marginLeft: "auto", fontSize: 28, color: C.correct, opacity: grade }}>✓</div>
+        <div style={{ marginLeft: "auto", fontSize: 28 * scale, color: C.correct, opacity: grade }}>
+          ✓
+        </div>
       ) : null}
     </div>
   );
 }
 
 /** A rationale card — the thing the app has that a flashcard deck does not. */
-function Rationale({ label, text, color, delay }) {
+export function Rationale({ label, text, color, delay, scale = 1 }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s = spring({ frame: frame - delay, fps, config: { damping: 200 }, durationInFrames: 24 });
@@ -77,15 +90,17 @@ function Rationale({ label, text, color, delay }) {
         transform: `translateX(${(1 - s) * 40}px)`,
         ...panel,
         borderLeft: `4px solid ${color}`,
-        padding: 26,
-        marginTop: 18,
+        padding: 26 * scale,
+        marginTop: 18 * scale,
       }}
     >
-      <div style={{ fontFamily: F.mono, fontSize: 18, letterSpacing: 3, color }}>{label}</div>
+      <div style={{ fontFamily: F.mono, fontSize: 18 * scale, letterSpacing: 3, color }}>
+        {label}
+      </div>
       <div
         style={{
           fontFamily: F.body,
-          fontSize: 23,
+          fontSize: 23 * scale,
           color: C.textSecondary,
           marginTop: 12,
           lineHeight: 1.5,

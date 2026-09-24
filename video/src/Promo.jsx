@@ -10,6 +10,12 @@ import { Game } from "./scenes/Game.jsx";
 import { Local } from "./scenes/Local.jsx";
 import { Arch } from "./scenes/Arch.jsx";
 import { Cta } from "./scenes/Cta.jsx";
+import { Hook as VHook } from "./vertical/Hook.jsx";
+import { Tour as VTour } from "./vertical/Tour.jsx";
+import { Quiz as VQuiz } from "./vertical/Quiz.jsx";
+import { Game as VGame } from "./vertical/Game.jsx";
+import { Local as VLocal } from "./vertical/Local.jsx";
+import { Cta as VCta } from "./vertical/Cta.jsx";
 
 // The running order. Durations are in frames at 30fps.
 export const SCENES = [
@@ -34,11 +40,24 @@ export const TEASER = [
   { id: "game", C: Game, duration: 145 },
 ];
 
+// The 9:16 cut for Reels, TikTok, Shorts and LinkedIn. Same copy, same
+// question, relaid for a phone; kept under 30s so it plays through before
+// people scroll on.
+export const VERTICAL = [
+  { id: "hook", C: VHook, duration: 80 },
+  { id: "tour", C: VTour, duration: 200 },
+  { id: "quiz", C: VQuiz, duration: 200 },
+  { id: "game", C: VGame, duration: 145 },
+  { id: "local", C: VLocal, duration: 110 },
+  { id: "cta", C: VCta, duration: 150 },
+];
+
 // Compositions pass a variant name rather than the scene array itself:
 // Remotion serialises defaultProps to JSON, and React components are not.
 export const VARIANTS = {
   full: { scenes: SCENES, frozen: false, progress: true },
   teaser: { scenes: TEASER, frozen: true, progress: false },
+  vertical: { scenes: VERTICAL, frozen: false, progress: false },
 };
 
 export const totalFrames = (variant) =>
