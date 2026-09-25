@@ -381,7 +381,10 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
         title="Skip battle"
         aria-label="Skip battle"
         style={{
+          // The dragon below animates with a transform, which paints it over
+          // an earlier absolute sibling and swallows the click without this.
           position: "absolute",
+          zIndex: 1,
           top: 14,
           right: 14,
           width: 32,

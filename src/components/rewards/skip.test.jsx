@@ -69,6 +69,29 @@ describe("skipping a reward", () => {
     expect(onComplete).not.toHaveBeenCalled();
   });
 
+  it("lets the player leave a boss battle that has already started", () => {
+    const onComplete = vi.fn();
+    const onClose = vi.fn();
+    render(
+      <BossBattle
+        questions={[QUESTION]}
+        dragon={DRAGON}
+        onComplete={onComplete}
+        onClose={onClose}
+      />,
+    );
+    fireEvent.click(screen.getByText("FIGHT"));
+
+    const exit = screen.getByLabelText("Skip battle");
+    // Layout is not computed in jsdom: this pins the stacking fix that keeps
+    // the animated dragon from covering the button in a real browser.
+    expect(exit.style.zIndex).toBe("1");
+
+    fireEvent.click(exit);
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onComplete).not.toHaveBeenCalled();
+  });
+
   it("stops offering to skip the chest once it is open", () => {
     render(<MysteryChest onComplete={() => {}} onClose={() => {}} />);
     fireEvent.click(screen.getByText("OPEN CHEST"));
