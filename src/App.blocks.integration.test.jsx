@@ -427,6 +427,72 @@ describe("block study, wired into the app", () => {
     });
   });
 
+  describe("focus mode", () => {
+    const REWARD_OVERLAY = /^(SKIP|OPEN CHEST|SPIN|Claim reward.*)$/;
+
+    /** Answers right without dismissing anything, so a reward would show. */
+    function answerRightAndAdvance() {
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Check/);
+      expect(findButton(REWARD_OVERLAY)).toBeUndefined();
+      clickButton(ADVANCE_BUTTON);
+    }
+
+    it("lets a streak run with no wheel, chest, scratch card or boss", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      clickButton(/^🎯 Focus off$/);
+      expect(findButton(/^🎯 Focus on$/).getAttribute("aria-pressed")).toBe("true");
+
+      // A streak of 3 is what opens the wheel when focus mode is off.
+      for (let i = 0; i < 4; i += 1) answerRightAndAdvance();
+
+      expect(screen.getByText("Question number 56")).toBeTruthy();
+      // XP still counts.
+      expect(storage().loadProgress().xp).toBeGreaterThan(0);
+    });
+
+    it("drops a reward that was already queued when it is switched on", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      for (let i = 0; i < 2; i += 1) answerCurrent();
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Check/);
+      // The third right answer queued the wheel behind the claim button.
+      expect(findButton(/^Claim reward/)).toBeTruthy();
+
+      clickButton(/^🎯 Focus off$/);
+      clickButton(ADVANCE_BUTTON);
+
+      expect(screen.getByText("Question number 57")).toBeTruthy();
+      expect(findButton(REWARD_OVERLAY)).toBeUndefined();
+    });
+
+    it("is remembered with the account settings, not per cert", () => {
+      const first = render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      clickButton(/^🎯 Focus off$/);
+      first.unmount();
+
+      expect(JSON.parse(window.localStorage.getItem("app.settings.v1"))).toEqual({
+        focusMode: true,
+      });
+      render(<AppContent allQuestions={BANK} />);
+      expect(findButton(/^🎯 Focus on$/)).toBeTruthy();
+    });
+
+    it("can be switched off again to get rewards back", () => {
+      render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      clickButton(/^🎯 Focus off$/);
+      clickButton(/^🎯 Focus on$/);
+      for (let i = 0; i < 2; i += 1) answerCurrent();
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Check/);
+      expect(findButton(/^Claim reward/)).toBeTruthy();
+    });
+  });
+
   describe("rewards over a question", () => {
     it("moves on by itself once a claimed reward is dismissed", () => {
       render(<AppContent allQuestions={BANK} />);

@@ -5,8 +5,11 @@ export const OWNER_KEY = "cloud.owner";
 export const PENDING_KEY = "cloud.pending";
 const FLUSH_DELAY_MS = 1500;
 
+// Cert-independent state (settings) lives under this prefix.
+export const APP_KEY_PREFIX = "app.";
+
 export function isSyncedKey(key, certIds) {
-  return certIds.some((certId) => key.startsWith(`${certId}.`));
+  return key.startsWith(APP_KEY_PREFIX) || certIds.some((certId) => key.startsWith(`${certId}.`));
 }
 
 function listSyncedKeys(storage, certIds) {
@@ -28,8 +31,8 @@ function readJson(storage, key) {
 }
 
 /**
- * Mirrors every cert-namespaced localStorage key into the user_state table,
- * one row per key.
+ * Mirrors every cert-namespaced localStorage key, plus the "app." settings,
+ * into the user_state table, one row per key.
  *
  * On start the server is the source of truth: its rows overwrite the local
  * cache. The exception is data that belongs to nobody yet — progress made

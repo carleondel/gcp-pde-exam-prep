@@ -20,6 +20,8 @@ export default function QuizHeader({
   mockRemainingSec,
   blockElapsedSec,
   onGoToMenu,
+  focusMode = false,
+  onToggleFocusMode,
 }) {
   return (
     <div
@@ -150,6 +152,30 @@ export default function QuizHeader({
               >
                 ⏱ {formatDuration(blockElapsedSec)}
               </span>
+            )}
+            {mode !== "mock" && onToggleFocusMode && (
+              <button
+                onClick={onToggleFocusMode}
+                aria-pressed={focusMode}
+                title={
+                  focusMode
+                    ? "Focus mode is on: no wheels, chests, scratch cards or bosses. XP and achievements still count."
+                    : "Turn on focus mode to skip wheels, chests, scratch cards and bosses."
+                }
+                style={{
+                  padding: "6px 10px",
+                  borderRadius: "var(--radius-pill)",
+                  border: `1px solid ${focusMode ? "var(--signal-info)" : "var(--surface-line)"}`,
+                  background: focusMode ? "var(--info-soft)" : "var(--surface-panel-muted)",
+                  color: focusMode ? "var(--signal-info)" : "var(--text-secondary)",
+                  fontSize: 11,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  fontFamily: "var(--font-mono)",
+                }}
+              >
+                {focusMode ? "🎯 Focus on" : "🎯 Focus off"}
+              </button>
             )}
           </div>
         </div>
