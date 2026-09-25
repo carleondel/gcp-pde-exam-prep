@@ -616,6 +616,13 @@ export function AppContent({ allQuestions }) {
       setSavedMockSession(restoredMock);
       setSession(restoredMock);
       setScreen("quiz");
+    } else if (restoredBlock?.leftForMenu) {
+      // Left for the menu before the reload: keep it resumable, stay there.
+      setSavedBlockSession(restoredBlock);
+      setBlockTrackSize(sanitizeBlockSize(restoredBlock.meta?.blockStudy?.size));
+      setSelectedBlockIndex(restoredBlock.meta?.blockStudy?.blockIndex || 0);
+      clearActiveMock();
+      setScreen("menu");
     } else if (restoredBlock) {
       const uiState = normalizeSessionUi(restoredBlock);
       const restoreSelection = (question) => {
@@ -845,12 +852,14 @@ export function AppContent({ allQuestions }) {
     (block, existingSession = null) => {
       if (!block) return;
 
-      if (existingSession?.pausedElapsedSec != null) {
-        existingSession = {
-          ...existingSession,
-          startedAt: Date.now() - existingSession.pausedElapsedSec * 1000,
-        };
-        delete existingSession.pausedElapsedSec;
+      if (existingSession) {
+        existingSession = { ...existingSession };
+        // Back in the block, so a reload from here should land in it again.
+        delete existingSession.leftForMenu;
+        if (existingSession.pausedElapsedSec != null) {
+          existingSession.startedAt = Date.now() - existingSession.pausedElapsedSec * 1000;
+          delete existingSession.pausedElapsedSec;
+        }
       }
 
       const blockProgress = getBlockProgressRecord(progress, block.trackId, block.blockIndex);
@@ -1357,6 +1366,7 @@ export function AppContent({ allQuestions }) {
       const pausedSession = {
         ...session,
         pausedElapsedSec: Math.floor((Date.now() - session.startedAt) / 1000),
+        leftForMenu: true,
       };
       setSavedBlockSession(pausedSession);
       setBlockMessage(

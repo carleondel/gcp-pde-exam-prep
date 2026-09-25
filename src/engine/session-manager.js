@@ -125,6 +125,7 @@ export function toStoredBlockSession(session) {
     ui: session.ui || {},
   };
   if (session.pausedElapsedSec != null) stored.pausedElapsedSec = session.pausedElapsedSec;
+  if (session.leftForMenu) stored.leftForMenu = true;
   return stored;
 }
 
@@ -154,5 +155,6 @@ export function hydrateBlockSession(stored, questionMap) {
     ui: stored.ui || {},
   });
   if (stored.pausedElapsedSec != null) session.pausedElapsedSec = stored.pausedElapsedSec;
+  if (stored.leftForMenu) session.leftForMenu = true;
   return session;
 }
