@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DRAGONS } from "../../data/gamification.js";
+import { SHARED_DRAGONS } from "../../data/gamification.js";
 import { installCanvasStub } from "../../test/canvas-stub.js";
 import { BossBattle } from "./BossBattle.jsx";
 import { MysteryChest } from "./MysteryChest.jsx";
@@ -31,7 +31,7 @@ const QUESTION = {
 };
 
 // The first dragon of the bestiary, so the shape stays true to the real one.
-const DRAGON = DRAGONS[0];
+const DRAGON = SHARED_DRAGONS[0];
 
 describe("skipping a reward", () => {
   beforeEach(() => {

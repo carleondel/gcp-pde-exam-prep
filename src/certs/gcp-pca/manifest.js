@@ -1,6 +1,7 @@
 import logoPath from "./assets/logo.svg";
 import { TOPIC_MAP, EXAM_DOMAINS } from "./domains.js";
 import { CASE_STUDIES } from "./case-studies.js";
+import { DRAGONS } from "./dragons.js";
 
 const manifest = {
   id: "gcp-pca",
@@ -22,6 +23,7 @@ const manifest = {
   topicMap: TOPIC_MAP,
   examDomains: EXAM_DOMAINS,
   caseStudies: CASE_STUDIES,
+  dragons: DRAGONS,
   loadQuestions: () => import("./questions.js"),
 };
 

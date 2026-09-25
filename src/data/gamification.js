@@ -343,13 +343,8 @@ export function applyDiminishing(rawXp, totalXp) {
 
 const DRAGON_TIER_WEIGHTS = [40, 30, 20, 8, 2];
 
-export const DRAGONS = [
-  // Tier 1
-  {
-    id: "slime_dragon",
-    name: "Slime Dragon",
-    emoji: "\uD83D\uDC09",
-    tier: 1,
+const DRAGON_TIER_STATS = {
+  1: {
     minXp: 0,
     hp: 80,
     playerHp: 100,
@@ -357,17 +352,8 @@ export const DRAGONS = [
     counterRange: [6, 10],
     wrongDmgRange: [24, 36],
     xpReward: 400,
-    topicFilter: null,
-    difficultyFilter: null,
-    enrageThreshold: 0.25,
-    enrageMultiplier: 1.4,
   },
-  // Tier 2
-  {
-    id: "bigquery_wyrm",
-    name: "BigQuery Wyrm",
-    emoji: "\uD83D\uDC32",
-    tier: 2,
+  2: {
     minXp: 1000,
     hp: 120,
     playerHp: 115,
@@ -375,34 +361,8 @@ export const DRAGONS = [
     counterRange: [7, 12],
     wrongDmgRange: [28, 42],
     xpReward: 600,
-    topicFilter: "BigQuery",
-    difficultyFilter: null,
-    enrageThreshold: 0.25,
-    enrageMultiplier: 1.4,
   },
-  {
-    id: "dataflow_serpent",
-    name: "Dataflow Serpent",
-    emoji: "\uD83D\uDC0D",
-    tier: 2,
-    minXp: 1000,
-    hp: 120,
-    playerHp: 115,
-    dmgRange: [14, 22],
-    counterRange: [7, 12],
-    wrongDmgRange: [28, 42],
-    xpReward: 600,
-    topicFilter: "Dataflow",
-    difficultyFilter: null,
-    enrageThreshold: 0.25,
-    enrageMultiplier: 1.4,
-  },
-  // Tier 3
-  {
-    id: "ml_hydra",
-    name: "ML Hydra",
-    emoji: "\uD83E\uDDE0",
-    tier: 3,
+  3: {
     minXp: 5000,
     hp: 180,
     playerHp: 150,
@@ -410,51 +370,8 @@ export const DRAGONS = [
     counterRange: [8, 14],
     wrongDmgRange: [32, 48],
     xpReward: 900,
-    topicFilter: "ML",
-    difficultyFilter: null,
-    enrageThreshold: 0.25,
-    enrageMultiplier: 1.4,
   },
-  {
-    id: "storage_golem",
-    name: "Storage Golem",
-    emoji: "\uD83D\uDDFF",
-    tier: 3,
-    minXp: 5000,
-    hp: 180,
-    playerHp: 150,
-    dmgRange: [18, 28],
-    counterRange: [8, 14],
-    wrongDmgRange: [32, 48],
-    xpReward: 900,
-    topicFilter: "Storage",
-    difficultyFilter: null,
-    enrageThreshold: 0.25,
-    enrageMultiplier: 1.4,
-  },
-  {
-    id: "security_basilisk",
-    name: "Security Basilisk",
-    emoji: "\uD83D\uDC0D",
-    tier: 3,
-    minXp: 5000,
-    hp: 180,
-    playerHp: 150,
-    dmgRange: [18, 28],
-    counterRange: [8, 14],
-    wrongDmgRange: [32, 48],
-    xpReward: 900,
-    topicFilter: "Security",
-    difficultyFilter: null,
-    enrageThreshold: 0.25,
-    enrageMultiplier: 1.4,
-  },
-  // Tier 4
-  {
-    id: "pipeline_leviathan",
-    name: "Pipeline Leviathan",
-    emoji: "\uD83D\uDC33",
-    tier: 4,
+  4: {
     minXp: 20000,
     hp: 260,
     playerHp: 180,
@@ -462,34 +379,8 @@ export const DRAGONS = [
     counterRange: [10, 16],
     wrongDmgRange: [36, 52],
     xpReward: 1400,
-    topicFilter: "Data",
-    difficultyFilter: null,
-    enrageThreshold: 0.25,
-    enrageMultiplier: 1.4,
   },
-  {
-    id: "architect_phoenix",
-    name: "Architect Phoenix",
-    emoji: "\uD83D\uDD25",
-    tier: 4,
-    minXp: 20000,
-    hp: 260,
-    playerHp: 180,
-    dmgRange: [24, 34],
-    counterRange: [10, 16],
-    wrongDmgRange: [36, 52],
-    xpReward: 1400,
-    topicFilter: "Architecture",
-    difficultyFilter: null,
-    enrageThreshold: 0.25,
-    enrageMultiplier: 1.4,
-  },
-  // Tier 5
-  {
-    id: "certified_colossus",
-    name: "Certified Colossus",
-    emoji: "\uD83C\uDF0B",
-    tier: 5,
+  5: {
     minXp: 50000,
     hp: 400,
     playerHp: 220,
@@ -497,15 +388,44 @@ export const DRAGONS = [
     counterRange: [12, 20],
     wrongDmgRange: [42, 60],
     xpReward: 2200,
-    topicFilter: null,
-    difficultyFilter: 3,
+  },
+};
+
+/**
+ * Builds a dragon from its tier's stats. `topics` lists canonical topics of
+ * the cert (see its topicMap); `topicLabel` is the badge shown in the battle.
+ */
+export function defineDragon({ tier, ...rest }) {
+  return {
+    ...DRAGON_TIER_STATS[tier],
+    tier,
+    topics: null,
+    topicLabel: null,
+    difficultyFilter: null,
     enrageThreshold: 0.25,
     enrageMultiplier: 1.4,
-  },
+    ...rest,
+  };
+}
+
+// Cert-agnostic dragons. Topic-themed ones live in each cert's manifest.
+export const SHARED_DRAGONS = [
+  defineDragon({ id: "slime_dragon", name: "Slime Dragon", emoji: "\uD83D\uDC09", tier: 1 }),
+  defineDragon({
+    id: "certified_colossus",
+    name: "Certified Colossus",
+    emoji: "\uD83C\uDF0B",
+    tier: 5,
+    difficultyFilter: 3,
+  }),
 ];
 
-export function selectDragon(playerXp) {
-  const eligible = DRAGONS.filter((d) => playerXp >= d.minXp);
+export function getDragonRoster(cert) {
+  return [...SHARED_DRAGONS, ...(cert?.dragons ?? [])];
+}
+
+export function selectDragon(playerXp, roster = SHARED_DRAGONS) {
+  const eligible = roster.filter((d) => playerXp >= d.minXp);
   const weights = eligible.map((d) => DRAGON_TIER_WEIGHTS[d.tier - 1]);
   const total = weights.reduce((a, b) => a + b, 0);
   let r = Math.random() * total;
@@ -516,10 +436,10 @@ export function selectDragon(playerXp) {
   return eligible[eligible.length - 1];
 }
 
-export function getBattleQuestions(allQuestions, dragon) {
+export function getBattleQuestions(allQuestions, dragon, getCanonicalTopic = (topic) => topic) {
   let pool = allQuestions;
-  if (dragon.topicFilter) {
-    pool = pool.filter((q) => q.topic.startsWith(dragon.topicFilter));
+  if (dragon.topics) {
+    pool = pool.filter((q) => dragon.topics.includes(getCanonicalTopic(q.topic)));
   }
   if (dragon.difficultyFilter) {
     pool = pool.filter((q) => q.difficulty === dragon.difficultyFilter);
