@@ -87,7 +87,7 @@ export default function TopicPicker({
             {group.topics.map((entry) => {
               const picked = entry.rawTopics.every((topic) => selectedTopics.has(topic));
               const tooltipText =
-                entry.total >= 10
+                entry.accuracy !== null
                   ? `${entry.correct}/${entry.total} correct`
                   : `${entry.total} attempts`;
               return (

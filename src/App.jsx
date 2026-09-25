@@ -6,6 +6,7 @@ import {
   applyDiminishing,
   selectDragon,
   getBattleQuestions,
+  getDragonRoster,
 } from "./data/gamification.js";
 import { createDomainHelpers, getWeakestDomain } from "./engine/domain-helpers.js";
 import { AchievementPopup } from "./components/rewards/index.js";
@@ -88,6 +89,8 @@ const EXAM_DOMAINS = ACTIVE_CERT.examDomains;
 
 const { getCanonicalTopic, computeDomainStats, computeCanonicalTopicStats } =
   createDomainHelpers(ACTIVE_CERT);
+
+const DRAGON_ROSTER = getDragonRoster(ACTIVE_CERT);
 
 const {
   clearActiveBlockSession,
@@ -250,10 +253,14 @@ export function AppContent({ allQuestions }) {
     () => computeDomainStats(progress.topicHistory),
     [progress.topicHistory],
   );
-  const canonicalTopicStats = useMemo(
-    () => computeCanonicalTopicStats(progress.topicHistory),
-    [progress.topicHistory],
-  );
+  const canonicalTopicStats = useMemo(() => {
+    const canonicalCounts = {};
+    for (const [topic, count] of Object.entries(topicCounts)) {
+      const canonical = getCanonicalTopic(topic);
+      canonicalCounts[canonical] = (canonicalCounts[canonical] || 0) + count;
+    }
+    return computeCanonicalTopicStats(progress.topicHistory, canonicalCounts);
+  }, [progress.topicHistory, topicCounts]);
   const weakestDomain = useMemo(() => getWeakestDomain(domainStats), [domainStats]);
   const weakTopicSet = useMemo(() => new Set(weakTopics.map((topic) => topic.topic)), [weakTopics]);
   const wrongQuestions = useMemo(
@@ -534,8 +541,8 @@ export function AppContent({ allQuestions }) {
       if (rewardKey === "scratch") setShowScratch(true);
       if (rewardKey === "chest") setShowChest(true);
       if (rewardKey === "boss") {
-        const dragon = selectDragon(progress.xp);
-        const battleQuestions = getBattleQuestions(allQuestions, dragon);
+        const dragon = selectDragon(progress.xp, DRAGON_ROSTER);
+        const battleQuestions = getBattleQuestions(allQuestions, dragon, getCanonicalTopic);
         setBossDragon(dragon);
         setBossQuestions(battleQuestions);
         setShowBoss(true);

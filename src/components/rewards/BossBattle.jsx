@@ -22,6 +22,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
   const [wrongCount, setWrongCount] = useState(0);
   const [totalDmgDealt, setTotalDmgDealt] = useState(0);
   const [totalDmgTaken, setTotalDmgTaken] = useState(0);
+  const [revealed, setRevealed] = useState(null);
   const [lastEvent, setLastEvent] = useState(
     "Answer correctly to strike. If the boss survives, it counterattacks.",
   );
@@ -31,7 +32,41 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
   const isMulti = Array.isArray(question.correct);
   const selectedIndexes = normalizeSelection(selected);
   const canAttack = canSubmitAnswer(question, selectedIndexes);
-  const neededAnswers = getCorrectOptionIndexes(question).length;
+  const correctIndexes = getCorrectOptionIndexes(question);
+  const neededAnswers = correctIndexes.length;
+
+  const optionStyle = (index) => {
+    if (revealed) {
+      if (correctIndexes.includes(index))
+        return {
+          background: "var(--correct-soft)",
+          border: "2px solid var(--signal-correct)",
+          color: "var(--signal-correct)",
+        };
+      if (revealed.selectedIndexes.includes(index))
+        return {
+          background: "var(--wrong-soft)",
+          border: "2px solid var(--signal-wrong)",
+          color: "var(--signal-wrong)",
+        };
+      return {
+        background: "var(--surface-panel-muted)",
+        border: "1px solid var(--surface-line)",
+        color: "var(--text-tertiary)",
+      };
+    }
+    return selectedIndexes.includes(index)
+      ? {
+          background: "var(--info-soft)",
+          border: "2px solid var(--signal-info)",
+          color: "var(--signal-info)",
+        }
+      : {
+          background: "var(--surface-panel-muted)",
+          border: "1px solid var(--surface-line)",
+          color: "var(--text-primary)",
+        };
+  };
 
   const toggleSelected = (index) => {
     if (!isMulti) {
@@ -46,81 +81,61 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
     });
   };
 
+  // The answered question stays on screen, graded, until the player moves on.
   const attack = () => {
-    if (!canAttack) return;
-    const { isCorrect: correct } = evaluateAnswer(question, selectedIndexes);
+    if (!canAttack || revealed) return;
+    const { isCorrect } = evaluateAnswer(question, selectedIndexes);
     setShaking(true);
     setTimeout(() => setShaking(false), 500);
 
-    if (correct) {
-      const dmg = randomInRange(dragon.dmgRange);
-      const newBossHp = Math.max(0, bossHp - dmg);
-      setBossHp(newBossHp);
-      setTotalDmgDealt((d) => d + dmg);
-      if (newBossHp <= 0) {
-        const finalDmg = totalDmgDealt + dmg;
-        const finalTaken = totalDmgTaken;
-        setLastEvent(`Hit: ${dmg} damage. Victory.`);
-        setTimeout(() => {
-          setPhase("result");
-          onComplete({
-            won: true,
-            dragon,
-            turns: turn + 1,
-            dmgDealt: finalDmg,
-            dmgTaken: finalTaken,
-            flawless: wrongCount === 0,
-          });
-        }, 600);
-      } else {
-        const counterMult = enraged ? dragon.enrageMultiplier : 1;
-        const counterDmg = Math.round(randomInRange(dragon.counterRange) * counterMult);
-        setLastEvent(`Hit: ${dmg} damage. ${dragon.name} counterattacks for ${counterDmg}.`);
-        setTimeout(() => {
-          setHp((h) => {
-            const newHp = Math.max(0, h - counterDmg);
-            if (newHp <= 0) {
-              setTimeout(() => {
-                setPhase("result");
-                onComplete({
-                  won: false,
-                  dragon,
-                  turns: turn + 1,
-                  dmgDealt: totalDmgDealt + dmg,
-                  dmgTaken: totalDmgTaken + counterDmg,
-                  flawless: false,
-                });
-              }, 400);
-            }
-            return newHp;
-          });
-          setTotalDmgTaken((d) => d + counterDmg);
-        }, 400);
-      }
+    const mult = enraged ? dragon.enrageMultiplier : 1;
+    let dealt = 0;
+    let taken = 0;
+    if (isCorrect) {
+      dealt = randomInRange(dragon.dmgRange);
+      if (bossHp - dealt > 0) taken = Math.round(randomInRange(dragon.counterRange) * mult);
     } else {
+      taken = Math.round(randomInRange(dragon.wrongDmgRange) * mult);
       setWrongCount((w) => w + 1);
-      const wrongMult = enraged ? dragon.enrageMultiplier : 1;
-      const bossDmg = Math.round(randomInRange(dragon.wrongDmgRange) * wrongMult);
-      const newHp = Math.max(0, hp - bossDmg);
-      setHp(newHp);
-      setTotalDmgTaken((d) => d + bossDmg);
-      setLastEvent(`Miss: ${dragon.name} strikes for ${bossDmg}.`);
-      if (newHp <= 0) {
-        setTimeout(() => {
-          setPhase("result");
-          onComplete({
-            won: false,
-            dragon,
-            turns: turn + 1,
-            dmgDealt: totalDmgDealt,
-            dmgTaken: totalDmgTaken + bossDmg,
-            flawless: false,
-          });
-        }, 600);
-      }
     }
-    setSelected([]);
+    const newBossHp = Math.max(0, bossHp - dealt);
+    const newHp = Math.max(0, hp - taken);
+
+    setLastEvent(
+      !isCorrect
+        ? `Miss: ${dragon.name} strikes for ${taken}.`
+        : newBossHp <= 0
+          ? `Hit: ${dealt} damage. Victory.`
+          : `Hit: ${dealt} damage. ${dragon.name} counterattacks for ${taken}.`,
+    );
+    setBossHp(newBossHp);
+    setHp(newHp);
+    setTotalDmgDealt((d) => d + dealt);
+    setTotalDmgTaken((d) => d + taken);
     setTurn((t) => t + 1);
+
+    const over = newBossHp <= 0 || newHp <= 0;
+    setRevealed({ isCorrect, selectedIndexes, over });
+    if (over) {
+      const won = newBossHp <= 0;
+      onComplete({
+        won,
+        dragon,
+        turns: turn + 1,
+        dmgDealt: totalDmgDealt + dealt,
+        dmgTaken: totalDmgTaken + taken,
+        flawless: won && wrongCount === 0,
+      });
+    }
+  };
+
+  const nextTurn = () => {
+    if (revealed?.over) {
+      setPhase("result");
+      return;
+    }
+    setRevealed(null);
+    setSelected([]);
     setQIndex((i) => i + 1);
   };
 
@@ -181,7 +196,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
             >
               {tierBadge}
             </span>
-            {dragon.topicFilter && (
+            {dragon.topicLabel && (
               <span
                 style={{
                   padding: "4px 10px",
@@ -193,7 +208,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
                   fontFamily: "var(--font-mono)",
                 }}
               >
-                {dragon.topicFilter}
+                {dragon.topicLabel}
               </span>
             )}
             <span
@@ -460,7 +475,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
               fontFamily: "var(--font-mono)",
             }}
           >
-            Turn {turn + 1}
+            Turn {revealed ? turn : turn + 1}
           </span>
           <span
             style={{
@@ -487,7 +502,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
                 fontFamily: "var(--font-mono)",
               }}
             >
-              {neededAnswers} respuestas
+              {neededAnswers} answers
             </span>
           )}
         </div>
@@ -524,21 +539,16 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
             <button
               key={i}
               onClick={() => toggleSelected(i)}
+              disabled={Boolean(revealed)}
               style={{
                 padding: "12px 16px",
                 borderRadius: "var(--radius-sm)",
                 fontSize: 13,
                 textAlign: "left",
-                cursor: "pointer",
+                cursor: revealed ? "default" : "pointer",
                 fontFamily: "inherit",
                 lineHeight: 1.4,
-                background: selectedIndexes.includes(i)
-                  ? "var(--info-soft)"
-                  : "var(--surface-panel-muted)",
-                border: selectedIndexes.includes(i)
-                  ? "2px solid var(--signal-info)"
-                  : "1px solid var(--surface-line)",
-                color: selectedIndexes.includes(i) ? "var(--signal-info)" : "var(--text-primary)",
+                ...optionStyle(i),
               }}
             >
               {o}
@@ -565,25 +575,79 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
         >
           {lastEvent}
         </div>
-        <button
-          onClick={attack}
-          disabled={!canAttack}
-          style={{
-            width: "100%",
-            padding: "13px",
-            background: canAttack ? "var(--gradient-danger)" : "var(--text-muted)",
-            border: "none",
-            borderRadius: "var(--radius-md)",
-            color: "white",
-            fontSize: 15,
-            fontWeight: 700,
-            cursor: canAttack ? "pointer" : "not-allowed",
-            opacity: canAttack ? 1 : 0.5,
-            fontFamily: "var(--font-mono)",
-          }}
-        >
-          {"\u2694\uFE0F"} {canAttack ? "ATTACK" : isMulti ? `PICK ${neededAnswers}` : "ATTACK"}
-        </button>
+        {revealed && (
+          <div
+            style={{
+              marginBottom: 10,
+              padding: "10px 12px",
+              borderRadius: "var(--radius-sm)",
+              background: revealed.isCorrect ? "var(--correct-soft)" : "var(--wrong-soft)",
+              border: `1px solid ${revealed.isCorrect ? "var(--signal-correct)" : "var(--signal-wrong)"}`,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 800,
+                color: revealed.isCorrect ? "var(--signal-correct)" : "var(--signal-wrong)",
+                marginBottom: question.explanation ? 4 : 0,
+              }}
+            >
+              {revealed.isCorrect ? "Correct" : "Incorrect"}
+            </div>
+            {question.explanation && (
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 13,
+                  lineHeight: 1.5,
+                  color: "var(--text-secondary)",
+                }}
+              >
+                {question.explanation}
+              </p>
+            )}
+          </div>
+        )}
+        {revealed ? (
+          <button
+            onClick={nextTurn}
+            style={{
+              width: "100%",
+              padding: "13px",
+              background: "var(--gradient-practice)",
+              border: "none",
+              borderRadius: "var(--radius-md)",
+              color: "white",
+              fontSize: 15,
+              fontWeight: 700,
+              cursor: "pointer",
+              fontFamily: "var(--font-mono)",
+            }}
+          >
+            {revealed.over ? "SEE RESULT" : "NEXT TURN"}
+          </button>
+        ) : (
+          <button
+            onClick={attack}
+            disabled={!canAttack}
+            style={{
+              width: "100%",
+              padding: "13px",
+              background: canAttack ? "var(--gradient-danger)" : "var(--text-muted)",
+              border: "none",
+              borderRadius: "var(--radius-md)",
+              color: "white",
+              fontSize: 15,
+              fontWeight: 700,
+              cursor: canAttack ? "pointer" : "not-allowed",
+              opacity: canAttack ? 1 : 0.5,
+              fontFamily: "var(--font-mono)",
+            }}
+          >
+            {"\u2694\uFE0F"} {canAttack ? "ATTACK" : isMulti ? `PICK ${neededAnswers}` : "ATTACK"}
+          </button>
+        )}
       </div>
       <div style={{ maxWidth: 300, margin: "16px auto 0" }}>
         <div

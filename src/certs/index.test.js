@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { getDragonRoster } from "../data/gamification.js";
 import { createDomainHelpers } from "../engine/domain-helpers.js";
 import { CERT_LIST, CERTS, DEFAULT_CERT_ID, getActiveCert, isKnownCertId } from "./index.js";
 
@@ -134,5 +135,29 @@ describe.each(CERT_LIST.map((cert) => [cert.id, cert]))("%s question bank", (id,
     });
 
     expect(starved.map((domain) => domain.short)).toEqual([]);
+  });
+
+  // A themed dragon with no matching questions silently falls back to the
+  // whole bank, so its name stops matching what it asks.
+  it("gives every dragon enough questions on its own topics", async () => {
+    const { QUESTIONS } = await cert.loadQuestions();
+    const { getCanonicalTopic } = createDomainHelpers(cert);
+    const starved = getDragonRoster(cert).filter((dragon) => {
+      const matching = QUESTIONS.filter(
+        (q) =>
+          (!dragon.topics || dragon.topics.includes(getCanonicalTopic(q.topic))) &&
+          (!dragon.difficultyFilter || q.difficulty === dragon.difficultyFilter),
+      );
+      return matching.length < 10;
+    });
+    expect(starved.map((dragon) => dragon.id)).toEqual([]);
+  });
+
+  it("only themes dragons on topics the cert actually has", () => {
+    const canonicals = new Set(Object.values(cert.topicMap));
+    const unknown = (cert.dragons ?? []).flatMap((dragon) =>
+      (dragon.topics ?? []).filter((topic) => !canonicals.has(topic)),
+    );
+    expect(unknown).toEqual([]);
   });
 });
