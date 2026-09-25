@@ -128,7 +128,7 @@ Docker when you want a disposable, host-independent run.
 
 ### Where progress is stored
 
-`localStorage`, under keys namespaced per cert:
+`localStorage`, under keys namespaced per cert, plus one app-wide key:
 
 | Key                              | Contents                                                                                                     |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -137,6 +137,7 @@ Docker when you want a disposable, host-independent run.
 | `<certId>.activeBlockSession.v1` | A block left in progress                                                                                     |
 | `<certId>.practicePrefs.v1`      | Source, order and question count                                                                             |
 | `<certId>.blockPrefs.v1`         | Block size and selection                                                                                     |
+| `app.settings.v1`                | Settings shared by every cert (focus mode)                                                                   |
 
 Progress is written on **every change**, never on exit. There is no
 save button and nothing to flush: by the time you close the app, the
@@ -181,59 +182,20 @@ as described above; tests and Docker work that way.
 - **Feedback:** the top bar has a **Feedback** button. Reports go to
   `public.feedback` with the question on screen attached, and fall back to
   email if sending fails.
+- **Access codes:** a link with `?redeem=<code>` grants a complimentary
+  plan to the account that redeems it; the top bar shows it. There is no
+  billing yet, so for now it is only a badge.
 
-### Complimentary access codes
+### Infrastructure
 
-To give someone free access, create a code in the Supabase SQL editor:
-
-```sql
-insert into public.access_grants (code, note, plan, expires_at)
-values ('DF-ABCD-EFGH', 'Ana (friend)', 'pro', null);  -- null = never expires
-```
-
-Then send them `https://<site>/app/?redeem=DF-ABCD-EFGH`. The code is kept
-through sign-in or sign-up, redeemed once with `redeem_access_code()`, and
-tied to that account; the top bar shows the plan. To see who redeemed what:
-`select code, note, redeemed_by, redeemed_at from public.access_grants;`.
-Keep real codes out of the repo. There is no billing yet, so a grant only
-shows up as a badge for now; the paywall should honour
-`loadAccess()` in [src/cloud/access.js](src/cloud/access.js).
-
-### Setting it up
-
-1. **Supabase.** Create a project. In the SQL editor, run every file in
-   [supabase/migrations/](supabase/migrations/), oldest first:
-   - `user_state` holds progress. Row level security lets users read and
-     write only their own rows.
-   - `feedback` holds reports sent from the in-app **Feedback** button.
-     Anyone can insert and nobody can read through the API; you read it
-     in Table Editor.
-   - `waitlist` holds the early-bird sign-ups from the pricing section of
-     the landing page. It uses the same insert-only rule.
-   - `access_grants` holds complimentary access codes; see below.
-2. **Auth URLs.** Go to Supabase → Authentication → URL Configuration.
-   Set _Site URL_ to the production URL. Add `http://localhost:5173/**`
-   and `https://*-<vercel-team>.vercel.app/**` (preview deploys) to the
-   redirect URLs.
-3. **Google sign-in.** In Google Cloud console → APIs & Services →
-   Credentials, create an OAuth client ID of type _Web application_.
-   Its authorised redirect URI is
-   `https://<project-ref>.supabase.co/auth/v1/callback`. Paste the
-   client ID and secret into Supabase → Authentication → Providers →
-   Google.
-4. **GitHub sign-in.** Go to GitHub → Settings → Developer settings →
-   OAuth Apps → New OAuth App. The authorization callback URL is the
-   same Supabase callback. Paste the client ID and secret into
-   Supabase → Authentication → Providers → GitHub.
-5. **Email.** Email + password and magic links work out of the box.
-   Supabase's built-in mailer is rate-limited, though, so configure
-   custom SMTP (Resend, Postmark, SES…) before real users arrive.
-6. **Local.** Run `cp .env.example .env.local`, fill in both values,
-   then `npm run dev`.
-7. **Vercel.** Import the GitHub repo; [vercel.json](vercel.json) sets
-   up the Vite build. Add both `VITE_SUPABASE_*` variables for
-   Production and Preview. Every push to `main` deploys, and every PR
-   gets a preview URL.
+- **Frontend:** Vercel. Every push to `main` deploys to production and
+  every PR gets a preview URL.
+- **Backend:** Supabase, for auth and data. Tables: `user_state`
+  (progress), `feedback`, `waitlist` (early-bird list from the landing
+  page) and `access_grants`. Row level security keeps each user to their
+  own rows; feedback and the waitlist are insert-only.
+- **Auth:** Google, GitHub, email + password and magic links, all through
+  Supabase Auth.
 
 The publishable key is meant to be public; row level security is what
 protects the data. Never put the secret / `service_role` key in a
