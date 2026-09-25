@@ -3,6 +3,7 @@ import {
   BLOCK_SIZE_PRESETS,
   hasBlockChanged,
   isBlockMastered,
+  numberBlockRounds,
 } from "../engine/block-study";
 import { formatDuration, getPercentTone } from "../ui/formatting.js";
 
@@ -38,7 +39,7 @@ export default function BlockView({
   onSelectIndex,
   onPickBlock,
 }) {
-  const selectedBlockRounds = selectedBlockProgress?.rounds || [];
+  const selectedBlockRounds = numberBlockRounds(selectedBlockProgress?.rounds);
   const selectedBlockChanged = selectedBlock
     ? hasBlockChanged(selectedBlock, selectedBlockProgress)
     : false;
@@ -443,7 +444,7 @@ export default function BlockView({
                             fontFamily: "var(--font-mono)",
                           }}
                         >
-                          {roundStat.completedBlocks}/{blocks.length} blocks
+                          {roundStat.blocks}/{blocks.length} blocks
                         </div>
                       </div>
                     );
