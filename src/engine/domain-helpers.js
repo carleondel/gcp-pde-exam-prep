@@ -1,3 +1,5 @@
+export const MIN_ACCURACY_ATTEMPTS = 10;
+
 export function createDomainHelpers({ topicMap, examDomains }) {
   function getCanonicalTopic(topic) {
     return topicMap[topic] || topic;
@@ -32,7 +34,9 @@ export function createDomainHelpers({ topicMap, examDomains }) {
     });
   }
 
-  function computeCanonicalTopicStats(topicHistory) {
+  // A topic with fewer questions than the minimum reports accuracy once the
+  // player has answered as many as the topic has; otherwise it never could.
+  function computeCanonicalTopicStats(topicHistory, questionCounts = {}) {
     const byCanonical = {};
     for (const [topic, entries] of Object.entries(topicHistory)) {
       const canonical = getCanonicalTopic(topic);
@@ -46,7 +50,11 @@ export function createDomainHelpers({ topicMap, examDomains }) {
     return examDomains.flatMap((domain) =>
       domain.topics.map((topic) => {
         const stats = byCanonical[topic] || { correct: 0, total: 0 };
-        const accuracy = stats.total >= 10 ? Math.round((stats.correct / stats.total) * 100) : null;
+        const minAttempts = Math.min(MIN_ACCURACY_ATTEMPTS, questionCounts[topic] || Infinity);
+        const accuracy =
+          stats.total > 0 && stats.total >= minAttempts
+            ? Math.round((stats.correct / stats.total) * 100)
+            : null;
         return { topic, domainId: domain.id, ...stats, accuracy };
       }),
     );

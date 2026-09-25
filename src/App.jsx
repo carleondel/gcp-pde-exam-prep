@@ -253,10 +253,14 @@ export function AppContent({ allQuestions }) {
     () => computeDomainStats(progress.topicHistory),
     [progress.topicHistory],
   );
-  const canonicalTopicStats = useMemo(
-    () => computeCanonicalTopicStats(progress.topicHistory),
-    [progress.topicHistory],
-  );
+  const canonicalTopicStats = useMemo(() => {
+    const canonicalCounts = {};
+    for (const [topic, count] of Object.entries(topicCounts)) {
+      const canonical = getCanonicalTopic(topic);
+      canonicalCounts[canonical] = (canonicalCounts[canonical] || 0) + count;
+    }
+    return computeCanonicalTopicStats(progress.topicHistory, canonicalCounts);
+  }, [progress.topicHistory, topicCounts]);
   const weakestDomain = useMemo(() => getWeakestDomain(domainStats), [domainStats]);
   const weakTopicSet = useMemo(() => new Set(weakTopics.map((topic) => topic.topic)), [weakTopics]);
   const wrongQuestions = useMemo(
