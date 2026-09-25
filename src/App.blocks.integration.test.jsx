@@ -364,6 +364,40 @@ describe("block study, wired into the app", () => {
       expect(screen.getAllByText("Option removed")).toHaveLength(2);
     });
 
+    // Reloading used to drop the player back into a block they had already
+    // walked away from. Leaving for the menu is a choice the reload keeps.
+    it("stays on the menu after a reload when the block was left for it", () => {
+      const first = render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      answerCurrent();
+      vi.spyOn(window, "confirm").mockReturnValue(true);
+      clickButton(/^← Menu$/);
+      expect(screen.getByText("Study blocks")).toBeTruthy();
+      first.unmount();
+
+      render(<AppContent allQuestions={BANK} />);
+      expect(screen.queryByText("Question number 59")).toBeNull();
+      expect(screen.getByText("Study blocks")).toBeTruthy();
+
+      // Still resumable, and it picks up where it was left.
+      expect(screen.getByText("Continue Block 1")).toBeTruthy();
+      clickButton(/^Continue$/);
+      expect(screen.getByText("Question number 59")).toBeTruthy();
+    });
+
+    it("goes back into the block on a reload once it has been resumed", () => {
+      const first = render(<AppContent allQuestions={BANK} />);
+      startFirstBlock();
+      answerCurrent();
+      vi.spyOn(window, "confirm").mockReturnValue(true);
+      clickButton(/^← Menu$/);
+      clickButton(/^Continue B1$/);
+      first.unmount();
+
+      render(<AppContent allQuestions={BANK} />);
+      expect(screen.getByText("Question number 59")).toBeTruthy();
+    });
+
     it("is written under this cert only", () => {
       const first = render(<AppContent allQuestions={BANK} />);
       startFirstBlock();
