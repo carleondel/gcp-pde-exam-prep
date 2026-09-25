@@ -1,10 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export function AchievementPopup({ achievement, onClose }) {
+  // Parents pass an inline onClose that changes every render; keying the
+  // timer on it would restart the countdown forever in timed modes.
+  const onCloseRef = useRef(onClose);
   useEffect(() => {
-    const t = setTimeout(onClose, 3500);
+    onCloseRef.current = onClose;
+  });
+
+  useEffect(() => {
+    const t = setTimeout(() => onCloseRef.current(), 3500);
     return () => clearTimeout(t);
-  }, [onClose]);
+  }, [achievement.id]);
   return (
     <div
       style={{
