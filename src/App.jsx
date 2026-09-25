@@ -44,6 +44,8 @@ import {
   completeDailyChallenge,
   createStorage,
   isDailyChallengeCompleted,
+  loadAppSettings,
+  saveAppSettings,
   updateDailyStreak,
 } from "./engine/storage";
 import { getActiveCert, isKnownCertId, CERT_LIST } from "./certs/index.js";
@@ -239,6 +241,17 @@ export function AppContent({ allQuestions }) {
   const [rewardFlow, setRewardFlow] = useState("manual");
   const [showAch, setShowAch] = useState(null);
   const [xpPop, setXpPop] = useState(null);
+  const [appSettings, setAppSettings] = useState(loadAppSettings);
+  // Focus mode: wheel, chest, scratch card and boss stop interrupting; XP
+  // and achievements are unaffected.
+  const focusMode = appSettings.focusMode;
+  const toggleFocusMode = useCallback(() => {
+    setAppSettings((current) => {
+      const next = { ...current, focusMode: !current.focusMode };
+      saveAppSettings(next);
+      return next;
+    });
+  }, []);
   const [showConfetti, setShowConfetti] = useState(false);
   const [now, setNow] = useState(Date.now());
 
@@ -437,7 +450,7 @@ export function AppContent({ allQuestions }) {
     ? canSubmitAnswer(currentQuestion, selectedAnswer)
     : false;
   const blockElapsedSec = blockMode ? Math.floor((now - session.startedAt) / 1000) : 0;
-  const pendingRewardCount = practiceMode ? session.rewardQueue.length : 0;
+  const pendingRewardCount = practiceMode && !focusMode ? session.rewardQueue.length : 0;
 
   const resetQuestionUi = useCallback(() => {
     setSelectedAnswer(null);
@@ -563,6 +576,12 @@ export function AppContent({ allQuestions }) {
 
   const openQueuedPracticeReward = useCallback(() => {
     if (!session || session.mode !== "practice") return;
+    // Rewards queued before the mode was switched on are dropped, not kept
+    // back to ambush the player once it is switched off again.
+    if (focusMode) {
+      advancePracticeSession({ ...session, rewardQueue: [] });
+      return;
+    }
     if (session.rewardQueue.length > 0) {
       const [nextReward, ...rest] = session.rewardQueue;
       setSession({
@@ -573,7 +592,7 @@ export function AppContent({ allQuestions }) {
       return;
     }
     advancePracticeSession(session);
-  }, [advancePracticeSession, openRewardByKey, session]);
+  }, [advancePracticeSession, openRewardByKey, session, focusMode]);
 
   const afterRewardClose = useCallback(() => {
     if (rewardFlow === "queued") openQueuedPracticeReward();
@@ -1589,12 +1608,14 @@ export function AppContent({ allQuestions }) {
       xp: xpInfo.xp,
       time: elapsedSec,
     };
-    const rewardQueue = evaluation.isCorrect
-      ? [
-          ...session.rewardQueue,
-          ...rollPracticeRewards(nextStreak, progress.inventory.bossKeys > 0),
-        ]
-      : session.rewardQueue;
+    const rewardQueue = focusMode
+      ? []
+      : evaluation.isCorrect
+        ? [
+            ...session.rewardQueue,
+            ...rollPracticeRewards(nextStreak, progress.inventory.bossKeys > 0),
+          ]
+        : session.rewardQueue;
 
     updateProgress((prev) => {
       const inventory = { ...prev.inventory };
@@ -1677,6 +1698,7 @@ export function AppContent({ allQuestions }) {
     setSavedMockSession,
     showDiscussion,
     showHint,
+    focusMode,
     updateProgress,
   ]);
 
@@ -2271,6 +2293,8 @@ export function AppContent({ allQuestions }) {
         mockRemainingSec={mockRemainingSec}
         blockElapsedSec={blockElapsedSec}
         onGoToMenu={goToMenu}
+        focusMode={focusMode}
+        onToggleFocusMode={toggleFocusMode}
       />
 
       <QuizView

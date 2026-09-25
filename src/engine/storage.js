@@ -96,6 +96,21 @@ function sanitizeObject(value) {
   return value && typeof value === "object" ? value : null;
 }
 
+// Settings that belong to the player rather than to a cert. The "app."
+// namespace is synced with the account like the per-cert keys.
+export const APP_SETTINGS_KEY = "app.settings.v1";
+export const DEFAULT_APP_SETTINGS = { focusMode: false };
+
+export function loadAppSettings() {
+  if (!hasStorage()) return DEFAULT_APP_SETTINGS;
+  const stored = sanitizeObject(safeParse(window.localStorage.getItem(APP_SETTINGS_KEY)));
+  return { ...DEFAULT_APP_SETTINGS, ...stored, focusMode: stored?.focusMode === true };
+}
+
+export function saveAppSettings(settings) {
+  writeItem(APP_SETTINGS_KEY, settings);
+}
+
 export function getTodayString() {
   return toLocalDateString();
 }

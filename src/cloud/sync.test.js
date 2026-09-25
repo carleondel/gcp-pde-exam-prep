@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createStorage, EMPTY_PROGRESS, setStorageWriteListener } from "../engine/storage.js";
-import { createCloudSync, OWNER_KEY, PENDING_KEY } from "./sync.js";
+import { createCloudSync, isSyncedKey, OWNER_KEY, PENDING_KEY } from "./sync.js";
 
 const CERT_IDS = ["gcp-pde", "gcp-pca"];
 const USER = "user-1";
@@ -98,6 +98,15 @@ function fakeClient(rows = new Map()) {
 }
 
 const writes = (client) => client.calls.filter(([op]) => op !== "select");
+
+describe("isSyncedKey", () => {
+  it("syncs per-cert keys and the app-wide settings, nothing else", () => {
+    expect(isSyncedKey("gcp-pde.progress.v2", ["gcp-pde"])).toBe(true);
+    expect(isSyncedKey("app.settings.v1", ["gcp-pde"])).toBe(true);
+    expect(isSyncedKey("cloud.owner", ["gcp-pde"])).toBe(false);
+    expect(isSyncedKey("gcp-pca.progress.v2", ["gcp-pde"])).toBe(false);
+  });
+});
 
 describe("createCloudSync", () => {
   let store;
