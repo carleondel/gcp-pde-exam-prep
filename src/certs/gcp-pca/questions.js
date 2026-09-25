@@ -3741,8 +3741,8 @@ export const QUESTIONS = [
     "options": [
       "A. Set up a network peering between vpc-a and vpc-b.",
       "B. Set up a VPN between vpc-a and vpc-b using Cloud VPN.",
-      "C. Configure IAP TCP forwarding on the instance in vpc-b, and then launch the following gcloud command...",
-      "D. 1. Create an additional instance in vpc-a. 2. Create an additional instance in vpc-b. 3. Install OpenVPN in newly created instances..."
+      "C. Configure IAP TCP forwarding on the instance in vpc-b, and then launch the following gcloud command from one of the instances in vpc-a: gcloud compute start-iap-tunnel INSTANCE_NAME_IN_VPC_B 22 --local-host-port=localhost:22",
+      "D. 1. Create an additional instance in vpc-a. 2. Create an additional instance in vpc-b. 3. Install OpenVPN in newly created instances. 4. Configure a VPN tunnel between vpc-a and vpc-b with the help of OpenVPN."
     ],
     "correct": 0,
     "explanation": "VPC Network Peering works across organizations when subnets do not overlap and routes traffic on Google's internal fabric with no encryption overhead, giving the best latency and throughput.",
