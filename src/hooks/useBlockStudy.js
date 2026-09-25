@@ -4,6 +4,7 @@ import {
   buildBlockCatalog,
   getBlockProgressRecord,
   getSuggestedBlockIndex,
+  numberBlockRounds,
 } from "../engine/block-study.js";
 import { toStoredBlockSession } from "../engine/session-manager.js";
 import { sanitizeBlockSize } from "../ui/practice-prefs.js";
@@ -18,8 +19,8 @@ export function buildTrackRoundStats(progress, trackId) {
   const byRound = new Map();
 
   for (const record of Object.values(blocks)) {
-    (record.rounds || []).forEach((round, index) => {
-      const roundNumber = round.roundNumber || index + 1;
+    numberBlockRounds(record.rounds).forEach((round) => {
+      const { roundNumber } = round;
       const entry = byRound.get(roundNumber) || { roundNumber, blocks: 0, correct: 0, total: 0 };
       entry.blocks += 1;
       entry.correct += round.correctCount || 0;
@@ -170,7 +171,8 @@ export function useBlockStudy({
           lastPercent: 0,
           bestPercent: 0,
         };
-        const rounds = [...(blockRecord.rounds || []), summary];
+        const previousRounds = blockRecord.rounds || [];
+        const rounds = [...previousRounds, { ...summary, roundNumber: previousRounds.length + 1 }];
         return {
           ...prev,
           blockStudy: {

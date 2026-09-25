@@ -101,11 +101,25 @@ describe("buildTrackRoundStats", () => {
     expect(stats[1]).toMatchObject({ roundNumber: 2, blocks: 1 });
   });
 
-  it("orders rounds ascending", () => {
+  // Seen in the wild: a block whose first round was saved as round 2.
+  it("numbers rounds by their place in the history, not the stored number", () => {
     const progress = {
-      blockStudy: { tracks: { t: { blocks: { 0: { rounds: [round(50, 3), round(60, 1)] } } } } },
+      blockStudy: {
+        tracks: {
+          t: {
+            blocks: {
+              0: { rounds: [round(56, 2), round(72, 2)] },
+              1: { rounds: [round(40, 1)] },
+            },
+          },
+        },
+      },
     };
-    expect(buildTrackRoundStats(progress, "t").map((s) => s.roundNumber)).toEqual([1, 3]);
+    const stats = buildTrackRoundStats(progress, "t");
+    expect(stats.map((s) => [s.roundNumber, s.blocks])).toEqual([
+      [1, 2],
+      [2, 1],
+    ]);
   });
 });
 

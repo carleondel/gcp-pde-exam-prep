@@ -90,6 +90,15 @@ export function getBlockRoundNumber(blockProgress) {
   return (blockProgress?.rounds?.length || 0) + 1;
 }
 
+/**
+ * A round's number is its place in the block's history. The number stored
+ * on each round was frozen when it started and can disagree with that (two
+ * rounds both saved as "2"), so it is not trusted for display or grouping.
+ */
+export function numberBlockRounds(rounds = []) {
+  return rounds.map((round, index) => ({ ...round, roundNumber: index + 1 }));
+}
+
 export function isBlockMastered(blockProgress) {
   const rounds = blockProgress?.rounds || [];
   if (rounds.length < 2) return false;

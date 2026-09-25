@@ -473,7 +473,17 @@ export function AppContent({ allQuestions }) {
           xp: prev.xp + dailyBonus,
         }));
       }
-      const blockRoundSummary = isBlocks ? buildBlockRoundSummary(finishedSession) : null;
+      // Numbered from the history as it stands now, the same way it is
+      // recorded, rather than from the number frozen when the round began.
+      const blockMeta = finishedSession.meta?.blockStudy;
+      const blockRoundSummary = isBlocks
+        ? {
+            ...buildBlockRoundSummary(finishedSession),
+            roundNumber: getBlockRoundNumber(
+              getBlockProgressRecord(progress, blockMeta?.trackId, blockMeta?.blockIndex),
+            ),
+          }
+        : null;
       if (blockRoundSummary) {
         recordBlockRound(finishedSession, blockRoundSummary);
         clearActiveBlockSession();

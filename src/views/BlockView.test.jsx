@@ -125,6 +125,48 @@ describe("BlockView", () => {
     });
   });
 
+  describe("the round history", () => {
+    // Two rounds stored with the same number used to share a React key, and
+    // every re-render (picking another block and back) added another copy.
+    it("lists each round once, numbered in order, however often it re-renders", () => {
+      const rounds = [round(56, 2), { ...round(72, 2), finishedAt: 1700000100000 }];
+      const view = (selected) => (
+        <BlockView
+          blocks={BLOCKS}
+          trackSize={25}
+          selectedBlock={BLOCKS[selected]}
+          selectedBlockProgress={selected === 0 ? record(rounds) : null}
+          roundStats={[]}
+          suggestedBlock={BLOCKS[0]}
+          savedBlockIndex={null}
+          activeBlockIndex={null}
+          message=""
+          getBlockRecord={() => null}
+          onContinueSaved={() => {}}
+          onStart={() => {}}
+          onSelectSize={() => {}}
+          onSelectIndex={() => {}}
+          onPickBlock={() => {}}
+        />
+      );
+      const { rerender } = render(view(0));
+      for (let i = 0; i < 3; i++) {
+        rerender(view(1));
+        rerender(view(0));
+      }
+
+      expect(screen.getAllByText(/^Round \d$/).map((el) => el.textContent)).toEqual([
+        "Round 2",
+        "Round 1",
+      ]);
+    });
+
+    it("says how many blocks each round covers", () => {
+      render_({ roundStats: [{ roundNumber: 1, blocks: 2, correct: 30, total: 50, percent: 60 }] });
+      expect(screen.getByText("2/3 blocks")).toBeTruthy();
+    });
+  });
+
   describe("an interrupted block", () => {
     it("offers to continue the one in flight instead of restarting it", () => {
       const onContinueSaved = vi.fn();
