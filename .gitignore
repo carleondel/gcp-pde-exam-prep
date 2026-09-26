@@ -22,5 +22,6 @@ video/TODO.md
 video/WALKTHROUGH.md
 
 # Promo video renders (regenerate with `npm run render`)
-video/out
-video/public
+landing-video/out
+# Generated from the cert banks by `npm run facts`
+landing-video/src/facts.json

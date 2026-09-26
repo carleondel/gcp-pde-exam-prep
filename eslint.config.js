@@ -61,12 +61,19 @@ export default [
   },
 
   {
-    // The promo video under video/ is a Remotion project, not a Vite app.
-    // It has no dev server and no Fast Refresh, so a file mixing a scene
+    // The promo video under landing-video/ is a Remotion project, not a Vite
+    // app. It has no dev server and no Fast Refresh, so a file mixing a scene
     // component with the constants that drive it costs nothing there.
-    files: ["video/**/*.{js,jsx}"],
+    files: ["landing-video/**/*.{js,jsx}"],
     rules: {
       "react-refresh/only-export-components": "off",
+    },
+  },
+
+  {
+    files: ["landing-video/scripts/**/*.mjs"],
+    languageOptions: {
+      globals: { ...globals.node },
     },
   },
 ];

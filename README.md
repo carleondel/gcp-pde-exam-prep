@@ -34,10 +34,10 @@ each.
 
 ## Demo
 
-https://github.com/user-attachments/assets/d80d82d8-faa9-4ae5-8760-ac9d8e4a126d
+[![Watch the 30-second tour of DataForge](docs/dataforge-promo-poster.jpg)](docs/dataforge-promo.mp4)
 
-<sub>Not seeing a player? Your viewer is not GitHub — the file is at
-[docs/dataforge-promo.mp4](docs/dataforge-promo.mp4).</sub>
+<sub>Click the image to play the video (30 s, with sound). Built with
+[Remotion](https://www.remotion.dev) in [landing-video/](landing-video/).</sub>
 
 ## Status
 
