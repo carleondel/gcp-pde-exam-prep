@@ -11,8 +11,10 @@
 
 - `landing-video/` is a standalone Remotion project (own `package.json`, `npm install` inside it).
 - `npm run studio` to preview, `npm run render` → `landing-video/out/landing-promo.mp4`.
-- `npm run publish` re-renders the README video: `docs/dataforge-promo.mp4` (audio mastered to
-  -16 LUFS) and `docs/dataforge-promo-poster.jpg`.
+- `npm run publish` re-renders the README video into `docs/dataforge-promo.mp4` (audio mastered to
+  -16 LUFS). The README plays it from a GitHub `user-attachments` URL, which can only be created by
+  dragging the mp4 into GitHub's web editor: after re-rendering, the user must upload it and swap
+  the URL.
 - Audio lives in `landing-video/src/audio/` (sources and licenses in `CREDITS.md`). Scene cuts are
   locked to the music's bars in `src/theme.js`; each scene exports `CUES` read by `Soundtrack.jsx`.
 - Screenshots come from the app's `public/` (`remotion.config.js`); question counts and dates are

@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
-# Renders the film and its poster into ../docs for the README.
-#   docs/dataforge-promo.mp4         web-sized, audio mastered to -16 LUFS
-#   docs/dataforge-promo-poster.jpg  thumbnail linked from the README
-# Uses the ffmpeg bundled with Remotion, so nothing else needs installing.
+# Renders the film into ../docs/dataforge-promo.mp4: web-sized, audio
+# mastered to -16 LUFS. Uses the ffmpeg bundled with Remotion, so nothing
+# else needs installing.
+#
+# The README plays the film from GitHub's attachment CDN, not from docs/.
+# After re-rendering, drag the new mp4 into the README in GitHub's web
+# editor and swap the user-attachments URL it produces.
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -19,7 +22,5 @@ npx remotion render src/index.jsx LandingPromo out/web.mp4 \
 npx remotion ffmpeg -y -loglevel error -i out/web.mp4 -c:v copy \
   -af loudnorm=I=-16:TP=-1.5:LRA=11 -ar 48000 -c:a aac -b:a 160k \
   -movflags +faststart "$docs/dataforge-promo.mp4"
-npx remotion still src/index.jsx Poster "$docs/dataforge-promo-poster.jpg" \
-  --frame=100 --image-format=jpeg --jpeg-quality=88
 
-ls -lh "$docs/dataforge-promo.mp4" "$docs/dataforge-promo-poster.jpg"
+ls -lh "$docs/dataforge-promo.mp4"
