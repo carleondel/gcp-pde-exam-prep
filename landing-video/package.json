@@ -1,0 +1,21 @@
+{
+  "name": "dataforge-landing-video",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "facts": "node scripts/facts.mjs",
+    "studio": "npm run facts && remotion studio src/index.jsx",
+    "render": "npm run facts && remotion render src/index.jsx LandingPromo out/landing-promo.mp4 --codec=h264 --crf=18",
+    "publish": "bash scripts/publish.sh",
+    "sfx": "node scripts/synth-sfx.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.525",
+    "@remotion/google-fonts": "4.0.525",
+    "@remotion/transitions": "4.0.525",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.525"
+  }
+}
