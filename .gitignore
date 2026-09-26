@@ -10,6 +10,7 @@ yarn-error.log*
 .env.*
 !.env.example
 .vercel
+.security-audit/
 
 # Source question dumps
 raw.md
