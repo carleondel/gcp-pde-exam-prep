@@ -243,5 +243,14 @@ describe("BlockView", () => {
       // still reads "Not started".
       expect(screen.getAllByText("In progress")).toHaveLength(1);
     });
+
+    it("marks only the selected tile as selected, not the one in flight", () => {
+      render_({ selectedBlock: BLOCKS[2], activeBlockIndex: 1, savedBlockIndex: 1 });
+      const pressed = screen
+        .getAllByRole("button", { pressed: true })
+        .map((tile) => tile.textContent);
+      expect(pressed).toHaveLength(1);
+      expect(pressed[0]).toMatch(/^Block 3/);
+    });
   });
 });
