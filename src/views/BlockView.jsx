@@ -556,6 +556,11 @@ export default function BlockView({
           const isSelected = selectedBlock?.blockIndex === block.blockIndex;
           const isUpdated = hasBlockChanged(block, blockProgress);
           const isMastered = isBlockMastered(blockProgress);
+          const selectionColor = isActive
+            ? "var(--signal-info)"
+            : blockTone.value === null
+              ? "var(--primary-400)"
+              : blockTone.text;
           const label = isActive
             ? "In progress"
             : isUpdated
@@ -569,14 +574,11 @@ export default function BlockView({
             <button
               key={block.id}
               onClick={() => onPickBlock(block)}
+              aria-pressed={isSelected}
               style={{
                 padding: 14,
                 borderRadius: "var(--radius-lg)",
-                border: isActive
-                  ? "1px solid var(--signal-info)"
-                  : isSelected
-                    ? `1px solid ${blockTone.value === null ? "var(--primary-medium)" : blockTone.border}`
-                    : `1px solid ${blockTone.border}`,
+                border: `1px solid ${isActive || isSelected ? selectionColor : blockTone.border}`,
                 background:
                   blockTone.value === null
                     ? isSelected
@@ -588,7 +590,9 @@ export default function BlockView({
                 textAlign: "left",
                 cursor: "pointer",
                 color: "var(--text-primary)",
-                boxShadow: isSelected ? blockTone.shadow : "none",
+                boxShadow: isSelected
+                  ? `0 0 0 2px ${selectionColor}${blockTone.shadow === "none" ? "" : `, ${blockTone.shadow}`}`
+                  : "none",
                 transition:
                   "transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out)",
               }}
