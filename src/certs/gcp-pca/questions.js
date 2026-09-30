@@ -3460,10 +3460,10 @@ export const QUESTIONS = [
       "A. 1. Create an image of the on-premises virtual machines and upload into Cloud Storage.\n2. Import the image as a virtual disk on Compute Engine.",
       "B. 1. Create standard instances on Compute Engine.\n2. Select as the OS the same Microsoft Windows version that is currently in use in the on-premises environment.",
       "C. 1. Create an image of the on-premises virtual machine.\n2. Import the image as a virtual disk on Compute Engine.\n3. Create a standard instance on Compute Engine, selecting as the OS the same Microsoft Windows version that is currently in use in the on-premises environment.\n4. Attach a data disk that includes data that matches the created image.",
-      "D. 1. Create an image of the on-premises virtual machines.\n2. Import the image as a virtual disk on Compute Engine using --os=windows-2022-dc-v.\n3. Create a sole-tenancy instance on Compute Engine that uses the imported disk as a boot disk."
+      "D. 1. Create an image of the on-premises virtual machines.\n2. Import the image as a virtual disk on Compute Engine using --os=windows-2022-byol.\n3. Create a sole-tenancy instance on Compute Engine that uses the imported disk as a boot disk."
     ],
     "correct": 3,
-    "explanation": "Bring-your-own Windows Server licences require dedicated physical hardware under Microsoft's terms, which on Google Cloud means running the imported disk on a sole-tenant node.",
+    "explanation": "The source exam expects D: a BYOL image imported with --os=windows-2022-byol and run on a sole-tenant node. However, Google's current Microsoft licensing guidance says Windows Server 2022 is not eligible for this BYOL route, so no option is fully valid as written.",
     "discussion": [
       {
         "user": "e5019c6",
@@ -3495,16 +3495,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 194,
     "isRecent": false,
     "importBatch": "examtopics-2026-08",
-    "confidence": "high",
+    "confidence": "low",
     "conflict": true,
-    "discussionSummary": "Strong majority D: bringing your own Windows Server licence requires a sole-tenant node to satisfy Microsoft's dedicated hardware terms. A minority chose A, conflating Microsoft License Mobility for applications with base OS licensing.",
+    "discussionSummary": "Strong majority D in the source discussion, but the source's OS flag is invalid and its Windows Server 2022 BYOL premise conflicts with Google's current licensing guidance. Treat D as the intended historical answer only.",
     "conceptSummary": "Bringing existing Windows Server licences to Compute Engine.",
-    "correctRationale": "Microsoft licenses Windows Server per physical core and, for bring-your-own-licence scenarios, requires that the underlying physical hardware be dedicated to the customer. Sole-tenant nodes give exactly that: a physical server reserved for your project. So the workflow is to import the existing disk with the correct OS flag so Compute Engine does not attach its own premium licence, then boot it on a sole-tenant node.",
+    "correctRationale": "D is the historical exam answer: the CLI accepts --os=windows-2022-byol for image import, and eligible BYOL Windows Server licenses require a sole-tenant node. But Google's current Microsoft licensing FAQ says Windows Server 2022 is not eligible under the applicable outsourcing rights. The source question therefore has no fully valid answer for the version named in its stem.",
     "optionRationales": [
       "Wrong: Importing the disk without placing the instance on a sole-tenant node does not satisfy Microsoft's dedicated hardware requirement for bring-your-own OS licences.",
       "Wrong: Creating a standard instance and selecting the Windows image means paying Google's included premium licence, so the existing licences are not brought across at all.",
       "Wrong: This still runs on a standard multi-tenant instance with a Google-supplied licence, and attaching the import as a data disk does not carry the licence over.",
-      "Correct: Importing with the explicit OS flag and booting on a sole-tenant node meets Microsoft's dedicated hardware condition, which is what makes the existing licences usable."
+      "Intended exam answer: The BYOL import flag and sole-tenant node match the workflow for eligible Windows Server licenses, but Windows Server 2022 is not eligible under Google's current licensing guidance."
     ]
   },
   {
