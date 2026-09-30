@@ -3457,10 +3457,10 @@ export const QUESTIONS = [
     "difficulty": 2,
     "question": "Your company is planning to migrate their Windows Server 2022 from their on-premises data center to Google Cloud. You need to bring the licenses that are currently in use in on-premises virtual machines into the target cloud environment. What should you do?",
     "options": [
-      "A. 1. Create an image of the on-premises virtual machines and upload into Cloud Storage. 2. Import the image as a virtual disk on Compute Engine.",
-      "B. 1. Create standard instances on Compute Engine. 2. Select as the OS the same Microsoft Windows version that is currently in use in the on-premises environment.",
-      "C. 1. Create an image of the on-premises virtual machine. 2. Import the image as a virtual disk on Compute Engine. 3. Create a standard instance on Compute Engine, selecting as the OS the same Microsoft Windows version... 4. Attach a data disk...",
-      "D. 1. Create an image of the on-premises virtual machines. 2. Import the image as a virtual disk on Compute Engine using --os=windows-2022-dc-v. 3. Create a sole-tenancy instance on Compute Engine that uses the imported disk as a boot disk."
+      "A. 1. Create an image of the on-premises virtual machines and upload into Cloud Storage.\n2. Import the image as a virtual disk on Compute Engine.",
+      "B. 1. Create standard instances on Compute Engine.\n2. Select as the OS the same Microsoft Windows version that is currently in use in the on-premises environment.",
+      "C. 1. Create an image of the on-premises virtual machine.\n2. Import the image as a virtual disk on Compute Engine.\n3. Create a standard instance on Compute Engine, selecting as the OS the same Microsoft Windows version that is currently in use in the on-premises environment.\n4. Attach a data disk that includes data that matches the created image.",
+      "D. 1. Create an image of the on-premises virtual machines.\n2. Import the image as a virtual disk on Compute Engine using --os=windows-2022-dc-v.\n3. Create a sole-tenancy instance on Compute Engine that uses the imported disk as a boot disk."
     ],
     "correct": 3,
     "explanation": "Bring-your-own Windows Server licences require dedicated physical hardware under Microsoft's terms, which on Google Cloud means running the imported disk on a sole-tenant node.",
