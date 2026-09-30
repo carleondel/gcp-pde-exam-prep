@@ -3569,10 +3569,10 @@ export const QUESTIONS = [
     "difficulty": 2,
     "question": "Your company has an application running on App Engine that allows users to upload music files and share them with other people. You want to allow users to upload files directly into Cloud Storage from their browser session. The payload should not be passed through the backend. What should you do?",
     "options": [
-      "A. 1. Set a CORS configuration in the target Cloud Storage bucket where the base URL of the App Engine application is an allowed origin.\n2. Use the Cloud Storage Signed URL feature to generate a POST URL.",
-      "B. 1. Set a CORS configuration in the target Cloud Storage bucket where the base URL of the App Engine application is an allowed origin.\n2. Assign the Cloud Storage WRITER role to users who upload files.",
-      "C. 1. Use the Cloud Storage Signed URL feature to generate a POST URL.\n2. Use App Engine default credentials to sign requests against Cloud Storage.",
-      "D. 1. Assign the Cloud Storage WRITER role to users who upload files.\n2. Use App Engine default credentials to sign requests against Cloud Storage."
+      "A. Step 1: Set a CORS configuration in the target Cloud Storage bucket where the base URL of the App Engine application is an allowed origin.\nStep 2: Use the Cloud Storage Signed URL feature to generate a POST URL.",
+      "B. Step 1: Set a CORS configuration in the target Cloud Storage bucket where the base URL of the App Engine application is an allowed origin.\nStep 2: Assign the Cloud Storage WRITER role to users who upload files.",
+      "C. Step 1: Use the Cloud Storage Signed URL feature to generate a POST URL.\nStep 2: Use App Engine default credentials to sign requests against Cloud Storage.",
+      "D. Step 1: Assign the Cloud Storage WRITER role to users who upload files.\nStep 2: Use App Engine default credentials to sign requests against Cloud Storage."
     ],
     "correct": 0,
     "explanation": "A browser POST from the App Engine origin to storage.googleapis.com is cross-origin, so the bucket needs CORS; the signed URL supplies time-limited authorization without granting IAM roles.",

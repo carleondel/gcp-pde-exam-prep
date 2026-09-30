@@ -551,6 +551,7 @@ export function BossBattle({ questions, dragon, onComplete, onClose }) {
                 cursor: revealed ? "default" : "pointer",
                 fontFamily: "inherit",
                 lineHeight: 1.4,
+                whiteSpace: "pre-line",
                 ...optionStyle(i),
               }}
             >
