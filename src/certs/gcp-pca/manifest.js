@@ -14,6 +14,8 @@ const manifest = {
     "Independent study tool, not affiliated with or sponsored by Google LLC. Google Cloud and its logo are used here only as a visual reference for the exam.",
   // Fecha del volcado del banco de preguntas (importBatch examtopics-2026-08).
   // No es la fecha del fichero: es cuándo se dio el banco por bueno.
+  // isRecent marca las 150 más recientes del volcado (ExamTopics 131–281),
+  // que son los bloques 1–6 del modo bloques de 25.
   questionsDumpedAt: "2026-08-17",
   passPercent: 70,
   mock: {
