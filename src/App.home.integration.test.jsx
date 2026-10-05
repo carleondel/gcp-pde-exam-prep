@@ -84,6 +84,40 @@ describe("the home screen, wired into the app", () => {
     vi.restoreAllMocks();
   });
 
+  describe("the readiness card", () => {
+    it("asks for a block or a mock before estimating", () => {
+      render(<AppContent allQuestions={BANK} />);
+
+      expect(screen.getByText("Exam readiness")).toBeTruthy();
+      expect(
+        screen.getByText("Play a study block or a mock exam to get an estimate."),
+      ).toBeTruthy();
+    });
+
+    it("blends the played blocks with the latest mocks", () => {
+      const questionIds = BANK.slice(0, 30).map((question) => question.id);
+      storage().saveProgress({
+        ...EMPTY_PROGRESS,
+        blockStudy: {
+          tracks: {
+            "blocks-desc-30": {
+              blocks: {
+                0: { questionIds, lastPercent: 80, lastStudiedAt: 1, rounds: [{ percent: 80 }] },
+              },
+            },
+          },
+        },
+        mockHistory: [{ date: 1, percent: 90, passed: true }],
+      });
+      render(<AppContent allQuestions={BANK} />);
+
+      // Half the bank at 80 % gives 40 for blocks; with one mock at 90 the
+      // estimate is their mean.
+      expect(screen.getByText("≈65%")).toBeTruthy();
+      expect(screen.getByText(/30\/60 questions played in blocks · 1 mock/)).toBeTruthy();
+    });
+  });
+
   describe("the shortcuts", () => {
     it("launches a quick practice with the saved settings", () => {
       render(<AppContent allQuestions={BANK} />);
