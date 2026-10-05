@@ -66,8 +66,9 @@ export default function MockView({
   passPercent,
   certShort,
   distribution,
-  preferRecent,
-  onPreferRecentChange,
+  recentCount,
+  recentOnly,
+  onRecentOnlyChange,
   onStart,
   savedSession,
   onContinue,
@@ -162,48 +163,54 @@ export default function MockView({
             ))}
           </div>
         </div>
-        <label
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-            gap: 10,
-            marginBottom: 14,
-            padding: "10px 12px",
-            borderRadius: "var(--radius-md)",
-            background: preferRecent ? "var(--accent-soft)" : "var(--surface-panel-muted)",
-            border: `1px solid ${preferRecent ? "var(--accent-medium)" : "var(--surface-line)"}`,
-            cursor: "pointer",
-            transition: "all 0.18s ease",
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={preferRecent}
-            onChange={(event) => onPreferRecentChange(event.target.checked)}
-            style={{ marginTop: 2, accentColor: "var(--accent-300)", cursor: "pointer" }}
-          />
-          <div style={{ flex: 1 }}>
-            <div
-              style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: preferRecent ? "var(--accent-300)" : "var(--text-primary)",
-              }}
-            >
-              Prioritize the most recent questions
+        {recentCount > 0 && (
+          <label
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 10,
+              marginBottom: 14,
+              padding: "10px 12px",
+              borderRadius: "var(--radius-md)",
+              background: recentOnly ? "var(--accent-soft)" : "var(--surface-panel-muted)",
+              border: `1px solid ${recentOnly ? "var(--accent-medium)" : "var(--surface-line)"}`,
+              cursor: "pointer",
+              transition: "all 0.18s ease",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={recentOnly}
+              onChange={(event) => onRecentOnlyChange(event.target.checked)}
+              style={{ marginTop: 2, accentColor: "var(--accent-300)", cursor: "pointer" }}
+            />
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: recentOnly ? "var(--accent-300)" : "var(--text-primary)",
+                }}
+              >
+                {recentCount >= questionCount
+                  ? `Only the ${recentCount} most recent questions`
+                  : `Include all ${recentCount} recent questions`}
+              </div>
+              <div
+                style={{
+                  fontSize: 11,
+                  color: "var(--text-secondary)",
+                  lineHeight: 1.5,
+                  marginTop: 2,
+                }}
+              >
+                {recentCount >= questionCount
+                  ? "Same domain proportions, drawn at random from the questions marked Recent."
+                  : "Topped up at random from the rest of the bank."}
+              </div>
             </div>
-            <div
-              style={{
-                fontSize: 11,
-                color: "var(--text-secondary)",
-                lineHeight: 1.5,
-                marginTop: 2,
-              }}
-            >
-              Same proportions, but picking the highest indexes in each domain.
-            </div>
-          </div>
-        </label>
+          </label>
+        )}
         <button
           onClick={onStart}
           style={{

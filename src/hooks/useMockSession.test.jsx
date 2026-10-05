@@ -33,6 +33,7 @@ const BANK = ["Compute", "Storage"].flatMap((topic, t) =>
     options: ["a", "b", "c", "d"],
     correct: 0,
     sourceQuestionNumber: t * 20 + i + 1,
+    isRecent: i >= 10,
   })),
 );
 
@@ -207,23 +208,28 @@ describe("useMockSession", () => {
       expect(created.currentIndex).toBe(0);
     });
 
-    it("draws the newest questions when asked to prefer recent ones", () => {
+    it("draws only recent questions, at random, when asked for recent only", () => {
       const { seen } = mountMock();
-      act(() => seen.api.setMockPreferRecent(true));
+      act(() => seen.api.setMockRecentOnly(true));
 
-      let created = null;
-      act(() => {
-        created = seen.api.createMockAttempt();
+      const draws = Array.from({ length: 20 }, () => {
+        let created = null;
+        act(() => {
+          created = seen.api.createMockAttempt();
+        });
+        return created.questionIds.map((id) => QUESTION_MAP.get(id));
       });
 
-      // Both domains weigh 50, so the draw is the newest five of each: 16-20
-      // out of Compute and 36-40 out of Storage. Asserted as an exact set
-      // rather than as an average, which the random draw clears often enough
-      // by luck to let a broken preferRecent through.
-      const drawn = created.questionIds
-        .map((id) => QUESTION_MAP.get(id).sourceQuestionNumber)
-        .sort((a, b) => a - b);
-      expect(drawn).toEqual([16, 17, 18, 19, 20, 36, 37, 38, 39, 40]);
+      // The newest ten of each domain are recent; every draw stays inside
+      // them and keeps the 50/50 split. Across twenty draws more than the
+      // five newest of a domain must show up, which a fixed "highest numbers"
+      // pick would never do.
+      draws.forEach((drawn) => {
+        expect(drawn.every((question) => question.isRecent)).toBe(true);
+        expect(drawn.filter((question) => question.topic === "Compute")).toHaveLength(5);
+      });
+      const seenNumbers = new Set(draws.flat().map((question) => question.sourceQuestionNumber));
+      expect(seenNumbers.size).toBeGreaterThan(10);
     });
   });
 
