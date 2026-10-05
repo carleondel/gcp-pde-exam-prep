@@ -13,10 +13,11 @@ import { isBlockMastered } from "../engine/block-study";
  * a block worth suggesting.
  */
 
-/** The four cards across the top: rank, next rank, inventory, weakest topic. */
+/** The cards across the top: rank, next rank, readiness, inventory, weakest topic. */
 function SummaryCards({
   rank,
   xp,
+  readiness,
   inventoryCount,
   achievementCount,
   weakestTopic,
@@ -158,6 +159,7 @@ function SummaryCards({
           </div>
         )}
       </div>
+      <ReadinessCard readiness={readiness} />
       <div
         style={{
           background: "var(--gradient-panel)",
@@ -265,6 +267,103 @@ function SummaryCards({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Estimated exam readiness against the pass mark. The estimate itself is
+ * worked out by the caller (computeReadiness); this only presents it.
+ */
+function ReadinessCard({ readiness }) {
+  const scopeLabel = readiness.scope === "recent" ? "recent" : "questions";
+  return (
+    <div
+      style={{
+        background: "var(--gradient-panel)",
+        border: "1px solid var(--surface-line)",
+        borderRadius: "var(--radius-xl)",
+        padding: 16,
+        boxShadow: "var(--shadow-card)",
+      }}
+    >
+      <div
+        style={{
+          fontSize: 11,
+          color: "var(--text-tertiary)",
+          textTransform: "uppercase",
+          letterSpacing: 1,
+          fontFamily: "var(--font-mono)",
+        }}
+      >
+        Exam readiness
+      </div>
+      {readiness.hasData ? (
+        <>
+          <div style={{ marginTop: 8, display: "flex", alignItems: "baseline", gap: 8 }}>
+            <div
+              style={{
+                fontSize: 22,
+                fontWeight: 800,
+                color: readiness.passing ? "var(--signal-correct)" : "var(--signal-wrong)",
+                fontFamily: "var(--font-mono)",
+              }}
+            >
+              ≈{readiness.percent}%
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                color: "var(--text-secondary)",
+                fontFamily: "var(--font-mono)",
+              }}
+            >
+              / {readiness.passPercent}% to pass
+            </div>
+          </div>
+          <div
+            style={{
+              marginTop: 8,
+              height: 6,
+              background: "var(--surface-line)",
+              borderRadius: "var(--radius-pill)",
+              overflow: "hidden",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                height: "100%",
+                width: `${readiness.percent}%`,
+                background: readiness.passing ? "var(--signal-correct)" : "var(--signal-wrong)",
+                borderRadius: "var(--radius-pill)",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: `${readiness.passPercent}%`,
+                width: 2,
+                background: "var(--text-primary)",
+              }}
+            />
+          </div>
+          <div style={{ marginTop: 8, fontSize: 12, color: "var(--text-secondary)" }}>
+            {readiness.covered}/{readiness.total} {scopeLabel} played in blocks ·{" "}
+            {readiness.mockCount
+              ? `${readiness.mockCount} ${readiness.mockCount === 1 ? "mock" : "mocks"}`
+              : "no mock yet"}
+          </div>
+        </>
+      ) : (
+        <div
+          style={{ marginTop: 8, fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5 }}
+        >
+          Play a study block or a mock exam to get an estimate.
+        </div>
+      )}
     </div>
   );
 }

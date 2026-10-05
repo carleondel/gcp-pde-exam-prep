@@ -65,6 +65,7 @@ import { useBlockStudy } from "./hooks/useBlockStudy.js";
 import { useMockSession } from "./hooks/useMockSession.js";
 import { useProgress } from "./hooks/useProgress.js";
 import { formatDumpDate } from "./engine/format.js";
+import { computeReadiness } from "./engine/readiness.js";
 import { formatPracticeBadge } from "./ui/formatting.js";
 import { PRACTICE_SOURCE_META, sanitizeBlockSize } from "./ui/practice-prefs.js";
 import AuthGate from "./cloud/AuthGate.jsx";
@@ -274,6 +275,16 @@ export function AppContent({ allQuestions }) {
     }
     return computeCanonicalTopicStats(progress.topicHistory, canonicalCounts);
   }, [progress.topicHistory, topicCounts]);
+  const readiness = useMemo(
+    () =>
+      computeReadiness({
+        questions: allQuestions,
+        blockTracks: progress.blockStudy?.tracks,
+        mockHistory: progress.mockHistory,
+        passPercent: PASS_PERCENT,
+      }),
+    [allQuestions, progress.blockStudy, progress.mockHistory],
+  );
   const weakestDomain = useMemo(() => getWeakestDomain(domainStats), [domainStats]);
   const weakTopicSet = useMemo(() => new Set(weakTopics.map((topic) => topic.topic)), [weakTopics]);
   const wrongQuestions = useMemo(
@@ -1824,6 +1835,7 @@ export function AppContent({ allQuestions }) {
     const homeSummary = {
       rank: rankState,
       xp: progress.xp,
+      readiness,
       inventoryCount:
         progress.inventory.shields +
         progress.inventory.fiftyFifty +
