@@ -48,7 +48,7 @@ export function useMockSession({
   ready,
 }) {
   const [savedMockSession, setSavedMockSession] = useState(null);
-  const [mockPreferRecent, setMockPreferRecent] = useState(false);
+  const [mockRecentOnly, setMockRecentOnly] = useState(false);
 
   const isMock = session?.mode === "mock";
   const mockRemainingSec = isMock ? getRemainingTime(session, now) : 0;
@@ -72,7 +72,7 @@ export function useMockSession({
    */
   const createMockAttempt = useCallback(() => {
     const questions = buildMockQuestions(allQuestions, questionCount, {
-      preferRecent: mockPreferRecent,
+      recentOnly: mockRecentOnly,
       examDomains,
       topicMap,
     });
@@ -86,7 +86,7 @@ export function useMockSession({
     // module scope: it is the cert's bank and never changes while mounted, so
     // naming it keeps the dependency list honest without changing when this
     // callback is rebuilt.
-  }, [allQuestions, durationSec, examDomains, mockPreferRecent, questionCount, topicMap]);
+  }, [allQuestions, durationSec, examDomains, mockRecentOnly, questionCount, topicMap]);
 
   /**
    * Grades a finished attempt, folds it into progress and clears the attempt
@@ -175,8 +175,8 @@ export function useMockSession({
   return {
     savedMockSession,
     setSavedMockSession,
-    mockPreferRecent,
-    setMockPreferRecent,
+    mockRecentOnly,
+    setMockRecentOnly,
     mockRemainingSec,
     mockExpired,
     createMockAttempt,

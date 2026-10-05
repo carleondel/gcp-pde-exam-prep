@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildMockQuestions,
   buildPracticeQuestions,
   canSubmitAnswer,
   computeMockDistribution,
@@ -168,6 +169,41 @@ describe("computeMockDistribution", () => {
     ];
     const total = computeMockDistribution(50, pde).reduce((sum, d) => sum + d.target, 0);
     expect(total).toBe(50);
+  });
+});
+
+describe("buildMockQuestions", () => {
+  const domains = [{ id: 1, short: "D1", weight: 100, topics: ["A"] }];
+  const recentBank = (n, recentFrom) =>
+    bank(n).map((question) => ({ ...question, isRecent: question.id >= recentFrom }));
+
+  it("draws only recent questions when asked for recent only", () => {
+    const drawn = buildMockQuestions(recentBank(40, 21), 10, {
+      recentOnly: true,
+      examDomains: domains,
+      topicMap: {},
+    });
+    expect(drawn).toHaveLength(10);
+    expect(drawn.every((question) => question.isRecent)).toBe(true);
+  });
+
+  it("tops up from the rest of the bank when the recent set is too small", () => {
+    const drawn = buildMockQuestions(recentBank(40, 36), 10, {
+      recentOnly: true,
+      examDomains: domains,
+      topicMap: {},
+    });
+    expect(drawn).toHaveLength(10);
+    expect(new Set(drawn.map((question) => question.id)).size).toBe(10);
+    expect(drawn.filter((question) => question.isRecent)).toHaveLength(5);
+  });
+
+  it("draws from the whole bank by default", () => {
+    const drawn = buildMockQuestions(recentBank(40, 39), 40, {
+      examDomains: domains,
+      topicMap: {},
+    });
+    expect(drawn).toHaveLength(40);
   });
 });
 

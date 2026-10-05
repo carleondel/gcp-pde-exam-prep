@@ -348,8 +348,8 @@ export function AppContent({ allQuestions }) {
   const {
     savedMockSession,
     setSavedMockSession,
-    mockPreferRecent,
-    setMockPreferRecent,
+    mockRecentOnly,
+    setMockRecentOnly,
     mockRemainingSec,
     mockExpired,
     createMockAttempt,
@@ -2140,8 +2140,9 @@ export function AppContent({ allQuestions }) {
                   passPercent={PASS_PERCENT}
                   certShort={ACTIVE_CERT.short}
                   distribution={computeMockDistribution(mockQuestionCount, ACTIVE_CERT.examDomains)}
-                  preferRecent={mockPreferRecent}
-                  onPreferRecentChange={setMockPreferRecent}
+                  recentCount={recentQuestions.length}
+                  recentOnly={mockRecentOnly}
+                  onRecentOnlyChange={setMockRecentOnly}
                   onStart={startMock}
                   savedSession={savedMockSession}
                   onContinue={() => {

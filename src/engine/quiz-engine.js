@@ -1,5 +1,4 @@
 import { xpDiminishingFactor } from "../data/gamification.js";
-import { getQuestionOrderNumber } from "./block-study.js";
 import { toLocalDateString } from "./format.js";
 
 export const WEAK_TOPIC_WINDOW = 10;
@@ -156,8 +155,17 @@ export function computeMockDistribution(count, examDomains) {
   }));
 }
 
+/**
+ * Draws a mock at random, split across domains by their exam weight.
+ *
+ * With recentOnly the draw comes from the questions flagged isRecent, so
+ * every attempt is a different sample of that set rather than the same
+ * fifty highest numbers. When the recent set is smaller than the mock, the
+ * remainder is filled at random from the rest of the bank.
+ */
 export function buildMockQuestions(allQuestions, count, options = {}) {
-  const { preferRecent = false, examDomains, topicMap } = options;
+  const { recentOnly = false, examDomains, topicMap } = options;
+  const pool = recentOnly ? allQuestions.filter((question) => question.isRecent) : allQuestions;
 
   const canonicalTopic = (topic) => topicMap[topic] || topic;
   const domainForTopic = (canonical) =>
@@ -165,7 +173,7 @@ export function buildMockQuestions(allQuestions, count, options = {}) {
 
   const buckets = new Map(examDomains.map((domain) => [domain.id, []]));
   const unmatched = [];
-  for (const question of allQuestions) {
+  for (const question of pool) {
     const domain = domainForTopic(canonicalTopic(question.topic));
     if (domain && buckets.has(domain.id)) buckets.get(domain.id).push(question);
     else unmatched.push(question);
@@ -174,24 +182,20 @@ export function buildMockQuestions(allQuestions, count, options = {}) {
   const targets = new Map(
     allocateDomainTargets(count, examDomains).map((entry) => [entry.id, entry.floor]),
   );
-  const orderPool = (pool) =>
-    preferRecent
-      ? [...pool].sort((a, b) => getQuestionOrderNumber(b) - getQuestionOrderNumber(a))
-      : shuffle(pool);
-
   const picked = [];
   const leftover = [...unmatched];
-  for (const [domainId, pool] of buckets.entries()) {
-    const ordered = orderPool(pool);
+  for (const [domainId, bucket] of buckets.entries()) {
+    const ordered = shuffle(bucket);
     const target = targets.get(domainId) || 0;
     picked.push(...ordered.slice(0, target));
     leftover.push(...ordered.slice(target));
   }
 
-  const deficit = count - picked.length;
-  if (deficit > 0) {
-    const filler = orderPool(leftover);
-    picked.push(...filler.slice(0, deficit));
+  picked.push(...shuffle(leftover).slice(0, Math.max(0, count - picked.length)));
+  if (picked.length < count) {
+    const pickedIds = new Set(picked.map((question) => question.id));
+    const rest = allQuestions.filter((question) => !pickedIds.has(question.id));
+    picked.push(...shuffle(rest).slice(0, count - picked.length));
   }
 
   return shuffle(picked);

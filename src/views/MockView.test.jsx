@@ -17,8 +17,9 @@ const render_ = (props = {}) =>
       passPercent={70}
       certShort="PDE"
       distribution={distribution}
-      preferRecent={false}
-      onPreferRecentChange={() => {}}
+      recentCount={150}
+      recentOnly={false}
+      onRecentOnlyChange={() => {}}
       onStart={() => {}}
       savedSession={null}
       onContinue={() => {}}
@@ -42,12 +43,31 @@ describe("MockView", () => {
   });
 
   it("passes the current checkbox value to the caller", () => {
-    const onPreferRecentChange = vi.fn();
-    render_({ onPreferRecentChange });
+    const onRecentOnlyChange = vi.fn();
+    render_({ onRecentOnlyChange });
 
     fireEvent.click(screen.getByRole("checkbox"));
 
-    expect(onPreferRecentChange).toHaveBeenCalledWith(true);
+    expect(onRecentOnlyChange).toHaveBeenCalledWith(true);
+  });
+
+  it("offers a recent-only mock when the recent set fills it", () => {
+    render_();
+
+    expect(screen.getByText("Only the 150 most recent questions")).toBeTruthy();
+  });
+
+  it("says the recent set is topped up when it is smaller than the mock", () => {
+    render_({ recentCount: 15 });
+
+    expect(screen.getByText("Include all 15 recent questions")).toBeTruthy();
+    expect(screen.getByText("Topped up at random from the rest of the bank.")).toBeTruthy();
+  });
+
+  it("hides the recent option when no question is marked recent", () => {
+    render_({ recentCount: 0 });
+
+    expect(screen.queryByRole("checkbox")).toBeNull();
   });
 
   it("starts an attempt through the caller", () => {
@@ -71,8 +91,8 @@ describe("MockView", () => {
         passPercent={70}
         certShort="PDE"
         distribution={distribution}
-        preferRecent={false}
-        onPreferRecentChange={() => {}}
+        recentOnly={false}
+        onRecentOnlyChange={() => {}}
         onStart={() => {}}
         savedSession={{ currentIndex: 2 }}
         onContinue={onContinue}
