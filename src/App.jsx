@@ -96,6 +96,7 @@ const { getCanonicalTopic, computeDomainStats, computeCanonicalTopicStats } =
 const DRAGON_ROSTER = getDragonRoster(ACTIVE_CERT);
 
 const {
+  allowProgressReset,
   clearActiveBlockSession,
   clearActiveMock,
   loadActiveBlockSession,
@@ -2189,6 +2190,7 @@ export function AppContent({ allQuestions }) {
             <button
               onClick={() => {
                 if (window.confirm("Reset all progress? This action cannot be undone.")) {
+                  allowProgressReset();
                   resetProgress();
                   setSavedMockSession(null);
                   clearActiveMock();

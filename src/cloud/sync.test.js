@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createStorage, EMPTY_PROGRESS, setStorageWriteListener } from "../engine/storage.js";
-import { createCloudSync, isSyncedKey, OWNER_KEY, PENDING_KEY } from "./sync.js";
+import { createCloudSync, hasProgressData, isSyncedKey, OWNER_KEY, PENDING_KEY } from "./sync.js";
 
 const CERT_IDS = ["gcp-pde", "gcp-pca"];
 const USER = "user-1";
@@ -105,6 +105,24 @@ describe("isSyncedKey", () => {
     expect(isSyncedKey("app.settings.v1", ["gcp-pde"])).toBe(true);
     expect(isSyncedKey("cloud.owner", ["gcp-pde"])).toBe(false);
     expect(isSyncedKey("gcp-pca.progress.v2", ["gcp-pde"])).toBe(false);
+  });
+});
+
+describe("hasProgressData", () => {
+  it("tells real progress from an empty one", () => {
+    expect(hasProgressData(EMPTY_PROGRESS)).toBe(false);
+    expect(hasProgressData(null)).toBe(false);
+    expect(hasProgressData({ ...EMPTY_PROGRESS, xp: 1 })).toBe(true);
+    expect(hasProgressData({ ...EMPTY_PROGRESS, mockHistory: [{ percent: 50 }] })).toBe(true);
+    expect(hasProgressData({ ...EMPTY_PROGRESS, topicHistory: { A: [{ correct: true }] } })).toBe(
+      true,
+    );
+    expect(
+      hasProgressData({
+        ...EMPTY_PROGRESS,
+        blockStudy: { tracks: { t: { blocks: { 0: { rounds: [{ percent: 80 }] } } } } },
+      }),
+    ).toBe(true);
   });
 });
 
@@ -321,5 +339,93 @@ describe("createCloudSync", () => {
 
     expect(store.has("gcp-pde.progress.v2")).toBe(false);
     expect(store.has(OWNER_KEY)).toBe(false);
+  });
+
+  describe("never losing saved progress", () => {
+    const studied = { ...EMPTY_PROGRESS, xp: 12000 };
+
+    it("keeps the cache when a refresh comes back with no rows at all", async () => {
+      const client = fakeClient(new Map([[`${USER}|gcp-pca.progress.v2`, studied]]));
+      const sync = createCloudSync({ client, userId: USER, certIds: CERT_IDS });
+      await sync.start();
+
+      // What row level security answers to a request without a valid session.
+      client.rows.clear();
+
+      expect(await sync.refresh()).toBe(false);
+      expect(JSON.parse(store.get("gcp-pca.progress.v2")).xp).toBe(12000);
+      await sync.stop();
+    });
+
+    it("sends nothing without this user's session", async () => {
+      const client = fakeClient(new Map([[`${USER}|gcp-pca.progress.v2`, studied]]));
+      client.session = { user: { id: USER } };
+      client.auth = { getSession: async () => ({ data: { session: client.session } }) };
+      const sync = createCloudSync({ client, userId: USER, certIds: CERT_IDS });
+      await sync.start();
+
+      client.session = null;
+      client.remoteWrite("gcp-pca.progress.v2", { ...EMPTY_PROGRESS, xp: 1 });
+      expect(await sync.refresh()).toBe(false);
+      createStorage("gcp-pca").saveProgress({ ...EMPTY_PROGRESS, xp: 12001 });
+      await expect(sync.flush()).rejects.toThrow("No valid session");
+
+      expect(JSON.parse(store.get("gcp-pca.progress.v2")).xp).toBe(12001);
+      expect(store.has(PENDING_KEY)).toBe(true);
+      setStorageWriteListener(null);
+    });
+
+    it("uploads its own progress again when the account does not have it", async () => {
+      store.set(OWNER_KEY, USER);
+      store.set("gcp-pca.progress.v2", JSON.stringify(studied));
+      const client = fakeClient();
+
+      await createCloudSync({ client, userId: USER, certIds: CERT_IDS }).start();
+
+      expect(JSON.parse(store.get("gcp-pca.progress.v2")).xp).toBe(12000);
+      expect(client.rows.get(`${USER}|gcp-pca.progress.v2`).xp).toBe(12000);
+    });
+
+    it("refuses to push an empty progress over one with data", async () => {
+      const onRemoteChange = vi.fn();
+      const client = fakeClient(new Map([[`${USER}|gcp-pca.progress.v2`, studied]]));
+      const sync = createCloudSync({
+        client,
+        userId: USER,
+        certIds: CERT_IDS,
+        delayMs: 10_000,
+        onRemoteChange,
+      });
+      await sync.start();
+
+      const storage = createStorage("gcp-pca");
+      storage.saveProgress(EMPTY_PROGRESS);
+      storage.saveBlockPrefs({ trackSize: 25, blockIndex: 0 });
+      await sync.flush();
+
+      expect(client.rows.get(`${USER}|gcp-pca.progress.v2`).xp).toBe(12000);
+      expect(JSON.parse(store.get("gcp-pca.progress.v2")).xp).toBe(12000);
+      expect(client.rows.get(`${USER}|gcp-pca.blockPrefs.v1`)).toEqual({
+        trackSize: 25,
+        blockIndex: 0,
+      });
+      expect(store.has(PENDING_KEY)).toBe(false);
+      expect(onRemoteChange).toHaveBeenCalledTimes(1);
+      await sync.stop();
+    });
+
+    it("lets an explicit reset through", async () => {
+      const client = fakeClient(new Map([[`${USER}|gcp-pca.progress.v2`, studied]]));
+      const sync = createCloudSync({ client, userId: USER, certIds: CERT_IDS, delayMs: 10_000 });
+      await sync.start();
+
+      const storage = createStorage("gcp-pca");
+      storage.allowProgressReset();
+      storage.saveProgress(EMPTY_PROGRESS);
+      await sync.flush();
+
+      expect(client.rows.get(`${USER}|gcp-pca.progress.v2`).xp).toBe(0);
+      await sync.stop();
+    });
   });
 });

@@ -68,6 +68,15 @@ export function setStorageWriteListener(listener) {
   writeListener = listener;
 }
 
+// Progress keys the player chose to reset. The cloud sync refuses to push
+// an empty progress over one with data unless its key is in here.
+const progressResets = new Set();
+
+/** Reports, once, whether an empty write to this key was an explicit reset. */
+export function consumeProgressReset(key) {
+  return progressResets.delete(key);
+}
+
 function writeItem(key, value) {
   if (!hasStorage()) return;
   window.localStorage.setItem(key, JSON.stringify(value));
@@ -205,6 +214,11 @@ export function createStorage(certId) {
 
     saveProgress(progress) {
       writeItem(PROGRESS_KEY, progress);
+    },
+
+    /** Marks the next empty save as a reset the player asked for. */
+    allowProgressReset() {
+      progressResets.add(PROGRESS_KEY);
     },
 
     loadActiveMock() {
