@@ -20,6 +20,13 @@
 - Screenshots come from the app's `public/` (`remotion.config.js`); question counts and dates are
   generated into `src/facts.json` by `npm run facts` (run automatically by studio/render).
 
+## Supabase
+
+- The Supabase CLI is linked to the `dataforge` project (`eshppfizjbxwootpwmex`). Apply new files in
+  `supabase/migrations/` with `supabase db push --dry-run`, then `supabase db push`.
+- Migrations up to `20260925000000` were applied by hand and later marked applied with
+  `supabase migration repair`; the remote history is in sync since `20261006000000`.
+
 ## Conventions
 
 - All user-facing text (UI, question bank discussion/notes) is in English. Date formatting uses `en-US`.
