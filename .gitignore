@@ -25,3 +25,6 @@ video/WALKTHROUGH.md
 landing-video/out
 # Generated from the cert banks by `npm run facts`
 landing-video/src/facts.json
+
+# Supabase CLI local state
+supabase/.temp/
