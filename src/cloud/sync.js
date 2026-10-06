@@ -1,4 +1,4 @@
-import { setStorageWriteListener } from "../engine/storage.js";
+import { consumeProgressReset, setStorageWriteListener } from "../engine/storage.js";
 
 export const USER_STATE_TABLE = "user_state";
 export const OWNER_KEY = "cloud.owner";
@@ -10,6 +10,22 @@ export const APP_KEY_PREFIX = "app.";
 
 export function isSyncedKey(key, certIds) {
   return key.startsWith(APP_KEY_PREFIX) || certIds.some((certId) => key.startsWith(`${certId}.`));
+}
+
+const PROGRESS_KEY_PATTERN = /\.progress\.v\d+$/;
+
+export function isProgressKey(key) {
+  return PROGRESS_KEY_PATTERN.test(key);
+}
+
+/** True when a saved progress holds anything worth keeping. */
+export function hasProgressData(value) {
+  if (!value || typeof value !== "object") return false;
+  if (value.xp > 0 || value.mockHistory?.length) return true;
+  if (Object.values(value.topicHistory || {}).some((entries) => entries?.length)) return true;
+  return Object.values(value.blockStudy?.tracks || {}).some((track) =>
+    Object.values(track?.blocks || {}).some((block) => block?.rounds?.length),
+  );
 }
 
 function listSyncedKeys(storage, certIds) {
@@ -42,6 +58,14 @@ function readJson(storage, key) {
  * Writes are batched and debounced. Until a batch is confirmed it is kept
  * in localStorage too, so closing the tab straight after answering loses
  * nothing: the next start pushes it before pulling.
+ *
+ * Progress is guarded on both sides, because an empty answer from the server
+ * is not proof the account is empty: without a valid session, row level
+ * security returns no rows and no error. So every request first checks the
+ * session belongs to this user; local progress with data is never dropped
+ * for being absent remotely (it is uploaded again instead); and an empty
+ * progress is never pushed over one with data, unless it is an explicit
+ * reset.
  */
 export function createCloudSync({
   client,
@@ -62,61 +86,102 @@ export function createCloudSync({
     else storage.removeItem(PENDING_KEY);
   };
 
+  /** Rejects instead of letting a request run without this user's session. */
+  async function table() {
+    if (client.auth?.getSession) {
+      const { data } = await client.auth.getSession();
+      if (data?.session?.user?.id !== userId) throw new Error("No valid session for this account");
+    }
+    return client.from(USER_STATE_TABLE);
+  }
+
   async function push(entries) {
     const upserts = entries
       .filter(([, value]) => value !== null)
       .map(([key, value]) => ({ user_id: userId, key, value }));
     const deletes = entries.filter(([, value]) => value === null).map(([key]) => key);
     if (upserts.length) {
-      const { data, error } = await client
-        .from(USER_STATE_TABLE)
+      const db = await table();
+      const { data, error } = await db
         .upsert(upserts, { onConflict: "user_id,key" })
         .select("key, updated_at");
       if (error) throw error;
       data.forEach((row) => seen.set(row.key, row.updated_at));
     }
     if (deletes.length) {
-      const { error } = await client
-        .from(USER_STATE_TABLE)
-        .delete()
-        .eq("user_id", userId)
-        .in("key", deletes);
+      const db = await table();
+      const { error } = await db.delete().eq("user_id", userId).in("key", deletes);
       if (error) throw error;
       deletes.forEach((key) => seen.delete(key));
     }
   }
 
   async function pull() {
-    const { data, error } = await client
-      .from(USER_STATE_TABLE)
-      .select("key, value, updated_at")
-      .eq("user_id", userId);
+    const db = await table();
+    const { data, error } = await db.select("key, value, updated_at").eq("user_id", userId);
     if (error) throw error;
     return data;
   }
 
-  /** Makes the local cache match the account, and remembers what it saw. */
+  /**
+   * Makes the local cache match the account, and remembers what it saw.
+   * Local progress with data that the account lacks is kept and queued for
+   * upload rather than deleted.
+   */
   function applyRemote(rows) {
     const remote = new Map(rows.map((row) => [row.key, row]));
     for (const key of listSyncedKeys(storage, certIds)) {
-      if (!remote.has(key)) storage.removeItem(key);
+      if (remote.has(key)) continue;
+      const local = readJson(storage, key);
+      if (isProgressKey(key) && hasProgressData(local)) pending.set(key, local);
+      else storage.removeItem(key);
     }
     seen = new Map();
     for (const [key, row] of remote) {
       storage.setItem(key, JSON.stringify(row.value));
       seen.set(key, row.updated_at);
     }
+    persistPending();
   }
 
   /** Keys another writer (a device, an admin import) changed since we last synced them. */
   async function findStaleKeys(keys) {
-    const { data, error } = await client
-      .from(USER_STATE_TABLE)
+    const db = await table();
+    const { data, error } = await db
       .select("key, updated_at")
       .eq("user_id", userId)
       .in("key", keys);
     if (error) throw error;
     return data.filter((row) => seen.has(row.key) && seen.get(row.key) !== row.updated_at);
+  }
+
+  /**
+   * Takes out of the batch every empty progress that would overwrite one
+   * with data, and adopts the account's version instead. An explicit reset
+   * (consumeProgressReset) is let through.
+   */
+  async function dropEmptyOverwrites(batch) {
+    const keys = [...batch]
+      .filter(([key, value]) => isProgressKey(key) && value !== null && !hasProgressData(value))
+      .map(([key]) => key)
+      .filter((key) => !consumeProgressReset(key));
+    if (!keys.length) return false;
+    const db = await table();
+    const { data, error } = await db
+      .select("key, value, updated_at")
+      .eq("user_id", userId)
+      .in("key", keys);
+    if (error) throw error;
+    const kept = data.filter((row) => hasProgressData(row.value));
+    for (const row of kept) {
+      console.warn(`Refused to overwrite saved ${row.key} with an empty one`);
+      batch.delete(row.key);
+      pending.delete(row.key);
+      storage.setItem(row.key, JSON.stringify(row.value));
+      seen.set(row.key, row.updated_at);
+    }
+    if (kept.length) persistPending();
+    return kept.length > 0;
   }
 
   /**
@@ -126,6 +191,10 @@ export function createCloudSync({
    * account's state is adopted and announced for the app to re-mount on.
    */
   async function pushUnlessStale(batch) {
+    if (await dropEmptyOverwrites(batch)) {
+      if (running) onRemoteChange?.();
+      if (!batch.size) return;
+    }
     if (running && seen.size) {
       const stale = await findStaleKeys([...batch.keys()]);
       if (stale.length) {
@@ -239,17 +308,19 @@ export function createCloudSync({
   async function refresh() {
     if (!running || pending.size || inFlight) return false;
     try {
-      const { data, error } = await client
-        .from(USER_STATE_TABLE)
-        .select("key, updated_at")
-        .eq("user_id", userId);
+      const db = await table();
+      const { data, error } = await db.select("key, updated_at").eq("user_id", userId);
       if (error) throw error;
+      // An account that had rows and now has none was not emptied by another
+      // device: no device deletes them all. Treat it as a bad read.
+      if (!data.length && seen.size) return false;
       const changed =
         data.length !== seen.size || data.some((row) => seen.get(row.key) !== row.updated_at);
       if (!changed) return false;
       const rows = await pull();
-      if (pending.size || inFlight) return false;
+      if (pending.size || inFlight || (!rows.length && seen.size)) return false;
       applyRemote(rows);
+      if (pending.size) flushQuietly();
       return true;
     } catch (error) {
       console.warn("Could not check for changes from other devices:", error);
