@@ -140,3 +140,50 @@ the real numbers are unknown (could be 226 or 231–239).
 - Or scan thread ids in later 2026 ranges once the rate limit allows.
 - When a real number turns up for 231–233, move the question to it, drop
   `sourceNumberConfirmed`/`sourceNumberNote`, and free the slot it was occupying.
+
+## Associate Data Practitioner (`gcp-adp`)
+
+Source: [ExamTopics](https://www.examtopics.com/exams/google/associate-data-practitioner/view/),
+103 questions (last updated there on Oct 1, 2026). Bank dumped on 2026-10-14: **101 of 103 loaded**
+(1–101, no gaps, every number confirmed by its discussion thread).
+
+### Not in the bank (2)
+
+102, 103
+
+No text for these was found anywhere public:
+
+- ExamTopics has no discussion thread for them. A full crawl of the Google discussions forum (180
+  pages, Oct 2026) ends at 101, and per-number searches for 102 and 103 return nothing.
+- The newest known batch (99, 100 and 101, Dec 4, 2025) sits at thread ids 323865–323888. Probing
+  ids 323850–323960 with the full slug for 102 and 103 returned 404 for every one.
+- The ExamTopics list pages that hold them in order (`view/11/`) are login-gated.
+
+### Loaded, but the number is unconfirmed
+
+None. Every question was fetched from its own discussion page, whose title and slug carry the number.
+
+### Caveats
+
+- 90, 92–96, 99 and 100 have no comments, so the forum never lists them and search engines don't
+  index them. They were found by probing thread ids with the full slug: the Aug 22, 2025 batch
+  (73–98) uses ids 310918–310943, where 90=310942, 92=310937, 93=310940, 94=310938, 95=310925 and
+  96=310922; 99=323888, 100=323865 and 101=323874. 89, 97 and 101 have no comments either.
+- ExamTopics' own "Suggested Answer" is login-gated past page 1. It was compared for 1–10 (list
+  page) and for 15, 16, 23, 24, 27, 29, 30, 34, 54, 56, 65, 97, 98 and 101 (search snippets), and
+  matched the bank every time. All other answers were decided against current docs, using the
+  comment vote as a signal.
+- 16 conflicts with the community vote; an independent review by Gemini confirmed all 16. 59
+  overrides the community majority (B → A).
+- Data fixes: 1 and 2 have image-only options on ExamTopics (BigQuery SQL); they were transcribed
+  as text. 13 needs its pipeline diagram, which ships under `public/question-images/gcp-adp/`.
+  Obvious OCR typos (BigOuery, Cloud SGL, Vertex Al…) were corrected in 12 questions.
+
+### How to close the gap
+
+- A logged-in ExamTopics account that can open `view/11/`: paste the page and add 102–103 with the
+  same per-question review.
+- Or probe thread ids above 323960 for 102 and 103 (likely a later 2026 batch), or wait until
+  someone comments and the threads appear in the forum. Discussion pages only load with the full
+  slug:
+  `https://www.examtopics.com/discussions/google/view/<id>-exam-associate-data-practitioner-topic-1-question-<n>-discussion/`.
