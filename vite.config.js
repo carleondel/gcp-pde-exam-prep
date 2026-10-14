@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react";
 
 const page = (path) => resolve(import.meta.dirname, path);
 
-const CERT_IDS = ["gcp-pde", "gcp-pca", "gcp-gail", "gcp-pmle"];
+const CERT_IDS = ["gcp-pde", "gcp-pca", "gcp-gail", "gcp-pmle", "gcp-cdl"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /**
