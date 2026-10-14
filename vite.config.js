@@ -15,6 +15,7 @@ const CERT_IDS = [
   "gcp-ace",
   "gcp-pcse",
   "gcp-pcdoe",
+  "gcp-adp",
 ];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
