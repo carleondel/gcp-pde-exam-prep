@@ -424,6 +424,11 @@ a.card:hover {
   color: var(--text-secondary);
 }
 
+.tag-lime {
+  background: rgba(156, 204, 101, 0.14);
+  color: #9ccc65;
+}
+
 .meta {
   display: flex;
   flex-wrap: wrap;

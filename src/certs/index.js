@@ -10,6 +10,7 @@ import gcpPcdoe from "./gcp-pcdoe/manifest.js";
 import gcpAdp from "./gcp-adp/manifest.js";
 import gcpPsoe from "./gcp-psoe/manifest.js";
 import gcpPcd from "./gcp-pcd/manifest.js";
+import gcpPcde from "./gcp-pcde/manifest.js";
 
 const REQUIRED_FIELDS = [
   "id",
@@ -51,6 +52,7 @@ export const CERTS = Object.freeze({
   "gcp-pcdoe": gcpPcdoe,
   "gcp-psoe": gcpPsoe,
   "gcp-pcd": gcpPcd,
+  "gcp-pcde": gcpPcde,
 });
 
 export const DEFAULT_CERT_ID = "gcp-pde";
