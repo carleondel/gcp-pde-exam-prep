@@ -17,16 +17,16 @@ and [the web version](#web-version-login-and-cloud-progress).
 
 Originally built to prepare for the **Google Cloud Professional Data
 Engineer (PDE)** exam, then refactored into a multi-cert architecture.
-It now ships nine certifications behind the same engine, with an in-app
+It now ships ten certifications behind the same engine, with an in-app
 selector to switch between them; progress is tracked separately for
 each.
 
-| URL         | What                                                                                                                                       | Source                                                 |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
-| `/`         | Landing page with pricing and the early-bird list                                                                                          | [index.html](index.html), [src/landing/](src/landing/) |
-| `/app/`     | The study app (sign-in, trial mode, `?cert=gcp-pde`/`gcp-pca`/`gcp-gail`/`gcp-pmle`/`gcp-cdl`/`gcp-agwa`/`gcp-ace`/`gcp-pcse`/`gcp-pcdoe`) | [app/index.html](app/index.html), [src/](src/)         |
-| `/privacy/` | Privacy policy                                                                                                                             | [privacy/index.html](privacy/index.html)               |
-| `/terms/`   | Terms of service                                                                                                                           | [terms/index.html](terms/index.html)                   |
+| URL         | What                                                                                                                                                 | Source                                                 |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `/`         | Landing page with pricing and the early-bird list                                                                                                    | [index.html](index.html), [src/landing/](src/landing/) |
+| `/app/`     | The study app (sign-in, trial mode, `?cert=gcp-pde`/`gcp-pca`/`gcp-adp`/`gcp-gail`/`gcp-pmle`/`gcp-cdl`/`gcp-agwa`/`gcp-ace`/`gcp-pcse`/`gcp-pcdoe`) | [app/index.html](app/index.html), [src/](src/)         |
+| `/privacy/` | Privacy policy                                                                                                                                       | [privacy/index.html](privacy/index.html)               |
+| `/terms/`   | Terms of service                                                                                                                                     | [terms/index.html](terms/index.html)                   |
 
 > Independent study tool, not affiliated with or sponsored by any
 > certification authority. Brand names and logos are used solely as
@@ -53,6 +53,7 @@ https://github.com/user-attachments/assets/9a856f49-fcc0-4d8e-a764-3cfa8b19536f
 | `gcp-ace` — Associate Cloud Engineer                  | 335       | 4       | 2026-10-14  | Complete; 63 questions flagged as conflicts, 39 flagged as outdated                        |
 | `gcp-pcse` — Professional Cloud Security Engineer     | 361       | 5       | 2026-10-14  | Partial: 361 of 376 ExamTopics questions; 94 conflicts, 3 outdated                         |
 | `gcp-pcdoe` — Professional Cloud DevOps Engineer      | 232       | 5       | 2026-10-14  | Partial: 232 of 239 ExamTopics questions; 3 numbers unconfirmed, 43 conflicts, 25 outdated |
+| `gcp-adp` — Associate Data Practitioner               | 101       | 4       | 2026-10-14  | Complete; all 101 public threads (ExamTopics lists 103), 3 flagged as outdated             |
 | `dbt-aeng` — dbt Analytics Engineering                | —         | —       | —           | Planned, paused — needs a question pool                                                    |
 
 Adding a cert means adding a folder under `src/certs/` and registering its
