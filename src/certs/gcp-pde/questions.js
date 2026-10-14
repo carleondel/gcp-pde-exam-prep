@@ -5119,7 +5119,7 @@ export const QUESTIONS = [
       "D. Match loan applicants with their social profiles to enable feature engineering."
     ],
     "correct": 1,
-    "explanation": "With labelled historical loans you can directly train a supervised model that outputs a default risk score; the other options delay or misuse the data.",
+    "explanation": "The labelled data on granted loans is enough to train a supervised model that scores default risk. Declined applications have no outcome, so they cannot add labels.",
     "discussion": [
       {
         "user": "GHN74",
@@ -5155,12 +5155,12 @@ export const QUESTIONS = [
     "conflict": false,
     "discussionSummary": "Community vote: B 60%, D 19%, C 17%, A 3% (58 votes).",
     "conceptSummary": "Supervised modeling on labelled data to predict credit default risk.",
-    "correctRationale": "The labelled dataset of granted loans and their default outcome is exactly what is needed to train a supervised model. Predicting a risk score for applicants answers the request. The question is loosely worded (logistic models are more typical for default), but among the options B is the only one that actually trains a model on the available data.",
+    "correctRationale": "The bank already holds labelled examples, granted loans with a known default outcome, which is what supervised training needs. Training a model that outputs a default risk score directly meets the request to predict default rates. The wording is loose (logistic regression is more typical for default), and no Google doc settles the question, but B is the only option that trains a model on the data you have. Source: https://cloud.google.com/bigquery/docs/bqml-introduction",
     "optionRationales": [
-      "Wrong: Nothing indicates the dataset is too small; you should start with the data you have.",
-      "Correct: Training a model that outputs a credit default risk score uses the labelled data directly.",
-      "Wrong: Declined applications have no default outcome, so they cannot be labelled for this task.",
-      "Wrong: Linking applicants to social profiles raises privacy, fairness and legal concerns."
+      "Wrong: Nothing says the dataset is too small, so collecting more data is not the next step.",
+      "Correct: Training a regression on the labelled loans produces a default risk score, which is what was asked.",
+      "Wrong: Selection bias is a real concern, which makes this tempting. But declined applicants never received loans, so they have no default outcome to train on, and the step builds no model.",
+      "Wrong: Linking applicants to social profiles raises privacy, fairness and regulatory problems."
     ]
   },
   {
@@ -11876,7 +11876,7 @@ export const QUESTIONS = [
       "D. Modify ETL job to load the data into both the current and another backup region."
     ],
     "correct": 0,
-    "explanation": "A daily export to a dual- or multi-region Cloud Storage bucket keeps a copy outside the dataset's region, meets a 24-hour RPO, and storage is cheap.",
+    "explanation": "A daily export to a geo-redundant Cloud Storage bucket survives a regional failure with an RPO of 24 hours or less, at low cost. Snapshots stay in the same region.",
     "discussion": [
       {
         "user": "MaxNRG",
@@ -11908,16 +11908,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 211,
     "isRecent": true,
     "importBatch": "examtopics-2026-10",
-    "confidence": "medium",
+    "confidence": "high",
     "conflict": false,
     "discussionSummary": "Community vote: A 62%, C 33%, D 5% (58 votes).",
     "conceptSummary": "Protecting BigQuery data against regional loss at low cost.",
-    "correctRationale": "BigQuery does not guarantee data survives the loss of a region, even for multi-region datasets, so a copy must live elsewhere. A daily export to a geo-redundant Cloud Storage bucket meets an RPO under 24 hours at low storage cost. Table snapshots must be in the same region as the base table, so they do not protect against a regional failure.",
+    "correctRationale": "Google's BigQuery disaster-recovery guidance says a multi-region location does not provide cross-region replication or regional redundancy. It gives nightly extract jobs to Cloud Storage outside the region as an example of a 24-hour-RPO backup. Exporting costs nothing, and Cloud Storage holds the data more cheaply than a second BigQuery copy. Source: https://docs.cloud.google.com/bigquery/docs/reliability-disaster",
     "optionRationales": [
-      "Correct: A daily export to geo-redundant Cloud Storage survives a regional failure and costs little.",
-      "Wrong: Copying the whole dataset daily to another region works but costs more than exporting the one table.",
-      "Wrong: Table snapshots live in the same region as the base table, so a regional failure takes them out too.",
-      "Wrong: Dual-loading through the ETL job doubles processing and storage cost and adds pipeline complexity."
+      "Correct: A daily export to a dual- or multi-region Cloud Storage bucket keeps an out-of-region copy within a 24-hour RPO, and storage is cheap.",
+      "Wrong: Copying the dataset to another region daily protects the data but adds cross-region transfer and full BigQuery storage costs, so it is not the cheapest option.",
+      "Wrong: Snapshots are tempting because they are cheap and incremental, but a snapshot must live in the same region as its base table and does not add durability, so it is lost with the region.",
+      "Wrong: Dual-loading through the ETL job doubles ingestion and storage and adds pipeline complexity, so it is not the cheapest option."
     ]
   },
   {
@@ -14627,7 +14627,7 @@ export const QUESTIONS = [
       "D. Create a script to export the historical data, and upload in batches to Cloud Storage. Set up a BigQuery Data Transfer Service instance from Cloud Storage to BigQuery."
     ],
     "correct": 0,
-    "explanation": "BigQuery Data Transfer Service with the JDBC driver and FastExport connection is Google's recommended extraction method when local storage for extracted files is limited.",
+    "explanation": "BigQuery Data Transfer Service needs no custom code, and its JDBC FastExport extraction mode is the one Google recommends when local storage is constrained.",
     "discussion": [
       {
         "user": "raaad",
@@ -14659,16 +14659,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 261,
     "isRecent": true,
     "importBatch": "examtopics-2026-10",
-    "confidence": "medium",
+    "confidence": "high",
     "conflict": false,
     "discussionSummary": "Community vote: A 60%, C 40% (42 votes).",
     "conceptSummary": "Choosing the Teradata extraction method for BigQuery Data Transfer Service.",
-    "correctRationale": "BigQuery Data Transfer Service automates Teradata migration with little programming. Google documents two extraction modes: TPT tbuild is faster but writes extracted files to local disk, while the JDBC driver with FastExport is recommended when local storage space is constrained. Limited local storage therefore points to JDBC with FastExport.",
+    "correctRationale": "BigQuery Data Transfer Service runs a Teradata migration through a migration agent, so almost no programming is needed. Google documents two extraction modes. TPT tbuild is faster and is the default recommendation, but it puts no limit on how much local disk the extracted files use. JDBC with FastExport is the documented choice when local storage is limited, because it lets you cap the local space its AVRO files take up. Source: https://cloud.google.com/bigquery/docs/migration/teradata-overview#extraction_method",
     "optionRationales": [
-      "Correct: DTS with JDBC FastExport minimizes programming and avoids the large local disk footprint of TPT extraction.",
-      "Wrong: Custom TPT export scripts and manual bq loads require programming and local storage for the exports.",
-      "Wrong: TPT tbuild extraction stages files on local storage, which is limited here.",
-      "Wrong: Writing export scripts and uploading batches requires programming and local staging space."
+      "Correct: BigQuery Data Transfer Service with JDBC FastExport needs little programming, and the docs recommend it when local storage space is constrained.",
+      "Wrong: A hand-written TPT export script plus bq loads takes programming and stages full exports on local disk.",
+      "Wrong: TPT tbuild is tempting because Google calls it the faster, recommended default. But the docs say it does not limit the local space extracted files use, so it fails the limited-storage constraint.",
+      "Wrong: Custom export scripts and batch uploads take programming and still need local staging space."
     ]
   },
   {
@@ -17755,7 +17755,7 @@ export const QUESTIONS = [
       "D. Use Dataflow and Cloud KMS to encrypt sensitive fields and write the encrypted data in BigQuery. Share the encryption key by following the principle of least privilege."
     ],
     "correct": 2,
-    "explanation": "Masking sensitive elements with Cloud DLP in Dataflow protects privacy while keeping every record and column for analysis and future use.",
+    "explanation": "Masking sensitive values with Cloud DLP inside Dataflow protects the data, keeps every row and column for analysis, and leaves the raw data in the restricted bucket.",
     "discussion": [
       {
         "user": "HectorLeon2099",
@@ -17779,16 +17779,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 319,
     "isRecent": true,
     "importBatch": "examtopics-2026-10",
-    "confidence": "high",
+    "confidence": "medium",
     "conflict": false,
     "discussionSummary": "Community vote: C 100% (13 votes).",
     "conceptSummary": "De-identification with Cloud DLP without losing data.",
-    "correctRationale": "The requirement is to protect sensitive data and retain all data. Masking with Cloud DLP in Dataflow de-identifies sensitive values while keeping all records and fields in BigQuery for analyses and future use. Removing fields loses data, and encrypting with shared keys still exposes raw values to key holders.",
+    "correctRationale": "Cloud DLP (now Sensitive Data Protection) de-identification uses masking, replacement or tokenization to transform sensitive values while the surrounding record stays intact. Google ships a Dataflow template that applies DLP de-identification to Cloud Storage data and writes the result to BigQuery. This option protects sensitive elements for organization-wide analysis and keeps all data, because nothing is dropped and the originals stay in the restricted bucket. Source: https://cloud.google.com/sensitive-data-protection/docs/deidentify-sensitive-data",
     "optionRationales": [
-      "Wrong: Removing sensitive fields violates the requirement to retain all data.",
-      "Wrong: CMEK protects data at rest but does not de-identify sensitive values for analysts.",
-      "Correct: DLP masking protects sensitive elements while keeping all data usable.",
-      "Wrong: Field encryption with shared keys adds complexity and exposes raw data to key holders."
+      "Wrong: Removing sensitive fields breaks the requirement to retain all of the data.",
+      "Wrong: CMEK only controls the encryption-at-rest key. Anyone allowed to query still sees raw sensitive values, so nothing is de-identified.",
+      "Correct: Cloud DLP masking in Dataflow de-identifies sensitive elements and keeps every record and field in BigQuery.",
+      "Wrong: Field-level KMS encryption is tempting because it is reversible. But the encrypted fields are useless for analysis, and sharing the key exposes raw values, which DLP de-identification avoids without custom crypto."
     ]
   },
   {
@@ -17803,7 +17803,7 @@ export const QUESTIONS = [
       "D. Use BigQuery BI Engine to accelerate query performance by caching frequently accessed data."
     ],
     "correct": 3,
-    "explanation": "BI Engine is BigQuery's in-memory analysis service that transparently accelerates Looker Studio queries, cutting dashboard load times without changing the dashboards.",
+    "explanation": "BI Engine caches frequently accessed BigQuery data in memory and transparently speeds up Looker Studio dashboard queries without rewriting them.",
     "discussion": [
       {
         "user": "5523042",
@@ -17819,12 +17819,12 @@ export const QUESTIONS = [
     "conflict": false,
     "discussionSummary": "Community vote: D 100% (2 votes).",
     "conceptSummary": "Accelerating Looker Studio dashboards on BigQuery with BI Engine.",
-    "correctRationale": "BI Engine caches frequently accessed data in memory and accelerates SQL from BI tools such as Looker Studio, giving sub-second responses for aggregations and filters. It needs only a reservation and works across the varied queries a dashboard issues, whereas a materialized view only helps queries that match its definition.",
+    "correctRationale": "BI Engine is a fast, in-memory analysis service. It caches frequently used data and, according to Google, significantly improves the performance of dashboards connected to BigQuery, with Looker Studio as the main integration. It needs only a reservation, optionally with preferred tables, and covers the many filter combinations a dashboard issues without manual tuning. Source: https://docs.cloud.google.com/bigquery/docs/bi-engine-intro",
     "optionRationales": [
-      "Wrong: A shorter refresh interval sends more queries to BigQuery and does nothing to make each query faster.",
-      "Wrong: Materialized views can help specific aggregations, but BI Engine is the purpose-built accelerator for interactive BI dashboards across many filter combinations.",
-      "Wrong: Row-level security restricts access; it adds filtering overhead and is not a performance optimization.",
-      "Correct: BI Engine caches data in memory and accelerates Looker Studio queries transparently."
+      "Wrong: A shorter refresh interval sends more queries and does not make any query faster.",
+      "Wrong: A materialized view is tempting because it pre-aggregates data, but it only helps queries that match its definition. BI Engine is the purpose-built accelerator for interactive dashboards that filter on many columns.",
+      "Wrong: Row-level security controls access. It is not a performance feature and adds filtering overhead.",
+      "Correct: BI Engine caches data in memory and transparently accelerates Looker Studio queries on BigQuery."
     ]
   },
   {
@@ -17870,7 +17870,7 @@ export const QUESTIONS = [
       "D. Use Datastream to replicate the data in real time."
     ],
     "correct": 2,
-    "explanation": "BigQuery Data Transfer Service has migration connectors for vendor data warehouses such as Teradata and Redshift, handling schema and batch data transfer into BigQuery as a managed service.",
+    "explanation": "BigQuery Data Transfer Service offers managed batch migration transfers from proprietary warehouses such as Teradata and Redshift into BigQuery.",
     "discussion": [
       {
         "user": "06bbd0e",
@@ -17890,16 +17890,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 322,
     "isRecent": true,
     "importBatch": "examtopics-2026-10",
-    "confidence": "medium",
+    "confidence": "low",
     "conflict": false,
     "discussionSummary": "Community vote: C 71%, B 29% (7 votes).",
     "conceptSummary": "Batch data warehouse migration to BigQuery using BigQuery Data Transfer Service.",
-    "correctRationale": "BigQuery Data Transfer Service includes data warehouse migration transfers for sources such as Teradata, Amazon Redshift and others, which extract data from the proprietary system, stage it and load it into BigQuery with schema mapping. It is the managed, Google-recommended path for a batch warehouse migration and avoids hand-built export pipelines.",
+    "correctRationale": "BigQuery Data Transfer Service lists data warehouse migration sources, including Teradata, Amazon Redshift and Snowflake, each with its own migration guide. These transfers extract data from the vendor system, stage it and load it into BigQuery with schema mapping, as part of the BigQuery Migration Service. This is Google's managed path for a batch warehouse migration. Source: https://docs.cloud.google.com/bigquery/docs/dts-introduction",
     "optionRationales": [
-      "Wrong: The bq tool loads files from local disk or Cloud Storage; it cannot read directly from a proprietary on-premises warehouse.",
-      "Wrong: Manual CSV export works but is error-prone, loses type fidelity, and is not the managed migration path when a connector exists.",
-      "Correct: BigQuery Data Transfer Service provides managed batch migration connectors for vendor data warehouses.",
-      "Wrong: Datastream does real-time CDC replication from operational databases, not batch migration of a data warehouse."
+      "Wrong: bq load reads local files or Cloud Storage. It cannot pull directly from a proprietary on-premises warehouse.",
+      "Wrong: A manual export to open files is the generic fallback and would be required if the vendor has no Data Transfer Service connector; the question doesn't name the vendor, so this is a close second. When a DTS migration connector exists, it is Google's managed path with better type fidelity.",
+      "Correct: BigQuery Data Transfer Service provides managed batch migration from vendor data warehouses into BigQuery.",
+      "Wrong: Datastream does real-time CDC replication from operational databases, not batch warehouse migration."
     ]
   },
   {
@@ -18349,7 +18349,7 @@ export const QUESTIONS = [
       "D. Create a pipeline by using BigQuery pipelines and schedule it to load the data into BigQuery daily."
     ],
     "correct": 3,
-    "explanation": "BigQuery pipelines let analysts visually build, sequence and schedule ingestion and transformation tasks inside BigQuery Studio, a fully managed, no-code-friendly option.",
+    "explanation": "BigQuery pipelines let an analyst chain visual data-preparation steps (loading CSVs from Cloud Storage) and transformations, then schedule them, all managed inside BigQuery.",
     "discussion": [
       {
         "user": "mpuche3",
@@ -18377,12 +18377,12 @@ export const QUESTIONS = [
     "conflict": false,
     "discussionSummary": "Community vote: D 64%, B 36% (11 votes).",
     "conceptSummary": "No-code ingestion and transformation using BigQuery pipelines.",
-    "correctRationale": "BigQuery pipelines (built on Dataform) let an analyst chain data preparation and SQL tasks that load files from Cloud Storage and transform them, then schedule the whole pipeline daily from BigQuery Studio. Loading and transformation live in one managed tool with no infrastructure or application code.",
+    "correctRationale": "BigQuery pipelines, powered by Dataform, run data preparation, SQL and notebook tasks in dependency order and can be scheduled to run daily. Data preparation is an interactive, Gemini-assisted editor that can take CSV files from Cloud Storage as a source and write the prepared data to a destination table. Ingestion and transformation therefore sit in one fully managed tool that an analyst can build without application code. Source: https://docs.cloud.google.com/bigquery/docs/pipelines-introduction",
     "optionRationales": [
-      "Wrong: A Cloud Run function requires writing and maintaining code.",
-      "Wrong: It can work, but it splits loading and transformation across separately scheduled services instead of one managed pipeline.",
-      "Wrong: A custom Beam pipeline orchestrated by Composer is code-heavy and overkill for 3 GB of CSV a day.",
-      "Correct: BigQuery pipelines provide a managed, visually built and scheduled load-and-transform pipeline."
+      "Wrong: A Cloud Run function means writing and maintaining code, so it is not no-code.",
+      "Wrong: Data Transfer Service plus a scheduled query is tempting because both are console-configured, but transformation needs hand-written SQL and loading and transforming are scheduled separately. BigQuery pipelines cover both in one no-code flow.",
+      "Wrong: A custom Beam pipeline orchestrated by Composer needs a lot of code and is overkill for about 3 GB of CSV a day.",
+      "Correct: BigQuery pipelines provide one managed, visually built and scheduled pipeline that loads and transforms the data."
     ]
   },
   {
