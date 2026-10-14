@@ -816,7 +816,7 @@ export const QUESTIONS = [
       "D. Estimate the average latency for data availability after streaming inserts, and always run queries after waiting twice as long."
     ],
     "correct": 3,
-    "explanation": "Streamed rows become queryable after a short delay; waiting about twice the average availability latency before aggregating lets queries include in-flight data.",
+    "explanation": "Keep streaming inserts, but wait about twice the average data-availability latency before running aggregations so the queries include in-flight rows.",
     "discussion": [
       {
         "user": "noob_master",
@@ -848,16 +848,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 15,
     "isRecent": false,
     "importBatch": "examtopics-2026-10",
-    "confidence": "medium",
+    "confidence": "low",
     "conflict": false,
     "discussionSummary": "Community vote: D 52%, A 26%, B 22% (92 votes).",
     "conceptSummary": "Accounting for streaming-insert availability latency in BigQuery.",
-    "correctRationale": "Streaming inserts land in a buffer and become available for query shortly afterward, so aggregations run immediately after inserts can miss in-flight rows. Measuring the typical availability latency and delaying queries by a safe margin keeps near-real-time design while improving completeness. Other options give up near-real-time or batch individual messages inefficiently.",
+    "correctRationale": "The question targets legacy streaming inserts, where rows became available after a short and variable delay. Measuring that delay and waiting a safe margin before aggregating keeps near-real-time ingestion while making reports include recently streamed rows. Current docs say Storage Write API data can be queried as soon as it's acknowledged, so the premise is dated and confidence is low. Source: https://cloud.google.com/bigquery/docs/streaming-data-into-bigquery",
     "optionRationales": [
-      "Wrong: Loading every 2 minutes abandons streaming and adds latency rather than fixing the consistency issue.",
-      "Wrong: Batch-loading individual messages would quickly exhaust load-job quotas at 10,000 messages per minute.",
-      "Wrong: Routing through Cloud SQL with hourly exports adds latency and complexity and still uses streaming inserts.",
-      "Correct: Delaying queries beyond the typical availability latency lets in-flight data be included."
+      "Wrong: Tempting because load jobs commit atomically, but switching to 2-minute batch loads gives up the per-posting streaming design the question tells you to keep and adds latency, rather than adjusting how queries are timed.",
+      "Wrong: A batch load per individual message would quickly exhaust the per-table load-job quotas at 10,000 messages per minute.",
+      "Wrong: Cloud SQL plus hourly exports adds latency and complexity and still uses streaming inserts, so it does not solve the consistency issue.",
+      "Correct: Waiting about twice the measured availability latency before aggregating lets queries include in-flight streamed rows while keeping near-real-time ingestion."
     ]
   },
   {
@@ -2626,8 +2626,8 @@ export const QUESTIONS = [
       "C. Cloud Bigtable",
       "D. Cloud Datastore"
     ],
-    "correct": 0,
-    "explanation": "BigQuery can store the product's transactional records with a nested, denormalized schema optimized for analytics and ML prediction (e.g., BigQuery ML).",
+    "correct": 1,
+    "explanation": "The database stores the service's transactional data (profiles, accounts, orders). That is an OLTP workload, and Google points those to Cloud SQL, not BigQuery.",
     "discussion": [
       {
         "user": "jvg637",
@@ -2659,16 +2659,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 47,
     "isRecent": false,
     "importBatch": "examtopics-2026-10",
-    "confidence": "low",
-    "conflict": false,
+    "confidence": "medium",
+    "conflict": true,
     "discussionSummary": "Community vote: A 43%, B 41%, D 17% (174 votes).",
     "conceptSummary": "Choosing a store optimized for ML-driven analytics over user and order data.",
-    "correctRationale": "The data feeds an ML service that predicts preferences, so it needs to be analyzed at scale; BigQuery supports an optimized nested/repeated schema and in-place ML. The question is ambiguous because 'transactional data' could suggest Cloud SQL, and the community is split.",
+    "correctRationale": "The question says the database holds all of the product's transactional data: user profiles, account details and individual orders written as they happen. Google's BigQuery docs say BigQuery is built for analytics, not OLTP, and recommend a database such as Cloud SQL for single-row inserts and updates. Cloud SQL is a managed relational database, so a normalized schema fits this structured, related data. The ML part can read the same data later, for example through BigQuery federated queries to Cloud SQL. Source: https://docs.cloud.google.com/bigquery/docs/best-practices-performance-compute",
     "optionRationales": [
-      "Correct: BigQuery stores the data with an analytics-optimized schema and supports ML directly.",
-      "Wrong: Cloud SQL fits OLTP but is less suited to large-scale ML analysis; this is the main competing answer.",
-      "Wrong: Bigtable is for high-throughput key/value workloads, not schema-optimized relational data.",
-      "Wrong: Datastore is a document store for app data, not optimized for ML analytics."
+      "Wrong: The ML wording makes BigQuery tempting, but BigQuery is an analytics warehouse that Google says is not designed for OLTP. The product's transactional store belongs in an OLTP database.",
+      "Correct: Cloud SQL is a managed relational OLTP database that suits structured, related user, account and order records written transactionally.",
+      "Wrong: Bigtable is a wide-column NoSQL store for high-throughput key/value access. It has no relational schema or multi-row transactions for this kind of data.",
+      "Wrong: Datastore/Firestore is a document database. It is less suited than Cloud SQL to the relational schema optimization the question asks for."
     ]
   },
   {
@@ -3885,7 +3885,7 @@ export const QUESTIONS = [
       "D. Use BigQuery Data Transfer Service to transfer the offsite backup files to a Cloud Storage Regional storage bucket as a final destination."
     ],
     "correct": 0,
-    "explanation": "Every option ends in a Cloud Storage bucket, which Storage Transfer Service (not BigQuery DTS) targets; multi-regional suits world-wide teams.",
+    "explanation": "Every option ends in a Cloud Storage bucket, which only Storage Transfer Service targets (BigQuery DTS loads into BigQuery); multi-regional suits world-wide teams.",
     "discussion": [
       {
         "user": "VishalB",
@@ -3921,12 +3921,12 @@ export const QUESTIONS = [
     "conflict": true,
     "discussionSummary": "Community vote: C 50%, A 43%, B 7% (76 votes).",
     "conceptSummary": "Choosing between Storage Transfer Service and BigQuery Data Transfer Service, and bucket location.",
-    "correctRationale": "BigQuery Data Transfer Service loads data into BigQuery tables, not Cloud Storage buckets, so the options that name a bucket as the final destination fit Storage Transfer Service. Teams are world-wide, so a multi-regional bucket gives better availability. The question is poorly worded: in practice YouTube channel reports go to BigQuery through BigQuery DTS, which is why many voters picked C.",
+    "correctRationale": "All four options make a Cloud Storage bucket the final destination for 'offsite backup files'. BigQuery Data Transfer Service writes into BigQuery datasets and has no Cloud Storage destination, while Storage Transfer Service exists to move files into Cloud Storage buckets. A multi-regional bucket fits globally distributed marketing teams. The question is flawed (the natural real-world answer is BigQuery DTS into BigQuery), so confidence is low. Source: https://cloud.google.com/bigquery/docs/youtube-channel-transfer",
     "optionRationales": [
-      "Correct: Storage Transfer Service writes to Cloud Storage, and a multi-regional bucket serves world-wide users.",
-      "Wrong: A regional bucket is less suitable for globally distributed teams.",
-      "Wrong: BigQuery Data Transfer Service loads into BigQuery datasets, not a Cloud Storage bucket as final destination.",
-      "Wrong: BigQuery Data Transfer Service does not target Cloud Storage, and a regional bucket is less suitable."
+      "Correct: Storage Transfer Service moves files into Cloud Storage, and a multi-regional bucket gives world-wide teams highly available access to the data.",
+      "Wrong: Storage Transfer Service fits, but a single-region bucket suits world-wide teams less well than a multi-regional one.",
+      "Wrong: Tempting because BigQuery DTS has a YouTube Channel connector and the teams want SQL, but DTS loads into BigQuery datasets and cannot make a Cloud Storage bucket the final destination.",
+      "Wrong: BigQuery DTS does not write to Cloud Storage buckets, and a regional bucket is also a weaker fit for world-wide teams."
     ]
   },
   {
@@ -4895,7 +4895,7 @@ export const QUESTIONS = [
       "D. Switch from HDDs to SSDs, override the preemptible VMs configuration to increase the boot disk size."
     ],
     "correct": 3,
-    "explanation": "Shuffle-heavy Spark jobs are bound by local disk; use SSDs and override the small default boot disk of preemptible workers, keeping the cheap setup.",
+    "explanation": "Shuffle-heavy Spark writes intermediate data to worker disks. Faster SSD disks and larger preemptible-worker boot disks fix the I/O bottleneck and keep the cheap preemptible setup.",
     "discussion": [
       {
         "user": "rickywck",
@@ -4931,12 +4931,12 @@ export const QUESTIONS = [
     "conflict": false,
     "discussionSummary": "Community vote: D 42%, A 39%, C 19% (79 votes).",
     "conceptSummary": "Tuning Dataproc disks for shuffle-heavy Spark on preemptible (secondary) workers.",
-    "correctRationale": "Shuffle data is written to the workers' local disks, and most workers here are preemptible. By default, preemptible worker disks are limited to 100 GB or the primary worker disk size, whichever is smaller, and HDD throughput scales with size. Switching to SSD and overriding the preemptible boot disk size removes the shuffle I/O bottleneck while keeping the cost-sensitive preemptible setup.",
+    "correctRationale": "Without local SSDs, Dataproc stores intermediate shuffle data on the VMs' persistent boot disks, so a shuffle-heavy job is limited by disk I/O. Secondary (preemptible) workers get a default boot disk size, which you can override with --secondary-worker-boot-disk-size, and their disk type follows the primary workers. Switching to SSD persistent disks and enlarging the preemptible disks speeds up shuffle and keeps the cost-sensitive preemptible-heavy cluster. Source: https://docs.cloud.google.com/dataproc/docs/concepts/compute/secondary-vms",
     "optionRationales": [
-      "Wrong: 200-400 MB Parquet files are already a reasonable size; making them larger does not fix shuffle I/O between stages.",
-      "Wrong: TFRecord is meant for TensorFlow input, not Spark analytics, and gives no shuffle benefit.",
-      "Wrong: Copying data into HDFS adds steps, and HDFS lives only on the two primary workers, so it does not fit a preemptible-heavy cluster.",
-      "Correct: Larger SSD disks on preemptible workers speed up shuffle writes and reads at low cost."
+      "Wrong: Google's Spark guidance suggests files of a few hundred MB, so 200-400 MB Parquet files are already in range. Making them 1 GB is tempting because Google does warn about small files, but it does nothing for the shuffle-disk bottleneck.",
+      "Wrong: TFRecord is a TensorFlow input format. It gives Spark analytics no shuffle or read benefit over columnar Parquet.",
+      "Wrong: Secondary worker disks are not part of HDFS, so on a cluster that is mostly preemptible, HDFS sits on only two primary workers. Copying data in and out also adds steps.",
+      "Correct: Shuffle is disk-bound. SSD boot disks plus a larger preemptible-worker boot disk raise shuffle throughput while keeping the low-cost preemptible configuration."
     ]
   },
   {
@@ -8964,7 +8964,7 @@ export const QUESTIONS = [
       "D. Cloud Datastore"
     ],
     "correct": 2,
-    "explanation": "Spanner is fully managed, transactionally consistent, SQL-queryable, and scales compute automatically (managed autoscaler); Cloud SQL only auto-grows storage, not compute.",
+    "explanation": "Spanner meets every requirement as written: fully managed, transactional, SQL, and automatic scaling of compute and storage. Cloud SQL auto-grows only storage.",
     "discussion": [
       {
         "user": "",
@@ -8996,16 +8996,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 159,
     "isRecent": false,
     "importBatch": "examtopics-2026-10",
-    "confidence": "medium",
+    "confidence": "low",
     "conflict": false,
     "discussionSummary": "Community vote: C 54%, A 46% (98 votes).",
     "conceptSummary": "Choosing a fully managed, auto-scaling, transactional SQL database.",
-    "correctRationale": "All requirements point to a relational, transactional, SQL database. Cloud Spanner scales both compute and storage horizontally, and its managed autoscaler adjusts capacity automatically, so it meets the automatic scale-up requirement. Cloud SQL can hold 6 TB and auto-increases storage, but scaling its compute requires manual changes, which is why the question is contested.",
+    "correctRationale": "Cloud Spanner is a fully managed, strongly consistent relational database that you query with SQL. With its managed autoscaler, it adds or removes compute capacity on its own as load and storage change. Cloud SQL can hold 6 TB and can auto-increase storage, but its docs say cores and memory are changed manually, so it only partly meets 'automatically scale up'. The question is ambiguous: the small 6 TB figure suggests Cloud SQL, which is why the vote is split. Source: https://docs.cloud.google.com/spanner/docs/managed-autoscaler",
     "optionRationales": [
-      "Wrong: Cloud SQL handles 6 TB and auto-grows storage, but compute (CPU/RAM) isn't scaled automatically.",
-      "Wrong: Bigtable is NoSQL with no SQL query support and only single-row transactions.",
-      "Correct: Spanner is fully managed, strongly consistent, SQL-based, and scales automatically.",
-      "Wrong: Datastore offers only a limited SQL-like query language (GQL) and isn't a relational SQL database."
+      "Wrong: Cloud SQL is tempting because 6 TB is far below its 64 TB limit and automatic storage increase exists. But only storage scales automatically; compute (CPU/RAM) scaling is manual.",
+      "Wrong: Bigtable is NoSQL with single-row transactions only and no standard SQL interface for transactional queries.",
+      "Correct: Spanner is fully managed, transactionally consistent, SQL-queryable, and scales compute and storage automatically with its managed autoscaler.",
+      "Wrong: Datastore is a NoSQL document database with only a limited GQL query language, not a full SQL relational database."
     ]
   },
   {
@@ -9020,7 +9020,7 @@ export const QUESTIONS = [
       "D. Cloud Datastore"
     ],
     "correct": 0,
-    "explanation": "A 20 TB operational transactional database fits within Cloud SQL's 64 TB limit, making it the simplest and most cost-effective relational choice for a mid-sized enterprise.",
+    "explanation": "A 20 TB operational transactional database fits within Cloud SQL's 64 TB limit, making it the simplest and most cost-effective relational target for a mid-sized enterprise.",
     "discussion": [
       {
         "user": "jvg637",
@@ -9052,16 +9052,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 160,
     "isRecent": false,
     "importBatch": "examtopics-2026-10",
-    "confidence": "medium",
+    "confidence": "high",
     "conflict": false,
     "discussionSummary": "Community vote: A 53%, C 47% (17 votes).",
     "conceptSummary": "Choosing Cloud SQL for a moderately sized relational OLTP migration.",
-    "correctRationale": "The workload is a transactional operational database of about 20 TB, which is within Cloud SQL's storage limit of up to 64 TB. Cloud SQL supports standard MySQL, PostgreSQL, and SQL Server, simplifying migration from on-premises. Spanner is only warranted for global scale or horizontal write scaling, which isn't stated here and would cost much more.",
+    "correctRationale": "The data is an operational transactional (OLTP) relational database of about 20 TB. Cloud SQL quotas allow up to 64 TB on dedicated-core instances, and Cloud SQL runs standard MySQL, PostgreSQL and SQL Server, which makes migration from on-premises simple. Nothing in the question calls for global distribution or horizontal write scaling, so Spanner's extra cost is not justified. Source: https://docs.cloud.google.com/sql/docs/quotas",
     "optionRationales": [
-      "Correct: Cloud SQL supports this size, is relational and transactional, and is the most cost-effective fit.",
-      "Wrong: Bigtable is NoSQL for wide-column analytics/time series, not transactional relational data.",
-      "Wrong: Spanner works but is overkill and costlier when no global scale or horizontal write scaling is required.",
-      "Wrong: Datastore is a NoSQL document store, not suited for migrating a relational transactional system."
+      "Correct: Cloud SQL is a managed relational OLTP database whose 64 TB limit easily holds 20 TB, and it is the most cost-effective fit.",
+      "Wrong: Bigtable is a NoSQL wide-column store, not a relational transactional database.",
+      "Wrong: Spanner is tempting because 20 TB sounds large and older Cloud SQL limits were 10 TB. Today Cloud SQL handles 20 TB, and Spanner is overkill without global scale or horizontal write needs.",
+      "Wrong: Datastore is a NoSQL document store and isn't suited to migrating a relational transactional system."
     ]
   },
   {
@@ -9132,7 +9132,7 @@ export const QUESTIONS = [
       "D. Specify customer-supplied encryption key (CSEK) in the .boto configuration file. Use gsutil cp to upload each archival file to the Cloud Storage bucket. Save the CSEK in a different project that only the security team can access."
     ],
     "correct": 0,
-    "explanation": "Encrypt with Cloud KMS using unique AAD per file and keep the AAD outside Google Cloud, so Google staff cannot decrypt the files without it.",
+    "explanation": "Encrypting with Cloud KMS plus unique AAD kept outside Google Cloud means Google staff can't decrypt; a CSEK stored in another GCP project still sits inside Google.",
     "discussion": [
       {
         "user": "dhs227",
@@ -9164,16 +9164,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 162,
     "isRecent": false,
     "importBatch": "examtopics-2026-10",
-    "confidence": "low",
+    "confidence": "medium",
     "conflict": true,
     "discussionSummary": "Community vote: D 62%, A 38% (48 votes).",
     "conceptSummary": "Trust No One encryption using Cloud KMS with externally held additional authenticated data.",
-    "correctRationale": "In a Trust No One model, something needed to decrypt must stay outside the provider's control. Additional authenticated data (AAD) must be supplied again to decrypt with Cloud KMS, so keeping it outside Google Cloud means provider staff cannot decrypt the files alone. Storing a CSEK in another Google Cloud project still leaves all the key material inside Google Cloud.",
+    "correctRationale": "Cloud KMS decryption needs the exact AAD used at encryption time. If that AAD is held only outside Google Cloud, nobody with access to Google's infrastructure, including the key in KMS, can decrypt the archives. That makes it the only option where something Google never holds is needed for decryption. Source: https://cloud.google.com/kms/docs/additional-authenticated-data",
     "optionRationales": [
-      "Correct: The KMS key alone cannot decrypt without the AAD, which is kept outside Google Cloud.",
-      "Wrong: Destroying the key makes the archived data permanently unreadable.",
-      "Wrong: Memorystore is an in-memory cache, not durable secret storage, and it is inside Google Cloud.",
-      "Wrong: Storing the CSEK in another Google Cloud project still keeps the key inside the provider's environment, so it is not TNO."
+      "Correct: KMS needs the matching AAD to decrypt, so keeping each file's unique AAD outside Google Cloud means cloud provider staff cannot decrypt the data.",
+      "Wrong: Destroying the key makes the archives permanently unreadable even to you, and rotating it does not re-encrypt existing data.",
+      "Wrong: Memorystore is an in-memory cache, not durable secret storage, and it lives inside Google Cloud.",
+      "Wrong: Tempting because Cloud Storage doesn't keep a CSEK permanently, but storing the key in another Google Cloud project puts it back inside the provider's environment, which breaks Trust No One."
     ]
   },
   {
@@ -10356,7 +10356,7 @@ export const QUESTIONS = [
       "D. Have a staging table that moves the staged data over to the production table and deletes the contents of the staging table every thirty minutes."
     ],
     "correct": 2,
-    "explanation": "Stream into an append-only staging table and every three hours move its rows into production and clear staging, keeping one master dataset without hurting ingestion or reporting.",
+    "explanation": "Move staged rows to production and clear staging every three hours: production stays the single master copy and the streaming buffer has time to flush before the delete.",
     "discussion": [
       {
         "user": "NicolasN",
@@ -10388,16 +10388,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 184,
     "isRecent": false,
     "importBatch": "examtopics-2026-10",
-    "confidence": "low",
+    "confidence": "high",
     "conflict": false,
     "discussionSummary": "Community vote: C 47%, A 35%, D 11%, B 7% (57 votes).",
     "conceptSummary": "Staging-to-production pattern for streamed data in a BigQuery warehouse.",
-    "correctRationale": "A Google case study on streaming into BigQuery used a staging table that receives streamed data and a production table for reporting, moving staged data into production periodically and then clearing staging so production is the single master copy. A three-hour interval leaves time for streaming-buffer data (which can take up to 90 minutes to become available for copy/DML) and limits the cost and contention of frequent moves.",
+    "correctRationale": "In Google's write-up of moving a publishing workflow to BigQuery, the team used a staging table and a separate production table so loads would not affect users. Each cycle moved the data into production and deleted it from staging. They chose three hours because the streaming buffer can block deletes or changes for 30 to 60 minutes or more. Source: https://cloud.google.com/blog/products/data-analytics/moving-a-publishing-workflow-to-bigquery-for-new-data-insights",
     "optionRationales": [
-      "Wrong: Keeping all data in staging as well as production leaves two copies instead of a single master dataset.",
-      "Wrong: Same duplication problem, and 90 minutes is close to the streaming-buffer delay.",
-      "Correct: Periodic move-then-clear every three hours keeps production as the only master dataset with low overhead.",
-      "Wrong: Every 30 minutes risks touching rows still in the streaming buffer and adds load on both sides."
+      "Wrong: Tempting because three hours clears the streaming buffer, but an append-only staging table keeps every row, so the data lives in staging and production and there is no single master dataset.",
+      "Wrong: An append-only staging table duplicates production, and 90 minutes is the worst-case streaming-buffer delay, so updates could miss rows.",
+      "Correct: Moving staged data to production and clearing staging every three hours keeps one master dataset and leaves the streaming buffer time to flush, as in Google's case study.",
+      "Wrong: Every 30 minutes the delete is likely to hit rows still in the streaming buffer, which cannot be modified, and the frequent moves add load."
     ]
   },
   {
@@ -12150,7 +12150,7 @@ export const QUESTIONS = [
       "D. Set up VPC Network Peering between Project A and Project B. Create a Compute Engine instance without external IP address in Project B on the peered subnet to serve as a proxy server to the Cloud SQL database."
     ],
     "correct": 3,
-    "explanation": "Cloud SQL private IP sits in a Google-managed VPC peered to Project B, and peering is not transitive, so Project A needs a proxy VM in B's network to reach it.",
+    "explanation": "Cloud SQL private IP sits in a Google-managed VPC peered to Project B. Peering is not transitive, so Project A needs a private proxy VM in B's network to reach it.",
     "discussion": [
       {
         "user": "aoifneofi_ef",
@@ -12186,12 +12186,12 @@ export const QUESTIONS = [
     "conflict": false,
     "discussionSummary": "Community vote: D 51%, A 49% (73 votes).",
     "conceptSummary": "Reaching a private-IP Cloud SQL instance from another project's VPC.",
-    "correctRationale": "A private-IP Cloud SQL instance lives in a Google-managed service producer VPC that is peered with Project B's VPC. VPC peering is not transitive, so peering Project A with Project B does not route Dataflow workers to the instance. A proxy VM without an external IP in Project B (for example, running the Cloud SQL Auth Proxy) relays the traffic privately.",
+    "correctRationale": "A private-IP Cloud SQL instance that uses private services access lives in a Google-managed producer VPC peered only with Project B's network. Peering Project A with Project B does not give A a route to that producer network, because VPC peering is not transitive. Google's docs list an intermediate proxy VM, for example SOCKS5 with the Cloud SQL Auth Proxy, as a supported workaround that keeps traffic on private IPs. Source: https://cloud.google.com/sql/docs/mysql/connect-multiple-vpcs",
     "optionRationales": [
-      "Wrong: Because peering is not transitive, Project A still cannot reach the Cloud SQL producer network, and allowing all instances is too broad.",
-      "Wrong: Cloud NAT gives outbound internet access, which is the public path the question rules out, and the instance has no public IP.",
-      "Wrong: Authorized networks apply to public IP connections, and the instance has no public IP.",
-      "Correct: Peering plus a private proxy VM in Project B works around non-transitive peering without touching the internet."
+      "Wrong: Tempting because peering plus a firewall rule looks like enough, but peering is not transitive, so Project A still has no route to the Cloud SQL producer network, and allowing all instances is too broad.",
+      "Wrong: Cloud NAT only gives workers outbound internet access, which is the public path the question rules out, and the instance has no public IP.",
+      "Wrong: Authorized networks apply only to public-IP connections, and this instance has no public IP.",
+      "Correct: Peering A with B and placing a proxy VM without an external IP on B's network relays traffic to Cloud SQL privately, working around non-transitive peering."
     ]
   },
   {
@@ -15019,7 +15019,7 @@ export const QUESTIONS = [
       "D. Cancel the old pipeline, then start the new pipeline."
     ],
     "correct": 0,
-    "explanation": "Updating the running job in place replaces the code while preserving in-flight data and window state, avoiding loss, duplicate window firings, or a long restart gap.",
+    "explanation": "An in-place --update keeps buffered data and open 5-minute window state, so there's no loss, no partial windows and only a short switchover. Draining fires windows early.",
     "discussion": [
       {
         "user": "AlizCert",
@@ -15051,16 +15051,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 268,
     "isRecent": true,
     "importBatch": "examtopics-2026-10",
-    "confidence": "low",
+    "confidence": "medium",
     "conflict": true,
     "discussionSummary": "Community vote: C 66%, B 28%, A 6% (32 votes).",
     "conceptSummary": "Safely deploying a new version of a Dataflow streaming pipeline.",
-    "correctRationale": "Google recommends an in-flight update (--update with the same job name) when the new code is compatible: Dataflow transfers buffered data and state to the new job, so no data is lost, windows stay consistent, and latency impact is small. Draining fires partially filled 5-minute windows, which can create inconsistent aggregates when the new job processes the rest. The community favors drain, and snapshot-and-restart is also defensible, so this question is contested.",
+    "correctRationale": "With --update, Dataflow carries the old job's intermediate state and buffered in-flight records over to the replacement job, so open windows are neither lost nor fired early. Downtime is limited to the compatibility check and job swap. Draining fires open windows right away, which produces partial aggregates, the 'inconsistencies' the question rules out. Source: https://cloud.google.com/dataflow/docs/guides/updating-a-pipeline",
     "optionRationales": [
-      "Correct: An in-place update preserves state and buffered data, so there is no data loss or inconsistency and minimal added latency.",
-      "Wrong: Snapshot then restart preserves state but involves stopping the job and is mainly for when an update is not possible; it adds downtime.",
-      "Wrong: Draining closes open windows early, firing partial 5-minute aggregates that can create inconsistencies.",
-      "Wrong: Cancelling discards buffered and in-flight data, causing data loss."
+      "Correct: An in-place update preserves intermediate window state and in-flight data, avoiding data loss and partial windows with only a brief switchover.",
+      "Wrong: Snapshot, stop and restore also keeps state, but it adds more steps and downtime than an in-place update and offers no benefit here.",
+      "Wrong: Tempting because draining loses no data, but it closes the open 5-minute windows and fires their triggers early, producing partial aggregates (inconsistencies) before the new job starts.",
+      "Wrong: Cancelling stops processing immediately and can lose in-flight and buffered data."
     ]
   },
   {
@@ -15351,7 +15351,7 @@ export const QUESTIONS = [
       "D. Create a new BigQuery table and Pub/Sub topic by using customer-managed encryption keys (CMEK), and migrate the data from the old BigQuery table."
     ],
     "correct": 1,
-    "explanation": "Table encryption is a BigQuery table property; create a CMEK-protected table with the central KMS key and migrate the data so data at rest uses CMEK.",
+    "explanation": "BigQuery cannot switch a table from Google-managed keys to CMEK in place, so create a CMEK table with the central KMS key and copy the data in. Pub/Sub doesn't need a new topic.",
     "discussion": [
       {
         "user": "raaad",
@@ -15387,12 +15387,12 @@ export const QUESTIONS = [
     "conflict": false,
     "discussionSummary": "Community vote: B 54%, D 46% (67 votes).",
     "conceptSummary": "Moving BigQuery data from Google-managed keys to CMEK.",
-    "correctRationale": "The data at rest in question is the BigQuery table, which is encrypted with a Google-managed key. Creating a new table protected by a CMEK from the centralized Cloud KMS project and copying the data over makes the stored data compliant. Recreating the Pub/Sub topic is not needed to fix the table's encryption and adds unnecessary migration work, though some argue Pub/Sub retention also counts as data at rest.",
+    "correctRationale": "BigQuery's CMEK docs say a table cannot be switched in place between default encryption and CMEK. Instead you copy it to a table protected by a Cloud KMS key, for example with bq cp and --destination_kms_key. Creating a CMEK table that uses the central KMS project's key and migrating the data therefore brings the data at rest into compliance. Source: https://cloud.google.com/bigquery/docs/customer-managed-encryption",
     "optionRationales": [
-      "Wrong: Dataflow with a KMS key does not change the encryption of the existing BigQuery table.",
-      "Correct: A new CMEK-protected table plus data migration puts the stored data under keys from the central KMS project.",
-      "Wrong: Keeping the table on a Google-managed key violates the new policy.",
-      "Wrong: Recreating the Pub/Sub topic is extra work not required to make the BigQuery table's data at rest CMEK-encrypted."
+      "Wrong: Encrypting the Dataflow pipeline with a KMS key does not change the encryption of the existing BigQuery table.",
+      "Correct: A new CMEK-protected table that uses the central KMS key, plus a data migration, puts the stored data under the required keys.",
+      "Wrong: Keeping the BigQuery table on a Google-managed key violates the new policy.",
+      "Wrong: Tempting because Pub/Sub also stores messages at rest, but Pub/Sub lets you add or change CMEK on an existing topic, so creating a new topic is unnecessary extra work."
     ]
   },
   {
@@ -15795,7 +15795,7 @@ export const QUESTIONS = [
       "D. Use the BigQuery Streaming API and ensure that your target BigQuery table is multiregional."
     ],
     "correct": 1,
-    "explanation": "The Storage Write API offers exactly-once semantics via stream offsets, and its throughput quota is 3 GB/s in multi-regions versus 300 MB/s in regions, so 1.5 GB/s needs a multi-region.",
+    "explanation": "The Storage Write API gives exactly-once delivery through stream offsets. Its quota is 3 GB/s in multi-regions but 300 MB/s in regions, so 1.5 GB/s needs a multi-region table.",
     "discussion": [
       {
         "user": "AlizCert",
@@ -15827,16 +15827,16 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 282,
     "isRecent": true,
     "importBatch": "examtopics-2026-10",
-    "confidence": "medium",
+    "confidence": "high",
     "conflict": false,
     "discussionSummary": "Community vote: B 50%, A 48%, D 2% (92 votes).",
     "conceptSummary": "BigQuery Storage Write API exactly-once delivery and regional throughput limits.",
-    "correctRationale": "Exactly-once delivery requires the Storage Write API (committed streams with offsets); the legacy streaming API (insertAll) is best-effort deduplication only. The Storage Write API throughput quota is about 3 GB per second per project in the US and EU multi-regions but 300 MB per second in other regions. An expected 1.5 GB per second therefore requires a multi-regional dataset.",
+    "correctRationale": "The BigQuery Storage Write API supports exactly-once semantics through stream offsets. The legacy streaming API (insertAll) offers only best-effort deduplication. BigQuery quotas allow up to 3 GB per second in the us and eu multi-regions but only 300 MB per second in other regions per project, so 1.5 GB/s requires a multi-regional table. Source: https://cloud.google.com/bigquery/quotas#write-api-limits",
     "optionRationales": [
-      "Wrong: The Storage Write API supports exactly-once, but regional throughput is limited to about 300 MB/s, below 1.5 GB/s.",
-      "Correct: Storage Write API provides exactly-once semantics, and multi-regions allow up to 3 GB/s.",
-      "Wrong: The legacy streaming API offers only best-effort deduplication, not exactly-once delivery.",
-      "Wrong: The legacy streaming API cannot guarantee exactly-once delivery regardless of location."
+      "Wrong: Tempting because the Storage Write API gives exactly-once delivery, but regional throughput is capped at 300 MB/s per project, well below 1.5 GB/s.",
+      "Correct: The Storage Write API provides exactly-once delivery, and the us/eu multi-regions allow up to 3 GB/s, enough for 1.5 GB/s.",
+      "Wrong: The legacy streaming API provides only best-effort deduplication, not exactly-once delivery.",
+      "Wrong: The legacy streaming API cannot guarantee exactly-once delivery, whatever the table location."
     ]
   },
   {
