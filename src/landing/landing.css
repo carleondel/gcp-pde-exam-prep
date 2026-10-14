@@ -404,6 +404,11 @@ a.card:hover {
   color: #ff6d00;
 }
 
+.tag-pink {
+  background: rgba(233, 30, 99, 0.14);
+  color: #f06292;
+}
+
 .tag-muted {
   background: var(--surface-line);
   color: var(--text-secondary);
