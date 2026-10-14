@@ -17,16 +17,16 @@ and [the web version](#web-version-login-and-cloud-progress).
 
 Originally built to prepare for the **Google Cloud Professional Data
 Engineer (PDE)** exam, then refactored into a multi-cert architecture.
-It now ships three certifications behind the same engine, with an in-app
+It now ships four certifications behind the same engine, with an in-app
 selector to switch between them; progress is tracked separately for
 each.
 
-| URL         | What                                                                      | Source                                                 |
-| ----------- | ------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `/`         | Landing page with pricing and the early-bird list                         | [index.html](index.html), [src/landing/](src/landing/) |
-| `/app/`     | The study app (sign-in, trial mode, `?cert=gcp-pde`/`gcp-pca`/`gcp-gail`) | [app/index.html](app/index.html), [src/](src/)         |
-| `/privacy/` | Privacy policy                                                            | [privacy/index.html](privacy/index.html)               |
-| `/terms/`   | Terms of service                                                          | [terms/index.html](terms/index.html)                   |
+| URL         | What                                                                                 | Source                                                 |
+| ----------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| `/`         | Landing page with pricing and the early-bird list                                    | [index.html](index.html), [src/landing/](src/landing/) |
+| `/app/`     | The study app (sign-in, trial mode, `?cert=gcp-pde`/`gcp-pca`/`gcp-gail`/`gcp-pmle`) | [app/index.html](app/index.html), [src/](src/)         |
+| `/privacy/` | Privacy policy                                                                       | [privacy/index.html](privacy/index.html)               |
+| `/terms/`   | Terms of service                                                                     | [terms/index.html](terms/index.html)                   |
 
 > Independent study tool, not affiliated with or sponsored by any
 > certification authority. Brand names and logos are used solely as
@@ -47,6 +47,7 @@ https://github.com/user-attachments/assets/9a856f49-fcc0-4d8e-a764-3cfa8b19536f
 | `gcp-pde` — Professional Data Engineer   | 333       | 5       | 2026-04-30  | Complete; used for a successful exam attempt                        |
 | `gcp-pca` — Professional Cloud Architect | 280       | 6       | 2026-08-17  | Complete; 4 official case studies, 36 questions flagged as outdated |
 | `gcp-gail` — Generative AI Leader        | 99        | 4       | 2026-10-14  | Complete; product renames flagged                                   |
+| `gcp-pmle` — Professional ML Engineer    | 375       | 6       | 2026-10-14  | Complete; 44 questions flagged as outdated, 2 diagrams              |
 | `dbt-aeng` — dbt Analytics Engineering   | —         | —       | —           | Planned, paused — needs a question pool                             |
 
 Adding a cert means adding a folder under `src/certs/` and registering its
@@ -252,6 +253,8 @@ src/
       case-studies.js         # official case study briefs, verbatim
     gcp-gail/
       ...                     # same shape as gcp-pde
+    gcp-pmle/
+      ...                     # same shape as gcp-pde (no case studies)
   styles/
 ```
 
