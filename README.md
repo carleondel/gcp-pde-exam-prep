@@ -51,7 +51,7 @@ https://github.com/user-attachments/assets/9a856f49-fcc0-4d8e-a764-3cfa8b19536f
 | `gcp-cdl` — Cloud Digital Leader                      | 289       | 6       | 2026-10-14  | Complete; 18 questions flagged as outdated                          |
 | `gcp-agwa` — Associate Google Workspace Administrator | 88        | 6       | 2026-10-14  | Partial: 88 of 108 ExamTopics questions; 22 numbers unconfirmed     |
 | `gcp-ace` — Associate Cloud Engineer                  | 335       | 4       | 2026-10-14  | Complete; 63 questions flagged as conflicts, 39 flagged as outdated |
-| `gcp-pcse` — Professional Cloud Security Engineer     | 361       | 5       | 2026-10-14  | Complete; 94 questions flagged as conflicts, 3 flagged as outdated  |
+| `gcp-pcse` — Professional Cloud Security Engineer     | 361       | 5       | 2026-10-14  | Partial: 361 of 376 ExamTopics questions; 94 conflicts, 3 outdated  |
 | `dbt-aeng` — dbt Analytics Engineering                | —         | —       | —           | Planned, paused — needs a question pool                             |
 
 Adding a cert means adding a folder under `src/certs/` and registering its
