@@ -266,6 +266,28 @@ question 357 Discussions` and variations) only return its neighbours.
   nothing in: 306429, 306436, 306438, 306439, 306443, 306446–306700, 336150–336200,
   308790–308830, 157290–157400 and 303200–303400.
 - The ExamTopics list page that holds it in order (`view/36/`) is login-gated.
+## Professional Cloud Network Engineer (`gcp-pcne`)
+
+Source: [ExamTopics](https://www.examtopics.com/exams/google/professional-cloud-network-engineer/view/),
+316 questions. Bank dumped on 2026-10-14: **303 of 316 loaded** — every number confirmed by its
+discussion-thread title, so no unconfirmed numbers.
+
+### Not in the bank (13)
+
+149, 277, 281, 283, 308, 309, 310, 311, 312, 313, 314, 315, 316
+
+No text for these was found anywhere public:
+
+- ExamTopics has no discussion thread for them. A full crawl of the Google discussions forum (181
+  pages, Oct 2026; index pages 32, 35 and 37 failed and were never re-fetched) listed none of them,
+  and per-number web searches return nothing. A thread only exists once someone comments, and every
+  recovered gap turned out to be a comment-less thread.
+- Thread-id probing was used for the rest: the server validates the full slug, so probes tried
+  (id, N) pairs — 978 probes, 32 hits, all of them comment-less threads. Ranges swept:
+  385283–385332 (Mar 18, 2026 batch, covering 249–282), 407580–407815 (Apr 30, 2026 batches,
+  covering 281–307), and 89960–89998 for 149.
+- No Wayback Machine capture exists beyond 9 stale PCNE URLs, all already loaded.
+- The ExamTopics list pages that hold every question in order are login-gated after page 2.
 
 ### Loaded, but the number is unconfirmed
 
@@ -274,6 +296,7 @@ number.
 
 ### Caveats
 
+<<<<<<< HEAD
 - 17 questions have no comments, so the forum never lists them: 323, 325, 334, 335, 336, 338, 341,
   343, 344, 345, 346, 350, 355, 356, 368, 375 and 378. 336, 338, 341, 343 and 344 were found by
   probing thread ids: the Jul 15, 2025 batch uses 306428–306445 (334=306428, 335=306430,
@@ -375,3 +398,15 @@ questions at all.
   fix their numbers (then drop `sourceNumberConfirmed`/`sourceNumberNote`), and add whatever is
   left of 180 and 182–197 with the same per-question review.
 - Or wait until someone comments on them: the threads then appear in the discussions forum.
+=======
+- In ~10 of the 48 zero-vote questions, the doc support in the adjudication record is paraphrased
+  rather than quoted literally because the doc pages wouldn't load at review time: 250, 251, 253,
+  255, 261, 266, 270, 288, 289, 296, 304, 307.
+
+### How to close the gap
+
+- A logged-in ExamTopics account that can open list pages 31–32: those pages hold the thread ids
+  for 308–316 (and would resolve 149, 277, 281, 283 too). Discussion pages only load with the full
+  slug:
+  `https://www.examtopics.com/discussions/google/view/<id>-exam-professional-cloud-network-engineer-topic-1-question-<n>-discussion/`.
+- Or extend the probe above 407815 for 308–316 (the Apr 30, 2026 batches ran contiguous upward).
