@@ -6,6 +6,7 @@ import gcpCdl from "./gcp-cdl/manifest.js";
 import gcpAgwa from "./gcp-agwa/manifest.js";
 import gcpAce from "./gcp-ace/manifest.js";
 import gcpPcse from "./gcp-pcse/manifest.js";
+import gcpPcdoe from "./gcp-pcdoe/manifest.js";
 
 const REQUIRED_FIELDS = [
   "id",
@@ -43,6 +44,7 @@ export const CERTS = Object.freeze({
   "gcp-agwa": gcpAgwa,
   "gcp-ace": gcpAce,
   "gcp-pcse": gcpPcse,
+  "gcp-pcdoe": gcpPcdoe,
 });
 
 export const DEFAULT_CERT_ID = "gcp-pde";
