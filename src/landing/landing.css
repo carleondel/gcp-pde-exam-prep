@@ -399,6 +399,11 @@ a.card:hover {
   color: #00adb5;
 }
 
+.tag-orange {
+  background: rgba(255, 109, 0, 0.14);
+  color: #ff6d00;
+}
+
 .tag-muted {
   background: var(--surface-line);
   color: var(--text-secondary);
