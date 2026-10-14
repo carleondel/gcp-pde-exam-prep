@@ -21,12 +21,12 @@ It now ships twelve certifications behind the same engine, with an in-app
 selector to switch between them; progress is tracked separately for
 each.
 
-| URL         | What                                                                                                                                                                      | Source                                                 |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `/`         | Landing page with pricing and the early-bird list                                                                                                                         | [index.html](index.html), [src/landing/](src/landing/) |
-| `/app/`     | The study app (sign-in, trial mode, `?cert=gcp-pde`/`gcp-pca`/`gcp-adp`/`gcp-gail`/`gcp-pmle`/`gcp-cdl`/`gcp-agwa`/`gcp-ace`/`gcp-pcse`/`gcp-pcdoe`/`gcp-psoe`/`gcp-pcd`) | [app/index.html](app/index.html), [src/](src/)         |
-| `/privacy/` | Privacy policy                                                                                                                                                            | [privacy/index.html](privacy/index.html)               |
-| `/terms/`   | Terms of service                                                                                                                                                          | [terms/index.html](terms/index.html)                   |
+| URL         | What                                                                                                                                                                              | Source                                                 |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `/`         | Landing page with pricing and the early-bird list                                                                                                                                 | [index.html](index.html), [src/landing/](src/landing/) |
+| `/app/`     | The study app (sign-in, trial mode, `?cert=gcp-pde`/`gcp-pca`/`gcp-adp`/`gcp-gail`/`gcp-pmle`/`gcp-cdl`/`gcp-agwa`/`gcp-ace`/`gcp-pcse`/`gcp-pcdoe`/`gcp-psoe`/`gcp-pcd`/`gcp-pcde`) | [app/index.html](app/index.html), [src/](src/)         |
+| `/privacy/` | Privacy policy                                                                                                                                                                    | [privacy/index.html](privacy/index.html)               |
+| `/terms/`   | Terms of service                                                                                                                                                                  | [terms/index.html](terms/index.html)                   |
 
 > Independent study tool, not affiliated with or sponsored by any
 > certification authority. Brand names and logos are used solely as
@@ -56,6 +56,7 @@ https://github.com/user-attachments/assets/9a856f49-fcc0-4d8e-a764-3cfa8b19536f
 | `gcp-adp` — Associate Data Practitioner                | 101       | 4       | 2026-10-14  | Complete; all 101 public threads (ExamTopics lists 103), 3 flagged as outdated                                                 |
 | `gcp-psoe` — Professional Security Operations Engineer | 133       | 6       | 2026-10-14  | Complete; 2 numbers estimated (132–133, from mirror sites), 1 diagram                                                          |
 | `gcp-pcd` — Professional Cloud Developer               | 378       | 4       | 2026-10-14  | Complete; all 378 public threads (ExamTopics lists 379), 97 conflicts, 59 flagged as outdated, 1 retired case study (HipLocal) |
+| `gcp-pcde` — Professional Cloud Database Engineer      | 187       | 4       | 2026-10-14  | Complete for the public pool; 180 and 189–197 have no public discussion yet, 182–188 come from mirror sites with estimated numbers; 6 questions carry legacy notes |
 | `dbt-aeng` — dbt Analytics Engineering                 | —         | —       | —           | Planned, paused — needs a question pool                                                                                        |
 
 Adding a cert means adding a folder under `src/certs/` and registering its
@@ -268,6 +269,8 @@ src/
     gcp-agwa/
       ...                     # same shape as gcp-pde (no case studies)
     gcp-psoe/
+      ...                     # same shape as gcp-pde (no case studies)
+    gcp-pcde/
       ...                     # same shape as gcp-pde (no case studies)
   styles/
 ```
