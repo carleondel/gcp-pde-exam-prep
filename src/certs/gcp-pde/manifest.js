@@ -11,9 +11,9 @@ const manifest = {
   logoPath,
   disclaimer:
     "Independent study tool, not affiliated with or sponsored by Google LLC. Google Cloud and its logo are used here only as a visual reference for the exam.",
-  // Fecha del volcado del banco de preguntas (importBatch examtopics-2026-04).
+  // Fecha del volcado del banco de preguntas (importBatch examtopics-2026-10).
   // No es la fecha del fichero: es cuándo se dio el banco por bueno.
-  questionsDumpedAt: "2026-04-30",
+  questionsDumpedAt: "2026-10-14",
   passPercent: 70,
   mock: {
     count: 50,
