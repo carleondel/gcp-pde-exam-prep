@@ -78,3 +78,65 @@ They are the newest batch and no text for them was found anywhere public:
 - Or wait until someone comments on them: the threads then appear in the discussions forum.
   Discussion pages only load with the full slug:
   `https://www.examtopics.com/discussions/google/view/<id>-exam-professional-cloud-security-engineer-topic-1-question-<n>-discussion/`.
+
+## Professional Cloud DevOps Engineer (`gcp-pcdoe`)
+
+Source: [ExamTopics](https://www.examtopics.com/exams/google/professional-cloud-devops-engineer/view/),
+239 questions (checked Oct 14, 2026). Bank dumped on 2026-10-14: **232 of 239 loaded** — 229
+confirmed (1–225, 227–230) plus 3 unconfirmed (231–233). Questions 1–196 come from a GitHub cache
+of ExamTopics data
+([thatonecodes/examtopics-data](https://github.com/thatonecodes/examtopics-data), April 2025
+snapshot) with full threads and ExamTopics' answer key; 197–230 come from the live discussion
+pages fetched on Oct 14, 2026 — the Suggested Answer is not shown on those pages, so every answer
+there was decided against current docs with the comment vote as a signal.
+
+### Not in the bank (7)
+
+226, 234, 235, 236, 237, 238, 239
+
+- They most likely have no discussion comments yet, so they never appear in the forum list — the crawler covered
+  pages 1–79 of 181 of the Google forum, which only lists threads with comments and shows the
+  newest threads at the front.
+- No search-engine hits for any of them, no Wayback captures of DevOps discussion threads (exam
+  list pages only captured up to May 2025), and the list pages past page 1 need a captcha/login;
+  heavy 429 rate limiting applies.
+
+Thread ids found (to guide future scans; pages only load with the full slug
+`https://www.examtopics.com/discussions/google/view/<id>-exam-professional-cloud-devops-engineer-topic-1-question-<n>-discussion/`):
+197–201 = 304431–304435 (Jun 3, 2025). Mar 18, 2026 batches: 19:31 → 392418–392428 (202–208
+descending from 392428, then 223=392421, 225=392420, 227=392419, 229=392418); 19:46 →
+392902–392921 (209=392921, 210=392920, 211=392918, 212=392919, 213=392917, 214=392906,
+215=392904, 216=392905, 217=392903, 218=392912, 219=392911, 220=392910, 221=392909,
+222=392908, 224=392907, 228=392902); 20:03 → 230=393436. Ids already ruled out: 226 not in
+392410–392421 or 392880–392935; 231 not in 392880–392935 or 393362–393510; 392913–392916 are not
+226 or 231 (probably other exams).
+
+### Loaded, but the number is unconfirmed (3)
+
+These carry `sourceNumberConfirmed: false` and show an `Unconfirmed #N` badge in the app.
+
+| Number | Text found on (all dated 2026)            | Topic                         |
+| ------ | ----------------------------------------- | ----------------------------- |
+| 231    | certshero, p2pexams, freecram, testpassed | App Hub forwarding rule       |
+| 232    | myexamcollection                          | Cloud Deploy CD for Cloud Run |
+| 233    | validtests                                | VPC per department + peering  |
+
+Texts found only on mirror sites dated 2026, slotted into the 226/231–239 gap in the order found;
+the real numbers are unknown (could be 226 or 231–239).
+
+### Caveats
+
+- 43 conflicts adjudicated against current docs; a second opinion from Gemini agreed on 35 and led
+  to changing 4, 20, 38, 105 and 121.
+- Data fixes: 113 (two options merged into one, split back), 119 (ExamTopics shows 118's stem;
+  replaced with the real stem quoted in the thread), 163 (options are images on ExamTopics;
+  reconstructed from the thread and mirrors), 176 (options C/D are YAML images on ExamTopics and no copy was found anywhere; they were rewritten from the thread's description of the correct answer),
+  65 and 74 (garbled characters cleaned).
+
+### How to close the gap
+
+- A logged-in account that can open the list pages holding 226 and 231–239 (`view/23/`–`view/24/`),
+  or ITExams/SecExams accounts: paste the list pages and match them by text.
+- Or scan thread ids in later 2026 ranges once the rate limit allows.
+- When a real number turns up for 231–233, move the question to it, drop
+  `sourceNumberConfirmed`/`sourceNumberNote`, and free the slot it was occupying.
