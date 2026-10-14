@@ -187,3 +187,62 @@ None. Every question was fetched from its own discussion page, whose title and s
   someone comments and the threads appear in the forum. Discussion pages only load with the full
   slug:
   `https://www.examtopics.com/discussions/google/view/<id>-exam-associate-data-practitioner-topic-1-question-<n>-discussion/`.
+
+## Professional Security Operations Engineer (`gcp-psoe`)
+
+Source: [ExamTopics](https://www.examtopics.com/exams/google/professional-security-operations-engineer/view/),
+133 questions (last updated there on Sep 30, 2026). Bank dumped on 2026-10-14: **133 of 133
+loaded** — 131 confirmed (1–131, every number confirmed by its discussion thread) plus 2
+unconfirmed (132–133).
+
+### Not in the bank
+
+None by text: every one of the 133 questions is loaded. Only the numbers of 132 and 133 are guessed
+(see below).
+
+### Loaded, but the number is unconfirmed (2)
+
+These carry `sourceNumberConfirmed: false` and show an `Unconfirmed #N` badge in the app.
+
+| Number | Text found on                                                                          | Topic                                                   |
+| ------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| 132    | itdumpsfree                                                                            | SCCE resource graph (CAI relationships → Spanner Graph) |
+| 133    | marks4sure ("October updated release"), certprep, utt.edu.tt, examcollection, examsvce | YARA-L rule vs MISP intel: cut false positives          |
+
+They are the only two ExamTopics-style texts on the mirrors that match none of 1–131. They were
+slotted into the 132–133 gap: 133 is the MISP question because the 143-item vendor bank appends
+it at the end (#142) and an October 2026 release carries it; 132 sits earlier in that bank (#96).
+The real numbers could be swapped.
+
+Why there is no thread for them:
+
+- A full crawl of the Google discussions forum (181 pages, Oct 2026) listed only 68 threads for this
+  exam. The other 63 of 1–131 never show up in the forum list (almost all have no comments); they
+  were found by probing thread ids with the full slug.
+- Probing 304 candidate ids (609 requests) inside and around every post-Nov 2025 Google batch found
+  nothing for 132 or 133, and per-number searches return nothing.
+- The ExamTopics list pages that hold them in order (`view/14/`) are login-gated. ITExams and
+  ExamIce keep ExamTopics' numbering (133 questions) but gate content; the free mirrors carry the
+  texts in their own scrambled order.
+
+### Caveats
+
+- Thread ids (pages only load with the full slug
+  `https://www.examtopics.com/discussions/google/view/<id>-exam-professional-security-operations-engineer-topic-1-question-<n>-discussion/`):
+  1 = 315252, 2 = 315346, 4 = 315222, 83 = 315347, 131 = 315687; every other number from 3 to 130
+  sits in the Nov 10, 2025 batch 316043–316169, with ids in no particular question order.
+- 92 of 131 have no comments. ExamTopics' own "Suggested Answer" is login-gated past page 1; it was
+  compared for 1–10 and matched the bank every time. All other answers were decided against
+  current docs, using the comment vote as a signal.
+- 15 conflicts with the community vote; an independent review by Gemini agreed on 13 and led to
+  changing 97 (A → C, per Google's alert-suppression guidance). 4 was kept on A after the same
+  review. 28, 49, 52, 97, 98, 125 and 131 go against or break a tie in the community vote
+  (`resolvedBy: devin-2026-10`).
+- 113 needs its YARA-L rule screenshot, which ships under `public/question-images/gcp-psoe/`.
+
+### How to close the gap
+
+- A logged-in ExamTopics account that can open `view/14/` (or an ITExams/ExamIce account): match
+  132–133 by text, then drop `sourceNumberConfirmed`/`sourceNumberNote` (or swap the two numbers if
+  needed).
+- Or wait until someone comments on them: the threads then appear in the discussions forum.
