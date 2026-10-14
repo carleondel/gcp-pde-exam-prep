@@ -409,6 +409,11 @@ a.card:hover {
   color: #f06292;
 }
 
+.tag-indigo {
+  background: rgba(121, 134, 203, 0.14);
+  color: #7986cb;
+}
+
 .tag-muted {
   background: var(--surface-line);
   color: var(--text-secondary);
