@@ -377,6 +377,22 @@ export default function QuizView({
             Recent #{question.sourceQuestionNumber || question.id}
           </span>
         )}
+        {question.sourceNumberConfirmed === false && (
+          <span
+            title={question.sourceNumberNote}
+            style={{
+              padding: "5px 10px",
+              borderRadius: "var(--radius-pill)",
+              background: "var(--warning-soft)",
+              color: "var(--signal-warning)",
+              fontSize: 11,
+              fontWeight: 700,
+              fontFamily: "var(--font-mono)",
+            }}
+          >
+            Unconfirmed #{question.sourceQuestionNumber || question.id}
+          </span>
+        )}
         {answer.isMulti && (
           <span
             style={{
