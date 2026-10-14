@@ -31,6 +31,37 @@ export const QUESTIONS = [
     ]
   },
   {
+    "id": 179,
+    "topic": "Migration",
+    "difficulty": 2,
+    "question": "Your retail company is currently using DynamoDB to store product catalog data. Due to increasing data volumes and the need for better scalability, cost efficiency, and AI features; you have decided to migrate your data to Bigtable. You want a cost-effective migration, with minimal downtime and minimal effort, while ensuring data consistency between the two databases. What should you do?",
+    "options": [
+      "A. Export the DynamoDB data to CSV files, upload them to Cloud Storage, and use the cbt CLI to import the data into Bigtable.",
+      "B. Create a Dataflow pipeline using the DynamoDBIO and BigtableIO connectors to stream data from DynamoDB to Bigtable in near real time.",
+      "C. Develop a custom script using the DynamoDB and Bigtable APIs to directly transfer data between the two databases.",
+      "D. Use Dataproc to export the data from DynamoDB and load it into Bigtable."
+    ],
+    "correct": 1,
+    "explanation": "A Dataflow pipeline with the DynamoDBIO and BigtableIO connectors streams data continuously — minimal downtime and minimal effort while keeping both stores consistent during cutover.",
+    "discussion": [],
+    "source": "devin-validated",
+    "sourceExam": "professional-cloud-database-engineer",
+    "sourceQuestionNumber": 179,
+    "isRecent": true,
+    "importBatch": "examtopics-2026-10",
+    "confidence": "medium",
+    "conflict": false,
+    "discussionSummary": "",
+    "conceptSummary": "DynamoDB→Bigtable migration via Dataflow (DynamoDBIO + BigtableIO).",
+    "correctRationale": "Minimal downtime plus consistency calls for a streaming migration: the Dataflow DynamoDBIO connector reads DynamoDB and BigtableIO writes Bigtable, giving near-real-time replication without bespoke code.",
+    "optionRationales": [
+      "Wrong: CSV export + cbt import is a one-shot offline copy — downtime grows with data and no ongoing consistency.",
+      "Correct: The Dataflow DynamoDBIO→BigtableIO pipeline is the managed, near-real-time, minimal-downtime path.",
+      "Wrong: A custom script is maximal effort and still gives no continuous consistency.",
+      "Wrong: Dataproc is batch-oriented export/import — heavier and not near-real-time."
+    ]
+  },
+  {
     "id": 178,
     "topic": "Database Selection",
     "difficulty": 3,
@@ -98,6 +129,37 @@ export const QUESTIONS = [
     ]
   },
   {
+    "id": 176,
+    "topic": "Migration",
+    "difficulty": 2,
+    "question": "You have several on-premises Percona Server for MySQL 8.0 instances used for mission-critical applications. The workload is read-heavy with 80%+ reads and each instance has several TBs of data. You want to migrate to Google Cloud with minimal downtime and the fewest changes possible.\nWhat should you do?",
+    "options": [
+      "A. Use Database Migration Service to migrate to Alloy DB.",
+      "B. Use Datastream to migrate to Cloud SQL Enterprise",
+      "C. Use the spanner-migration-tool to migrate to Spanner.",
+      "D. Use Database Migration Service to migrate to Cloud SQL Enterprise Plus."
+    ],
+    "correct": 3,
+    "explanation": "Percona Server for MySQL is a supported DMS source, and Cloud SQL Enterprise Plus suits a mission-critical, multi-TB, read-heavy workload — minimal downtime, fewest changes.",
+    "discussion": [],
+    "source": "devin-validated",
+    "sourceExam": "professional-cloud-database-engineer",
+    "sourceQuestionNumber": 176,
+    "isRecent": true,
+    "importBatch": "examtopics-2026-10",
+    "confidence": "high",
+    "conflict": false,
+    "discussionSummary": "",
+    "conceptSummary": "Percona MySQL → Cloud SQL Enterprise Plus via DMS.",
+    "correctRationale": "DMS performs continuous (dump + CDC) migrations from MySQL-compatible sources including Percona Server for MySQL, keeping downtime minimal and requiring no application changes. Enterprise Plus is the tier aimed at demanding, read-heavy production workloads — matching 'mission-critical' and '80%+ reads, several TBs'.",
+    "optionRationales": [
+      "Wrong: AlloyDB is a PostgreSQL engine — migrating MySQL to it is an engine change, not 'fewest changes'.",
+      "Wrong: Datastream is a CDC replication service for destinations like BigQuery/Cloud Storage, not the MySQL→Cloud SQL migration path.",
+      "Wrong: The Spanner migration tool replatforms to Spanner — maximum change, not minimum.",
+      "Correct: DMS's continuous MySQL migration to Cloud SQL Enterprise Plus is the minimal-downtime, minimal-change path."
+    ]
+  },
+  {
     "id": 175,
     "topic": "Operations & Maintenance",
     "difficulty": 1,
@@ -126,6 +188,37 @@ export const QUESTIONS = [
       "Correct: Scheduler + Cloud Run function is the managed daily automation pattern.",
       "Wrong: Automated backups change backup type, not the BAK export routine.",
       "Wrong: A cron still needs somewhere unmanaged to run, and Pub/Sub is a target config not a scheduler."
+    ]
+  },
+  {
+    "id": 174,
+    "topic": "Security & IAM",
+    "difficulty": 2,
+    "question": "Your company is migrating one of its monolithic applications to a microservices architecture on Google Cloud. The new architecture involves a user authentication service that runs on Google Kubernetes Engine (GKE) and needs to access Cloud SQL for PostgreSQL instances. Your developers need to access the databases for local development and debugging purposes. You need to design a centralized, secure, and scalable database connectivity and access management strategy for both application service interfaces and developers. What should you do?",
+    "options": [
+      "A. Configure the GKE and Compute Engine applications to use the Cloud SQL Auth Proxy for all database connections. Instruct developers to use their local clients with database-native user/password authentication.",
+      "B. Enable public IP addresses for all database instances and configure firewall rules to restrict access based on the source IP addresses of the GKE cluster, Compute Engine VMs, and developers’ machines.",
+      "C. For all service interfaces and developers, create unique database-native user and password credentials directly on each database instance, and store the credentials in a centralized secret management tool.",
+      "D. For GKE and Compute Engine services, create and grant dedicated IAM service accounts with least-privilege roles for Cloud SQL resources, and configure applications to use workload identity account credentials. For developers, use IAM authentication with Cloud SQL Auth Proxy for secure access."
+    ],
+    "correct": 3,
+    "explanation": "Centralized identity is the requirement: dedicated least-privilege service accounts with workload identity for services, and IAM database authentication through the Auth Proxy for developers — no shared or scattered credentials.",
+    "discussion": [],
+    "source": "devin-validated",
+    "sourceExam": "professional-cloud-database-engineer",
+    "sourceQuestionNumber": 174,
+    "isRecent": true,
+    "importBatch": "examtopics-2026-10",
+    "confidence": "high",
+    "conflict": false,
+    "discussionSummary": "",
+    "conceptSummary": "Centralized DB access: workload-identity service accounts + IAM auth via Auth Proxy for devs.",
+    "correctRationale": "Google-recommended practice centralizes access on IAM: GKE services use workload identity mapped to dedicated, least-privilege service accounts, and developers authenticate with IAM database authentication through the Cloud SQL Auth Proxy — eliminating per-instance native passwords and giving one auditable control plane.",
+    "optionRationales": [
+      "Wrong: Auth Proxy for services is fine, but local clients with native passwords leaves developer access unmanaged and decentralized — contrary to the requirement.",
+      "Wrong: Public IPs plus firewall rules exposes the database to the internet — the opposite of a secure design.",
+      "Wrong: Native credentials per instance plus a secret store is exactly the decentralized credential sprawl the question wants removed.",
+      "Correct: Dedicated least-privilege service accounts (workload identity) for services + IAM auth via Auth Proxy for developers is the centralized secure pattern."
     ]
   },
   {
@@ -7182,7 +7275,7 @@ export const QUESTIONS = [
     "source": "devin-validated",
     "sourceExam": "professional-cloud-database-engineer",
     "sourceQuestionNumber": 30,
-    "isRecent": true,
+    "isRecent": false,
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
@@ -7238,7 +7331,7 @@ export const QUESTIONS = [
     "source": "devin-validated",
     "sourceExam": "professional-cloud-database-engineer",
     "sourceQuestionNumber": 29,
-    "isRecent": true,
+    "isRecent": false,
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
@@ -7298,7 +7391,7 @@ export const QUESTIONS = [
     "source": "devin-validated",
     "sourceExam": "professional-cloud-database-engineer",
     "sourceQuestionNumber": 28,
-    "isRecent": true,
+    "isRecent": false,
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,

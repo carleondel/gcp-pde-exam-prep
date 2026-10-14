@@ -41,7 +41,6 @@ https://github.com/user-attachments/assets/9a856f49-fcc0-4d8e-a764-3cfa8b19536f
 [Remotion](https://www.remotion.dev) in [landing-video/](landing-video/).</sub>
 
 ## Status
-
 | Cert                                                   | Questions | Domains | Bank dumped | State                                                                                                                          |
 | ------------------------------------------------------ | --------- | ------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `gcp-pde` — Professional Data Engineer                 | 349       | 5       | 2026-10-14  | Complete; used for a successful exam attempt                                                                                   |
