@@ -246,3 +246,60 @@ Why there is no thread for them:
   132–133 by text, then drop `sourceNumberConfirmed`/`sourceNumberNote` (or swap the two numbers if
   needed).
 - Or wait until someone comments on them: the threads then appear in the discussions forum.
+
+## Professional Cloud Developer (`gcp-pcd`)
+
+Source: [ExamTopics](https://www.examtopics.com/exams/google/professional-cloud-developer/view/),
+379 questions (checked Oct 14, 2026). Bank dumped on 2026-10-14: **378 of 379 loaded** (1–379
+except 357, every number confirmed by its discussion thread).
+
+### Not in the bank (1)
+
+357
+
+No text for it was found on ExamTopics or any other public source:
+
+- It has no discussion thread. A full crawl of the Google discussions forum (181 pages, Oct 2026)
+  and per-number searches (`Examtopics Professional Cloud Developer: Professional Cloud Developer
+question 357 Discussions` and variations) only return its neighbours.
+- Probing thread ids with the full slug (about 450 page loads through a real browser) found
+  nothing in: 306429, 306436, 306438, 306439, 306443, 306446–306700, 336150–336200,
+  308790–308830, 157290–157400 and 303200–303400.
+- The ExamTopics list page that holds it in order (`view/36/`) is login-gated.
+
+### Loaded, but the number is unconfirmed
+
+None. Every question was fetched from its own discussion page, whose title and slug carry the
+number.
+
+### Caveats
+
+- 17 questions have no comments, so the forum never lists them: 323, 325, 334, 335, 336, 338, 341,
+  343, 344, 345, 346, 350, 355, 356, 368, 375 and 378. 336, 338, 341, 343 and 344 were found by
+  probing thread ids: the Jul 15, 2025 batch uses 306428–306445 (334=306428, 335=306430,
+  336=306431, 338=306432, 343=306433, 344=306434, 345=306435, 346=306437, 350=306440,
+  352=306441, 356=306442, 359=306444, 360=306445), and 341=306683. Other recent ids:
+  337=157312, 339=157313, 340=157334, 342=303351, 347=303237, 348=157356, 355=336186,
+  358=336176, 362=308808, 366=308815.
+- ExamTopics' own "Suggested Answer" is login-gated, so it was never compared. Every answer was
+  decided against current docs, using the weighted comment vote as a signal; 104 carry
+  `resolvedBy: devin-2026-10` (split vote, no vote, or overriding the majority).
+- 97 conflicts with the community vote. An independent review by Gemini of the 139 disputed or
+  unvoted questions agreed on 132 and led to changing 30, 245, 321, 342, 347, 348 and 369; 55,
+  178, 229 and 335 were kept after the same review.
+- HipLocal case study: 19 questions (43–50, 80–83, 167–169, 186–189) embedded the full case text in
+  the stem. It was stripped into `case-studies.js` as a retired case (it is not in the current
+  exam guide) and the questions reference it through `caseStudy: "hiplocal"`.
+- Missing exhibits: 4, 12, 20, 28, 53, 62, 75, 98, 100 and 123 show an image on ExamTopics that
+  is broken at the source; the stem keeps a `(see exhibit)` marker. All are answerable from the
+  text and the thread, and 4, 12, 28, 53, 62, 98 and 100 carry a `legacyNote` saying so. 10
+  questions ship their diagram under `public/question-images/gcp-pcd/` (155, 182, 209, 236,
+  248, 262, 279, 317, 326 and 368).
+
+### How to close the gap
+
+- A logged-in ExamTopics account that can open `view/36/`: paste the page and add 357 with the
+  same per-question review.
+- Or wait until someone comments on it: the thread then appears in the discussions forum.
+  Discussion pages only load with the full slug:
+  `https://www.examtopics.com/discussions/google/view/<id>-exam-professional-cloud-developer-topic-1-question-<n>-discussion/`.
