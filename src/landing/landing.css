@@ -414,6 +414,11 @@ a.card:hover {
   color: #7986cb;
 }
 
+.tag-cyan {
+  background: rgba(77, 208, 225, 0.14);
+  color: #4dd0e1;
+}
+
 .tag-muted {
   background: var(--surface-line);
   color: var(--text-secondary);
