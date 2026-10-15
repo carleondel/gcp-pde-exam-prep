@@ -55,9 +55,9 @@ export default function CaseStudyPanel({ caseStudyId, caseStudies }) {
               whiteSpace: "normal",
             }}
           >
-            <strong style={{ color: "var(--signal-warning)" }}>Retired case.</strong> It is no
-            longer part of the current official guide. The current cases are Altostrat Media, Cymbal
-            Retail, EHR Healthcare and KnightMotives Automotive.
+            <strong style={{ color: "var(--signal-warning)" }}>Retired case.</strong>{" "}
+            {caseStudy.retiredNote ??
+              "It is no longer part of the current official guide. The current cases are Altostrat Media, Cymbal Retail, EHR Healthcare and KnightMotives Automotive."}
           </div>
         )}
         {caseStudy.context ?? "Context unavailable: this case is no longer in the official guide."}
