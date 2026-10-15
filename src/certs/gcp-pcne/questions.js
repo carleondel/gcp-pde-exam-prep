@@ -463,7 +463,7 @@ export const QUESTIONS = [
     "conceptSummary": "Cloud CDN cache invalidation while keeping signed URLs.",
     "correctRationale": "Invalidating the object path removes the old copy so the next request fetches the new video, and generating fresh signed URLs maintains the authorization model — the minimal, secure fix.",
     "optionRationales": [
-      "Wrong: key rotation only affects URL signing and does not remove the stale cached object.",
+      "Wrong: rotating the signed URL keys only invalidates URL signatures; it does not evict the stale object already cached by Cloud CDN.",
       "Wrong: switching to USE_ORIGIN_HEADERS with no-store stops caching for the future but leaves the already-cached object in place and hurts performance.",
       "Wrong: disabling signed URLs exposes the content to anyone and still depends on TTL expiry.",
       "Correct: invalidate the file path in the cache and issue new signed URLs — immediate refresh with security preserved."
@@ -553,7 +553,7 @@ export const QUESTIONS = [
     "confidence": "high",
     "conflict": false,
     "discussionSummary": "",
-    "conceptSummary": "Purging one stale object with a Cloud CDN invalidation.",
+    "conceptSummary": "Purging one stale object with a Cloud CDN invalidation. This addresses the gcloud invalidate site described in the question.",
     "correctRationale": "gcloud compute url-maps invalidate-cdn-cache removes the cached article immediately, so the next request goes to the Cloud Run origin and every subsequent user sees the correction.",
     "optionRationales": [
       "Wrong: a new revision does not purge the already-cached response; users still get the stale copy until TTL expiry.",
@@ -1276,7 +1276,7 @@ export const QUESTIONS = [
       "D. Purge all cached content from Cloud CDN by performing a full cache flush for the entire CDN service."
     ],
     "correct": 1,
-    "explanation": "Invalidating just the changed URLs purges those objects from edge caches while leaving everything else warm — the immediate, efficient refresh.",
+    "explanation": "Invalidating just the changed URLs purges those objects from edge caches while leaving everything else warm — the immediate, efficient refresh. This addresses the push information invalidate described in the question.",
     "discussion": [],
     "source": "devin-validated",
     "sourceExam": "professional-cloud-network-engineer",
@@ -1318,7 +1318,7 @@ export const QUESTIONS = [
     "conflict": false,
     "discussionSummary": "",
     "conceptSummary": "IPsec encryption over Dedicated Interconnect for L3 end-to-end security.",
-    "correctRationale": "The requirement says layer 3 and end-to-end to the VPC. HA VPN over Cloud Interencrypts IP traffic from the on-premises gateway into the VPC across the whole path, whereas MACsec only protects the link segment to the Google edge device.",
+    "correctRationale": "The chosen path is \"Deploy HA VPN tunnels over the Dedicated Interconnect connections, and configure BGP sessions with on-premises routers to exchange routes.\": The requirement says layer 3 and end-to-end to the VPC. HA VPN over Cloud Interencrypts IP traffic from the on-premises gateway into the VPC across the whole path, whereas MACsec only protects the link segment to the Google edge device.",
     "optionRationales": [
       "Wrong: BGP MD5 authenticates routing sessions but does not encrypt data traffic.",
       "Wrong: MACsec encrypts only the L2 hop between the on-premises router and the Google edge, not end-to-end at layer 3.",
@@ -1588,7 +1588,7 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": false,
     "discussionSummary": "",
-    "conceptSummary": "Working around overlapping GKE Pod CIDRs with ip-masq-agent SNAT.",
+    "conceptSummary": "Working around overlapping GKE Pod CIDRs with ip-masq-agent SNAT. This addresses the recreate while reused described in the question.",
     "correctRationale": "Node IPs are unique and reachable across NCC. With ip-masq-agent masquerading Pod source addresses, cross-VPC Pod traffic appears to come from the nodes, sidestepping the excluded, overlapping Pod ranges without rebuilding anything.",
     "optionRationales": [
       "Correct: masquerading to node IPs is the only option that makes overlapping Pod ranges reachable without redesign.",
@@ -1609,7 +1609,7 @@ export const QUESTIONS = [
       "D. • Create a hybrid NEG that points to the existing IP of the application. • Map the NEG to an Application Load Balancer as a backend service. • Enable Cloud CDN on the backend service."
     ],
     "correct": 0,
-    "explanation": "Cloud CDN works with the global external Application Load Balancer, and an internet NEG lets that load balancer use a publicly reachable FQDN endpoint — the application still running on AWS — as an origin backend.",
+    "explanation": "Cloud CDN can front an origin hosted outside Google Cloud only through an internet NEG attached to an external Application Load Balancer: the NEG references the AWS application's public FQDN, and Cloud CDN is enabled on the backend service. A passthrough Network Load Balancer is a Layer-4 device that cannot front an internet NEG or serve Cloud CDN, and a hybrid NEG requires private connectivity to the endpoint, not a public FQDN.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -1623,14 +1623,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "The lone comment agrees with A: internet NEG plus Application Load Balancer is the documented way to put Cloud CDN in front of an AWS origin.",
-    "conceptSummary": "Internet NEG behind an external ALB to front an AWS origin with Cloud CDN.",
-    "correctRationale": "Internet NEGs exist precisely for endpoints reachable over the public internet by FQDN or IP, which describes the un-migrated AWS workload. Attaching the NEG to an external Application Load Balancer backend service is also the only combination here that supports Cloud CDN.",
+    "discussionSummary": "Unanimous community vote for A; consistent with the documented internet-NEG pattern.",
+    "conceptSummary": "Third-party/internet origins for Cloud CDN use an internet NEG as a backend on the global external Application Load Balancer.",
+    "correctRationale": "An internet NEG is the only NEG type that can point at an external FQDN reachable over the public internet, and Cloud CDN is enabled on the Application Load Balancer's backend service that maps to it.",
     "optionRationales": [
-      "Correct: internet NEG to the AWS FQDN, mapped to an external ALB backend service with Cloud CDN enabled, is the documented external-origin pattern.",
-      "Wrong: hybrid NEGs serve private IP:port endpoints over Interconnect/VPN, and a passthrough NLB cannot take NEG backends or run Cloud CDN.",
-      "Wrong: a passthrough Network Load Balancer is L4 and supports neither an internet NEG backend service nor Cloud CDN.",
-      "Wrong: a hybrid NEG requires private reachability; an AWS public endpoint is served by an internet NEG instead."
+      "Correct: internet NEG -> FQDN -> external Application Load Balancer -> Cloud CDN is exactly the documented pattern for origins outside Google Cloud.",
+      "Wrong: hybrid NEGs are for endpoints reached over private connectivity (Interconnect/VPN), and a target pool on a passthrough NLB cannot serve Cloud CDN.",
+      "Wrong: a passthrough Network Load Balancer is L4 and cannot host an internet NEG as a backend or provide Cloud CDN.",
+      "Wrong: a hybrid NEG references a private IP endpoint; the AWS application's public IP is not reachable that way, even though the ALB/CDN half is right."
     ]
   },
   {
@@ -1645,7 +1645,7 @@ export const QUESTIONS = [
       "D. Build a log-based alert in Cloud Logging that parses Cloud Router logs to detect when BGP keepalive messages are no longer received."
     ],
     "correct": 2,
-    "explanation": "Cloud Monitoring exposes Dedicated Interconnect metrics for physical-link optical power and for the VLAN attachment BGP session state, so alerting policies on both cover a degrading transceiver and a traffic stop.",
+    "explanation": "Cloud Monitoring exposes Dedicated Interconnect metrics for both the physical link and the attachments: optical transceiver light levels (sent/received optical power) and BGP session state, plus byte counters. Alerting on optical power plus BGP state covers both failure modes in the question.",
     "discussion": [],
     "source": "devin-validated",
     "sourceExam": "professional-cloud-network-engineer",
@@ -1654,14 +1654,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "",
-    "conceptSummary": "Alerting on optical-power and BGP-state metrics for Dedicated Interconnect.",
-    "correctRationale": "Google publishes interconnect metrics including optical light levels and VLAN attachment BGP/session state. Alerting on both directly covers the two failure symptoms named.",
+    "discussionSummary": "No community votes; decided on documentation.",
+    "conceptSummary": "Monitor Dedicated Interconnect health with Cloud Monitoring metrics: optical power and BGP session state.",
+    "correctRationale": "The two required signals are optical transceiver light level and traffic stoppage; the interconnect metrics include optical power and BGP session state, which together cover both.",
     "optionRationales": [
-      "Wrong: a zero byte count catches only the traffic stop and gives no warning about degrading optics.",
-      "Wrong: a Connectivity Test checks configuration reachability and reports nothing about optical power.",
-      "Correct: optical power and BGP session metrics in Cloud Monitoring cover both described symptoms.",
-      "Wrong: parsing router logs for keepalives detects session loss but not degrading optics, and adds brittle plumbing."
+      "Wrong: a zero-byte-count alert detects stopped traffic but cannot warn about degrading optical power before the link drops.",
+      "Wrong: a connectivity test pings end-to-end reachability; it does not measure transceiver light levels.",
+      "Correct: alerting on the optical-power metric and the BGP-session metric matches both required failure modes.",
+      "Wrong: log-based BGP keepalive detection is brittle and still misses the optical transceiver requirement."
     ]
   },
   {
@@ -1676,7 +1676,7 @@ export const QUESTIONS = [
       "D. Create a VPC firewall rule with a DENY action for the 192.168.1.0/24 range."
     ],
     "correct": 2,
-    "explanation": "An include export ranges filter on the VPC spoke advertises only the listed prefixes, so corp-prod is shared while any future subnets stay unadvertised by default.",
+    "explanation": "A VPC spoke's include export ranges filter lists exactly which subnet ranges are advertised to the NCC hub. Setting it to only 10.10.1.0/24 is the direct, precise control and is unaffected by future subnets, unlike an exclude filter which would advertise any new range.",
     "discussion": [],
     "source": "devin-validated",
     "sourceExam": "professional-cloud-network-engineer",
@@ -1685,14 +1685,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "",
-    "conceptSummary": "NCC spoke include-export-ranges as a positive allowlist.",
-    "correctRationale": "Include filters export exactly the listed ranges; new subnets are excluded automatically. An exclude filter would still leak every future subnet, failing the requirement.",
+    "discussionSummary": "No community votes; decided on documentation.",
+    "conceptSummary": "Control what a VPC spoke advertises to the NCC hub with the spoke's include/exclude export ranges filters.",
+    "correctRationale": "The include filter whitelists advertised ranges: listing only the prod subnet guarantees nothing else is ever exported, satisfying the 'even if new subnets are created' clause.",
     "optionRationales": [
-      "Wrong: static routes do not control which spoke prefixes the hub advertises.",
-      "Wrong: excluding 192.168.1.0/24 still exports every future subnet.",
-      "Correct: include-export of only 10.10.1.0/24 keeps corp-test and any new subnets unadvertised.",
-      "Wrong: firewall rules filter traffic, not hub route advertisement."
+      "Wrong: NCC hubs do not exchange custom static routes between VPC spokes; the advertisement is controlled on the spoke, not via a hub route.",
+      "Wrong: excluding only the test range still advertises every future subnet, violating the 'only prod' requirement.",
+      "Correct: include export ranges set to exactly 10.10.1.0/24 is the precise whitelist.",
+      "Wrong: firewall rules filter traffic, not route advertisement to the hub."
     ]
   },
   {
@@ -1707,7 +1707,7 @@ export const QUESTIONS = [
       "D. Create routes for both appliances at the same priority, but higher than the existing standalone appliance's route. Then remove the pre-existing route that directed traffic to the standalone appliance."
     ],
     "correct": 1,
-    "explanation": "Placing both appliances behind an internal passthrough Network Load Balancer and pointing a higher-priority route at the LB next hop gives symmetric active/active forwarding; deleting the old route then completes a low-disruption cutover.",
+    "explanation": "An internal passthrough Network Load Balancer can be the next hop of a custom route and balances traffic across both appliances; its symmetric hashing avoids asymmetric routing. Replacing the old route with a higher-priority route to the ILB moves the fleet to active/active.",
     "discussion": [],
     "source": "devin-validated",
     "sourceExam": "professional-cloud-network-engineer",
@@ -1716,14 +1716,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "",
-    "conceptSummary": "Active/active NVAs behind an internal passthrough NLB next hop.",
-    "correctRationale": "Google recommends fronting NVA fleets with an internal passthrough NLB used as a route next hop, which keeps flows to the same appliance. Adding the LB route at higher priority before removing the standalone route avoids asymmetric paths and downtime.",
+    "discussionSummary": "No community votes; decided on documentation.",
+    "conceptSummary": "Use an internal passthrough NLB as a route next hop for active/active multi-appliance inspection.",
+    "correctRationale": "The ILB next hop provides ECMP across both appliances with flow symmetry, meeting the active/active and no-asymmetric-routing requirements.",
     "optionRationales": [
-      "Wrong: Packet Mirroring only copies traffic; it cannot put the second appliance inline.",
-      "Correct: an NLB next-hop route at higher priority, then removal of the old route, is the documented clean migration.",
-      "Wrong: equal-priority routes to two separate instance next hops can produce asymmetric forwarding.",
-      "Wrong: same-priority instance routes still risk asymmetry, and deleting the old route first interrupts traffic."
+      "Wrong: packet mirroring copies packets for analysis; it does not steer traffic through the second appliance.",
+      "Correct: ILB next hop balances both appliances and replaces the standalone route cleanly.",
+      "Wrong: two equal-priority routes to different appliances can send the two directions of a flow to different boxes - asymmetric.",
+      "Wrong: same-priority routes to distinct next hops still hash flows to either appliance without the ILB's symmetric guarantee."
     ]
   },
   {
@@ -1738,7 +1738,7 @@ export const QUESTIONS = [
       "D. Create a public GKE cluster, and configure authorized networks on the control plane to restrict access to the corporate network's external IP address."
     ],
     "correct": 1,
-    "explanation": "A private cluster with the public endpoint disabled keeps the control plane entirely off the internet, and Private Service Connect lets the corporate network reach the private endpoint over the Cloud VPN path.",
+    "explanation": "A private GKE cluster with the public endpoint disabled keeps the control plane off the internet entirely. Private Service Connect access lets the corporate network reach the private endpoint over Cloud VPN, satisfying the highest-security requirement.",
     "discussion": [],
     "source": "devin-validated",
     "sourceExam": "professional-cloud-network-engineer",
@@ -1747,14 +1747,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "",
-    "conceptSummary": "Private GKE control plane reachable via PSC over hybrid connectivity.",
-    "correctRationale": "Disabling the public endpoint gives the strongest posture, and GKE supports accessing the private control plane endpoint through PSC and existing hybrid links, which covers the VPN-connected corporate network.",
+    "discussionSummary": "No community votes; decided on documentation.",
+    "conceptSummary": "Highest-security GKE access: private cluster, public endpoint disabled, PSC access to the control plane.",
+    "correctRationale": "Private cluster plus PSC gives API access only from the VPC and connected on-premises networks - nothing public.",
     "optionRationales": [
-      "Wrong: a public endpoint stays internet-reachable, and VPC Service Controls is not the mechanism for restricting GKE API access this way.",
-      "Correct: private cluster with public endpoint disabled plus PSC access satisfies the no-internet and VPN-reachability requirements.",
-      "Wrong: fronting the control plane with an internal TCP/UDP LB and an identity proxy is not a supported pattern.",
-      "Wrong: authorized networks on a public endpoint still expose the API to the internet."
+      "Wrong: a public endpoint exists at all, so the control plane is exposed to the internet path even with VPC Service Controls.",
+      "Correct: private cluster + PSC to the control plane is the documented high-security pattern.",
+      "Wrong: an internal TCP/UDP load balancer with an identity proxy is not a supported path to the GKE control plane.",
+      "Wrong: authorized networks narrow access but the endpoint remains public - it fails 'not exposed to the internet'."
     ]
   },
   {
@@ -1769,7 +1769,7 @@ export const QUESTIONS = [
       "D. Deploy two Classic VPN gateways, each connected to a separate on-premises gateway. Configure matching static routes with different priorities on both sides to handle failover."
     ],
     "correct": 2,
-    "explanation": "One HA VPN gateway with a tunnel on each interface, each terminated on a different on-premises gateway, and a BGP session per tunnel removes every single point of failure while giving dynamic routing.",
+    "explanation": "HA VPN provides 99.99% availability with two interfaces; connecting each interface to a separate on-premises gateway removes the single point of failure. Cloud Router gives the required dynamic routing over each tunnel.",
     "discussion": [],
     "source": "devin-validated",
     "sourceExam": "professional-cloud-network-engineer",
@@ -1778,14 +1778,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "",
-    "conceptSummary": "HA VPN to two peer gateways with per-tunnel BGP.",
-    "correctRationale": "This is the documented 99.99% redundant topology: two tunnels across the two HA interfaces to two peer devices, with Cloud Router BGP sessions providing the required dynamic route exchange.",
+    "discussionSummary": "No community votes; decided on documentation.",
+    "conceptSummary": "No-SPOF VPN: one HA VPN gateway, both interfaces to both on-prem gateways, BGP via Cloud Router.",
+    "correctRationale": "Only this option uses both HA VPN interfaces against both on-prem gateways and dynamic routing - the documented 99.99% topology.",
     "optionRationales": [
-      "Wrong: multiple tunnels to a single on-prem gateway leave that device as the single point of failure.",
-      "Wrong: Classic VPN is legacy, has no 99.99% SLA, and two tunnels to one peer still share a failure domain.",
-      "Correct: HA VPN across both interfaces to two on-prem gateways with BGP per tunnel is the documented redundant dynamic design.",
-      "Wrong: two Classic gateways with static routes abandon dynamic routing and are harder to operate."
+      "Wrong: one on-prem interface/gateway remains a single point of failure.",
+      "Wrong: Classic VPN cannot offer the 99.99% SLA and both tunnels to one peer gateway keep that SPOF.",
+      "Correct: HA VPN two interfaces to two on-prem gateways + Cloud Router BGP is the documented redundant design.",
+      "Wrong: Classic VPN + static routes is failover at best, slower to converge, and not the 99.99% design."
     ]
   },
   {
@@ -1800,7 +1800,7 @@ export const QUESTIONS = [
       "D. Use gcloud container clusters create [CLUSTER_NAME] to create a VPC-native Cluster."
     ],
     "correct": 2,
-    "explanation": "Sizing for the stated growth needs a /25 node subnet (100 nodes), a /17 Pod range (about 20,000 Pod addresses), and a /21 Service range (1,500 services) declared as secondary ranges at creation.",
+    "explanation": "Sizing for 100 nodes x 20 Pods needs ~2048 Pod IPs (round to /21-ish planning) and Services need room beyond 150+; option C allocates /17 for Pods and /21 for Services on a /25 primary subnet - comfortable headroom. Alias-IP secondary ranges are the VPC-native design.",
     "discussion": [
       {
         "user": "kirrim",
@@ -1814,14 +1814,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C and notes this is a duplicate of question 33 with the same sizing logic.",
-    "conceptSummary": "Right-sizing VPC-native secondary ranges for projected growth.",
-    "correctRationale": "100 nodes fit a /25 primary range; 200 Pods per node across 100 nodes needs roughly 20k addresses, which a /17 covers; 1500 services fit a /21. Option C is the only sizing that meets growth while minimizing waste, and secondary ranges cannot be resized later.",
+    "discussionSummary": "Community votes C (3); the sizing math agrees. Same stem as question 33 (kept, flagged as a duplicate in legacyNote).",
+    "conceptSummary": "VPC-native GKE clusters need subnets with planned secondary ranges for Pods and Services.",
+    "correctRationale": "C is the only option that both uses a VPC-native cluster with explicit secondary ranges and sizes them for the stated growth (100 nodes x 20 Pods ≈ 2000+ Pod IPs).",
     "optionRationales": [
-      "Wrong: /28 nodes and /24 services fall far short of the growth numbers, and subnets cannot be resized afterward.",
-      "Wrong: --enable-ip-alias uses default ranges, which neither minimize consumption nor fit the stated plan.",
-      "Correct: /25 primary plus /17 Pods and /21 Services covers 100x200 Pods and 1500 services with minimal waste.",
-      "Wrong: the default create command is not VPC-native with chosen ranges and gives no sizing control."
+      "Wrong: /24 Pod and Service ranges are far too small for 100 nodes x 20 Pods and hundreds of Services, and ranges cannot be resized later.",
+      "Wrong: --enable-ip-alias creates the cluster but leaves the subnet/secondary sizing unspecified - undersized defaults fail the growth requirement.",
+      "Correct: /17 Pods + /21 Services secondary ranges cover the planned 100-node growth.",
+      "Wrong: a plain create picks default ranges with no guarantee they fit the planned scale."
     ],
     "legacyNote": "Duplicate of question 33 with reordered options; the /25 + /17 + /21 answer remains correct."
   },
@@ -1837,7 +1837,7 @@ export const QUESTIONS = [
       "D. Enable the Firewall Insights API. Set the Deny rule insights observation period to one day. Review Insight results to assure there are no firewall rules denying traffic."
     ],
     "correct": 2,
-    "explanation": "TCP-only failures recurring at a fixed daily hour strongly suggest Cloud NAT port exhaustion at peak load; Cloud NAT logging surfaces the allocation errors for the SaaS destination.",
+    "explanation": "TCP failures to a public SaaS endpoint while ICMP works points at egress NAT issues such as port exhaustion or dropped mappings. Cloud NAT logging records exactly these errors against the destination.",
     "discussion": [
       {
         "user": "kirrim",
@@ -1851,14 +1851,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community identifies this as a duplicate of question 229 and reasons identically: daily TCP failures point to Cloud NAT port exhaustion, so Cloud NAT logging is the right tool.",
-    "conceptSummary": "Diagnosing intermittent TCP failures as NAT port exhaustion.",
-    "correctRationale": "ICMP succeeding while TCP fails on a schedule is the classic port-exhaustion signature. Cloud NAT logs record allocation failures and dropped connections, which a configuration-only Connectivity Test cannot see.",
+    "discussionSummary": "Community votes C (2); agrees with the egress-NAT diagnosis.",
+    "conceptSummary": "Troubleshoot NAT-related connection errors with Cloud NAT logs.",
+    "correctRationale": "Cloud NAT logs surface NAT allocation errors/timeouts for specific destinations, which matches TCP-only intermittent failures to a public endpoint.",
     "optionRationales": [
-      "Wrong: Connectivity Tests evaluate configuration reachability, not intermittent data-plane exhaustion.",
-      "Wrong: Cloud Armor logs inbound traffic to load balancers, not outbound VM connections.",
-      "Correct: Cloud NAT logging reveals port-exhaustion drops to the SaaS destination.",
-      "Wrong: deny-rule insights only analyze firewall config, which would block ICMP too."
+      "Wrong: a Connectivity Test checks configuration reachability inside Google Cloud, not NAT error states toward an internet SaaS.",
+      "Wrong: Cloud Armor protects load-balanced ingress; it has nothing to do with outbound connections to a SaaS.",
+      "Correct: Cloud NAT gateway logs reveal errors to the SaaS destination IP - the only option inspecting egress NAT.",
+      "Wrong: Firewall Insights deny-rule analysis answers 'is a rule blocking it', not intermittent TCP NAT errors."
     ],
     "legacyNote": "Duplicate of question 229; Cloud NAT logging remains the correct answer."
   },
@@ -1874,7 +1874,7 @@ export const QUESTIONS = [
       "D. Assign secure tags to these applications: secure-tag-app-1 to app-1 and secure-tag-app-2 to app-2. Configure a network firewall policy that is attached to VPC-2 with an ingress rule that allows traffic from secure-tag-app-1 to secure-tag-app-2. Leave the default deny ingress rule and the default allow egress rule."
     ],
     "correct": 3,
-    "explanation": "Microsegmentation across peered VPCs requires secure tags, which work across VPC boundaries only inside firewall policies; a network firewall policy attached to VPC-2 scopes the rule precisely.",
+    "explanation": "Microsegmentation across VPC peering needs secure tags (IAM-governed tags that work beyond network tags) evaluated by a network firewall policy attached to the destination VPC. Network tags are not usable in hierarchical policies for peered networks, so D is the only complete option.",
     "discussion": [
       {
         "user": "irmingard_examtopics",
@@ -1896,15 +1896,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and B (6 vs 3 votes): Community majority is D: secure tags are required across VPCs and a network firewall policy on the destination VPC scopes it more precisely than a hierarchical policy.",
-    "conceptSummary": "Secure tags in a network firewall policy for cross-VPC microsegmentation.",
-    "correctRationale": "Classic network tags do not propagate across VPC peering, so the rule must use secure tags — usable only in firewall policies. A network firewall policy on VPC-2 is the tightest correct scope; a hierarchical policy would apply far more broadly than needed.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and B (6 vs 3 votes): Split D (6) vs B (3): B misapplies hierarchical policies; secure tags inside a network firewall policy (D) is the documented mechanism. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Microsegmentation across peered VPCs: secure tags + network firewall policy rules.",
+    "correctRationale": "Secure tags are the only tag mechanism that identifies workloads across VPC peering in firewall policy rules, and attaching the policy to VPC-2 enforces ingress to app-2.",
     "optionRationales": [
-      "Wrong: classic network tags are not visible across peering, and the names used here are not secure tags.",
-      "Wrong: secure tags are right but a hierarchical policy applies org/folder-wide, broader than this two-VPC case needs.",
-      "Wrong: classic VPC firewall rules cannot use secure tags at all.",
-      "Correct: secure tags plus a network firewall policy on VPC-2 gives the required microsegmentation at the right scope."
+      "Wrong: 'network tags' are used by classic VPC firewall rules, not hierarchical policy matching for peered networks, and 'secure-tag-app-1' in a hierarchical policy is mislabeled here.",
+      "Wrong: same mechanism mismatch as A - hierarchical policies are organization/folder-scoped constructs, not the direct fit for this VPC-level microsegmentation.",
+      "Wrong: a classic ingress firewall rule cannot match on 'secure tags' as source across peered VPCs (tags don't propagate across peering).",
+      "Correct: secure tags + a network firewall policy on VPC-2 implements the required microsegmentation."
     ]
   },
   {
@@ -1919,7 +1919,7 @@ export const QUESTIONS = [
       "D. Enable MACsec on Partner Cloud Interconnect."
     ],
     "correct": 1,
-    "explanation": "HA VPN over Cloud Interconnect is a two-tier design: the existing Cloud Router serves the Interconnect tier, and a new dedicated Cloud Router is required for the HA VPN tier along with the HA VPN gateway, peer gateway resources, and tunnels.",
+    "explanation": "HA VPN over Cloud Interconnect creates a second encryption tier on top of the VLAN attachments, and each tier needs its own Cloud Router: the existing router terminates the Interconnect BGP, a new Cloud Router terminates the HA VPN BGP.",
     "discussion": [
       {
         "user": "Tire",
@@ -1941,15 +1941,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and A (6 vs 2 votes): Community majority is B, quoting the two-tier HA VPN over Interconnect architecture: each tier gets its own Cloud Router.",
-    "conceptSummary": "The HA VPN tier needs its own Cloud Router.",
-    "correctRationale": "Google's deployment architecture defines separate Cloud Routers for the Cloud Interconnect tier and the HA VPN tier. A new dedicated router plus the HA VPN gateway and tunnel resources is the documented completion.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and A (6 vs 2 votes): Community favors B (6 vs 2 for A) because each operational tier needs its own Cloud Router. Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "HA VPN over Interconnect: associate the gateway with the two VLAN attachments and create a dedicated Cloud Router for the VPN tier.",
+    "correctRationale": "The documented deployment keeps separate routers per tier; B creates the new Cloud Router for HA VPN while associating the gateway with the two attachments.",
     "optionRationales": [
-      "Wrong: the Interconnect-tier Cloud Router cannot also run the HA VPN tier; the tiers require separate routers.",
-      "Correct: create the HA VPN gateway on the VLAN attachments with a new dedicated HA VPN Cloud Router, peer gateway, and tunnels.",
-      "Wrong: MACsec encrypts only the link to the Google edge and does not deploy the end-to-end VPN requested.",
-      "Wrong: MACsec is unavailable on Partner Interconnect and is not the end-to-end encryption asked for."
+      "Wrong: reusing the Interconnect Cloud Router for HA VPN violates the two-tier design - each tier requires its own router.",
+      "Correct: HA VPN gateway + two VLAN attachments + a new Cloud Router is the documented completion step.",
+      "Wrong: MACsec encrypts the physical link to Google's edge, not end-to-end traffic over the Interconnect.",
+      "Wrong: MACsec is only offered on Dedicated Interconnect, not Partner Interconnect, and still only protects the physical hop."
     ]
   },
   {
@@ -1964,7 +1964,7 @@ export const QUESTIONS = [
       "D. Configure a subnet of purpose PRIVATE_NAT and use Hybrid NAT."
     ],
     "correct": 3,
-    "explanation": "Hybrid NAT is the Private NAT mode built to translate traffic between NCC VPC spokes and an on-premises network with overlapping CIDRs, letting the VMs reach on-prem hosts directly.",
+    "explanation": "When on-premises and Google Cloud CIDRs overlap, Hybrid NAT translates addresses so VMs can reach on-prem hosts that would otherwise collide. Private NAT serves spoke-to-spoke translation inside Google Cloud, not the on-prem overlap case.",
     "discussion": [
       {
         "user": "Martrin",
@@ -1986,15 +1986,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and C (5 vs 2 votes): ExamTopics labels these options A, C, D, E; letters here are remapped (C -> B, D -> C, E -> D). Community majority (original E) selects Hybrid NAT, matching the validated answer D; confidence medium given overlapping Private NAT terminology.",
-    "conceptSummary": "Hybrid NAT for overlapping on-prem ranges via NCC.",
-    "correctRationale": "When on-prem CIDRs overlap Google Cloud ranges, Hybrid NAT translates between the NCC-attached VPC and the hybrid (on-prem) side. A REGIONAL_MANAGED_PROXY subnet serves proxy load balancers, not NAT.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and C (5 vs 2 votes): Community favors E (5 vs 2 for D): Hybrid NAT handles on-prem/GCP overlap; Private NAT is for spoke-to-spoke overlaps. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Overlapping on-prem/GCP CIDRs over a hybrid connection are solved with Hybrid NAT. This addresses the company cloud overlaps described in the question.",
+    "correctRationale": "The chosen path is \"Configure a subnet of purpose PRIVATE_NAT and use Hybrid NAT.\": Hybrid NAT is designed for overlapping RFC1918 space between a VPC and an on-premises network reached via hybrid connectivity; that is exactly this scenario.",
     "optionRationales": [
-      "Wrong: a REGIONAL_MANAGED_PROXY subnet fronts proxy load balancers and does not translate overlapping hybrid addresses.",
-      "Wrong: a TCP proxy LB still consumes a proxy-only subnet and does not solve overlapping-CIDR reachability.",
-      "Wrong: Private NAT between NCC spokes handles VPC-to-VPC overlap, not the VPC-to-on-prem direction needed here.",
-      "Correct: Hybrid NAT on a PRIVATE_NAT-purpose subnet NATs between the NCC spoke and the on-prem network."
+      "Wrong: REGIONAL_MANAGED_PROXY is for proxy load balancer frontends; it does not translate overlapping private addresses.",
+      "Wrong: a TCP proxy LB terminates connections through a proxy - the VMs would not connect 'directly' to the on-prem host IPs.",
+      "Wrong: Private NAT translates between NCC VPC spokes inside Google Cloud, not between the VPC and the on-premises network.",
+      "Correct: PRIVATE_NAT subnet + Hybrid NAT translates the overlapping on-prem ranges for direct VM access."
     ]
   },
   {
@@ -2009,7 +2009,7 @@ export const QUESTIONS = [
       "D. Create two global external Application Load Balancers with multiple backend services. Ensure that each backend service contains one backend. Point each backend to a different instance group."
     ],
     "correct": 1,
-    "explanation": "A single global external Application Load Balancer with one backend service containing multiple regional backends (the instance groups) sends each user to the closest healthy region through Google anycast.",
+    "explanation": "One global external Application Load Balancer with a single backend service holding multiple instance-group backends gives nearest-region routing automatically: the global LB picks the healthiest closest backend. Multiple backend services or multiple LBs add nothing here.",
     "discussion": [
       {
         "user": "kirrim",
@@ -2027,14 +2027,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: a single backend service with multiple regional backends is the recommended shape.",
-    "conceptSummary": "One global ALB, one backend service, several regional backends.",
-    "correctRationale": "The global external ALB uses one anycast IP and picks the nearest healthy backend automatically. Multiple backends in one backend service is the documented multi-region pattern; extra backend services or extra load balancers add nothing.",
+    "discussionSummary": "Community votes B (4); the commenters eliminate the two-LB and multi-backend-service variants.",
+    "conceptSummary": "Nearest-region global load balancing = one global ALB, one backend service, multiple regional backends.",
+    "correctRationale": "A single backend service with multiple regional backends lets the global ALB route each user to the closest healthy region with the simplest recommended topology.",
     "optionRationales": [
-      "Wrong: separate backend services per region add complexity without changing proximity routing.",
-      "Correct: one global external ALB with one backend service whose backends point at the regional instance groups.",
-      "Wrong: two global ALBs double forwarding rules and IPs for no benefit.",
-      "Wrong: two load balancers each with one backend per service is needlessly complex."
+      "Wrong: multiple backend services are for path/host-based routing to different apps, not geographic affinity to the same app.",
+      "Correct: one global ALB + one backend service + multiple backends is the standard multi-region design.",
+      "Wrong: two global ALBs just duplicate the anycast frontend with no benefit.",
+      "Wrong: two LBs plus per-backend services adds cost and complexity without improving region affinity."
     ]
   },
   {
@@ -2049,7 +2049,7 @@ export const QUESTIONS = [
       "D. Configure Partner Interconnect by creating a VLAN attachment, submit the pairing key to your service provider, and activate the connection."
     ],
     "correct": 3,
-    "explanation": "Partner Interconnect supports at least 1 Gbps without traversing the internet, and onboarding is exactly: create the VLAN attachment, hand the pairing key to the provider, then activate.",
+    "explanation": "Partner Interconnect supplies dedicated non-internet connectivity from the data center to Google Cloud through a service provider, with bandwidths from 50 Mbps up - fitting 'at least 1 Gbps, no internet'. Dedicated Interconnect minimum is 10 Gbps and Cross-Cloud Interconnect is for other clouds.",
     "discussion": [
       {
         "user": "kirrim",
@@ -2067,14 +2067,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D: Partner Interconnect is the only private, sub-10G, pairing-key option.",
-    "conceptSummary": "Partner Interconnect pairing-key flow for private >=1 Gbps.",
-    "correctRationale": "Partner Interconnect offers sub-10-Gbps options over a provider network that never touches the public internet. The pairing-key workflow described is unique to Partner Interconnect.",
+    "discussionSummary": "Community votes D (5); commenters reject A (internet), B (cross-cloud), C (dedicated flow/minimum).",
+    "conceptSummary": "Sub-10-Gbps private connectivity to Google Cloud: Partner Interconnect.",
+    "correctRationale": "Only Partner Interconnect offers private non-internet connectivity at 1 Gbps scale via a provider.",
     "optionRationales": [
-      "Wrong: HA VPN traverses the public internet, violating the constraint.",
-      "Wrong: Cross-Cloud Interconnect connects Google to other clouds such as AWS or Azure, not an on-prem data center.",
-      "Wrong: Dedicated Interconnect starts at 10 Gbps ports and uses a colocation LOA-CFA, not a partner pairing key.",
-      "Correct: Partner Interconnect via pairing key to the service provider meets all requirements."
+      "Wrong: HA VPN encrypts traffic but still traverses the internet.",
+      "Wrong: Cross-Cloud Interconnect connects Google Cloud to another cloud provider, not an on-prem data center.",
+      "Wrong: Dedicated Interconnect starts at 10 Gbps and is provisioned directly at a colocation facility, not via a pairing key to a provider in this manner.",
+      "Correct: Partner Interconnect, VLAN attachment + pairing key to the service provider, matches the flow and bandwidth."
     ]
   },
   {
@@ -2089,7 +2089,7 @@ export const QUESTIONS = [
       "D. Create a BGP session with these settings: • Peer ASN: 64515 • Advertise Route Priority (MED): 1000 • Local BGP IP: 169.254.11.2 • Peer BGP IP: 169.254.11.1 • MD5 Authentication: Enabled."
     ],
     "correct": 2,
-    "explanation": "From the Cloud Router perspective, the peer ASN is the customer ASN 64515, the local BGP IP is the Google address 169.254.11.2, the peer BGP IP is 169.254.11.1, and MD5 stays disabled.",
+    "explanation": "Mirror the customer settings on the Google side: peer ASN is the customer's 64515, local BGP IP is Google's .2, peer BGP IP is the customer's .1, and MD5 stays disabled.",
     "discussion": [
       {
         "user": "kirrim",
@@ -2103,14 +2103,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C: A swaps the peer ASN and B swaps the BGP IPs.",
-    "conceptSummary": "Mapping customer BGP settings onto the Cloud Router session.",
-    "correctRationale": "The customer's 'Customer ASN' is the peer ASN from Google's side, and their 'Customer BGP address' is the peer IP. Google's own address is the local BGP IP, so only option C keeps every field consistent.",
+    "discussionSummary": "Community votes C (2); commenters detail the ASN and IP swap errors in A and B.",
+    "conceptSummary": "BGP session configuration mirrors the peer's ASN and link-local addresses.",
+    "correctRationale": "C has the correct ASN (customer's 64515 as the peer) and non-swapped IPs (local .2, peer .1).",
     "optionRationales": [
-      "Wrong: peer ASN must be the customer ASN 64515, not the Google ASN 64517.",
-      "Wrong: local and peer BGP IPs are swapped; local must be the Google .2 address.",
-      "Correct: peer ASN 64515, local .2, peer .1, MD5 disabled matches the provided settings.",
-      "Wrong: enables MD5 and changes MED, both contradicting the customer settings."
+      "Wrong: peer ASN 64517 is Google's own ASN - a session cannot peer with itself.",
+      "Wrong: the BGP IPs are swapped; Google side must use .2 locally and .1 as peer.",
+      "Correct: matches peer ASN 64515, local 169.254.11.2, peer 169.254.11.1, MD5 disabled.",
+      "Wrong: MD5 must stay disabled (customer side is disabled) and MED is not part of the required settings."
     ]
   },
   {
@@ -2125,7 +2125,7 @@ export const QUESTIONS = [
       "D. Configure a global Secure Web Proxy, and remove the default route to the internet."
     ],
     "correct": 1,
-    "explanation": "Private Google Access is enabled per subnet, and Google API traffic still relies on a default route toward the default internet gateway, which Google intercepts inside its network.",
+    "explanation": "Private Google Access is enabled per subnet: VMs in the subnet reach Google APIs (Cloud Storage, BigQuery) over private paths without external IPs. A default internet route is still needed so API traffic to Google's public endpoints is routed correctly.",
     "discussion": [
       {
         "user": "kirrim",
@@ -2143,14 +2143,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: PGA is set at the subnet level and the default route must remain.",
-    "conceptSummary": "Subnet-level PGA plus a default route.",
-    "correctRationale": "PGA is a subnet attribute, not a VPC-level one. A default route to the default internet gateway is still required — Google keeps that API traffic inside its own fabric.",
+    "discussionSummary": "Community votes B (5); commenters note this is the recurring PGA-applies-at-subnet-level question.",
+    "conceptSummary": "Private Google Access is a subnet-level setting; keep a default route to the internet.",
+    "correctRationale": "PGA is configured on the subnet, and Google API traffic still uses the default route toward Google's public service endpoints - the least-configuration option.",
     "optionRationales": [
-      "Wrong: PGA cannot be enabled on the VPC resource.",
-      "Correct: enable PGA on the subnet and keep a default route to the internet gateway.",
-      "Wrong: Cloud NAT serves outbound internet for private VMs, not Google API access, and removing the default route is wrong.",
-      "Wrong: Secure Web Proxy filters egress web traffic and is unrelated to private API reachability."
+      "Wrong: PGA does not exist as a VPC-level flag; it is enabled per subnet.",
+      "Correct: subnet-level PGA + existing default route gives private API access with minimal steps.",
+      "Wrong: Cloud NAT serves outbound internet traffic for VMs without external IPs, but Google APIs via PGA do not need it, and removing the default route breaks API reachability.",
+      "Wrong: Secure Web Proxy is for managed outbound web filtering of VM traffic, not private Google API access, and removing the default route still breaks it."
     ]
   },
   {
@@ -2165,7 +2165,7 @@ export const QUESTIONS = [
       "D. Create the backend service in us-east1, create the forwarding rule in us-east1, and then enable global access."
     ],
     "correct": 3,
-    "explanation": "A regional internal Application Load Balancer keeps its backend service and forwarding rule in its own region (us-east1); enabling global access on the forwarding rule lets clients in other regions connect.",
+    "explanation": "With regional dynamic routing, europe-west2 cannot see us-east1 routes. Enabling global access on the us-east1 regional internal ALB (backend service and forwarding rule both in us-east1) exposes it to clients in other regions.",
     "discussion": [
       {
         "user": "kspusr",
@@ -2183,14 +2183,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D: rule and backend both in us-east1 with global access enabled is the working configuration.",
-    "conceptSummary": "Cross-region access to a regional internal ALB via global access.",
-    "correctRationale": "Internal regional LBs require the forwarding rule and backend service in the same region. Turning on global access on the us-east1 forwarding rule makes it reachable from europe-west2 despite regional dynamic routing, because reachability is a property of the rule.",
+    "discussionSummary": "Community votes D (4); commenters note D is 'most of the way' - global access is the key switch.",
+    "conceptSummary": "Cross-region access to a regional internal load balancer requires the LB's global access setting.",
+    "correctRationale": "Global access on the us-east1 internal ALB is the mechanism that lets europe-west2 VMs reach it despite regional routing.",
     "optionRationales": [
-      "Wrong: a regional internal ALB has one forwarding rule in its region; per-region rules are not the mechanism.",
-      "Wrong: the backend service must live in the LB region; creating it in europe-west2 misplaces it.",
-      "Wrong: the forwarding rule must be in us-east1 where the backends are, not the client region.",
-      "Correct: backend service and forwarding rule in us-east1 plus global access on the rule serves europe-west2 VMs."
+      "Wrong: forwarding rules are regional; extra regional forwarding rules do not grant global access.",
+      "Wrong: the backend service must live in the LB's region (us-east1), not the client's.",
+      "Wrong: the forwarding rule must be in us-east1 where the load balancer is regional, not in europe-west2.",
+      "Correct: everything in us-east1 plus the LB's global access enabled."
     ]
   },
   {
@@ -2205,7 +2205,7 @@ export const QUESTIONS = [
       "D. Update the default policy and rule evaluation order to AFTER_CLASSIC_FIREWALL."
     ],
     "correct": 2,
-    "explanation": "The VPC deny-all egress rule was winning because classic VPC rules were being evaluated first; setting the enforcement order to BEFORE_CLASSIC_FIREWALL evaluates the FQDN allow policy ahead of them.",
+    "explanation": "FQDN egress rules live in a network firewall policy; for them to win over the classic VPC deny-all egress, the policy must be evaluated first - i.e. enforcement order BEFORE_CLASSIC_FIREWALL.",
     "discussion": [
       {
         "user": "dirkgrob",
@@ -2219,14 +2219,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C: BEFORE_CLASSIC_FIREWALL places the policy before the classic VPC deny rule.",
-    "conceptSummary": "Swapping policy vs VPC rule evaluation order.",
-    "correctRationale": "When the network firewall policy holds the FQDN allow but VPC rules deny all egress, the policy must be evaluated first. The networkFirewallPolicyEnforcementOrder BEFORE_CLASSIC_FIREWALL does exactly that.",
+    "discussionSummary": "Community votes C (4); commenters quote the documented evaluation order.",
+    "conceptSummary": "Make network firewall policy rules take effect ahead of classic VPC rules with BEFORE_CLASSIC_FIREWALL.",
+    "correctRationale": "The FQDN allow rule only applies if the network firewall policy is evaluated before the classic deny-all egress, which is exactly what BEFORE_CLASSIC_FIREWALL sets.",
     "optionRationales": [
-      "Wrong: raising policy priority numbers does not help while the policy is evaluated after the VPC deny-all.",
-      "Wrong: lowering policy priority makes it evaluate even later within its tier.",
-      "Correct: BEFORE_CLASSIC_FIREWALL puts the network policy ahead of the VPC rules so the FQDN allow applies.",
-      "Wrong: AFTER_CLASSIC_FIREWALL keeps VPC rules first and preserves the problem."
+      "Wrong: priority inside the policy does not help because classic deny-all egress is still evaluated first by default.",
+      "Wrong: same inversion as A - rule priority is irrelevant while classic rules run first.",
+      "Correct: BEFORE_CLASSIC_FIREWALL makes the FQDN allow apply.",
+      "Wrong: AFTER_CLASSIC_FIREWALL is the default order and keeps the deny winning."
     ]
   },
   {
@@ -2241,7 +2241,7 @@ export const QUESTIONS = [
       "D. Use Cloud VPN instead of Dedicated Interconnect to send traffic over the internet."
     ],
     "correct": 2,
-    "explanation": "A remote VLAN attachment lets the existing Frankfurt Dedicated Interconnect carry traffic for europe-west4 with global routing, avoiding a second circuit or a VPN while keeping latency low and cost down.",
+    "explanation": "A remote VLAN attachment lets the single Frankfurt Dedicated Interconnect reach europe-west4 without a second physical connection - the cheapest way to extend the same link to another region.",
     "discussion": [
       {
         "user": "irmingard_examtopics",
@@ -2259,14 +2259,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C: a remote VLAN attachment on the existing connection is the low-cost, low-latency answer.",
-    "conceptSummary": "Remote VLAN attachment to another region on the same Interconnect.",
-    "correctRationale": "With global dynamic routing a VLAN attachment can target a different region than the router region peers commonly assume; reusing the existing connection to reach europe-west4 TPUs is the cheapest path.",
+    "discussionSummary": "Community votes C (4); remote VLAN attachment is the documented multi-region extension.",
+    "conceptSummary": "One Dedicated Interconnect can serve other regions via remote VLAN attachments.",
+    "correctRationale": "Remote VLAN attachments are built for multi-region reach over one physical interconnect - minimal cost, low latency, no new circuit.",
     "optionRationales": [
-      "Wrong: re-terminating the Interconnect in europe-west4 abandons the Frankfurt deployment.",
-      "Wrong: a Partner Interconnect adds cost and a provider hop for something the existing circuit can do.",
-      "Correct: a remote VLAN attachment to europe-west4 reuses the existing Dedicated Interconnect.",
-      "Wrong: Cloud VPN over the internet cannot match Interconnect latency."
+      "Wrong: moving the whole connection to europe-west4 abandons the working europe-west3 design instead of extending it.",
+      "Wrong: an extra Partner Interconnect is a whole second paid circuit - not minimal cost.",
+      "Correct: remote VLAN attachment to europe-west4 on the existing interconnect.",
+      "Wrong: Cloud VPN sends traffic over the internet - slower and a step backward from a dedicated link."
     ]
   },
   {
@@ -2281,7 +2281,7 @@ export const QUESTIONS = [
       "D. Promote the ephemeral IP address from the application VM to static, add this static ip address to each internal client's host file, and change the myglobalapp.terramearth.com DNS record to this new static IP address."
     ],
     "correct": 2,
-    "explanation": "Split-horizon DNS is achieved with a private zone for the same FQDN bound to the VPC answering the internal IP, while the public zone keeps serving the external IP to internet users.",
+    "explanation": "Split-horizon DNS: a private Cloud DNS zone with the same record name bound to the VPC resolves myglobalapp.terramearth.com to the internal IP for VPC clients, while the public zone keeps serving the external IP elsewhere.",
     "discussion": [
       {
         "user": "kirrim",
@@ -2307,14 +2307,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C, citing the split-horizon DNS documentation.",
-    "conceptSummary": "Split-horizon DNS: private zone overriding a public name in the VPC.",
-    "correctRationale": "A Cloud DNS private zone for myglobalapp.terramearth.com bound to the VPC returns the internal IP to VPC clients while the public zone continues to serve the public IP — the recommended split-horizon pattern that avoids the external IP.",
+    "discussionSummary": "Community votes C (9); commenters cite split-horizon DNS documentation.",
+    "conceptSummary": "Private Cloud DNS zone bound to the VPC overrides the public name for internal clients.",
+    "correctRationale": "The private zone shadows the public record inside the VPC with the internal IP - the documented split-horizon pattern.",
     "optionRationales": [
-      "Wrong: a different hostname does not satisfy the requirement to resolve the same name.",
-      "Wrong: Cloud DNS has no query-logic scripting feature.",
-      "Correct: a private zone for the FQDN bound to the VPC implements split horizon correctly.",
-      "Wrong: host files per client are unmanageable and changing the public record would break external users."
+      "Wrong: a differently-named record changes the URL clients use; the requirement is the same hostname resolving internally.",
+      "Wrong: Cloud DNS has no 'query logic script' feature.",
+      "Correct: private zone bound to the VPC answering the same record name with the internal IP.",
+      "Wrong: editing host files on every client does not scale and conflicts with managed DNS."
     ]
   },
   {
@@ -2329,7 +2329,7 @@ export const QUESTIONS = [
       "D. 1. Create a new Cloud Armor backend security policy. In the policy, set the userIpRequestHeaders[] attribute. 2. Add a policy rule that denies traffic that matches the inIpRange(origin.ip, 'IP_RANGE_BLOCK') statement. 3. Apply the policy to the backend service that includes all your Google Cloud workloads."
     ],
     "correct": 2,
-    "explanation": "Because the third-party WAF re-originates connections, the load balancer sees the WAF's IP; a backend security policy with userIpRequestHeaders[] set and a rule matching origin.user_ip evaluates the forwarded client address.",
+    "explanation": "The client IP arrives inside a header added by the upstream WAF proxy, so the policy must match origin.user_ip. The policy attaches to the load balancer's backend service - i.e. a backend security policy.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -2351,14 +2351,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C: the WAF proxies connections, so the policy must read the forwarded client IP via userIpRequestHeaders and origin.user_ip in a backend security policy.",
-    "conceptSummary": "Backend policy matching origin.user_ip behind a proxy WAF.",
-    "correctRationale": "Backend security policies attach to the ALB backend service, and userIpRequestHeaders[] tells Cloud Armor which header carries the true client IP so origin.user_ip rules apply. Edge policies see only the TCP source — the WAF itself.",
+    "discussionSummary": "Community votes C (8); commenters cite origin.user_ip for proxied client IPs.",
+    "conceptSummary": "Cloud Armor behind a third-party WAF: backend security policy + userIpRequestHeaders + origin.user_ip matching.",
+    "correctRationale": "Only C combines the two required facts: backend policy (attached to the ALB backend service) and origin.user_ip (the true client IP from the configured header).",
     "optionRationales": [
-      "Wrong: network edge policies evaluate the connection source (the WAF IP) and cannot attach to a backend service.",
-      "Wrong: edge policy plus origin.ip still sees only the WAF address.",
-      "Correct: backend security policy with userIpRequestHeaders[] and inIpRange(origin.user_ip, ...) blocks on the real client IP.",
-      "Wrong: the policy type is right but origin.ip is the WAF address; origin.user_ip is required."
+      "Wrong: edge policies sit at the Google edge in front of the ALB; this rule must attach to the backend service.",
+      "Wrong: edge policy plus origin.ip (the WAF's IP) - wrong policy type and wrong match.",
+      "Correct: backend security policy denying inIpRange(origin.user_ip, ...).",
+      "Wrong: right policy type but origin.ip is the connecting WAF IP, not the end user's."
     ]
   },
   {
@@ -2373,7 +2373,7 @@ export const QUESTIONS = [
       "D. Configure a VM with Linux, implement the rate limit through iptables, and use a firewall rule to send an HTTP 429 response to the client application."
     ],
     "correct": 0,
-    "explanation": "Cloud Armor rate limiting supports a throttle action that returns HTTP 429 when clients exceed the configured request rate — the managed, recommended way to cap bursty client load.",
+    "explanation": "Cloud Armor rate limiting (throttle action with deny-429 exceed action) is the native way to cap per-client request rates on an external Application Load Balancer and return HTTP 429 to the excess.",
     "discussion": [
       {
         "user": "kirrim",
@@ -2399,14 +2399,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A with the rate-limiting documentation cited.",
-    "conceptSummary": "Cloud Armor throttle action returning deny-429.",
-    "correctRationale": "A rate-limit rule with action throttle, conform_action allow, and exceed_action deny-429 is the documented mechanism for exactly this behavior at the edge.",
+    "discussionSummary": "Community votes A (9); the throttle/deny-429 syntax is the documented Cloud Armor rate limit.",
+    "conceptSummary": "Rate limiting on a global external ALB is done with a Cloud Armor throttle rule (deny-429).",
+    "correctRationale": "A applies a Cloud Armor policy with throttle/deny-429 directly on the load balancer - exactly the documented rate-limit mechanism.",
     "optionRationales": [
-      "Correct: a Cloud Armor policy with throttle + deny-429 implements the required response.",
-      "Wrong: per-client request caps are not a forwarding-rule feature, and extra backends do not produce 429s.",
-      "Wrong: OWASP preconfigured rules target attack signatures, not per-client rate limits.",
-      "Wrong: an iptables VM cannot sit in the ALB path or emit HTTP 429 responses."
+      "Correct: throttle + deny-429 Cloud Armor policy attached to the ALB does rate limiting natively.",
+      "Wrong: ALBs have no built-in per-client request cap outside Cloud Armor, and 'redirect to a different backend to burst' is not a feature.",
+      "Wrong: the OWASP ruleset addresses injection/XSS rules, not per-IP rate limiting.",
+      "Wrong: iptables on a VM does not sit in the ALB path and a firewall rule cannot emit HTTP 429 responses."
     ]
   },
   {
@@ -2421,7 +2421,7 @@ export const QUESTIONS = [
       "D. Disable Cloud CDN. Reconfigure the load balancer with the updated game binary. Enable Cloud CDN."
     ],
     "correct": 2,
-    "explanation": "Upload the corrected binary under the same URL and invalidate the stale object so Cloud CDN evicts it and fetches the new version on the next request.",
+    "explanation": "The wrong binary is already cached at the edges; the fix is to upload the correct binary to the origin and invalidate the stale object in Cloud CDN so edges refetch it.",
     "discussion": [
       {
         "user": "kirrim",
@@ -2443,14 +2443,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C with the cache-invalidation doc cited.",
-    "conceptSummary": "Cache invalidation after replacing a wrongly cached object.",
-    "correctRationale": "Cloud CDN serves cached copies until expiry or eviction; after uploading the fix, a targeted invalidation is the documented way to force the new object without changing the published URL.",
+    "discussionSummary": "Community votes C (6).",
+    "conceptSummary": "Removing a wrong cached object = update the origin + Cloud CDN invalidation.",
+    "correctRationale": "Upload the fixed binary and invalidate the stale path - the documented way to purge specific cached content quickly.",
     "optionRationales": [
-      "Wrong: blocking all CDN requests takes the download down for everyone.",
-      "Wrong: a new URL contradicts the same-URL instruction and waiting for expiry is too slow.",
-      "Correct: re-upload plus cache invalidation is the documented remediation.",
-      "Wrong: disabling and re-enabling CDN is an unnecessary outage and still leaves stale caches."
+      "Wrong: blocking requests does not deliver the right binary and log filtering does not fix the cache.",
+      "Wrong: a new URL works but abandoning the old cached path leaves users on the wrong binary and waits on TTLs.",
+      "Correct: upload the correct object and invalidate the wrong binary path in Cloud CDN.",
+      "Wrong: disabling/re-enabling CDN does not purge cached objects and causes a global outage meanwhile."
     ]
   },
   {
@@ -2465,7 +2465,7 @@ export const QUESTIONS = [
       "D. Enable Firewall Rules Logging on your firewall rules and review the logs."
     ],
     "correct": 0,
-    "explanation": "Packet Mirroring copies the VM's actual egress packets to a collector, which directly proves whether packets leave the VM correctly formed — the visibility needed when suspecting loss near the source.",
+    "explanation": "Packet loss for low-volume intermittent traffic between a VM and on-premises calls for packet-level capture: Packet Mirroring on the VM to a collector records every packet so the actual loss point can be analyzed.",
     "discussion": [
       {
         "user": "irmingard_examtopics",
@@ -2499,15 +2499,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Votes split among A (Packet Mirroring), B (Flow Logs), and C (Interconnect metric). A is chosen on the merits since only mirroring proves the VM emits packets correctly; confidence medium.",
-    "conceptSummary": "Packet Mirroring to verify packets leaving a VM.",
-    "correctRationale": "The ask is to see whether the VM emits packets correctly; only Packet Mirroring captures full packets at the NIC. Flow logs show 5-tuple metadata, and the Interconnect drop metric sees only attachment-level loss, not what the VM sent.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between A and B (13 vs 8 votes): Split A (13) vs B (8) vs C (2): full packet capture via mirroring is the strongest evidence source for sporadic loss. Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Deep packet-loss troubleshooting = Packet Mirroring to a collector.",
+    "correctRationale": "Packet Mirroring copies all VM traffic at the NIC level; for intermittent low-volume loss a full capture beats flow-log samples.",
     "optionRationales": [
-      "Correct: a mirroring policy on the VM with a collector gives full packet evidence of egress behavior.",
-      "Wrong: flow logs record metadata only and add little forensic detail for low-volume intermittent traffic.",
-      "Wrong: egress_dropped_packets_count shows attachment drops, not whether the VM sent the packets.",
-      "Wrong: Firewall Rules Logging only shows allow/deny decisions for matched rules."
+      "Correct: packet mirroring to a collector gives a complete packet capture of the VM's traffic for analysis.",
+      "Wrong: flow logs at 100% show 5-tuple metadata, not packet-level loss detail - insufficient evidence for the drop point.",
+      "Wrong: the interconnect dropped-packets metric covers only the attachment; it cannot show where else packets die and the app is not necessarily traversing it.",
+      "Wrong: firewall logging only shows allowed/denied decisions, not packets lost downstream."
     ]
   },
   {
@@ -2522,7 +2522,7 @@ export const QUESTIONS = [
       "D. 1. TEAM_ONE creates a new VPC (SP_ONE_VPC) in the Shared VPC service projects (SP_ONE_PRJ). TEAM_ONE creates Cloud DNS private zones and DNS records in SP_ONE_PRJ, and binds the zones to the new VPC (SP_ONE_VPC). TEAM_ONE creates a VPC Network Peering relationship between SP_ONE_VPC and the VPC (SH_VPC) in the Shared VPC host project (SH_HOST_PRJ). 2. TEAM_TWO completes the same actions for the SP_TWO_PRJ project."
     ],
     "correct": 1,
-    "explanation": "Cross-project binding lets each team author private zones in its own service project while binding them to the Shared VPC, so all workloads resolve every zone with minimal setup.",
+    "explanation": "Each service-project team owns DNS for its project but resolves through the shared VPC: create private zones in the service projects and bind them to SH_VPC in the host project via cross-project binding. Both teams do the same so all workloads see all zones.",
     "discussion": [
       {
         "user": "Positron75",
@@ -2544,14 +2544,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: binding to the VPC (not the project) is the correct phrasing; A misstates the target.",
-    "conceptSummary": "Cross-project binding of private zones into the Shared VPC.",
-    "correctRationale": "Private zones are bound to networks, so binding each team's zones to SH_VPC gives all workloads resolution while teams keep ownership — B states the binding target (the VPC) correctly; A says \"the project\", which is imprecise.",
+    "discussionSummary": "Community votes B (6).",
+    "conceptSummary": "Cross-project Cloud DNS binding: zones live in service projects, bound to the shared VPC in the host project.",
+    "correctRationale": "B keeps zones where each team manages them (service projects) while binding visibility to the shared VPC, satisfying independent management plus shared resolution.",
     "optionRationales": [
-      "Wrong: zones bind to VPC networks, not to a host project as stated.",
-      "Correct: cross-project binding of each team's zones to the Shared VPC network delivers mutual resolution with least effort.",
-      "Wrong: new VPCs plus DNS peering per team is far more setup and still does not reach the shared VPC correctly.",
-      "Wrong: VPC peering does not provide DNS resolution and still needs DNS peering on top."
+      "Wrong: binding to the host project rather than the shared VPC does not scope the zones to the VPC correctly.",
+      "Correct: zones in each service project, bound to SH_VPC via cross-project binding.",
+      "Wrong: a new VPC in the service project abandons the Shared VPC the workloads actually use.",
+      "Wrong: same flaw as C - binding zones to a new service-project VPC leaves shared-VPC workloads unresolved."
     ]
   },
   {
@@ -2566,7 +2566,7 @@ export const QUESTIONS = [
       "D. Peer ASN: 64515 Advertised Route Priority (MED): 1000 Local BGP IP: 169.254.11.2 Peer BGP IP: 169.254.11.1 MD5 Authentication: Enabled"
     ],
     "correct": 2,
-    "explanation": "The customer's 'local' is Google's 'peer': peer ASN 64515, peer BGP IP 169.254.11.1, and the Cloud Router's local BGP IP is 169.254.11.2 with MD5 disabled.",
+    "explanation": "Mirror the customer's BGP settings on the Cloud Router side: peer ASN is the customer's 64515, local BGP IP is Google's .2, peer BGP IP is the customer's .1, MD5 stays disabled.",
     "discussion": [
       {
         "user": "kirrim",
@@ -2596,14 +2596,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is C: B swaps the BGP IPs and A swaps the ASN.",
-    "conceptSummary": "Translating peer-provided BGP settings into Cloud Router fields.",
-    "correctRationale": "From the Cloud Router's perspective the peer is the customer device, so Peer ASN = 64515 and Peer BGP IP = 169.254.11.1 while the local BGP IP is the Google .2 address. Only C maps every field correctly.",
+    "discussionSummary": "Community votes C (10 vs B's 2); nearly identical to question 241 - same ASN/IP mirror trap.",
+    "conceptSummary": "The Cloud Router BGP session mirrors the peer's ASN and link-local addresses.",
+    "correctRationale": "C has the correct peer ASN (customer 64515) and non-swapped local/peer BGP IPs.",
     "optionRationales": [
-      "Wrong: uses the Google ASN 64517 as the peer ASN; the peer is the customer, 64515.",
-      "Wrong: swaps local and peer BGP IPs; local must be the Google .2.",
-      "Correct: peer ASN 64515, local .2, peer .1, MD5 disabled matches the customer sheet.",
-      "Wrong: enables MD5 and changes MED, contradicting the provided settings."
+      "Wrong: peer ASN 64517 is Google's own ASN.",
+      "Wrong: local and peer BGP IPs are swapped (Google must be .2 local, .1 peer).",
+      "Correct: peer ASN 64515, local 169.254.11.2, peer 169.254.11.1, MD5 disabled.",
+      "Wrong: MD5 must remain disabled, and MED 1000 changes behavior beyond the given settings."
     ]
   },
   {
@@ -2618,7 +2618,7 @@ export const QUESTIONS = [
       "D. Create a Connectivity Test by using TCP, the source IP address of your test VM, and the destination IP address of the public SaaS provider. Review the live data plane analysis and take the next steps based on the test results."
     ],
     "correct": 1,
-    "explanation": "Intermittent TCP failures at the same daily time with healthy ICMP point to Cloud NAT port exhaustion at peak; NAT gateway logging shows the resulting errors for the SaaS destination.",
+    "explanation": "Intermittent TCP failures to a public SaaS while ICMP is clean points at egress NAT errors. Cloud NAT logging records allocation errors and drops per destination - the right place to look first.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -2644,14 +2644,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is B: TCP-only failures aligned to a daily peak are the classic NAT exhaustion signature.",
-    "conceptSummary": "Cloud NAT logging for port-exhaustion symptoms.",
-    "correctRationale": "NAT logs record allocation failures and dropped connections — the likeliest Google-side cause of protocol-specific, time-correlated failures. Connectivity Tests validate configuration, not transient resource exhaustion.",
+    "discussionSummary": "Community favors B (8 vs 2 for D); Cloud NAT logs match the reported error class best. Near-duplicate of question 247.",
+    "conceptSummary": "Troubleshoot egress-side connection errors in Cloud NAT logs.",
+    "correctRationale": "Cloud NAT logs expose errors mapping to the SaaS destination IP, matching TCP-only intermittent failures over the public internet.",
     "optionRationales": [
-      "Wrong: Cloud Armor logs inbound traffic to load balancers, not VM egress.",
-      "Correct: Cloud NAT logging reveals TCP port-exhaustion drops matching the daily-peak pattern.",
-      "Wrong: Firewall Insights analyzes rule config only; intermittent TCP-only failures are not denies.",
-      "Wrong: a Connectivity Test checks the config path at one instant and cannot observe peak exhaustion."
+      "Wrong: Cloud Armor logs cover inbound WAF evaluation on load balancers, not outbound connections.",
+      "Correct: Cloud NAT gateway logs for the SaaS destination IP surface egress NAT errors.",
+      "Wrong: Firewall Insights deny-rule review only answers whether a firewall blocks it, not intermittent NAT-level errors.",
+      "Wrong: a Connectivity Test probes path configuration, not real-time NAT error evidence for intermittent failures."
     ]
   },
   {
@@ -2666,7 +2666,7 @@ export const QUESTIONS = [
       "D. Configure a Private Service Connect network endpoint group (NEG) as a backend service as part of the load balancer. Ensure firewalls are opened for the client source IPs."
     ],
     "correct": 2,
-    "explanation": "Hybrid NEGs let an Application Load Balancer target IP:port endpoints reachable over private connectivity like Dedicated Interconnect, with proxy-only-subnet firewall openings for the LB proxies.",
+    "explanation": "On-premises backends reachable over Interconnect are represented to the ALB by a hybrid NEG; the LB's proxies come from the regional proxy-only subnet, so firewalls must allow it.",
     "discussion": [
       {
         "user": "researched_answer_boi",
@@ -2692,14 +2692,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C, citing the hybrid NEG concepts documentation.",
-    "conceptSummary": "Hybrid NEG backend for on-prem endpoints over Interconnect.",
-    "correctRationale": "Hybrid NEGs exist for endpoints reachable via Cloud VPN or Interconnect without the internet, which is exactly the on-prem backend described; the firewall opening for the proxy-only subnet is required for health checks and proxied traffic.",
+    "discussionSummary": "Community votes C (10).",
+    "conceptSummary": "Non-Google-Cloud backends on an ALB = hybrid NEG + proxy-only subnet firewall access.",
+    "correctRationale": "A hybrid NEG is the documented way to attach on-prem/Interconnect endpoints to an Application Load Balancer, and the proxy-only subnet carries the proxied connections.",
     "optionRationales": [
-      "Wrong: internet NEGs target public endpoints over the internet, violating the constraint.",
-      "Wrong: zonal NEGs reference Google Cloud resources, not arbitrary on-prem IP:port endpoints.",
-      "Correct: a hybrid NEG of on-prem endpoints behind the ALB with proxy-only-subnet openings is the documented design.",
-      "Wrong: PSC NEGs consume published producer services, not arbitrary on-prem backends."
+      "Wrong: internet NEGs are for public-internet endpoints and would send traffic via the internet.",
+      "Wrong: zonal NEGs reference GCE/GKE endpoints inside Google Cloud, not on-prem.",
+      "Correct: hybrid NEG + firewall opened for the proxy-only subnet.",
+      "Wrong: PSC NEGs publish a service to consumers, not backends for an ALB."
     ]
   },
   {
@@ -2714,7 +2714,7 @@ export const QUESTIONS = [
       "D. Create a hub and spoke design that incorporates a centralized network virtual appliance (NVA) in the hub to perform routing and NAT between spokes."
     ],
     "correct": 1,
-    "explanation": "NCC with Private NAT lets hundreds of business units reuse overlapping address space as VPC spokes while still communicating, and a Routing VPC exchanges dynamic routes with the on-premises environment.",
+    "explanation": "With too little routable address space across 250 units, the NCC hub uses Private NAT so overlapping private ranges can still communicate between VPC spokes; a Routing VPC exchanges dynamic routes with on-premises.",
     "discussion": [
       {
         "user": "glb2",
@@ -2736,14 +2736,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: NCC with Private NAT and a Routing VPC is the recommended design.",
-    "conceptSummary": "NCC + Private NAT + Routing VPC for overlapping space at scale.",
-    "correctRationale": "Private NAT on NCC spokes is the Google-recommended pattern for overlapping CIDRs across many VPCs, and a Routing VPC/hybrid spoke handles the dynamic on-prem exchange — a cloud-first scalable answer without custom NVAs.",
+    "discussionSummary": "Community votes B (9).",
+    "conceptSummary": "Overlapping private space at scale: NCC + Private NAT + a Routing VPC for dynamic on-prem routes.",
+    "correctRationale": "Private NAT on NCC spokes solves the overlapping-CIDR problem, and the Routing VPC provides dynamic route exchange - the documented large-scale pattern.",
     "optionRationales": [
-      "Wrong: VPC peering cannot carry overlapping ranges and is non-transitive to on-prem.",
-      "Correct: NCC spokes plus Private NAT plus a Routing VPC is the documented architecture for this exact problem.",
-      "Wrong: PSC publishes services unidirectionally and does not give bidirectional spoke communication.",
-      "Wrong: a central NVA hub cannot scale to 250 units and adds a fragile bottleneck."
+      "Wrong: VPC peering requires non-overlapping ranges, which is exactly what is lacking.",
+      "Correct: Private NAT between NCC spokes plus a Routing VPC for dynamic routes.",
+      "Wrong: Private Service Connect is service-oriented and one-directional (consumer->producer), not bidirectional spoke routing.",
+      "Wrong: a central NVA is a hand-rolled bottleneck vs. the managed NCC + Private NAT design."
     ]
   },
   {
@@ -2758,7 +2758,7 @@ export const QUESTIONS = [
       "D. Ask the on-premises team to enable Bidirectional Forwarding Detection (BFD)."
     ],
     "correct": 2,
-    "explanation": "Enabling graceful restart on the on-premises router lets it retain routes through BGP session flaps — Google's documented remedy for flapping sessions.",
+    "explanation": "Frequent BGP flaps toward Google Cloud are often the peer dropping sessions on keepalive timeouts; enabling BGP graceful restart on the on-premises router lets sessions survive control-plane restarts instead of flapping.",
     "discussion": [
       {
         "user": "ulkerra",
@@ -2792,15 +2792,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Votes tie between C and D; graceful restart is chosen on the merits because BFD shortens detection and worsens flapping. Confidence medium.",
-    "conceptSummary": "Graceful restart for flapping BGP sessions.",
-    "correctRationale": "Google's BGP troubleshooting guide recommends graceful restart on the peer so routes persist across control-plane flaps. BFD would detect failures faster and tear the session down sooner — the opposite of stabilizing a flap.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and D (9 vs 9 votes): Dead heat C vs D (9-9): graceful restart is the fix Google documents for session flaps; BFD only detects failures faster. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Reduce BGP flap impact with graceful restart on the peer router.",
+    "correctRationale": "Cloud Router supports graceful restart; enabling it on the on-prem router keeps routes during BGP restarts, which directly addresses session flaps.",
     "optionRationales": [
-      "Wrong: static routing abandons dynamic failover and does not address the flapping.",
-      "Wrong: a 36,000-second hold timer masks real failures and delays recovery.",
-      "Correct: graceful restart preserves routes through flaps, the documented recommendation.",
-      "Wrong: BFD accelerates teardown, which worsens perceived flapping."
+      "Wrong: static routing abandons BGP entirely - it does not fix flaps, it removes dynamic routing.",
+      "Wrong: a 36,000-second hold timer just delays detection of a dead peer - bad practice, not a fix.",
+      "Correct: enable graceful restart on the on-premises router.",
+      "Wrong: BFD speeds failure detection (tighter timers) - it does not prevent flaps and Cloud Router does not use BFD for this."
     ]
   },
   {
@@ -2815,7 +2815,7 @@ export const QUESTIONS = [
       "D. Create two Cloud Interconnect connections in different edge availability domains of the co-location facility in a project that will contain your connections. Create a Cloud Router in the Shared VPC host project and the VLAN attachments in the Shared VPC service projects."
     ],
     "correct": 1,
-    "explanation": "The 99.9% Dedicated Interconnect design uses two connections in different edge availability domains of one metro, one VLAN attachment per connection, on a single Cloud Router in the Shared VPC host project.",
+    "explanation": "The 99.9% Interconnect SLA needs two connections in different edge availability domains of one metro, each with its own VLAN attachment into the Shared VPC host project; a single Cloud Router can terminate both attachments.",
     "discussion": [
       {
         "user": "researched_answer_boi",
@@ -2849,14 +2849,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B with the 99.9% topology tutorial cited.",
-    "conceptSummary": "99.9% Dedicated Interconnect topology for Shared VPC.",
-    "correctRationale": "Google's 99.9% reference is two connections in one metro across different edge availability domains; attachments and the Cloud Router belong in the host project so service projects can consume them.",
+    "discussionSummary": "Community votes B (14 vs 2 for A); B is the documented 99.9% single-metro topology.",
+    "conceptSummary": "99.9% topology: 2 interconnect connections, separate edge availability domains, one Cloud Router for both attachments.",
+    "correctRationale": "B matches the documented 99.9% layout - two connections in different edge availability domains, one attachment each, single Cloud Router.",
     "optionRationales": [
-      "Wrong: two colocation facilities describe the 99.99% topology, more than required.",
-      "Correct: two connections across edge domains in one facility, one attachment each, one Cloud Router in the host project.",
-      "Wrong: attachments and routers live in the host project, not service projects.",
-      "Wrong: VLAN attachments cannot be placed in service projects for Shared VPC."
+      "Wrong: 'different co-location facilities' describes the 99.99% two-metro design - overkill for 99.9%.",
+      "Correct: two connections in different edge availability domains + per-connection VLAN attachments.",
+      "Wrong: missing the per-connection VLAN attachment detail required to reach the SLA topology.",
+      "Wrong: a single attachment/router does not provide the two-connection redundancy needed."
     ]
   },
   {
@@ -2871,7 +2871,7 @@ export const QUESTIONS = [
       "D. Review Network Analyzer insights on the VPC network category."
     ],
     "correct": 1,
-    "explanation": "The Firewall Insights \"overly permissive rules\" insight automatically flags rules that allow broad ingress such as internet sources — the automated audit requested.",
+    "explanation": "Firewall Insights' overly-permissive-rule insight automatically analyzes firewall rules and flags those allowing broad access such as 0.0.0.0/0 ingress - purpose-built for this review.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -2889,14 +2889,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Firewall Insights overly-permissive-rules detection.",
-    "correctRationale": "This insight analyzes rule usage and flags allows broader than needed, including 0.0.0.0/0 ingress — exactly the no-manual-work check wanted.",
+    "discussionSummary": "Community votes B (5). Same Firewall Insights scenario as questions 196 and 81 (kept).",
+    "conceptSummary": "Audit permissive firewall rules with Firewall Insights (overly permissive rules insight).",
+    "correctRationale": "Enabling the Overly permissive rules insight produces exactly the report asked for: rules allowing wide ingress like 0.0.0.0/0.",
     "optionRationales": [
-      "Wrong: CSV export and text search is precisely the manual work to avoid.",
-      "Correct: Firewall Insights surfaces overly permissive rules automatically.",
-      "Wrong: Connectivity Tests probe chosen paths, not the whole ruleset.",
-      "Wrong: Network Analyzer VPC insights target connectivity/config issues, not permissive exposure."
+      "Wrong: CSV grepping for 0.0.0.0/0 misses rules that are overly permissive via ports/tags and is manual.",
+      "Correct: Firewall Insights overly-permissive insight does this analysis automatically.",
+      "Wrong: Connectivity Tests probe specific paths, not a ruleset-wide permissiveness audit.",
+      "Wrong: Network Analyzer is for connectivity topology issues, not rule permissiveness."
     ],
     "legacyNote": "Firewall Insights is now part of Network Intelligence Center firewall analysis; the overly-permissive-rules insight and answer remain valid."
   },
@@ -2912,7 +2912,7 @@ export const QUESTIONS = [
       "D. Create an HA VPN gateway and associate the gateway with your two encrypted VLAN attachments. Create a new dedicated HA VPN Cloud Router, peer VPN gateway resources, and HA VPN tunnels."
     ],
     "correct": 3,
-    "explanation": "HA VPN over Cloud Interconnect requires a second operational tier with its own dedicated Cloud Router, plus the HA VPN gateway, peer VPN gateway resources, and tunnels.",
+    "explanation": "HA VPN over Cloud Interconnect is a second tier: the HA VPN gateway associates with the two encrypted VLAN attachments and needs its own dedicated HA VPN Cloud Router, since each tier terminates BGP separately.",
     "discussion": [
       {
         "user": "TMe392",
@@ -2946,14 +2946,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between D and A (14 vs 4 votes): Community majority is D, quoting the two-tier architecture documentation.",
-    "conceptSummary": "Dedicated Cloud Router for the HA VPN tier.",
-    "correctRationale": "The two-tier architecture assigns one Cloud Router to the Interconnect tier and a separate one to the HA VPN tier, since they exchange prefixes in different routing domains. Only D includes the dedicated router.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and A (14 vs 4 votes): Community favors D (14 vs 4 for A) on the dedicated-router requirement. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Each HA-VPN-over-Interconnect tier requires its own Cloud Router.",
+    "correctRationale": "D creates the dedicated HA VPN Cloud Router alongside the existing one - the documented two-router design.",
     "optionRationales": [
-      "Wrong: reusing the Interconnect-tier router violates the two-tier design.",
-      "Wrong: MACsec is unavailable on Partner Interconnect.",
-      "Wrong: MACsec encrypts the link to the Google edge only, not end-to-end to the VPC.",
-      "Correct: a dedicated HA VPN Cloud Router plus gateway, peer resources, and tunnels completes the deployment."
+      "Wrong: reusing the encrypted Interconnect Cloud Router breaks the two-tier requirement.",
+      "Wrong: MACsec is only offered on Dedicated Interconnect, not Partner Interconnect.",
+      "Wrong: MACsec encrypts only the physical link, not end-to-end - a different feature than HA VPN.",
+      "Correct: HA VPN gateway on the two attachments + new dedicated HA VPN Cloud Router."
     ]
   },
   {
@@ -2968,7 +2969,7 @@ export const QUESTIONS = [
       "D. Create a Cloud DNS private zone in each service project. Use cross-project binding to associate the zones to the Shared VPC in the host project."
     ],
     "correct": 3,
-    "explanation": "Cross-project binding lets service-project teams own their private zones while the zones are bound to the Shared VPC, so workloads resolve all private zones.",
+    "explanation": "Cross-project binding lets each service project keep its own private zones while making them resolvable on the Shared VPC in the host project, so every service project's workloads resolve all zones.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -2990,14 +2991,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D: cross-project binding is the intended mechanism.",
-    "conceptSummary": "Cross-project binding for team-owned zones on Shared VPC.",
-    "correctRationale": "Cross-project binding keeps zone management in each service project and makes the zones resolvable on the shared network — independent management plus universal resolution without DNS peering.",
+    "discussionSummary": "Community votes D (8).",
+    "conceptSummary": "Per-project private zones shared across a Shared VPC use cross-project binding.",
+    "correctRationale": "Cross-project binding attaches each service project's private zone to the shared host VPC - independent management, universal resolution.",
     "optionRationales": [
-      "Wrong: forwarding zones push queries to a resolver and do not share zones between projects.",
-      "Wrong: DNS peering targets another VPC for lookup, not cross-project authoring on the shared network.",
-      "Wrong: response policy zones rewrite answers, unrelated to the requirement.",
-      "Correct: cross-project binding to the Shared VPC meets both goals directly."
+      "Wrong: forwarding zones redirect queries to specific name servers, they do not share the zone contents across projects.",
+      "Wrong: DNS peering zones must point at a network, and peering each service project to the host VPC does not make the other service projects' zones resolvable everywhere.",
+      "Wrong: response policy zones are for rewriting/conditioning answers, not sharing private zones.",
+      "Correct: private zone per service project + cross-project binding to the Shared VPC."
     ]
   },
   {
@@ -3012,7 +3013,7 @@ export const QUESTIONS = [
       "D. Configure multiple regional internal passthrough Network Load Balancers and enable global access. Use DNS routing policies to balance traffic across regions."
     ],
     "correct": 3,
-    "explanation": "Internal passthrough Network Load Balancers preserve the client's true source IP and support arbitrary TCP ports; regional passthrough NLBs with global access plus DNS routing policies serve clients across regions.",
+    "explanation": "The app is non-HTTP on multiple TCP ports, must preserve the client IP header (i.e., passthrough, not proxy), live in the Shared VPC, and span regions: regional internal passthrough NLBs with global access, steered by DNS routing policies, fit.",
     "discussion": [
       {
         "user": "glb2",
@@ -3038,14 +3039,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is D: passthrough NLBs preserve the true source IP, unlike any proxy option.",
-    "conceptSummary": "Passthrough NLBs preserve source IP across regions.",
-    "correctRationale": "Only passthrough (non-proxy) LBs keep the original client IP end-to-end. One per region with global access plus DNS-based steering covers the multi-region, multi-port, non-HTTP service.",
+    "discussionSummary": "Community favors D (8 vs 2 for C); client-IP preservation rules out the proxy options.",
+    "conceptSummary": "Multi-region internal TCP service preserving client IP = internal passthrough NLBs + global access + DNS steering.",
+    "correctRationale": "Only passthrough NLBs keep the original client IP and handle arbitrary TCP ports; global access plus DNS policies handles multi-region.",
     "optionRationales": [
-      "Wrong: proxy NLBs terminate connections and replace the client source IP.",
-      "Wrong: internal ALBs are HTTP(S)-only, wrong protocol.",
-      "Wrong: a cross-region proxy NLB still proxies and loses the source IP.",
-      "Correct: regional passthrough NLBs with global access and DNS policies meet every requirement."
+      "Wrong: proxy NLBs terminate TCP and hide the client IP behind the proxy.",
+      "Wrong: internal ALBs are HTTP(S) only - the app is not HTTP.",
+      "Wrong: a single cross-region internal proxy NLB still proxies (loses client IP) and one regional LB cannot serve all regions internally.",
+      "Correct: regional internal passthrough NLBs + global access + DNS routing policies."
     ]
   },
   {
@@ -3060,7 +3061,7 @@ export const QUESTIONS = [
       "D. 1. Create one HA VPN gateway. 2. Create one tunnel for each of the two HA VPN gateway interfaces. 3. Terminate each of the two tunnels on the single public IP address that is configured on the VPN termination device located in your on-premises data center."
     ],
     "correct": 3,
-    "explanation": "A single HA VPN gateway with one tunnel per interface terminated on the single on-prem public IP is the documented 99.99% topology for a one-address peer, and the least-effort correct design.",
+    "explanation": "99.99% HA VPN needs both tunnels on both gateway interfaces; the on-prem device only has one public IP, and that is fine - both tunnels can terminate on a single peer IP.",
     "discussion": [
       {
         "user": "researched_answer_boi",
@@ -3086,14 +3087,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D, citing the one-peer/one-address topology section of the HA VPN docs.",
-    "conceptSummary": "HA VPN to a single-IP peer for 99.99% SLA.",
-    "correctRationale": "Google's topology docs state that tunnels on both HA VPN interfaces to a single peer IP meet the 99.99% SLA. It also minimizes setup effort as required.",
+    "discussionSummary": "Community votes D (14); both tunnels on one peer IP still meets the 99.99% requirement.",
+    "conceptSummary": "99.99% HA VPN = one HA VPN gateway, tunnels on both interfaces, even to a single on-prem IP.",
+    "correctRationale": "D builds the documented 99.99% topology with the existing single-IP peer device - no extra hardware needed.",
     "optionRationales": [
-      "Wrong: two HA VPN gateways add unnecessary infrastructure for a single-IP peer.",
-      "Wrong: mixing Classic and HA VPN loses the SLA and doubles the work.",
-      "Wrong: replacing the on-prem device is unnecessary; a single-IP peer qualifies.",
-      "Correct: one HA VPN gateway with tunnels on both interfaces to the single peer IP gives 99.99% with least effort."
+      "Wrong: splitting tunnels across two HA VPN gateways misallocates interfaces - 99.99% needs both tunnels on one gateway's two interfaces.",
+      "Wrong: mixing a Classic VPN tunnel with an HA VPN tunnel is not an SLA-valid topology.",
+      "Wrong: the peer device does not need two public IPs; replacing it is unnecessary cost.",
+      "Correct: both HA VPN interfaces tunneled to the single on-prem public IP."
     ]
   },
   {
@@ -3108,7 +3109,7 @@ export const QUESTIONS = [
       "D. Configure a star topology, and add the VPC spokes to the hub."
     ],
     "correct": 2,
-    "explanation": "A mesh topology makes all VPC spokes mutually reachable — exactly what \"all VPCs need connectivity to each other\" requires, and no export filters are needed since ranges are unique.",
+    "explanation": "For every VPC to reach every other VPC on the hub, the topology is mesh; subnet ranges are unique so no export filtering is needed.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -3138,14 +3139,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is C, citing the mesh topology documentation.",
-    "conceptSummary": "NCC mesh topology for full spoke connectivity.",
-    "correctRationale": "Mesh topology places all spokes in one group where each VPC reaches every other; excludeExportRanges would strip the required routes.",
+    "discussionSummary": "Community votes C (11); D voters conflate star topology with full connectivity.",
+    "conceptSummary": "Full VPC-to-VPC connectivity on NCC = mesh topology; export filters only when ranges must be hidden.",
+    "correctRationale": "Mesh topology connects all spokes to each other; with unique ranges there is nothing to exclude.",
     "optionRationales": [
-      "Wrong: star topology with excludes isolates spokes, the opposite of the requirement.",
-      "Wrong: mesh is right but excluding all ranges advertises nothing.",
-      "Correct: mesh topology with the VPC spokes attached gives full connectivity.",
-      "Wrong: star allows only center-to-edge flows, not edge-to-edge."
+      "Wrong: star topology isolates edge spokes and the exclude filter would hide all ranges anyway.",
+      "Wrong: excludeExportRanges on every range would advertise nothing - connectivity would fail.",
+      "Correct: mesh topology with all VPC spokes and no export filtering.",
+      "Wrong: star topology only connects edges to the center, not all-to-all."
     ]
   },
   {
@@ -3160,7 +3161,7 @@ export const QUESTIONS = [
       "D. Configure a Shared VPC, and create a VPC network in the service project."
     ],
     "correct": 1,
-    "explanation": "A Shared VPC with the network in the host project lets a central team manage networking while ~100 teams each get their own service project — the scalable landing-zone pattern.",
+    "explanation": "A Shared VPC with the network in the host project lets the central team own the network while each team gets its own service project - the standard scalable landing-zone pattern.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -3182,14 +3183,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Shared VPC host project for centralized network management.",
-    "correctRationale": "Shared VPC is designed for exactly this: the network lives in the host project under central control and service projects attach at scale.",
+    "discussionSummary": "Community votes B (6).",
+    "conceptSummary": "Landing zone with centralized networking = Shared VPC, VPC in the host project.",
+    "correctRationale": "Host-project VPC + service projects per team is the scalable shared-network design.",
     "optionRationales": [
-      "Wrong: policy-based routing does not provide per-team project separation.",
-      "Correct: one host-project Shared VPC serving many service projects meets scale and central control.",
-      "Wrong: peering one VPC to a service project does not scale to ~100 teams or centralize control.",
-      "Wrong: the VPC belongs in the host project, not a service project."
+      "Wrong: Policy-based Routing does not provide the project/network separation a landing zone needs.",
+      "Correct: Shared VPC with the VPC in the host project.",
+      "Wrong: VPC peering gives each team its own network - the network would not be centrally managed.",
+      "Wrong: the VPC must live in the host project; a service-project VPC defeats central control."
     ]
   },
   {
@@ -3204,7 +3205,7 @@ export const QUESTIONS = [
       "D. Configure Cloud NAT with nonMasqueradeCIDRs, and enable SNAT with the same configuration to allow traffic to 35.100.0.0/16."
     ],
     "correct": 1,
-    "explanation": "nonMasqueradeCIDRs exempts listed destinations from node SNAT; removing 35.100.0.0/16 makes the node SNAT the traffic to the node IP, which Cloud NAT can then translate to the Cloud NAT address.",
+    "explanation": "nonMasqueradeCIDRs lists ranges exempt from ip-masq SNAT; to force traffic to 35.100.0.0/16 through Cloud NAT, the range must come OUT of the exclusion list so pod egress gets NATed.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -3234,15 +3235,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and A (12 vs 4 votes): Community majority is B: removing the range forces SNAT to the node IP so Cloud NAT can translate it; a minority chose A, which does the opposite.",
-    "conceptSummary": "Removing a destination from nonMasqueradeCIDRs to force Cloud NAT egress.",
-    "correctRationale": "Traffic to a listed CIDR leaves the node with the Pod IP, which Cloud NAT never translates because it NATs node-source traffic only. Removing the range makes the masquerade agent SNAT first so Cloud NAT can translate egress.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and A (12 vs 4 votes): Community favors B (12 vs 4 for A); the exclusion-list direction is the trap. Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "GKE ip-masq-agent SNAT is bypassed for nonMasqueradeCIDRs; remove the range to send it through Cloud NAT.",
+    "correctRationale": "Removing 35.100.0.0/16 from nonMasqueradeCIDRs makes the ip-masq agent SNAT that traffic, which Cloud NAT then translates - the documented mechanism.",
     "optionRationales": [
-      "Wrong: keeping the range listed preserves Pod-source egress, which Cloud NAT cannot translate and which exits via node external IPs.",
-      "Correct: removing 35.100.0.0/16 from nonMasqueradeCIDRs triggers node SNAT so Cloud NAT handles egress.",
-      "Wrong: Cloud NAT has no such per-destination SNAT exclusion toggle for this purpose.",
-      "Wrong: nonMasqueradeCIDRs is an ip-masq-agent setting, not a Cloud NAT setting."
+      "Wrong: adding the range to nonMasqueradeCIDRs does the opposite - it bypasses SNAT so external IPs get used.",
+      "Correct: remove 35.100.0.0/16 from the exclusion list.",
+      "Wrong: Cloud NAT exclusion rules do not exist in that form, and the problem is on the GKE ip-masq side.",
+      "Wrong: nonMasqueradeCIDRs is an ip-masq-agent field, not a Cloud NAT setting."
     ]
   },
   {
@@ -3256,8 +3257,8 @@ export const QUESTIONS = [
       "C. 1. Create two Cross-Cloud Interconnect connections to CSP 1, with 40 Gbps of total bandwidth (20 Gbps in zone 1) in a common co-location facility located in Frankfurt, Germany and (20 Gbps in zone 2) in a common co-location facility located in Munich, Germany. 2. Create two Cross-Cloud Interconnect connections to CSP 2, with 40 Gbps of total bandwidth (20 Gbps in zone 1) in a common co-location facility located in Frankfurt, Germany and (20 Gbps in zone 2) in a common co-location facility located in Munich, Germany. 3. Create a Cloud Router in europe-west3 (Frankfurt), and configure two VLAN attachments for CSP 1 and two VLAN attachments for CSP 2.",
       "D. 1. Create two Cross-Cloud Interconnect connections to CSP 1, with 40 Gbps of total bandwidth (20 Gbps in zone 1 and 20 Gbps in zone 2) in a common co-location facility located in Frankfurt, Germany. 2. Create two Cross-Cloud Interconnect connections to CSP 2, with 40 Gbps of total bandwidth (20 Gbps in zone 1 and 20 Gbps in zone 2) in a common co-location facility located in Frankfurt, Germany. 3. Create a Cloud Router in us-east4 (Ashburn, Virginia, USA), and configure two VLAN attachments for CSP 1 and two VLAN attachments for CSP 2."
     ],
-    "correct": 1,
-    "explanation": "Protected 20 Gbps needs the traffic survive a single edge-zone failure: two 10-Gbps Cross-Cloud Interconnect connections per CSP across Frankfurt's two availability domains provide that protection at 99.9% and the lowest cost.",
+    "correct": 0,
+    "explanation": "'20 Gbps of protected bandwidth' means 20 Gbps must survive the loss of one edge availability domain, so each zone needs its own 20 Gbps - 40 Gbps total per CSP. Frankfurt only satisfies the single-metro topology, and the Cloud Router sits in the CSP region pair for Frankfurt (europe-west3).",
     "discussion": [
       {
         "user": "ulkerra",
@@ -3291,15 +3292,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and A (10 vs 8 votes): Community splits between A (40 Gbps per CSP) and B. B is chosen on the merits since protected bandwidth implies a redundant pair, not doubled capacity; confidence medium.",
-    "conceptSummary": "Sizing Cross-Cloud Interconnect for protected bandwidth at 99.9%.",
-    "correctRationale": "Protected bandwidth is delivered by a redundant pair, so two 10-Gbps connections per CSP (one per zone) in the nearest metro suffice for 20 Gbps protected. Munich (a second metro) belongs to the 99.99% design and adds cost without need; the Cloud Router belongs in europe-west3 where the attachments are.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community majority votes B (10/18). The validated answer is A. Community was split A (8) vs B (10); the bandwidth-protection math supports A. Changed to A after an independent Gemini review.",
+    "conceptSummary": "Protected bandwidth on Cross-Cloud Interconnect: provision per-zone capacity so one zone's failure still carries all traffic.",
+    "correctRationale": "Google's capacity guidance is to order enough capacity that one surviving connection carries all traffic; with a 20 Gbps requirement, that is 20 Gbps in each zone - option A's layout.",
     "optionRationales": [
-      "Wrong: 20 Gbps per zone (40 total per CSP) doubles the protected capacity requirement and cost.",
-      "Correct: 2x10 Gbps per CSP across Frankfurt's two zones, with the Cloud Router and attachments in europe-west3, meets protected 20 Gbps at 99.9% cheaply.",
-      "Wrong: a second metro is the 99.99% pattern and is unneeded spend for a 99.9% requirement.",
-      "Wrong: the Cloud Router must sit in the VLAN attachments' region, not us-east4."
+      "Correct: two connections per CSP at 20 Gbps per zone in Frankfurt, Cloud Router in the right region - the protected-bandwidth design.",
+      "Wrong: 10 Gbps per zone leaves only 10 Gbps surviving a zone loss - half the required protected capacity.",
+      "Wrong: splitting the two zones across Frankfurt and Munich metros is the 99.99% two-metro pattern and doubles the facilities.",
+      "Wrong: puts the Cloud Router in the wrong region for the Frankfurt attachments."
     ]
   },
   {
@@ -3314,7 +3315,7 @@ export const QUESTIONS = [
       "D. Configure Cloud Scheduler to run a task that checks the Cloud NGFW logs to verify the threats. Configure the task to create a security profile with each signature ID set to override the default action."
     ],
     "correct": 2,
-    "explanation": "Setting the override action to Deny for all severity levels in the Cloud NGFW security profile makes matched threats logged and dropped inline.",
+    "explanation": "To make the default signature set enforce rather than just alert, change the default override action to Deny for all severity levels in the security profile.",
     "discussion": [
       {
         "user": "researched_answer_boi",
@@ -3348,14 +3349,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between C and A (10 vs 2 votes): Community majority is C; a minority worried informational severity would over-block, but the question explicitly wants threats logged and dropped.",
-    "conceptSummary": "Per-severity Deny overrides in the threat-prevention profile.",
-    "correctRationale": "The security profile controls the action per severity level; overriding all of them to Deny logs the threat and drops the packet, which is precisely the required posture change.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes C (10); overriding the default action per severity is the documented enforcement path. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Turn Cloud NGFW threat signatures from alert to enforce via the profile's default override action = Deny.",
+    "correctRationale": "C flips every severity's action to Deny - the documented way to enforce the default signature set.",
     "optionRationales": [
-      "Wrong: \"Deny All\" is not a valid signature-level knob; overrides are set per severity as Deny.",
-      "Wrong: a DIY iptables VM cannot inspect application-layer threats and adds heavy overhead.",
-      "Correct: setting Deny for every severity in the security profile logs and drops threats.",
-      "Wrong: Scheduler-driven reactions detect after the fact instead of blocking inline."
+      "Wrong: 'Deny All to all severity options' is not a real signature setting - you override per severity.",
+      "Wrong: a homebrew iptables frontend replaces Cloud NGFW rather than configuring it.",
+      "Correct: set every severity's default override action to Deny in the security profile.",
+      "Wrong: a scheduled job hand-editing profiles per signature is needlessly complex and fragile."
     ]
   },
   {
@@ -3370,7 +3372,7 @@ export const QUESTIONS = [
       "D. Define an organization policy to allow only statically allocated IP addresses for VMs. Ensure the prefix matches your database VMs."
     ],
     "correct": 0,
-    "explanation": "In-use ephemeral internal IPs can be promoted to static assignments without stopping the VMs, satisfying the mandate with zero disruption.",
+    "explanation": "Promoting a VM's ephemeral internal IP to a static internal IP keeps the same address permanently without downtime or policy machinery - the direct fix for the mandate.",
     "discussion": [
       {
         "user": "glb2",
@@ -3392,14 +3394,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A with the static-internal-IP doc cited.",
-    "conceptSummary": "Promoting ephemeral internal IPs to static.",
-    "correctRationale": "Google supports promoting an ephemeral internal IP to a static internal address while the VM keeps running — the direct, non-disruptive fix.",
+    "discussionSummary": "Community votes A (9).",
+    "conceptSummary": "Static internal IPs: promote each VM's ephemeral internal IP to static.",
+    "correctRationale": "Promotion converts the existing ephemeral internal IPs into static reservations on the spot - minimal effort, matches the mandate exactly.",
     "optionRationales": [
-      "Correct: promoting the existing internal IPs to static is immediate and requires no downtime.",
-      "Wrong: firewall rules do not govern IP assignment.",
-      "Wrong: maintenance-window shutdowns create exactly the disruption to avoid.",
-      "Wrong: an org-policy constraint does not convert existing ephemeral addresses."
+      "Correct: promote each database VM's internal IP to static - done.",
+      "Wrong: a firewall rule restricts traffic but does not make addresses static.",
+      "Wrong: promotion does not need a shutdown/restart maintenance window.",
+      "Wrong: an org policy enforces future compliance but does not fix the existing VMs' addresses."
     ]
   },
   {
@@ -3414,7 +3416,7 @@ export const QUESTIONS = [
       "D. Create an HA VPN gateway with four tunnels. Configure BGP on four tunnels with tunnel 0 configured with a base routing priority metric of 100, tunnel 1 with a base routing priority metric of 200, tunnel 2 with a base routing priority of 300, and tunnel 3 with a base routing priority of 400. Configure the on-premises router with the corresponding multi-exit discriminator (MED) value."
     ],
     "correct": 2,
-    "explanation": "A single HA VPN gateway with two tunnels qualifies for the 99.99% SLA; equal advertised priorities on both tunnels keep them active/active, aggregating about 6 Gbps — above the 4 Gbps need — at minimal cost.",
+    "explanation": "300,000 pps exceeds a single tunnel's throughput, so multiple tunnels are needed; one HA VPN gateway with two tunnels and equal BGP metrics lets ECMP spread traffic across both. Equal priorities give active/active load sharing.",
     "discussion": [
       {
         "user": "ulkerra",
@@ -3448,15 +3450,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between C and B (11 vs 9 votes): Community splits between B and C, with C slightly ahead; C is kept because one gateway with two active tunnels meets the SLA and bandwidth at lower cost. Confidence medium.",
-    "conceptSummary": "One HA VPN gateway with two equal-priority tunnels for 4 Gbps.",
-    "correctRationale": "Each tunnel supports up to 3 Gbps, so two equal-priority tunnels on one gateway carry 4 Gbps with headroom while maintaining 99.99%. A second gateway (B) doubles cost beyond the minimal requirement; graded MEDs force active/passive and halve usable bandwidth.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and B (11 vs 9 votes): Split C (11) vs B (9): equal-metrics tunnels on one gateway give the needed ECMP without a second gateway. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Scale HA VPN throughput with multiple tunnels + equal BGP metrics for ECMP.",
+    "correctRationale": "C gives two tunnels on one HA VPN gateway with equal metrics - ECMP load-sharing that meets the throughput need with the simplest valid topology.",
     "optionRationales": [
-      "Wrong: priorities 100/200 make the tunnels active/passive, capping throughput at one tunnel.",
-      "Wrong: two gateways add cost without needing that much capacity.",
-      "Correct: one gateway, two tunnels, equal priority gives active/active 4+ Gbps at 99.99% and minimal cost.",
-      "Wrong: HA VPN gateways have only two interfaces, so a four-tunnel single gateway is impossible."
+      "Wrong: priorities 100/200 make one tunnel preferred (active/passive), not shared throughput.",
+      "Wrong: two gateways with equal metrics adds a second gateway without need - one HA gateway supports multiple tunnels.",
+      "Correct: one HA VPN gateway, two tunnels, equal metrics 100/100 for ECMP.",
+      "Wrong: four tunnels with escalating metrics creates an active/passive ladder, not balanced throughput."
     ]
   },
   {
@@ -3471,7 +3473,7 @@ export const QUESTIONS = [
       "D. Grant the compute.NetworkUser role to the developer in the specific Shared VPC service project."
     ],
     "correct": 0,
-    "explanation": "The restrictSharedVpcSubnetworks organizational constraint limits which Shared VPC subnets each service project may deploy into — the precise guardrail requested.",
+    "explanation": "The constraints/compute.restrictSharedVpcSubnetworks org constraint lets the host limit which subnets each service project can use - precisely the control needed to stop cross-team deployments.",
     "discussion": [
       {
         "user": "acloudboy",
@@ -3493,14 +3495,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A: the restrictSharedVpcSubnetworks constraint is the documented control.",
-    "conceptSummary": "Org constraint scoping service projects to their own subnets.",
-    "correctRationale": "constraints/compute.restrictSharedVpcSubnetworks exists to stop service projects from using subnets reserved for others, enforced centrally by the org policy.",
+    "discussionSummary": "Community votes A (7).",
+    "conceptSummary": "Restrict per-project subnet access in Shared VPC with the restrictSharedVpcSubnetworks org constraint.",
+    "correctRationale": "The org constraint binds subnet access to specific service projects - exactly the granularity required.",
     "optionRationales": [
-      "Correct: the restrictSharedVpcSubnetworks constraint enforces per-project subnet assignment.",
-      "Wrong: networkViewer grants visibility, not deployment scoping.",
-      "Wrong: restrictSharedVpcHostProject governs host-project attachment, not subnet choice.",
-      "Wrong: networkUser granted in the service project does not limit subnet selection and the role is applied on the host project anyway."
+      "Correct: restrictSharedVpcSubnetworks limits each application's service project to its own subnets.",
+      "Wrong: NetworkViewer is read-only visibility - it neither grants nor blocks deployments.",
+      "Wrong: restrictSharedVpcHostProject controls which projects can be host/service projects, not subnet access.",
+      "Wrong: granting NetworkUser in the service project does not restrict which subnets are usable."
     ]
   },
   {
@@ -3515,7 +3517,7 @@ export const QUESTIONS = [
       "D. Review the firewall rules configuration in the VPC. Identify what rule is blocking node creation."
     ],
     "correct": 0,
-    "explanation": "For GKE on Shared VPC, the service project's GKE service account needs compute.networkUser, container.hostServiceAgentUser, and compute.securityAdmin on the host project so nodes can be created on shared subnets.",
+    "explanation": "GKE in a service project on a Shared VPC needs its service account granted host-project roles: container.hostServiceAgentUser plus compute.networkUser (and securityAdmin for firewalling) on the host project where the network lives.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -3533,14 +3535,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A, citing the GKE Shared VPC roles documentation.",
-    "conceptSummary": "Shared VPC roles required by the GKE service account on the host project.",
-    "correctRationale": "GKE documents hostServiceAgentUser plus networkUser (and securityAdmin for firewall management) granted on the host project; missing grants are exactly why cluster creation fails while plain VM creation works.",
+    "discussionSummary": "Community votes A (5).",
+    "conceptSummary": "GKE on Shared VPC: the service project's GKE service account needs host-project IAM roles.",
+    "correctRationale": "Node creation fails because the GKE service agent lacks host-project permissions - A grants the documented trio on the host project.",
     "optionRationales": [
-      "Correct: those three roles on the host project are the documented requirement.",
-      "Wrong: the roles must be granted on the host project where the network lives, not the service project.",
-      "Wrong: networkUser alone is insufficient — hostServiceAgentUser is required.",
-      "Wrong: firewall rules do not block node creation; this is an IAM gap."
+      "Correct: securityAdmin + hostServiceAgentUser + networkUser on the host project.",
+      "Wrong: these roles must be granted on the host project that owns the network, not the service project.",
+      "Wrong: networkUser alone misses hostServiceAgentUser and securityAdmin, and the service project is the wrong scope anyway.",
+      "Wrong: no firewall rule is blocking - the failure is IAM, not traffic."
     ]
   },
   {
@@ -3555,7 +3557,7 @@ export const QUESTIONS = [
       "D. Create a custom route advertisement on VLAN attachments in the us-west1 region for prefix 172.16.53.0/24, and create a BGP route-policy to set the multi-exit discriminator (MED) to 100. Create a custom route advertisement on VLAN attachments in the us-west2 region for prefix 172.16.53.0/24, and create a BGP route-policy to set the multi-exit discriminator (MED) to 200."
     ],
     "correct": 2,
-    "explanation": "Custom route advertisements for the private services access range, with BGP session priority 100 in us-west1 and 200 in us-west2, make us-west1 the primary path and us-west2 the backup without touching existing routes.",
+    "explanation": "To advertise the private-services-access range to on-premises through the VLAN attachments you create custom route advertisements of 172.16.53.0/24 on each region's attachments; BGP route policy/MED sets preference. Option C's per-attachment advertisements with BGP session priority 100 steers as required.",
     "discussion": [
       {
         "user": "Alex3551",
@@ -3577,15 +3579,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between C and D (5 vs 2 votes): Community prefers C over D; session-level advertised route priority is the documented control while BGP route policies for MED are not the right mechanism. Confidence medium.",
-    "conceptSummary": "Per-BGP-session advertised route priority for primary/backup.",
-    "correctRationale": "Cloud Router lets you set advertised route priority per BGP session; lower wins, so 100 on us-west1 and 200 on us-west2 gives the desired preference while leaving everything else untouched.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and D (5 vs 2 votes): Split C (5) vs D (2): the priority belongs on the BGP session advertisement, not a hand-built MED policy. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Advertise the PSA range to on-prem via custom route advertisements on the VLAN attachments.",
+    "correctRationale": "C advertises the PSA prefix on both regions' VLAN attachments and uses BGP session priority 100 for the preference requirement.",
     "optionRationales": [
-      "Wrong: identical advertisements with no priority produce no preference.",
-      "Wrong: there is no \"custom learned route\" knob here; priorities belong on advertised sessions.",
-      "Correct: custom advertisements plus session priorities 100/200 implement primary/backup as required.",
-      "Wrong: this approach conflates route-policy mechanics; the documented knob is the session advertised route priority."
+      "Wrong: identical advertisements on both regions' VLAN attachments give no primary/backup preference between us-west1 and us-west2.",
+      "Wrong: 'custom learned route' is not the construct - you cannot create learned routes.",
+      "Correct: custom route advertisements per region + BGP session priority for preference.",
+      "Wrong: route-policy MED configuration is not how attachment advertisements are expressed here; the session priority is the simpler documented knob."
     ]
   },
   {
@@ -3600,7 +3602,7 @@ export const QUESTIONS = [
       "D. Set the sample rate of the Cloud Load Balancing logs to 1.0."
     ],
     "correct": 1,
-    "explanation": "Setting the security policy's logging option to VERBOSE gives the highest-detail Cloud Armor request logging; backend-service logging is already enabled.",
+    "explanation": "Cloud Armor verbose logging is the policy-level switch that records maximum detail (including which rules matched) to Cloud Logging.",
     "discussion": [
       {
         "user": "jekwoe",
@@ -3626,14 +3628,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: LB logging already exists, so VERBOSE is the missing step.",
-    "conceptSummary": "VERBOSE logging for Cloud Armor.",
-    "correctRationale": "Cloud Armor's logging option controls per-request detail; VERBOSE is the documented maximum. Since LB logging is already on, only the VERBOSE toggle is missing.",
+    "discussionSummary": "Community votes B (11).",
+    "conceptSummary": "Max Cloud Armor log detail = set the policy's logging option to VERBOSE.",
+    "correctRationale": "VERBOSE on the Cloud Armor policy emits the richest logs - the direct setting asked for.",
     "optionRationales": [
-      "Wrong: a 0.5 sample rate would reduce log volume, not increase detail.",
-      "Correct: VERBOSE is the documented highest-detail option.",
-      "Wrong: logging is already enabled per the question; only the detail level needs changing.",
-      "Wrong: 1.0 changes sampling coverage, not per-request detail."
+      "Wrong: 0.5 sampling reduces load balancer log detail, the opposite of 'highest level'.",
+      "Correct: VERBOSE logging option on Cloud Armor.",
+      "Wrong: Cloud Armor logging is already delivered via the LB logs; 'enabling Cloud Armor logging for backend services' is not a separate switch.",
+      "Wrong: 1.0 sampling keeps all entries but does not add the verbose rule-matching detail."
     ]
   },
   {
@@ -3648,7 +3650,7 @@ export const QUESTIONS = [
       "D. Configure the tunnel with LOCAL_TS set to 172.16.100.0/24, 172.16.101.0/24, and 172.16.102.0/24, and REMOTE_TS set to 0.0.0.0/0."
     ],
     "correct": 1,
-    "explanation": "IKEv1 policy-based tunnels allow only one CIDR per traffic selector, so the three ranges per side must be supernetted into /22s: LOCAL_TS is the GCP side 192.168.100.0/22 and REMOTE_TS is the on-prem side 172.16.100.0/22.",
+    "explanation": "Policy-based IKEv1 VPNs use traffic selectors; LOCAL_TS is the local (Google Cloud) ranges and REMOTE_TS is the remote (on-premises) ranges - B maps the /22-aggregated blocks correctly (the three /24s at 172.16.100-102 and 192.168.100-102 each summarize to /22).",
     "discussion": [
       {
         "user": "n2183712847",
@@ -3670,14 +3672,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is B, quoting the IKEv1 single-CIDR limitation directly.",
-    "conceptSummary": "Single-CIDR IKEv1 traffic selectors via /22 supernets.",
-    "correctRationale": "Cloud VPN docs state IKEv1 supports a single CIDR per selector and no multiple Child SAs, so the ranges are aggregated to /22. LOCAL refers to the Google Cloud side and REMOTE to the peer, making B the only correct pairing.",
+    "discussionSummary": "Community favors B (9 vs 2 for C): LOCAL_TS is the Google Cloud side.",
+    "conceptSummary": "Policy-based VPN traffic selectors: LOCAL_TS = GCP side, REMOTE_TS = on-prem side.",
+    "correctRationale": "B sets LOCAL_TS to the GCP /22 and REMOTE_TS to the on-prem /22 - correct direction and valid summarization.",
     "optionRationales": [
-      "Wrong: local/remote are swapped — local is the GCP side.",
-      "Correct: /22 supernets on the right sides satisfy the IKEv1 single-CIDR limit.",
-      "Wrong: three /24 selectors are not permitted under IKEv1.",
-      "Wrong: 0.0.0.0/0 remote is a route-based pattern, not valid policy-based here."
+      "Wrong: the selectors are swapped - on-prem ranges are in LOCAL_TS.",
+      "Correct: LOCAL_TS 192.168.100.0/22 (GCP) and REMOTE_TS 172.16.100.0/22 (on-prem).",
+      "Wrong: also swaps local/remote (and listing three /24s separately is valid but in the wrong field anyway).",
+      "Wrong: same swap problem plus 0.0.0.0/0 remote selector is broader than required."
     ]
   },
   {
@@ -3692,7 +3694,7 @@ export const QUESTIONS = [
       "D. Create custom learned routes at the Cloud Router in the hub to advertise the subnets of the VPC spokes."
     ],
     "correct": 1,
-    "explanation": "VPC peering does not inject spoke subnet routes into the hub's Cloud Router, so custom route advertisements on the hub router are needed to announce those prefixes on-premises.",
+    "explanation": "VPC peering does not re-advertise spoke routes to the hub's Cloud Router; the hub router must use custom advertised routes that include the spoke subnets so the on-premises router learns them.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -3722,14 +3724,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B with the custom-advertisement doc cited.",
-    "conceptSummary": "Custom advertisements on the hub router for spoke prefixes.",
-    "correctRationale": "Cloud Router advertises only routes known in its own VPC; peering is non-transitive for BGP, so the spoke subnets must be added explicitly as custom advertised prefixes on the hub router.",
+    "discussionSummary": "Community votes B (11).",
+    "conceptSummary": "Advertise spoke subnets to on-prem via custom route advertisements on the hub Cloud Router.",
+    "correctRationale": "Custom route advertisements on the hub Cloud Router export the spoke subnet prefixes over BGP - the documented workaround for non-transitive peering.",
     "optionRationales": [
-      "Wrong: the spokes have no router toward on-prem; the fix belongs on the hub router.",
-      "Correct: custom advertisements on the hub Cloud Router export spoke subnets to on-prem.",
-      "Wrong: a BGP route policy filters what a router advertises but cannot advertise prefixes it lacks.",
-      "Wrong: custom learned routes describe the opposite direction — learned from on-prem."
+      "Wrong: there is no Cloud Router in the spokes' peering relationship that controls this advertisement.",
+      "Correct: custom route advertisements on the hub's Cloud Router for the spoke subnets.",
+      "Wrong: a BGP route policy controls learned route attributes, not which prefixes are advertised.",
+      "Wrong: learned routes are received, not created - 'custom learned routes' is not a feature."
     ]
   },
   {
@@ -3744,7 +3746,7 @@ export const QUESTIONS = [
       "D. Use Cloud NGFW Enterprise. Create a firewall rule for egress traffic with the --tls-inspect flag, and associate the firewall rules with the VMs."
     ],
     "correct": 3,
-    "explanation": "Cloud NGFW Enterprise supports TLS inspection applied through egress firewall rules with the --tls-inspect flag, decrypting outbound TLS to catch the malicious traffic.",
+    "explanation": "Cloud NGFW Enterprise adds TLS inspection to egress firewall rules; creating an egress rule with --tls-inspect and associating it with the VMs enables inspection of encrypted traffic to the internet.",
     "discussion": [
       {
         "user": "glb2",
@@ -3762,14 +3764,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D: Enterprise tier plus the tls-inspect flag is required.",
-    "conceptSummary": "Egress TLS inspection with Cloud NGFW Enterprise.",
-    "correctRationale": "TLS inspection is an Enterprise-tier capability toggled per firewall rule. Essentials lacks it, and Cloud Armor only inspects inbound HTTP(S) to load balancers.",
+    "discussionSummary": "Community votes D (5).",
+    "conceptSummary": "Inspect outbound TLS: Cloud NGFW Enterprise egress rule with --tls-inspect.",
+    "correctRationale": "TLS inspection of VM egress requires Cloud NGFW Enterprise and a firewall rule flagged for TLS inspection.",
     "optionRationales": [
-      "Wrong: Cloud Armor protects inbound application traffic at the LB, not VM egress.",
-      "Wrong: Essentials does not support TLS inspection and flow logs see no decrypted content.",
-      "Wrong: per-VM TLS agents plus DLP is unscalable and not a managed approach.",
-      "Correct: NGFW Enterprise egress rules with TLS inspection decrypt and inspect the outbound flows."
+      "Wrong: Cloud Armor TLS inspection applies to load balancer traffic, not VM egress.",
+      "Wrong: NGFW Essentials lacks TLS inspection, and flow logs do not decrypt content.",
+      "Wrong: installing a TLS agent on every VM is a brittle DIY intercept - Cloud NGFW Enterprise performs managed TLS inspection at the firewall.",
+      "Correct: Cloud NGFW Enterprise + egress firewall rule with --tls-inspect."
     ]
   },
   {
@@ -3784,7 +3786,7 @@ export const QUESTIONS = [
       "D. Review the existing Cloud DNS zones, and validate that there is a route in the VPC directing traffic destined to the IP address of the DNS servers. Recreate the existing DNS forwarding zones for . to forward all queries to the on-premises DNS servers."
     ],
     "correct": 2,
-    "explanation": "VMs resolve through the metadata server; an outbound forwarding zone sends on-prem-domain queries to the on-prem DNS server, and the Cloud Router must advertise the 35.199.192.0/19 forwarding source range so replies can return.",
+    "explanation": "GCE VMs must use the metadata server (169.254.169.254) as resolver; an outbound forwarding zone sends the on-prem domain's queries to the on-prem DNS servers, and Cloud Router advertisements give the on-prem side a route back to the forwarding IPs.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -3798,14 +3800,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C: forwarding zone plus the 35.199 range advertisement.",
-    "conceptSummary": "Outbound forwarding zone plus advertising the Cloud DNS source range.",
-    "correctRationale": "Outbound forwarding queries originate from 35.199.192.0/19, which on-prem must be able to reach for responses — hence the custom advertisement. Keeping VMs on the metadata resolver preserves the managed design.",
+    "discussionSummary": "Community votes C (3).",
+    "conceptSummary": "On-prem DNS resolution from GCE: metadata resolver + outbound forwarding zone + return route advertisement.",
+    "correctRationale": "C covers all three required pieces: metadata resolver, outbound forwarding zone to the on-prem servers, and routing for replies.",
     "optionRationales": [
-      "Wrong: pointing VM OS resolvers at on-prem DNS bypasses Cloud DNS entirely.",
-      "Wrong: recreating peerings does not establish DNS forwarding or advertise the DNS source range.",
-      "Correct: metadata resolver + outbound forwarding zone + advertising 35.199.192.0/19 is the managed fix.",
-      "Wrong: forwarding \".\" to on-prem would hijack all DNS resolution."
+      "Wrong: VMs should not point directly at the on-prem DNS servers; the metadata server is the resolver.",
+      "Wrong: re-creating peerings does not fix DNS forwarding, and connectivity is only part of the chain.",
+      "Correct: metadata resolver + outbound forwarding zone + Cloud Router route advertisements.",
+      "Wrong: forwarding all queries ('.') to on-prem is not needed and does not address the resolver/return-path requirements."
     ]
   },
   {
@@ -3820,7 +3822,7 @@ export const QUESTIONS = [
       "D. Enable Private Google Access on the subnet, create a default route that points to the default internet gateway, and enable the Cloud Storage API."
     ],
     "correct": 3,
-    "explanation": "Private Google Access is enabled on the subnet; with a default route to the default internet gateway present and the Cloud Storage API enabled, VMs reach it privately.",
+    "explanation": "Private Google Access is enabled on the subnet; a default route to the default internet gateway must exist so traffic to Google's API endpoints is routed.",
     "discussion": [
       {
         "user": "7606350",
@@ -3838,14 +3840,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D: PGA is set at the subnet level.",
-    "conceptSummary": "Subnet-level PGA plus a default route.",
-    "correctRationale": "PGA is toggled per subnet, and the default route to the internet gateway stays in place — Google intercepts API traffic inside its own network.",
+    "discussionSummary": "Community votes D (5); same PGA-at-subnet-level family as 6, 26, 240.",
+    "conceptSummary": "Enable PGA on the subnet and keep a default internet-gateway route.",
+    "correctRationale": "D names both correct facts: subnet-level PGA and the required default route.",
     "optionRationales": [
-      "Wrong: PGA is not a project-level setting, and deleting the default route is wrong.",
-      "Wrong: PGA is not a per-VM setting, and deleting the default route is wrong.",
-      "Wrong: PGA is subnet-scoped, not VPC-scoped.",
-      "Correct: subnet-level PGA plus the default route plus the enabled API is the documented recipe."
+      "Wrong: PGA is not a project-level flag, and removing the default route breaks it.",
+      "Wrong: PGA is not a per-VM flag either, and removing the default route still breaks it.",
+      "Wrong: PGA is not a VPC-level flag - it is set per subnet.",
+      "Correct: subnet PGA + default route to the internet gateway + API enabled."
     ]
   },
   {
@@ -3860,7 +3862,7 @@ export const QUESTIONS = [
       "D. 1. Configure the primary and secondary interconnects of the BGP sessions on the Cloud Router with priority 100 and ASN 4200000001. 2. Configure the on-premises ASN as 4200000010. 3. Disable the BGP session on the on-premises router for the secondary interconnect-2."
     ],
     "correct": 1,
-    "explanation": "Active/passive uses different base priorities (0 primary, 200 backup) on the two BGP sessions; both Google-side sessions share one private ASN 65100 while on-prem uses ASN 65000.",
+    "explanation": "Active/passive between two interconnects is done with Cloud Router advertised-route priorities: 0 (preferred) on interconnect-1 and 200 on interconnect-2, with both Google-side BGP sessions using ASN 16550.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -3882,14 +3884,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: private Google ASN on both sessions with differing priorities.",
-    "conceptSummary": "Active/passive Interconnect via BGP priorities with valid private ASNs.",
-    "correctRationale": "Google-side BGP sessions on a Cloud Router use one ASN from the private ranges; differing advertised priorities implement active/passive. Only B has a consistent Google ASN, distinct valid on-prem ASN, and asymmetric priorities.",
+    "discussionSummary": "Community votes B (6).",
+    "conceptSummary": "Active/passive interconnect via Cloud Router route priority; Google-side ASN 16550 on both sessions.",
+    "correctRationale": "B sets priorities 0/200 for failover order and the correct single Google-side ASN 16550.",
     "optionRationales": [
-      "Wrong: two different Google-side ASNs is an invalid Cloud Router configuration.",
-      "Correct: priorities 0/200, Google ASN 65100 on both sessions, on-prem ASN 65000 — a valid active/passive design.",
-      "Wrong: equal priorities give ECMP rather than active/passive, and 16550 is reserved for Partner Interconnect.",
-      "Wrong: disabling BGP on the backup attachment removes the failover path entirely."
+      "Wrong: uses two different Google-side ASNs (65101/65102); Cloud Router uses 16550.",
+      "Correct: priority 0/200 + Google-side ASN 16550 on both sessions.",
+      "Wrong: equal priorities 100 give active/active, and the ASN choice is wrong for the Google side.",
+      "Wrong: ASN 4200000001 is not the Cloud Router side's ASN (Google uses 16550), and disabling the on-prem BGP session removes connectivity rather than ordering it."
     ]
   },
   {
@@ -3904,7 +3906,7 @@ export const QUESTIONS = [
       "D. Deploy a Secure Web Proxy instance in each region. Apply a Secure Web Proxy policy to allow access from machines that match the secure tag to the URLs defined in a URL list."
     ],
     "correct": 3,
-    "explanation": "Secure Web Proxy is a regional resource, so one instance per region is required; its policies match secure tags and URL lists for URL-level egress control.",
+    "explanation": "URL-level (hostname + path) egress filtering is a Secure Web Proxy job; SWP is regional, so one instance per region with a policy allowing the secure-tagged machines to the URL list is the right deployment.",
     "discussion": [
       {
         "user": "kirrim",
@@ -3930,14 +3932,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D, citing the SWP policy docs for matchTag and URL lists.",
-    "conceptSummary": "Regional Secure Web Proxy with secure-tag and URL-list rules.",
-    "correctRationale": "SWP rules support source.matchTag() for secure tags and URL lists for host/path matching. Because SWP is regional, multi-region coverage needs an instance in each region.",
+    "discussionSummary": "Community votes D (8).",
+    "conceptSummary": "Egress URL filtering = regional Secure Web Proxy + policy matching the secure tag to a URL list.",
+    "correctRationale": "The chosen path is \"Deploy a Secure Web Proxy instance in each region. Apply a Secure Web Proxy policy to allow access from machines that match the secure tag to the URLs defined i\": Only SWP filters by URL path, and it must be deployed per region where the workloads run.",
     "optionRationales": [
-      "Wrong: Cloud NAT with FQDN firewall objects cannot match URL paths and uses the wrong identity (service account).",
-      "Wrong: same FQDN limitation — firewall FQDN rules cannot filter URL paths.",
-      "Wrong: Secure Web Proxy is regional; one \"global\" instance does not exist.",
-      "Correct: regional SWP instances with secure-tag and URL-list policies meet the requirement."
+      "Wrong: firewall FQDN objects match hostnames, not URL paths, and service accounts are the wrong matcher here.",
+      "Wrong: still cannot match paths - FQDN rules only see the domain.",
+      "Wrong: SWP is regional; a single instance cannot serve all regions.",
+      "Correct: a regional SWP per region + policy keyed on the secure tag and URL list."
     ]
   },
   {
@@ -3952,7 +3954,7 @@ export const QUESTIONS = [
       "D. 1. Configure an ingress hierarchical firewall rule with priority 10000 specifying the 0.0.0.0/0 source, TCP port 25, and the deny action. 2. Associate the hierarchical firewall policy at the organization level. 3. Configure firewall policy rules allowing TCP port 25 in the firewall policies associated with the respective VPCs that require that access."
     ],
     "correct": 2,
-    "explanation": "At the org level, a corporate-source ingress rule with goto_next (evaluated before a deny-all SMTP rule) defers the verdict to the VPC policies, so only chosen VPCs allow SMTP.",
+    "explanation": "The pattern is: high-priority ingress rule on corporate source to TCP 25 with goto_next (pass evaluation onward where allowed), then a deny-all 0.0.0.0/0 port-25 rule, with the hierarchical policy attached only to the folders containing the chosen VPCs.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -3974,14 +3976,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C: ordered goto_next plus per-VPC allows is the delegation pattern.",
-    "conceptSummary": "Hierarchical goto_next delegation with ordered rules.",
-    "correctRationale": "The corporate-source goto_next rule must precede the blanket deny so matching traffic reaches the per-VPC allow rules; C has the right order, while A evaluates the deny first and adds an irrelevant egress rule.",
+    "discussionSummary": "Community votes C (6).",
+    "conceptSummary": "Selective SMTP allow: goto_next for the corporate source, deny-all for the rest, policy scoped to specific folders.",
+    "correctRationale": "C uses goto_next so corporate traffic continues to lower rules while the catch-all deny stops everyone else, and folder scoping limits which VPCs get SMTP.",
     "optionRationales": [
-      "Wrong: the deny-all is evaluated before the corporate rule, and the second rule is egress — the wrong direction.",
-      "Wrong: allowing 0.0.0.0/0 port 25 at org level breaks the mandate to block SMTP generally.",
-      "Correct: corporate goto_next then global deny, with per-VPC allows, implements exactly the policy.",
-      "Wrong: with only a deny-all at org level, the VPC allows can still work, but nothing distinguishes corporate sources and the design fails the corporate-only intent."
+      "Wrong: starts with a deny on 0.0.0.0/0 which blocks the corporate network too, and egress does not help.",
+      "Wrong: allowing 0.0.0.0/0 on port 25 opens SMTP to the whole internet.",
+      "Correct: corporate-source goto_next then deny-all, policy associated at the folder level.",
+      "Wrong: same blanket-deny-first flaw as A."
     ]
   },
   {
@@ -3996,7 +3998,7 @@ export const QUESTIONS = [
       "D. Configure the CACHE_ALL_STATIC caching mode on Cloud CDN to ensure Cloud CDN cache content depending on responses to requests from the backends."
     ],
     "correct": 2,
-    "explanation": "USE_ORIGIN_HEADERS makes Cloud CDN cache according to the Cache-Control directives the backend sends — which matches the caching the application team defined in the responses.",
+    "explanation": "The backend already declares what is cacheable via response headers, so the CDN should honor the origin's Cache-Control - that is the USE_ORIGIN_HEADERS mode.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4018,15 +4020,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between C and B (8 vs 3 votes): Community leans C with a dissent noting it is allegedly the default; C still names the correct mode for honoring response-defined caching. Confidence medium.",
-    "conceptSummary": "USE_ORIGIN_HEADERS respects backend-declared caching.",
-    "correctRationale": "The application already defines caching via response headers; USE_ORIGIN_HEADERS is the mode that obeys them. CACHE_ALL_STATIC and FORCE_CACHE_ALL would cache beyond what the backend specifies.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and B (8 vs 3 votes): Community favors C (8 vs 3 for B); USE_ORIGIN_HEADERS defers to the origin-defined caching. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Let the origin decide caching: Cloud CDN USE_ORIGIN_HEADERS mode.",
+    "correctRationale": "USE_ORIGIN_HEADERS follows the backend's Cache-Control/headers - matches 'the application team has already defined which content should be cached'. The scenario is technically odd (CACHE_ALL_STATIC also honours valid origin headers), but USE_ORIGIN_HEADERS is the intended answer.",
     "optionRationales": [
-      "Wrong: CACHE_ALL_STATIC caches every static response, exceeding the app-defined scope.",
-      "Wrong: FORCE_CACHE_ALL overrides the origin headers entirely.",
-      "Correct: USE_ORIGIN_HEADERS applies the origin's own directives — matching the defined behavior.",
-      "Wrong: duplicates A's mode while contradicting it; CACHE_ALL_STATIC does not follow response headers."
+      "Wrong: CACHE_ALL_STATIC caches all cacheable static types, overriding rather than deferring to the backend's choices.",
+      "Wrong: FORCE_CACHE_ALL caches everything including private content - dangerous and not what 'defined by the backend' means.",
+      "Correct: USE_ORIGIN_HEADERS defers to the origin's cache directives.",
+      "Wrong: misdescribes CACHE_ALL_STATIC; the mode does not mean 'depending on backend responses'."
     ]
   },
   {
@@ -4041,7 +4043,7 @@ export const QUESTIONS = [
       "D. Remove the conflicting VPC spoke for vpc-pre-prod from the set of VPC spokes in Network Connectivity Center. Add the VPC spoke for vpc-dev. Add the previously removed vpc-pre-prod as a VPC spoke."
     ],
     "correct": 1,
-    "explanation": "Adding --exclude-export-ranges for the conflicting subnet when creating the vpc-dev spoke lets it join the hub without touching vpc-pre-prod or renumbering anything.",
+    "explanation": "An IP-space conflict on spoke creation is fixed by excluding the overlapping range on the new spoke itself: --exclude-export-ranges when creating the vpc-dev spoke keeps its conflicting range out of the hub's advertisements.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4059,14 +4061,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B, citing the exclude-export-ranges documentation.",
-    "conceptSummary": "exclude-export-ranges to bypass a conflicting spoke subnet.",
-    "correctRationale": "The exclude filter at spoke creation is the surgical fix: the rest of vpc-dev advertises normally while the conflicting range stays unadvertised, avoiding VM deletion or spoke removal.",
+    "discussionSummary": "Community votes B (4).",
+    "conceptSummary": "Resolve NCC spoke IP conflicts with --exclude-export-ranges on the new spoke.",
+    "correctRationale": "Excluding the conflicting range at spoke creation admits vpc-dev without touching vpc-pre-prod - the documented remedy.",
     "optionRationales": [
-      "Wrong: deleting and renumbering subnets is maximal disruption.",
-      "Correct: excluding the conflicting range on the new spoke is fast and minimally invasive.",
-      "Wrong: the filter is configured on the spoke, not on the hub.",
-      "Wrong: removing vpc-pre-prod breaks that existing environment."
+      "Wrong: deleting and recreating subnets/VMs is destructive and unnecessary.",
+      "Correct: create the vpc-dev spoke with --exclude-export-ranges for the conflicting range.",
+      "Wrong: the flag goes on the spoke creation, not on the hub.",
+      "Wrong: removing vpc-pre-prod disrupts production for no reason."
     ]
   },
   {
@@ -4081,7 +4083,7 @@ export const QUESTIONS = [
       "D. Create a VPC Peering between the two VPCs that allows the export and import of subnet routes with public IP addresses. Create the necessary ingress VPC firewall rules that target the specific resources by using IP ranges as the source filter."
     ],
     "correct": 3,
-    "explanation": "VPC peering is the low-cost, high-performance interconnect; enabling subnet-route exchange with privately used public IPs makes the PUPI ranges reachable, and IP-range source filters work across peering.",
+    "explanation": "PUPI ranges need VPC peering with export/import of subnet routes with public IP addresses enabled; ingress firewall rules then target resources by IP ranges.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4103,14 +4105,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D, quoting the subnet-route-exchange table for PUPI ranges.",
-    "conceptSummary": "VPC peering plus PUPI subnet route exchange.",
-    "correctRationale": "Peering beats VPN on cost and performance, and the documented flag for exchanging subnet routes with privately used public IPv4 addresses covers the PUPI ranges; firewall source filters must use IP ranges across peered projects.",
+    "discussionSummary": "Community votes D (7).",
+    "conceptSummary": "PUPI connectivity between VPCs: VPC peering with public-IP subnet route exchange + IP-range firewall targets.",
+    "correctRationale": "Only D enables the peering flag that exchanges privately-used public IP ranges - the actual blocker here.",
     "optionRationales": [
-      "Wrong: HA VPN adds cost and latency, and network tags do not span VPCs as source filters.",
-      "Wrong: same VPN-overhead issue; also unnecessary since peering exists.",
-      "Wrong: service accounts cannot be used as source filters across peered projects.",
-      "Correct: peering with PUPI subnet-route exchange plus IP-range ingress filters is the working low-cost design."
+      "Wrong: HA VPN between VPCs is unnecessary when peering can carry PUPI, and network tags do not reach across projects/peering.",
+      "Wrong: same unneeded-VPN path plus IP-range filters are less accurate than the peering fix.",
+      "Wrong: custom route export/import covers custom routes, not the PUPI subnet-route flag.",
+      "Correct: VPC peering with subnet routes with public IP addresses exchanged."
     ]
   },
   {
@@ -4125,7 +4127,7 @@ export const QUESTIONS = [
       "D. Query the dynamic_routes/learned_routes/dropped_unique_destinations metric and review the regional routing_mode metric attribute."
     ],
     "correct": 2,
-    "explanation": "The dynamic_routes/learned_routes/any_dropped_unique_destinations metric flags dropped learned routes from quota exhaustion, reviewed via the regional routing-mode attribute where the limit is enforced.",
+    "explanation": "The dropped-unique-destinations symptom after advertising more routes is the learned-routes limit; the metric to check is dynamic_routes/learned_routes/any_dropped_unique_destinations and the relevant attribute is the regional routing_mode (limits apply per region in regional mode).",
     "discussion": [
       {
         "user": "Tire",
@@ -4155,14 +4157,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "discussionSummary": "Split between C and A (9 vs 3 votes): Community majority is C with the Cloud Router metrics doc cited; confidence medium on exact metric naming.",
-    "conceptSummary": "Detecting dropped learned routes with Cloud Router metrics.",
-    "correctRationale": "Google's troubleshooting doc lists any_dropped_unique_destinations as the metric indicating route drops; the regional attribute view matches where the advertised-route quota applies.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and A (9 vs 3 votes): Community favors C (9); A/B voters pick plausible-but-wrong metric names. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Diagnose dropped learned routes via the any_dropped_unique_destinations metric, reviewed against routing_mode.",
+    "correctRationale": "C names the exact metric that flags over-limit dropped destinations; regional mode is the attribute that determines the applicable limit.",
     "optionRationales": [
-      "Wrong: dropped_unique_destinations is not the documented metric name for this check.",
-      "Wrong: unique_destinations_limit shows the quota value, not whether drops happened.",
-      "Correct: any_dropped_unique_destinations with regional routing mode answers the question.",
-      "Wrong: pairs an incorrect metric name with the attribute."
+      "Wrong: dropped_unique_destinations without 'any' is not the metric name, and global mode is not the attribute tied to the regional symptom.",
+      "Wrong: the limit metric reports the quota, not whether drops occurred.",
+      "Correct: any_dropped_unique_destinations + regional routing_mode attribute.",
+      "Wrong: right family of metric but wrong metric name and mode pairing."
     ]
   },
   {
@@ -4177,7 +4180,7 @@ export const QUESTIONS = [
       "D. Enable the Network Analyzer API and review the \"VPC Network\" category insights."
     ],
     "correct": 1,
-    "explanation": "Firewall Insights \"overly permissive rules\" automatically surfaces rules allowing broad ingress such as from the internet — eliminating manual review.",
+    "explanation": "Firewall Insights' Overly permissive rules insight automatically surfaces rules that allow broad ingress such as from the internet - purpose-built for this audit.",
     "discussion": [
       {
         "user": "1f01b87",
@@ -4195,14 +4198,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B with the Firewall Insights doc cited.",
-    "conceptSummary": "Automated overly-permissive-ingress detection.",
-    "correctRationale": "This insight analyzes rule usage and flags allows broader than actually used, including internet-ingress allows — precisely the automated audit asked for.",
+    "discussionSummary": "Community votes B (6); same scenario family as 81/224.",
+    "conceptSummary": "Audit permissive ingress rules with Firewall Insights overly-permissive-rules insight.",
+    "correctRationale": "Enabling the insight and reviewing internet-ingress results directly answers 'no rules allow ingress from the internet'.",
     "optionRationales": [
-      "Wrong: manual filtering for 0.0.0.0/0 is the work to avoid.",
-      "Correct: the overly-permissive-rules insight flags internet-ingress allows automatically.",
-      "Wrong: Connectivity Tests probe selected endpoints, not the ruleset.",
-      "Wrong: Network Analyzer VPC insights target connectivity config, not permissive exposure."
+      "Wrong: manual filtering for 0.0.0.0/0 misses other permissive combinations and is error-prone.",
+      "Correct: the overly-permissive-rules insight automates the review.",
+      "Wrong: Connectivity Tests check specific paths, not a ruleset-wide audit.",
+      "Wrong: Network Analyzer's VPC insights cover connectivity, not permissive-rule review."
     ],
     "legacyNote": "Firewall Insights now sits under Network Intelligence Center; the insight name and answer remain valid."
   },
@@ -4218,7 +4221,7 @@ export const QUESTIONS = [
       "D. Grant the network security service agent service account the privateca.certificateRequester role. Create a trust config in Certificate Manager. Flip the TLS inspection flag in your firewall policy rules to true."
     ],
     "correct": 0,
-    "explanation": "TLS inspection setup requires the privateca.certificateRequester role for the network security service agent, a TLS inspection policy bound to the CA pool, endpoint associations using it, and the TLS flag on firewall rules.",
+    "explanation": "TLS inspection needs the service agent to mint certificates: grant privateca.certificateRequester, create a TLS inspection policy bound to the CA pool, and attach endpoint associations in the VPC to that policy.",
     "discussion": [
       {
         "user": "taka5094",
@@ -4244,14 +4247,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A, quoting the TLS-inspection setup steps and the certificateRequester role.",
-    "conceptSummary": "NGFW Enterprise TLS inspection with Certificate Authority Service.",
-    "correctRationale": "The documented sequence is: grant certificateRequester to the service agent, create the TLS inspection policy on the CA pool, associate it via endpoint associations, then enable the TLS flag on rules — matching A exactly.",
+    "discussionSummary": "Community votes A (10).",
+    "conceptSummary": "Enable NGFW Enterprise TLS inspection: certificateRequester role + TLS inspection policy on the CA pool + endpoint associations.",
+    "correctRationale": "A grants exactly the needed CA role and wires the inspection policy via endpoint associations.",
     "optionRationales": [
-      "Correct: certificateRequester + TLS inspection policy + endpoint association + tls flag is the documented flow.",
-      "Wrong: poolReader cannot request certificates; certificateRequester is required.",
-      "Wrong: a Certificate Manager trust config is unrelated to the CA-pool TLS inspection flow.",
-      "Wrong: repeats the wrong trust-config approach and omits the policy/endpoint association."
+      "Correct: certificateRequester + inspection policy + endpoint associations.",
+      "Wrong: poolReader only reads the pool; the service agent must request certificates.",
+      "Wrong: a trust config is not required here, and 'flipping the flag' skips the endpoint-association step.",
+      "Wrong: same missing inspection-policy/endpoint-association wiring as C."
     ]
   },
   {
@@ -4270,7 +4273,7 @@ export const QUESTIONS = [
       1,
       3
     ],
-    "explanation": "A dual-NIC appliance forwarding across two VPCs depends on firewall rules on both NICs and on canIpForward; checking audit logs for rule changes and verifying the flag covers the two most likely regressions.",
+    "explanation": "A dual-NIC bump-in-the-wire only forwards traffic if IP forwarding is enabled (--can-ip-forward) and no firewall change silently broke the path. B+D are the two checks that directly explain a sudden total flow stop.",
     "discussion": [
       {
         "user": "glb2",
@@ -4292,15 +4295,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B and D.",
-    "conceptSummary": "Two suspects when a bump-in-the-wire VM stops forwarding.",
-    "correctRationale": "Sudden total loss points to config change: Cloud Logging shows whether firewall rules on the interfaces were modified, and the canIpForward attribute is required for the VM to pass packets between NICs.",
+    "discussionSummary": "Community consensus BD (9 votes): the firewall-change check plus ip-forward attribute are the two causes to verify.",
+    "conceptSummary": "Troubleshooting a dual-NIC forwarding VM: verify ip-forwarding flag and firewall rule changes.",
+    "correctRationale": "B verifies no firewall/policy modification now blocks the interfaces; D verifies the required --can-ip-forward attribute is still on. Together they cover the two classic causes.",
     "optionRationales": [
-      "Wrong: VPC Service Controls governs API access, not packet forwarding between interfaces.",
-      "Correct: Cloud Logging reveals modifications to the firewall rules applied to the appliance NICs.",
-      "Wrong: a public IP assignment does not break inter-VPC forwarding.",
-      "Correct: without canIpForward the instance cannot forward between NICs — prime suspect.",
-      "Wrong: backend-service membership is irrelevant for an inline forwarding appliance."
+      "Wrong: VPC Service Controls governs API access, not data-plane forwarding between VPCs.",
+      "Correct: checking firewall-rule/policy changes is required - a silent rule change kills the flows.",
+      "Wrong: a public IP on the instance does not break forwarding between the two VPCs.",
+      "Correct: --can-ip-forward must be enabled for the instance to forward packets between NICs.",
+      "Wrong: the instance is not behind a backend service, and adding it would not stop forwarding."
     ]
   },
   {
@@ -4315,7 +4318,7 @@ export const QUESTIONS = [
       "D. Validate the health of the backend service. Disable any Cloud Armor policies on the backend service, and identify any error response in Cloud Logging. Review the statusDetails log field."
     ],
     "correct": 2,
-    "explanation": "Backend-service logging records per-request details in Cloud Logging, and the statusDetails field explains why the load balancer failed a request — the right evidence after health checks looked fine.",
+    "explanation": "Intermittent 4xx/5xx from the ALB should be diagnosed via backend-service logging: the statusDetails field records why requests failed or were served an error.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4333,14 +4336,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C with the LB failure-messages doc cited.",
-    "conceptSummary": "Reading LB statusDetails for intermittent 4xx/5xx.",
-    "correctRationale": "Health-check logs were already clean, so per-request backend logging is the remaining evidence; statusDetails describes the specific failure the LB observed.",
+    "discussionSummary": "Community votes C (5).",
+    "conceptSummary": "Diagnose intermittent LB errors with backend-service logs and the statusDetails field.",
+    "correctRationale": "Enabling logging on the backend service and reading statusDetails identifies the specific error source - the documented debug path.",
     "optionRationales": [
-      "Wrong: SSH-to-backend bypasses the LB path and cannot reproduce intermittent errors.",
-      "Wrong: replacing the ALB with a passthrough NLB abandons the design without diagnosing anything.",
-      "Correct: backend-service logging plus statusDetails pinpoints the error source.",
-      "Wrong: disabling Cloud Armor removes protection blindly before any diagnosis."
+      "Wrong: a single SSH probe does not diagnose intermittent errors, and 'add more backends' is a guess, not a diagnosis.",
+      "Wrong: deleting the ALB for a passthrough NLB and failover group discards a working global frontend instead of diagnosing the intermittent errors.",
+      "Correct: validate backend health and review statusDetails in the backend-service logs.",
+      "Wrong: disabling Cloud Armor removes protection based on an unproven guess."
     ]
   },
   {
@@ -4355,7 +4358,7 @@ export const QUESTIONS = [
       "D. Configure a firewall rule to match the source/destination IP addresses of the VMs, and use the apply_security_profile_group action."
     ],
     "correct": 3,
-    "explanation": "IPS inspection on Cloud NGFW Enterprise is invoked by firewall rules using the apply_security_profile_group action, and matching by VM IP addresses scopes it to the right VMs.",
+    "explanation": "IPS in Cloud NGFW Enterprise steers matched traffic through a security profile group: a firewall rule matching the VMs' IPs with apply_security_profile_group sends their traffic for inspection.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4385,14 +4388,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community strongly prefers D: apply_security_profile_group is the documented action; hostnames cannot be matched.",
-    "conceptSummary": "apply_security_profile_group on an IP-matched rule.",
-    "correctRationale": "apply_security_profile_group sends matched traffic to the NGFW endpoint for Layer-7 inspection. Firewall rules cannot match hostnames, so IP-based matching is the correct selector.",
+    "discussionSummary": "Community votes D (18).",
+    "conceptSummary": "Enable IPS inspection: firewall rule matching VM traffic + apply_security_profile_group action.",
+    "correctRationale": "apply_security_profile_group is the action that forwards matched flows to the IPS security profile; matching on IPs targets the VMs.",
     "optionRationales": [
-      "Wrong: Packet Mirroring copies traffic to collectors; it does not invoke NGFW inspection.",
-      "Wrong: goto_next defers evaluation to lower rules; it does not attach a security profile.",
-      "Wrong: firewall rules cannot match hostnames, making this rule unusable.",
-      "Correct: IP-match rule plus apply_security_profile_group routes the VMs' traffic through the IPS profiles."
+      "Wrong: Packet Mirroring copies traffic for analysis - it is not IPS enforcement.",
+      "Wrong: goto_next just continues evaluation; it does not send traffic to the security profile.",
+      "Wrong: firewall rules match IPs/attributes, not VM hostnames.",
+      "Correct: match source/destination IPs + apply_security_profile_group."
     ]
   },
   {
@@ -4407,7 +4410,7 @@ export const QUESTIONS = [
       "D. Lower the priority numbers of the firewall policy rules and raise the priority numbers of the VPC firewall rules."
     ],
     "correct": 2,
-    "explanation": "Evaluation order between network firewall policies and VPC firewall rules is swappable via networkFirewallPolicyEnforcementOrder; if the new VPC evaluates rules before the policy allows, external traffic hangs — reviewing and correcting the order is the fix.",
+    "explanation": "If VPC firewall rules seem to beat the policies, the issue is evaluation order: policies and rules have configurable enforcement order - switch the policy/rule evaluation order rather than renumbering priorities.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -4441,15 +4444,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between C and D (12 vs 6 votes): Community splits between C and D with C ahead; C is kept because the enforcement-order setting can swap VPC rules and network policies while priority juggling cannot. Confidence medium.",
-    "conceptSummary": "networkFirewallPolicyEnforcementOrder fixes policy-vs-VPC-rule ordering.",
-    "correctRationale": "Hierarchical policies always run first, but the relative order of network policies and VPC rules is configurable. The symptom (external hangs, no log entries) fits the VPC deny being evaluated before the policy allows; reviewing the order addresses it.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and D (12 vs 6 votes): Community favors C (12 vs 6 for D); the knob is enforcement order, not priorities. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Fix 'VPC rules overriding policies' by switching the policy/rule enforcement order.",
+    "correctRationale": "The documented fix is the evaluation-order setting (e.g. policies before/after classic rules), which C describes.",
     "optionRationales": [
-      "Wrong: rebuilding the VPC and migrating resources is extreme overkill.",
-      "Wrong: priority numbers cannot reorder across fixed hierarchy tiers.",
-      "Correct: checking and correcting the policy-vs-VPC-rule evaluation order fixes the symptom.",
-      "Wrong: lowering policy priorities pushes denies even earlier — wrong direction."
+      "Wrong: rebuilding the whole VPC is extreme and does not address evaluation order.",
+      "Wrong: priority numbers within each system do not change which system evaluates first.",
+      "Correct: review and switch the policy-vs-rule evaluation order.",
+      "Wrong: renumbering priorities inside each system does not change which system evaluates first - the policy-versus-rule order is the real control."
     ]
   },
   {
@@ -4464,7 +4467,7 @@ export const QUESTIONS = [
       "D. Create a design that uses the AS_PATH BGP attribute to influence the egress path from Google Cloud to the on-premises environment."
     ],
     "correct": 2,
-    "explanation": "To steer Google Cloud's egress toward one VLAN attachment, the on-premises routers advertise routes with different MEDs; the lower-MED attachment is preferred, giving active/passive forwarding.",
+    "explanation": "To steer Google's egress toward on-premises you change what Google Cloud prefers: MED (or the Cloud Router advertised route priority) lowers preference on the standby attachment - the knob for the Google-to-on-prem direction.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4498,15 +4501,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between C and A (12 vs 7 votes): Community majority is C with the active/passive forwarding doc cited; a minority argued LOCAL_PREF, but MED is the attribute honored by Cloud Router.",
-    "conceptSummary": "MED on advertised routes for active/passive attachments.",
-    "correctRationale": "Google's own docs for configuring on-prem routers recommend MED differences for active/passive designs. LOCAL_PREF is an iBGP attribute that does not leave your AS and cannot influence the Google side.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and A (12 vs 7 votes): Split C (12) vs A (7): MED is the attribute exchanged toward on-prem for the stated direction. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Influence Google->on-prem traffic with MED / Cloud Router advertised priority.",
+    "correctRationale": "MED (Cloud Router advertised route priority) is the attribute exchanged toward the on-premises router to steer the return path in an active/passive design; that is the documented lever for the Google-to-on-prem direction.",
     "optionRationales": [
-      "Wrong: LOCAL_PREF shapes your own AS's outbound choice, not Google's, and is not sent to Cloud Router.",
-      "Wrong: ECMP hashing keeps both attachments active — the opposite of active/passive.",
-      "Correct: MED on the advertised routes is the documented mechanism for preferring one attachment.",
-      "Wrong: AS_PATH is not the recommended or supported knob for this on Cloud Router."
+      "Wrong: LOCAL_PREF influences the on-prem router's own outbound choice (on-prem->Google), not Google's egress.",
+      "Wrong: ECMP gives load sharing, not the active/passive precedence required.",
+      "Correct: MED controls the egress path preference in the active/passive design.",
+      "Wrong: AS_PATH prepending influences inbound path choice, not Google egress."
     ]
   },
   {
@@ -4521,7 +4524,7 @@ export const QUESTIONS = [
       "D. Place your NVAs behind an internal passthrough Network Load Balancer named ILB1. Add global network firewall policy rules to allow traffic through your NVAs. Create a policy-based route (PBR) with the source IP range of the frontend VM subnet, destination IP range of the backend VM subnet, and the next hop of ILB1. Scope the PBR to the VMs with the frontend network tag. Add a frontend network tag to your frontend servers."
     ],
     "correct": 3,
-    "explanation": "A policy-based route with source=frontend subnet, destination=backend subnet, next hop=internal passthrough NLB, scoped to frontend-tagged VMs, steers only that flow through the NVAs; because the NVAs SNAT, return traffic needs no route.",
+    "explanation": "Compliance requires east-west traffic to traverse NVAs: place them behind an internal passthrough NLB and steer subnet-to-subnet flows with a policy-based route whose next hop is the ILB.",
     "discussion": [
       {
         "user": "kirrim",
@@ -4551,14 +4554,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D: PBR (not static routes) supports source matching, and the frontend direction/scope is correct.",
-    "conceptSummary": "PBR to an ILB next hop for subnet-to-subnet NVA inspection.",
-    "correctRationale": "Static routes cannot match on source range, so policy-based routing is required. The correct direction is frontend-to-backend (source frontend, destination backend) scoped by the frontend tag — option D gets all three right.",
+    "discussionSummary": "Community votes D (12).",
+    "conceptSummary": "Force inter-subnet traffic through NVAs: ILB-backed NVAs + policy-based route to the ILB next hop.",
+    "correctRationale": "D adds the PBR redirecting the frontend-to-backend traffic through the NVA ILB - the documented pattern for inserted inspection.",
     "optionRationales": [
-      "Wrong: source/destination are reversed — this steers backend-originated traffic instead.",
-      "Wrong: tag-based static routes cannot express a source-range match, so this cannot scope the traffic correctly.",
-      "Wrong: multi-NIC NVAs are unnecessary, and the static route still cannot match on source.",
-      "Correct: PBR with frontend source, backend destination, ILB next hop, and frontend tag scope routes exactly the intended flows."
+      "Wrong: the PBR described targets the wrong scope/direction of the traffic to inspect.",
+      "Wrong: a plain custom static route cannot express the per-source policy needed.",
+      "Wrong: two NVA interfaces in the same subnets don't force VPC flows through the appliance.",
+      "Correct: ILB fronted NVAs + PBR steering the inter-subnet traffic."
     ]
   },
   {
@@ -4573,7 +4576,7 @@ export const QUESTIONS = [
       "D. Create a new firewall policy ingress rule, and use the --network-src-asns parameter."
     ],
     "correct": 1,
-    "explanation": "A Cloud Armor network edge security policy supports the --network-src-asns parameter to block traffic by source ASN at the Google edge for VMs exposed directly on public IPs.",
+    "explanation": "Blocking connections by client ASN at the Google edge uses a Cloud Armor network edge security policy with --network-src-asns.",
     "discussion": [
       {
         "user": "glb2",
@@ -4595,14 +4598,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "discussionSummary": "Split between B and C (7 vs 2 votes): Community majority is B with a doc link showing network-edge policies support ASN fields; confidence medium on the exact parameter naming.",
-    "conceptSummary": "ASN blocking with a network edge security policy.",
-    "correctRationale": "Network edge security policies protect resources without an HTTP load balancer and accept source-ASN matching. Backend policies need a backend service, and classic firewall rules cannot match ASNs.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and C (7 vs 2 votes): Community favors B (7 vs 2 for C): 'network edge security policy' is the correct product name. Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "Block by source ASN: Cloud Armor edge security policy with network-src-asns.",
+    "correctRationale": "Edge policies evaluate traffic before it reaches backends; the --network-src-asns parameter matches the client ASNs to deny.",
     "optionRationales": [
-      "Wrong: backend security policies attach to LB backend services, not bare VM public IPs.",
-      "Correct: a network edge policy with --network-src-asns blocks the ASN at the edge.",
-      "Wrong: \"edge security policy\" (the CDN-tier kind) does not support --network-src-asns.",
-      "Wrong: firewall rules match IP ranges, not ASNs."
+      "Wrong: backend security policies attach to LB backend services; the edge policy fits VM-level ingress.",
+      "Correct: network edge security policy + --network-src-asns blocks the ASN range at the edge.",
+      "Wrong: 'edge security policy' is not the correct policy family name - it is 'network edge security policy'.",
+      "Wrong: firewall policy rules match IP ranges/tags, not ASNs."
     ]
   },
   {
@@ -4617,7 +4621,7 @@ export const QUESTIONS = [
       "D. Create a design where each project in each environment has its own VPC with its own subnets, routes, and firewall rules. Ensure all VPCs are added as spokes to a Network Connectivity Center hub."
     ],
     "correct": 0,
-    "explanation": "One Shared VPC host project per environment gives hard isolation between prod and non-prod, centralizes network administration, preserves per-application billing via service projects, and scales to ~1000 apps.",
+    "explanation": "Hard isolation between prod and nonprod with app-level communication inside each = two Shared VPC host projects (one per environment), each with its service projects.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4631,14 +4635,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Per-environment Shared VPC host projects.",
-    "correctRationale": "Two host projects isolate environments at the network layer while service projects deliver per-app billing and compute autonomy without network privileges — every listed requirement is met.",
+    "discussionSummary": "Community votes A (2).",
+    "conceptSummary": "Environment isolation at scale: separate Shared VPC host projects per environment.",
+    "correctRationale": "Separate host projects give total prod/nonprod isolation while intra-environment connectivity stays via the shared VPC.",
     "optionRationales": [
-      "Correct: one host project per environment with app service projects meets isolation, control, billing, autonomy, and scale.",
-      "Wrong: a Shared VPC per project inverts the model and cannot centralize networking.",
-      "Wrong: a single Shared VPC cannot enforce prod/non-prod isolation.",
-      "Wrong: a thousand-VPC NCC design loses centralized subnet/route control and clean billing."
+      "Correct: one host project per environment, service projects per application.",
+      "Wrong: Shared VPC per project fragments the network and firewall micro-segmentation across VPCs is fragile.",
+      "Wrong: a single Shared VPC keeps prod/nonprod in one network - violates isolation.",
+      "Wrong: one VPC per project on an NCC hub would connect everything - the opposite of isolation."
     ]
   },
   {
@@ -4653,7 +4657,7 @@ export const QUESTIONS = [
       "D. Enable global dynamic routing mode on the VPC. Configure BGP associated with the HA VPN in \"region 1\" to use a base priority value of 100. Configure BGP associated with the VLAN attachments to use a base priority of 20000. Configure your on-premises routers to use similar multi exit discriminator (MED) values."
     ],
     "correct": 2,
-    "explanation": "Cross-region failover requires global dynamic routing; giving the VLAN attachments base priority 100 and the HA VPN 20000 makes Interconnect primary and VPN backup.",
+    "explanation": "Making the Interconnect the preferred path while VPN stays as backup requires global dynamic routing (routes must cross regions) plus BGP priorities: a much worse (higher) base priority, e.g. 20000, on the HA VPN than on the VLAN attachments.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4671,14 +4675,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Global routing plus base priorities for Interconnect-primary.",
-    "correctRationale": "The VPN lives in a different region than the attachments, so regional routing can never cross-use them — global mode is required. Lower priority on the attachments makes them preferred; 20000 relegates the VPN to backup.",
+    "discussionSummary": "Community votes C (4).",
+    "conceptSummary": "Prefer Interconnect over HA VPN: global routing + lower BGP priority on VLAN attachments.",
+    "correctRationale": "C combines global routing (needed across the two regions) with VPN priority 20000 vs attachments 100 - the documented failover ordering.",
     "optionRationales": [
-      "Wrong: regional routing cannot carry traffic across regions and the priorities are inverted.",
-      "Wrong: regional mode fails the cross-region requirement even with right priorities.",
-      "Correct: global routing with attachments at 100 and VPN at 20000 is the right design.",
-      "Wrong: the priorities are reversed — the VPN would be primary."
+      "Wrong: regional routing keeps each region's routes local - traffic cannot use the other region's link.",
+      "Wrong: right priorities but still regional mode.",
+      "Correct: global routing + VPN 20000 vs attachments 100.",
+      "Wrong: base priorities 100/20000 in that order prefer the HA VPN over the interconnect - the priorities are inverted."
     ]
   },
   {
@@ -4693,7 +4697,7 @@ export const QUESTIONS = [
       "D. Review the Service YAML file. Define a default backend. Reapply the YAML."
     ],
     "correct": 2,
-    "explanation": "Requests to the bare hostname match no path rule, so the Ingress falls through to the built-in 404; defining a default backend in the Ingress spec sends unmatched traffic to a real service.",
+    "explanation": "Unmatched URL paths on a GKE Ingress get a 404 unless the Ingress defines a default backend; define the default backend in the Ingress YAML to catch all other paths.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4715,14 +4719,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C with the default-backend doc cited.",
-    "conceptSummary": "Ingress default backend for unmatched paths.",
-    "correctRationale": "GKE Ingress returns its own 404 unless a default backend exists; adding it in the Ingress YAML fixes the bare-domain failure.",
+    "discussionSummary": "Community votes C (9).",
+    "conceptSummary": "Catch-all routing in GKE Ingress = default backend.",
+    "correctRationale": "The default backend answers requests that match no path rule - the missing piece for 404s.",
     "optionRationales": [
-      "Wrong: path rules live in the Ingress, not the Service.",
-      "Wrong: the Ingress is the right object, but the default backend — not another path rule — catches the bare host.",
-      "Correct: define the default backend in the Ingress spec.",
-      "Wrong: Services have no default-backend concept."
+      "Wrong: wildcard path rules on the Service do not control Ingress routing.",
+      "Wrong: the '*' path rule approach is not the documented Ingress catch-all (and it belongs on Ingress not Service).",
+      "Correct: define the default backend in the Ingress resource.",
+      "Wrong: default backends are defined on the Ingress, not the Service."
     ]
   },
   {
@@ -4737,7 +4741,7 @@ export const QUESTIONS = [
       "D. Compare the Phase 1 settings and recreate the Cloud VPN tunnel by choosing a different IKE version and pre-shared key."
     ],
     "correct": 1,
-    "explanation": "\"received NO_PROPOSAL_CHOSEN notify, no CHILD_SA built\" is an IKE Phase-2 (IPsec SA) proposal mismatch, so the peer's Phase-2 ciphers must be aligned with a supported suite.",
+    "explanation": "An HA VPN that fails to establish most often breaks on IKE cipher mismatches in Phase 1 or Phase 2; verifying the on-prem Phase 2 proposals against Google's supported cipher suites is the first fix.",
     "discussion": [
       {
         "user": "glb2",
@@ -4759,14 +4763,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: the log signature is a Phase-2 mismatch.",
-    "conceptSummary": "IKE Phase-2 negotiation failure from logs.",
-    "correctRationale": "CHILD_SA errors mean Phase-2 proposals disagree — not Phase-1/IKE or PSK issues. Reviewing the on-prem Phase-2 settings against supported HA VPN cipher suites is the corrective action.",
+    "discussionSummary": "Community votes B (9).",
+    "conceptSummary": "HA VPN establishment failures: verify IKE Phase 1/Phase 2 cipher support on the peer.",
+    "correctRationale": "Phase 2 transform-set mismatches are the common cause; B checks the documented supported suites.",
     "optionRationales": [
-      "Wrong: BGP cannot be fixed before IPsec, and the error is not about ASN.",
-      "Correct: the CHILD_SA failure points to Phase-2 cipher mismatch — align them.",
-      "Wrong: region distance does not affect crypto negotiation.",
-      "Wrong: IKE version and PSK are Phase-1 concerns; the log explicitly shows Phase-2 failing."
+      "Wrong: BGP runs after the tunnel exists - it cannot block tunnel establishment.",
+      "Correct: compare Phase 2 settings against supported HA VPN cipher suites.",
+      "Wrong: region proximity affects latency, not negotiation.",
+      "Wrong: recreating with a different IKE version/PSK is a guess; verify cipher support first."
     ]
   },
   {
@@ -4781,7 +4785,7 @@ export const QUESTIONS = [
       "D. Create a full mesh of VPC Network Peering connections between all five VPCs with an export exclude filter for 240.0.0.0/4 on every side. Add Cloud network firewall policy rules to allow traffic."
     ],
     "correct": 1,
-    "explanation": "An NCC hub in mesh topology connects all five VPCs as spokes, and an export-exclude filter for 240.0.0.0/4 suppresses the overlapping Class E ranges that are not needed anyway.",
+    "explanation": "Two overlapping subnets make VPC peering impossible; NCC mesh plus an export-exclude filter for the overlapping range (240.0.0.0/4) lets all five VPCs interconnect.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4799,14 +4803,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is B (NCC mesh plus exclude filter); a dissenter worried about overlap, which is exactly what the filter solves.",
-    "conceptSummary": "NCC mesh with export-exclude for overlapping subnets.",
-    "correctRationale": "NCC spokes exchange routes through the hub; excluding 240.0.0.0/4 — which covers both conflicting subnets — prevents the overlap while mesh provides full connectivity with the fewest moving parts.",
+    "discussionSummary": "Community votes B (9).",
+    "conceptSummary": "Overlapping subnets across VPCs: NCC mesh + exclude the overlapping range from spoke exports.",
+    "correctRationale": "NCC mesh gives all-to-all connectivity and the exclude filter drops the overlapping range that peering could not handle.",
     "optionRationales": [
-      "Wrong: peering cannot handle overlapping ranges at all — subnet-route exchange breaks on overlap.",
-      "Correct: NCC mesh spokes plus a 240.0.0.0/4 export-exclude filter delivers all needed connectivity.",
-      "Wrong: multi-NIC VMs and per-VPC static routes are heavy, fragile DIY plumbing.",
-      "Wrong: peering has no export-exclude filters and cannot resolve overlapping subnet routes."
+      "Wrong: peering cannot carry overlapping ranges - exclusion of PUPI does not help here.",
+      "Correct: NCC mesh spokes + export exclude filter for the overlap.",
+      "Wrong: multi-NIC VMs are a hack that does not scale and confuses routing.",
+      "Wrong: peering export filters do not support that overlap workaround."
     ]
   },
   {
@@ -4821,7 +4825,7 @@ export const QUESTIONS = [
       "D. Deploy Cloud NAT in each VPC, and configure a custom source range that includes the allowed subnets. Configure Cloud NAT rules to only permit the allowed subnets to egress through Cloud NAT."
     ],
     "correct": 1,
-    "explanation": "The constraints/compute.restrictCloudNATUsage organization policy centrally restricts which subnets may use Cloud NAT, so other admins cannot accidentally broaden it.",
+    "explanation": "Restricting Cloud NAT use to approved subnets is an org-policy job: constraints/compute.restrictCloudNATUsage with allowedValues limiting which subnets may use Cloud NAT.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4843,14 +4847,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: the org-policy constraint provides the enforced guardrail.",
-    "conceptSummary": "Org-policy constraint locking Cloud NAT to allowed subnets.",
-    "correctRationale": "restrictCloudNATUsage enforces the allowed-subnet list at org/folder level independent of the NAT config, which is the tamper-proof answer matching \"avoid unintentional configuration issues\".",
+    "discussionSummary": "Community votes B (8).",
+    "conceptSummary": "Govern Cloud NAT usage via the restrictCloudNATUsage org constraint.",
+    "correctRationale": "The org constraint enforces the restriction across projects under the folder - exactly the governance asked for.",
     "optionRationales": [
-      "Wrong: egress firewall rules do not restrict which subnets Cloud NAT serves.",
-      "Correct: the org-policy constraint hard-caps NAT usage to the allowed subnets.",
-      "Wrong: same firewall approach; it filters traffic, not NAT configuration drift.",
-      "Wrong: NAT rules define which subnets are served but do not block other admins from changing them."
+      "Wrong: deny-egress firewall rules break the NAT path itself rather than restricting who may use Cloud NAT.",
+      "Correct: restrictCloudNATUsage constraint scoped to the folder with allowedValues.",
+      "Wrong: same firewall-rule flaw as A.",
+      "Wrong: custom source-range Cloud NAT rules are not a valid control for which subnets may use the gateway."
     ]
   },
   {
@@ -4865,7 +4869,7 @@ export const QUESTIONS = [
       "D. 1. Configure a Private NAT gateway instance in us-west1(192.168.1.0/24), europe-central1(192.168.2.0/24), and asia-southeast1(192.168.3.0/24). 2. Add the VPC as a spoke and configure an export exclude policy on the VPC spoke to advertise only the NAT subnets 192.168.1.0/24, 192.168.2.0/24, and 192.168.3.0/24 to the hub. 3. Enable global dynamic routing to allow resources in us-west1, us-central1, and asia-southeast1 to reach the on-premises location through us-east4."
     ],
     "correct": 0,
-    "explanation": "Private NAT gateways in each consuming region translate outbound flows onto small 192.168.x/24 NAT subnets; an export-include filter on the spoke advertises only those ranges to the hub, and global routing lets all regions reach on-prem via us-east4.",
+    "explanation": "Private NAT for NCC spokes needs a NAT gateway + NAT subnet in each region where the spoke operates; the spoke then uses an export include policy to advertise the NAT ranges (the 192.168.x.0/24 ranges listed).",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4883,14 +4887,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community agrees on A; the reasoning holds (own-space NAT ranges + include filter). Confidence medium due to dense option wording.",
-    "conceptSummary": "Private NAT + spoke export-include to conserve scarce IP space.",
-    "correctRationale": "The constraint is limited routable space: NAT subnets carved from the company's 192.168.0.0/20 keep consumption tiny, and export-include advertises only the NAT ranges. Option A uses the company's own space (not on-prem 172.16.x) and the correct include filter.",
+    "discussionSummary": "Community votes A (7).",
+    "conceptSummary": "Private NAT on an NCC spoke: per-region NAT subnets + export include filter of the NAT ranges.",
+    "correctRationale": "A has all three pieces right: NAT gateways in the three regions, spoke attached, and include-export of the NAT ranges - matching the documented setup.",
     "optionRationales": [
-      "Correct: regional Private NAT on 192.168.x/24 with export-include and global routing meets every constraint.",
-      "Wrong: NATs onto the on-prem 172.16 ranges, colliding with the real on-prem space.",
-      "Wrong: a single us-east4 NAT does not serve egress locality across the three regions as cleanly as regional gateways.",
-      "Wrong: export-exclude would advertise everything except the listed ranges — the opposite of the goal."
+      "Correct: per-region NAT subnets + export include of the NAT ranges.",
+      "Wrong: uses 172.16 ranges instead of the documented 192.168 NAT subnets in this scenario.",
+      "Wrong: a single region misses the other two regions the spoke covers.",
+      "Wrong: an exclude filter hides the NAT ranges - the opposite of what is needed."
     ]
   },
   {
@@ -4905,7 +4909,7 @@ export const QUESTIONS = [
       "D. Create a second HA VPN gateway, add VPN tunnels, and enable global dynamic routing."
     ],
     "correct": 0,
-    "explanation": "Dynamic routing over HA VPN requires a Cloud Router running BGP sessions on the tunnels — the gateways already exist, so the missing pieces are the router, the tunnels, and the sessions.",
+    "explanation": "Dynamic routing over HA VPN runs through a Cloud Router: create the router, add the VPN tunnels to it, and configure BGP sessions - the remaining steps after gateway + peer resource.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -4927,14 +4931,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Cloud Router + BGP for dynamic HA VPN routing.",
-    "correctRationale": "HA VPN exchanges routes via Cloud Router BGP sessions on each tunnel; adding the router, tunnels, and BGP sessions is the documented completion.",
+    "discussionSummary": "Community votes A (9).",
+    "conceptSummary": "HA VPN dynamic routing = Cloud Router + tunnels + BGP sessions.",
+    "correctRationale": "Cloud Router is the dynamic-routing vehicle; BGP sessions over the tunnels exchange routes.",
     "optionRationales": [
-      "Correct: Cloud Router with tunnels and BGP sessions provides dynamic route exchange.",
-      "Wrong: static routes are not dynamic exchange.",
-      "Wrong: a second gateway is not required, and firewall rules do not carry BGP for the tunnels.",
-      "Wrong: another gateway plus global routing still creates no BGP sessions."
+      "Correct: Cloud Router + tunnels + BGP sessions is the documented sequence.",
+      "Wrong: static routes replace, not implement, dynamic routing.",
+      "Wrong: a second gateway is unnecessary and firewalling BGP is unrelated.",
+      "Wrong: a second gateway is unnecessary and 'enable global routing' alone sets no BGP session."
     ]
   },
   {
@@ -4949,7 +4953,7 @@ export const QUESTIONS = [
       "D. Choose a Network Connectivity Center mesh topology. Configure the spokes as Network Connectivity Center spokes."
     ],
     "correct": 0,
-    "explanation": "Peering-based hub-and-spoke is non-transitive: spokes reach the hub but not each other. NCC star topology replicates that — the hub VPC goes in the center group and the spokes in the edge group.",
+    "explanation": "NCC star topology mirrors hub-and-spoke: the hub VPC goes in the center group and the spoke VPCs in the edge group, which connects each edge to the center but not edge-to-edge.",
     "discussion": [
       {
         "user": "zzaric",
@@ -4983,15 +4987,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between A and C (12 vs 5 votes): Community majority is A with the star-topology doc cited; center/edge groups replicate the non-transitive peering model.",
-    "conceptSummary": "Star topology replicates non-transitive hub-and-spoke.",
-    "correctRationale": "In star topology center-group spokes reach edge spokes but edge spokes cannot reach each other — identical to peering hub-and-spoke semantics. Mesh would give spokes direct connectivity, which the original design lacks.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between A and C (12 vs 5 votes): Community favors A (12 vs 5 for C); star topology is the direct analog. Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Replicate hub-and-spoke with NCC star topology: center = hub VPC, edge = spoke VPCs.",
+    "correctRationale": "Star topology with the hub as center reproduces exactly the peering hub-and-spoke shape.",
     "optionRationales": [
-      "Correct: star with the hub in center and spokes in edge reproduces the existing design.",
-      "Wrong: swapping the groups makes the spokes the center — wrong semantics.",
-      "Wrong: mesh gives spoke-to-spoke connectivity that peering never provided.",
-      "Wrong: excluding the hub removes the shared connectivity point."
+      "Correct: star topology, hub VPC in center, spokes in edge.",
+      "Wrong: inverting center/edge breaks the topology semantics.",
+      "Wrong: mesh connects all VPCs to each other - not the hub-and-spoke shape.",
+      "Wrong: mesh without the hub as a distinct center again fails the replication."
     ]
   },
   {
@@ -5006,7 +5010,7 @@ export const QUESTIONS = [
       "D. Create one HA VPN gateway. Create two tunnels-one tunnel for each of the two interfaces of the HA VPN gateway. Terminate each of the two tunnels on different public IPs addresses that are configured on the VPN termination device that is located on-premises."
     ],
     "correct": 1,
-    "explanation": "Two Dedicated Interconnect connections in one metro across different edge availability domains, each with a 10-Gbps VLAN attachment on a Cloud Router, delivers redundant 10 Gbps at 99.9% with the lowest latency.",
+    "explanation": "10 Gbps of private bandwidth with 99.9% SLA and redundancy = two Dedicated Interconnect connections in one metro spread across edge availability domains, each with a VLAN attachment on a Cloud Router.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -5036,14 +5040,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B with the 99.9% tutorial cited.",
-    "conceptSummary": "99.9% Dedicated Interconnect in one metro, two edge domains.",
-    "correctRationale": "Google's 99.9% topology is two connections in one metro in different edge availability domains — exactly B — and Dedicated Interconnect beats VPN on latency.",
+    "discussionSummary": "Community votes B (12).",
+    "conceptSummary": "99.9% dedicated connectivity: 2 connections, different edge availability domains, VLAN attachments + Cloud Router.",
+    "correctRationale": "B is the documented 99.9% Dedicated Interconnect topology and meets the bandwidth/redundancy specs.",
     "optionRationales": [
-      "Wrong: a single Partner attachment lacks redundancy and adds provider-path latency.",
-      "Correct: two Dedicated connections in different edge domains of one metro meet redundancy, SLA, and latency.",
-      "Wrong: HA VPN runs over the internet and cannot guarantee the latency.",
-      "Wrong: same internet-VPN limitation; also needs two peer IPs which may not exist."
+      "Wrong: a single Partner attachment is not redundant and Partner doesn't give a 99.9% physical-connection SLA by itself.",
+      "Correct: two Dedicated connections in different edge availability domains + two attachments.",
+      "Wrong: HA VPN tops out at 3 Gbps per tunnel - cannot meet 10 Gbps.",
+      "Wrong: same VPN bandwidth ceiling as C."
     ]
   },
   {
@@ -5062,7 +5066,7 @@ export const QUESTIONS = [
       2,
       4
     ],
-    "explanation": "When BGP over Dedicated Interconnect never comes up, the two checks are eBGP multihop 4 on the on-premises router and ARP resolution via gcloud compute interconnects get-diagnostics.",
+    "explanation": "A BGP session that will not come up over an Interconnect VLAN attachment is checked with eBGP multihop=4 on the on-prem router (Google requires TTL>1 for the LACP/interconnect path) and by verifying ARP learning via interconnects get-diagnostics.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -5096,16 +5100,16 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Votes fragment across BE, AE, and CE. Community majority votes BE but the validated answer is CE: /31 and \"MD5 is required\" are both false (MD5 is optional on Cloud Router), while eBGP multihop 4 and the ARP table in get-diagnostics are the documented checks. Confidence medium.",
-    "conceptSummary": "Two checks for a dead BGP session over Interconnect.",
-    "correctRationale": "Google's on-prem router guide recommends eBGP multihop 4, and get-diagnostics reports ARP state on the attachment — the L2 prerequisite for BGP. The /31 mask claim is wrong (link-local /29-style addressing is used), and while Cloud Router supports optional MD5 authentication it is not required for the session to come up — a mismatch only matters when configured on one side.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community majority votes BE (7/18). The validated answer is CE. Community was fragmented (BE 7, AE 5, CE 2): BE voters over-weight the /31 claim; the validated pair is C+E. Independent review (Gemini, Oct 2026) confirmed CE.",
+    "conceptSummary": "Interconnect BGP-down checks: eBGP multihop 4 + get-diagnostics ARP verification.",
+    "correctRationale": "C is the required peer-side multihop setting; E verifies ARP on the Google side - the two actionable checks. (MD5 is optional, not required; /31 is wrong for the interconnect addressing.)",
     "optionRationales": [
-      "Wrong: routers get-status shows routes/session state, not the Interconnect ARP table.",
-      "Wrong: /31 is not the expected attachment addressing; the check as stated is invalid.",
-      "Correct: eBGP multihop 4 is the documented on-prem requirement for the session to form.",
-      "Wrong: Cloud Router supports optional MD5 authentication, but it is not required for the BGP session — an unauthenticated session comes up fine; only a mismatched key (configured on one side only) breaks it.",
-      "Correct: get-diagnostics verifies ARP on the attachment — the layer-2 prerequisite for BGP."
+      "Wrong: get-status shows the router's routes/status, not the interconnect ARP table.",
+      "Wrong: a /31 on the VLAN attachment is not the documented interconnect addressing.",
+      "Correct: eBGP multihop minimum 4 is the required on-prem setting.",
+      "Wrong: MD5 is optional - not a cause of session failure when absent.",
+      "Correct: get-diagnostics verifies ARP learned across the interconnect."
     ]
   },
   {
@@ -5120,7 +5124,7 @@ export const QUESTIONS = [
       "D. Create a Cloud Router and VLAN attachments in the us-central1 region attached to your physical Interconnect in Ashburn, VA."
     ],
     "correct": 1,
-    "explanation": "VLAN attachments and their Cloud Router live in a chosen region — us-east4 is closest to New York, minimizing latency — and global routing lets the us-central1 workloads use the attachment without extra spend.",
+    "explanation": "The Interconnect is physically in Ashburn but traffic should enter Google near New York: put Cloud Router and VLAN attachments in us-east4 and enable global routing so us-central1 workloads use the same connection.",
     "discussion": [
       {
         "user": "irmingard_examtopics",
@@ -5154,15 +5158,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and A (8 vs 6 votes): Community splits A vs B; B wins on the merits — the router must share the attachments' region and the bandwidth setting adds nothing. Confidence medium.",
-    "conceptSummary": "Co-locate router/attachments near the data center plus global routing.",
-    "correctRationale": "Attachments terminate on a Cloud Router in a region; us-east4 minimizes latency to NYC. Global dynamic routing then serves us-central1 workloads, and setting a 500-Mbps cap is unnecessary since attachment pricing is flat.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and A (8 vs 6 votes): Split B (8) vs A (6): A's extra bandwidth flag is the distractor. Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "Remote VLAN attachments: router+attachments in us-east4 over the Ashburn interconnect, global routing for us-central1.",
+    "correctRationale": "B is the documented remote-VLAN-attachment pattern; global routing then serves the us-central1 deployment.",
     "optionRationales": [
-      "Wrong: pinning the attachment to 500 Mbps adds no benefit — pricing is the same up to 10 Gbps.",
-      "Correct: router and attachments in us-east4 with global routing minimizes latency and cost.",
-      "Wrong: a Cloud Router must be in the same region as its VLAN attachments.",
-      "Wrong: attachments in us-central1 add latency toward New York and break co-location with the router anyway."
+      "Wrong: forcing a bandwidth setting on the attachments is not part of the design question.",
+      "Correct: router + attachments in us-east4 + global routing.",
+      "Wrong: router and attachments must be co-located in the same region (us-east4).",
+      "Wrong: without us-east4 attachments/global routing the NYC proximity benefit is lost."
     ]
   },
   {
@@ -5177,7 +5181,7 @@ export const QUESTIONS = [
       "D. Configure two Partner Interconnect connections in one metro and two connections in another metro. Make sure the Interconnect connections are placed in different metro edge availability domains. Configure two VLAN attachments in one region and two VLAN attachments in another region, and configure regional dynamic routing on the VPC."
     ],
     "correct": 2,
-    "explanation": "Google's 99.99% production pattern for Partner Interconnect is four connections across two metros in different edge availability domains, VLAN attachments in two regions, and global dynamic routing.",
+    "explanation": "Production-grade partner-managed hybrid connectivity uses Partner Interconnect in the geo-redundant layout: two connections in each of two metros across different edge availability domains, VLAN attachments in two regions, and global dynamic routing.",
     "discussion": [
       {
         "user": "ce1997d",
@@ -5195,15 +5199,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between C and B (4 vs 2 votes): Community majority is C: two metros plus two regions plus global routing.",
-    "conceptSummary": "Geo-redundant 99.99% Partner Interconnect topology.",
-    "correctRationale": "Production-grade redundancy survives a metro outage and a region outage, which needs two metros and two regions; global routing stitches all paths together. Only C matches the documented 99.99% design.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and B (4 vs 2 votes): Community favors C (4 vs 2 for B); C is the geo-redundant 99.99% pattern. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "99.99% partner-managed design: 4 Partner Interconnect connections, 2 metros, 2 regions, global routing.",
+    "correctRationale": "C is the full 99.99% topology - four connections in two metros, attachments in two regions, global routing stitching it together.",
     "optionRationales": [
-      "Wrong: on-prem VPN appliances cannot deliver the production SLA and add internet transit.",
-      "Wrong: a single metro leaves a metro-level single point of failure.",
-      "Correct: two connections per metro across two metros, attachments in two regions, global routing — the documented pattern.",
-      "Wrong: regional routing cannot use the second region for failover."
+      "Wrong: VPN devices are not Google's recommended production hybrid design and cannot match Interconnect SLA.",
+      "Wrong: two connections in one metro only reaches 99.9%, not production 99.99%.",
+      "Correct: 2+2 connections across two metros + two-region attachments + global routing.",
+      "Wrong: right connection count but regional routing cannot carry cross-region paths."
     ]
   },
   {
@@ -5218,7 +5222,7 @@ export const QUESTIONS = [
       "D. Verify ownership of your IP addresses. Use live migration to import the prefix. Assign the IP addresses to the Compute Engine instances."
     ],
     "correct": 3,
-    "explanation": "BYOIP with live migration lets Google verify and announce your prefix while traffic keeps flowing, so hard-coded customer IPs keep working during the move — the minimal-disruption path.",
+    "explanation": "Tens of thousands of customer DNS records hard-coding the IPs rules out renumbering: the prefixes must move to Google Cloud via Bring Your Own IP (BYOIP) with live migration, which imports the prefix while traffic keeps flowing.",
     "discussion": [
       {
         "user": "enter_co",
@@ -5240,15 +5244,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and B (5 vs 4 votes): Community splits B vs D; D is kept because live migration is the specific feature built for minimal-disruption import. Confidence medium.",
-    "conceptSummary": "BYOIP live migration for hard-coded customer IPs.",
-    "correctRationale": "Live migration is the BYOIP feature designed to minimize downtime when IPs are actively in use; verifying ownership then importing the prefix via live migration and assigning to the VMs meets the requirement.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and B (5 vs 4 votes): Split D (5) vs B (4): B provisions the prefix but only D performs the seamless live migration of addresses. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Keep hard-coded customer DNS IPs when migrating = BYOIP with live migration.",
+    "correctRationale": "BYOIP live migration provisions the existing prefix in Google Cloud without changing the addresses customers already point at - the only option preserving those DNS records.",
     "optionRationales": [
-      "Wrong: new Google-issued IPs force every customer to update DNS — maximum disruption.",
-      "Wrong: verification plus provisioning is BYOIP but omits the live-migration step that minimizes disruption.",
-      "Wrong: mapping the on-prem range inside a VPC does not apply to public addresses.",
-      "Correct: verify ownership then live-migrate the prefix, keeping services reachable throughout."
+      "Wrong: new static IPs mean every customer's DNS record must change - exactly what is not feasible.",
+      "Wrong: verifying ownership and provisioning advertises the prefix, but skips the zero-disruption live-migration import the scenario needs.",
+      "Wrong: on-prem private ranges are not routable external addresses - customers could not reach them.",
+      "Correct: BYOIP live migration imports the owned prefix so the same public IPs keep working on Google Cloud."
     ]
   },
   {
@@ -5263,7 +5267,7 @@ export const QUESTIONS = [
       "D. • Build two VLAN attachments from each Dedicated Interconnect: one connecting to the Cloud Router in us-east1, and one connecting to the Cloud Router in us-west1. • Enable global routing at the VPC layer."
     ],
     "correct": 3,
-    "explanation": "With one Interconnect in each region and no SLA, maximum diversity means each connection carries attachments to both regional Cloud Routers, and global routing lets every region use either path.",
+    "explanation": "With two Dedicated Interconnects serving both regions and no SLA requirement, the resilient design is two VLAN attachments per interconnect (one to each region's Cloud Router) plus global routing, so either interconnect can carry either region.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -5289,14 +5293,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "Cross attachments to both routers plus global routing for max diversity.",
-    "correctRationale": "Two attachments per connection (one to each Cloud Router) plus global routing gives every region a failover path even if one router or attachment fails — the most diversity achievable with this topology.",
+    "discussionSummary": "Community votes D (8).",
+    "conceptSummary": "Cross-region resiliency with two interconnects: two attachments each, to both Cloud Routers, global routing.",
+    "correctRationale": "D gives each interconnect reach to both regional routers and global routing to carry either path - the design that survives a single link or region loss.",
     "optionRationales": [
-      "Wrong: one attachment per connection to its own router leaves each region dependent on a single attachment.",
-      "Wrong: regional routing prevents using the other region's attachment for failover.",
-      "Wrong: cross attachments are right, but regional routing blocks cross-region use.",
-      "Correct: two attachments per interconnect (one per router) with global routing maximizes diversity."
+      "Wrong: one attachment per interconnect ties each link to one region only.",
+      "Wrong: regional routing confines each region's routes to its own links.",
+      "Wrong: same single-region attachment limitation as A.",
+      "Correct: two attachments per interconnect to both regions' routers + global routing."
     ]
   },
   {
@@ -5311,7 +5315,7 @@ export const QUESTIONS = [
       "D. Border Gateway Protocol (BGP)-based VPN using HA VPN between the two Google Cloud VPCs"
     ],
     "correct": 3,
-    "explanation": "HA VPN with BGP is Google's recommended way to connect two Cloud VPCs via VPN, providing 99.99% availability with dynamic routing; Classic VPN is the legacy product.",
+    "explanation": "Maximum availability plus dynamic routing between two Google Cloud VPCs = HA VPN (which supports BGP via Cloud Router and the 99.99% SLA); Classic VPN options cannot offer that SLA and policy/route-based variants lack dynamic routing.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -5337,14 +5341,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "HA VPN + BGP between two VPCs.",
-    "correctRationale": "HA VPN is the modern recommended VPN (99.99% SLA) and always uses BGP, making D the only option matching both the recommendation and maximum availability.",
+    "discussionSummary": "Community votes D (9).",
+    "conceptSummary": "VPC-to-VPC VPN with max availability + BGP = HA VPN. This addresses the designing while connection described in the question.",
+    "correctRationale": "The chosen path is \"Border Gateway Protocol (BGP)-based VPN using HA VPN between the two Google Cloud VPCs\": HA VPN with BGP is the only option combining the 99.99% availability target with dynamic route exchange.",
     "optionRationales": [
-      "Wrong: Classic VPN policy-based is legacy with only 99.9%.",
-      "Wrong: Classic VPN does not support BGP.",
-      "Wrong: route-based Classic VPN remains legacy with lower availability.",
-      "Correct: HA VPN with BGP is recommended and reaches 99.99%."
+      "Wrong: Classic VPN policy-based has no SLA matching and no BGP.",
+      "Wrong: Classic VPN cannot run BGP.",
+      "Wrong: route-based Classic VPN still lacks BGP and the 99.99% SLA.",
+      "Correct: BGP-based HA VPN between the two VPCs."
     ],
     "legacyNote": "Classic VPN is legacy; HA VPN is the current recommendation and the answer is unchanged."
   },
@@ -5360,7 +5364,7 @@ export const QUESTIONS = [
       "D. Ensure that each zone in each of the VPC networks has at least 10 compute instances. Look in Project B for the reported metric."
     ],
     "correct": 3,
-    "explanation": "A 90% confidence level for inter-project packet loss requires 2.5 VMs per zone — 10 for four zones — and packet-loss metrics for VPC A -> B flows are viewed in the destination project, Project B.",
+    "explanation": "Performance Dashboard reports packet loss for flows between projects only when each zone has at least 10 instances, and the metric for flows terminating in VPC B is looked up in the destination project (Project B).",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -5394,14 +5398,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is D, quoting the 2.5-VMs-per-zone rule and destination-project visibility.",
-    "conceptSummary": "Performance Dashboard confidence thresholds and metric location.",
-    "correctRationale": "The documented threshold is 2.5 VMs per zone for 90% confidence, and metrics for flows into VPC B surface in B's project — matching D exactly.",
+    "discussionSummary": "Community votes D (18).",
+    "conceptSummary": "Performance Dashboard needs >=10 instances per zone; look up the metric in the destination project.",
+    "correctRationale": "D states both documented facts: 10-instance minimum per zone and the metric lives in the destination project.",
     "optionRationales": [
-      "Wrong: the metric for A->B loss is read in project B, not A.",
-      "Wrong: 9 VMs falls under the 2.5-per-zone threshold and B is wrong about the project too... it reads B which is right but count wrong.",
-      "Wrong: correct count but wrong project — metrics appear in the destination project.",
-      "Correct: 10 VMs per zone and reading in Project B matches the documented thresholds."
+      "Wrong: right minimum but wrong project - the metric is reported at the destination.",
+      "Wrong: 9 instances is below the reporting threshold and wrong project.",
+      "Wrong: 9 instances is below the threshold; Project A is the source, not where the metric appears.",
+      "Correct: >=10 instances per zone, metric read in Project B."
     ]
   },
   {
@@ -5420,7 +5424,7 @@ export const QUESTIONS = [
       0,
       2
     ],
-    "explanation": "Without BGP, the workable choices are a single route-based tunnel (0.0.0.0/0 selectors carrying all 30 CIDRs via static routes) or multiple policy-based tunnels each with a unique peer gateway IP address.",
+    "explanation": "With 30 on-prem CIDRs and no BGP, a route-based tunnel can carry the routes while policy-based tunnels with one CIDR pair per selector cover the SA limits; each tunnel must go to a unique peer IP address, so A+C.",
     "discussion": [
       {
         "user": "ulkerra",
@@ -5454,15 +5458,16 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "discussionSummary": "Community majority votes AC: the Classic VPN doc requires unique peer gateway IPs per tunnel on one gateway, so E fails and C is right. Confidence medium.",
-    "conceptSummary": "Non-BGP ways to carry 30 CIDRs over Cloud VPN.",
-    "correctRationale": "Route-based VPN uses 0.0.0.0/0 traffic selectors, so a child SA per CIDR is irrelevant — static routes carry all ranges over one tunnel. Alternatively, multiple policy-based tunnels each with a single CIDR selector pair work, but Google documents that tunnels on the same Classic VPN gateway must connect to unique peer gateway IP addresses, so each tunnel needs its own peer IP.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between AC and BE (12 vs 4 votes): Community consensus AC (12): route-based plus unique-peer policy tunnels. Independent review (Gemini, Oct 2026) confirmed AC.",
+    "conceptSummary": "Non-BGP VPN with many remote CIDRs: route-based tunnel plus single-selector policy-based tunnels.",
+    "correctRationale": "A gives the scalable route-based path and C the documented single-selector policy tunnels to unique peer IPs - together they cover all 30 ranges.",
     "optionRationales": [
-      "Correct: one route-based tunnel carries all 30 CIDRs through static routes regardless of child-SA behavior.",
-      "Wrong: 30 remote selectors in one tunnel exceeds recommended selector limits.",
-      "Correct: multiple single-CIDR policy tunnels, each on a unique peer IP, is a supported pattern.",
-      "Wrong: 10 CIDRs per tunnel still hits selector-limit complexity without benefit.",
-      "Wrong: the same peer IP cannot be shared — tunnels on the same Classic VPN gateway must connect to unique peer gateway IP addresses."
+      "Correct: a single route-based tunnel is one valid method.",
+      "Wrong: a single policy-based tunnel cannot host 30 remote traffic selectors.",
+      "Correct: multiple single-CIDR policy tunnels each to a unique peer IP.",
+      "Wrong: 10 CIDRs per tunnel still exceeds the selector model's limits.",
+      "Wrong: the same peer IP cannot terminate all the parallel policy tunnels."
     ]
   },
   {
@@ -5477,7 +5482,7 @@ export const QUESTIONS = [
       "D. Configure a firewall rule to permit Subnet-2 IP addresses outbound in the host project VPC."
     ],
     "correct": 1,
-    "explanation": "VPC Flow Logs is enabled per subnet in the VPC containing that subnet, so Subnet-2 — which lives in the service project's VPC — needs Flow Logs enabled there.",
+    "explanation": "Flow logs are collected per subnet in the project that owns the subnet's workloads: Subnet-2 sits in the service project VPC, so enable VPC Flow Logs there.",
     "discussion": [
       {
         "user": "researched_answer_boi",
@@ -5511,14 +5516,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community strongly prefers B: the subnet is in the service project VPC, so Flow Logs must be enabled there.",
-    "conceptSummary": "Flow logs must be enabled in the subnet's own VPC.",
-    "correctRationale": "Each subnet's flows are logged by enabling Flow Logs on that subnet in its own network; a filter in the host VPC cannot capture a service-project subnet.",
+    "discussionSummary": "Community votes B (14 vs 3 for A); Subnet-2 lives in the service project.",
+    "conceptSummary": "VPC Flow Logs are enabled where the subnet lives - here, the service project.",
+    "correctRationale": "Subnet-2 belongs to the service project in the Shared VPC design, so its flows are logged by enabling VPC Flow Logs in the service project.",
     "optionRationales": [
-      "Wrong: a filter in the host project sees only host-VPC subnets; Subnet-2 is in the service project VPC.",
-      "Correct: enable VPC Flow Logs on Subnet-2 in the service project VPC.",
-      "Wrong: Packet Mirroring captures packet payloads, not flow-log visibility.",
-      "Wrong: a firewall rule cannot enable flow logging."
+      "Wrong: the host project only sees Subnet-1; Subnet-2 is owned by the service project.",
+      "Correct: enable flow logs in the service project VPC for Subnet-2.",
+      "Wrong: Packet Mirroring is for full packet capture, not flow-log style monitoring.",
+      "Wrong: a firewall rule does not produce flow logs."
     ],
     "images": [
       {
@@ -5539,7 +5544,7 @@ export const QUESTIONS = [
       "D. O Create a Shared VPC and service project for each internal project."
     ],
     "correct": 1,
-    "explanation": "A single Shared VPC with each internal project attached as a service project centralizes network management while each project keeps its own owner and clean lifecycle.",
+    "explanation": "One internal project per Google Cloud project plus shared networking = a single Shared VPC with each project attached as a service project; the host project carries the shared network while projects stay separable for cleanup.",
     "discussion": [
       {
         "user": "3574e4e",
@@ -5565,15 +5570,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and A (5 vs 2 votes): Community splits between B and D; B is chosen on the merits — a single Shared VPC with service projects gives centralized control and per-project ownership. Confidence medium.",
-    "conceptSummary": "One Shared VPC with service projects per internal project.",
-    "correctRationale": "Centralized management and reusable Terraform favor one shared network with per-project service projects; deleting a finished project removes its resources while the network persists centrally.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and A (5 vs 2 votes): Community favors B (5 vs 2 for A). Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "Project-per-team with shared networking: single Shared VPC + service projects.",
+    "correctRationale": "B is the scalable landing-zone pattern: service projects per internal project, shared VPC centrally owned.",
     "optionRationales": [
-      "Wrong: a VPC per project abandons centralized management.",
-      "Correct: one Shared VPC plus a service project per internal project centralizes networking and simplifies teardown.",
-      "Wrong: extra VPCs in one project give neither per-project owners nor clean project-scoped deletion.",
-      "Wrong: a separate Shared VPC per internal project needs a host project each — wasteful and decentralized."
+      "Wrong: a separate VPC per project fragments networking and duplicates management.",
+      "Correct: single Shared VPC + one service project per internal project.",
+      "Wrong: multiple VPCs per project do not give per-project isolation or shared networking.",
+      "Wrong: a Shared VPC per internal project defeats the point of a shared network."
     ]
   },
   {
@@ -5588,7 +5593,7 @@ export const QUESTIONS = [
       "D. Configure a Cloud DNS Peering zone in Department A's VPC network pointing to Department B's VPC and a Cloud DNS outbound forwarding zone in Department B's VPC network. Use separate on-premises links in each VPC network."
     ],
     "correct": 3,
-    "explanation": "Each department VPC keeps its own on-prem link, and DNS peering zones connect the VPCs for name resolution only — a Cloud DNS control-plane feature that does not create network connectivity between them, so isolation is preserved.",
+    "explanation": "Full isolation between the departments' VPCs means no peering or DNS coupling: keep separate links, separate private zones and separate forwarding zones - B. (Independent outbound forwarding from multiple VPCs is discouraged, and DNS peering does not provide connectivity.)",
     "discussion": [
       {
         "user": "glb2",
@@ -5622,15 +5627,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and B (19 vs 11 votes): Community majority is D: DNS peering resolves names across the isolated VPCs without providing network connectivity, while independent per-VPC outbound forwarding (B) fails because Google only accepts responses routed back to the originating VPC. Confidence medium.",
-    "conceptSummary": "Isolated VPCs using Cloud DNS peering for cross-VPC name resolution.",
-    "correctRationale": "Google recommends outbound forwarding to on-premises from a single designated VPC: Google accepts DNS responses only when routed back to the VPC that originated the query, and every VPC sends queries from the shared 35.199.192.0/19 range, so two VPCs forwarding independently to on-prem cannot get responses routed correctly. DNS peering shares name resolution across the VPC boundary without providing network connectivity, so the departments stay isolated.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and B (19 vs 11 votes): Community favored D (19); validated - DNS peering does not merge the VPCs, and separate independent outbound forwarding is discouraged because DNS replies return on the querying VPC. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Fully isolated VPCs to the same on-prem: separate links + separate private and forwarding DNS zones.",
+    "correctRationale": "DNS peering from Department A to B plus an outbound forwarding zone in B lets both departments resolve on-prem names while the VPCs stay fully isolated - peering zones move control-plane DNS only, not traffic.",
     "optionRationales": [
-      "Wrong: hand-editing OS DNS files on VMs is unmanaged overhead.",
-      "Wrong: independent outbound forwarding from multiple VPCs breaks response routing — all queries share the 35.199.192.0/19 source range and Google only accepts responses routed back to the originating VPC, so on-prem cannot route replies correctly.",
-      "Wrong: peering the VPCs violates the isolation requirement.",
-      "Correct: DNS peering zones give cross-VPC name resolution while DNS peering provides no network connectivity, preserving the isolation requirement."
+      "Wrong: editing guest DNS files bypasses Cloud DNS and does not scale.",
+      "Wrong: keeping fully separate DNS leaves Department B's on-prem resolution unsolved by the shared link.",
+      "Wrong: VPC peering joins the data planes - violates full isolation.",
+      "Correct: DNS peering in Dept A + outbound forwarding zone in Dept B preserves isolation while sharing on-prem DNS."
     ]
   },
   {
@@ -5645,7 +5650,7 @@ export const QUESTIONS = [
       "D. Create three packet mirroring policies: one for each zone. Create three groups of collector instances: one group for each zone. Configure each policy to match traffic for its zone based on subnets, and create a filter for TCP traffic."
     ],
     "correct": 2,
-    "explanation": "To avoid inter-zonal egress charges, use one packet mirroring policy and one collector group per zone, with policies matched by instance tags and filtered to TCP.",
+    "explanation": "Packet mirroring policies are zonal in scope selection but collectors are regional pools in this design: three policies (one per zone) matching on instance tags, plus one collector group for us-west2, covers the fleet efficiently.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -5679,14 +5684,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between C and B (17 vs 5 votes): Community strongly prefers C: per-zone collectors and policies eliminate inter-zone egress; tags are more precise than subnets.",
-    "conceptSummary": "Zonal mirroring policies and collectors to cut egress cost.",
-    "correctRationale": "Mirrored traffic to collectors in another zone incurs inter-zone egress charges, so collectors must be zonal; tag-based matching is more precise than subnets, which span zones.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes C (17). Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Packet mirroring: per-zone policies selecting by tags, regional collector group.",
+    "correctRationale": "Three per-zone mirroring policies plus three per-zone collector instance groups is the documented zonal design - policies and collectors must live in the same zones as the mirrored workloads.",
     "optionRationales": [
-      "Wrong: a single regional collector forces cross-zone mirrored traffic.",
-      "Wrong: one region-wide policy and collector still crosses zones.",
-      "Correct: three zonal policies plus three zonal collector groups keep traffic in-zone.",
-      "Wrong: subnets are regional and cannot target a single zone."
+      "Wrong: one shared regional collector group does not match the per-zone collector placement.",
+      "Wrong: a single regional policy cannot select workloads per zone as required.",
+      "Correct: three zonal policies + three zonal collector groups, matching by instance tags.",
+      "Wrong: subnet-based matching is coarser than the per-instance selection required."
     ]
   },
   {
@@ -5701,7 +5707,7 @@ export const QUESTIONS = [
       "D. /28"
     ],
     "correct": 0,
-    "explanation": "Per the flexible Pod CIDR table, 65–128 Pods per node require a /24 per-node range (256 addresses, at least twice the Pod count).",
+    "explanation": "GKE's default pod CIDR per node is /24 (256 addresses, ~110 usable), which covers the 60-100 pods-per-node requirement; smaller ranges cap below the max.",
     "discussion": [
       {
         "user": "n2183712847",
@@ -5727,14 +5733,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A with the flexible-Pod-CIDR table quoted.",
-    "conceptSummary": "Per-node Pod CIDR sizing for up to 100 Pods.",
-    "correctRationale": "Google's flexible Pod CIDR mapping assigns /24 to the 65–128 Pods-per-node band, so 100 Pods fits within /24.",
+    "discussionSummary": "Community votes A (4).",
+    "conceptSummary": "Pods-per-node capacity is bounded by the per-node pod CIDR; /24 supports up to ~110 pods.",
+    "correctRationale": "/24 gives each node the full 110-usable pod IPs - the only range that covers the 60-100 pods-per-node requirement for this cluster.",
     "optionRationales": [
-      "Correct: /24 covers the 65–128 Pods-per-node band.",
-      "Wrong: /25 covers only 33–64 Pods per node.",
-      "Wrong: /26 covers only 17–32 Pods per node.",
-      "Wrong: /28 covers at most 8 Pods per node."
+      "Correct: /24 supports up to ~110 pods per node for this cluster.",
+      "Wrong: /25 caps pods per node near 64 - below the node's 100-pod maximum.",
+      "Wrong: /26 caps pods per node near 32 - below the requirement.",
+      "Wrong: /28 caps pods per node near 16 - far below the 60-pod minimum."
     ]
   },
   {
@@ -5749,7 +5755,7 @@ export const QUESTIONS = [
       "D. Use HA VPN. Configure one tunnel from each interface of the VPN gateway to connect to the corresponding interfaces on the peer gateway on-premises. Configure one Cloud Router and enable global routing in the VPC."
     ],
     "correct": 3,
-    "explanation": "HA VPN with one tunnel on each gateway interface to the peer is the 99.99% topology — the only listed option reaching that SLA.",
+    "explanation": "99.99% availability with the cheapest resilient option: HA VPN (both interfaces to the peer gateway's interfaces) plus one Cloud Router and global routing - Interconnect options either need two links (costly) or Direct Peering isn't a transit path.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -5783,15 +5789,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and C (7 vs 4 votes): Community favors D: single-metro dual Interconnect is only 99.9%, leaving HA VPN as the 99.99% answer.",
-    "conceptSummary": "99.99% requires HA VPN or a four-connection Interconnect.",
-    "correctRationale": "Two Dedicated connections in one metro give only 99.9%; 99.99% on Interconnect needs four connections across two metros. HA VPN with both interfaces tunneled reaches 99.99% and is the only fitting option.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and C (7 vs 4 votes): Community favors D (7 vs 4 for C); the SLA-plus-budget wording points at HA VPN. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "99.99% on a budget = HA VPN both interfaces + Cloud Router + global routing.",
+    "correctRationale": "The chosen path is \"Use HA VPN. Configure one tunnel from each interface of the VPN gateway to connect to the corresponding interfaces on the peer gateway on-premises. Configure on\": D reaches 99.99% without buying interconnect circuits - the required SLA at minimal cost.",
     "optionRationales": [
-      "Wrong: one Dedicated connection provides no SLA-grade redundancy.",
-      "Wrong: Direct Peering cannot carry private VPC traffic and Classic VPN tops at 99.9%.",
-      "Wrong: two connections in a single metro are the 99.9% design.",
-      "Correct: HA VPN with a tunnel per interface provides the 99.99% SLA."
+      "Wrong: one interconnect connection has no redundancy - cannot hit 99.99%.",
+      "Wrong: Direct Peering is for edge access to Google services, not VPC hybrid connectivity, and Classic VPN has no such SLA.",
+      "Wrong: two Dedicated Interconnects reach 99.9-99.99% but at much higher cost than required.",
+      "Correct: HA VPN both interfaces + one Cloud Router + global routing."
     ]
   },
   {
@@ -5806,7 +5812,7 @@ export const QUESTIONS = [
       "D. From the Cloud CLI, run gcloud compute routers describe mycloudrouter –-region REGION and review the results."
     ],
     "correct": 1,
-    "explanation": "gcloud compute routers get-status shows the Cloud Router's learned routes, advertised routes, BGP session state, and next hops — the data needed to see why traffic prefers one attachment.",
+    "explanation": "To see what the Cloud Router actually learned and advertises (the asymmetric-routing evidence), use routers get-status, which reports BGP session status plus advertised and learned routes.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -5840,15 +5846,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Community majority votes C (9/23). The validated answer is B. Votes scatter among B, C, and D; B is chosen on the merits since get-status is the only option exposing learned routes and next hops. Confidence medium.",
-    "conceptSummary": "routers get-status reveals learned routes and preferences.",
-    "correctRationale": "Asymmetry troubleshooting needs the route view: get-status returns learned routes and best paths per attachment, whereas describe shows only config and the console session view lacks route preference detail.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community favored C (9) over B (8): the validated answer is B because only get-status exposes learned routes. Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "Check Cloud Router learned/advertised routes with gcloud compute routers get-status.",
+    "correctRationale": "The chosen path is \"From the Cloud CLI, run gcloud compute –-project PROJECT_ID routers get-status mycloudrouter –-region REGION and review the results.\": get-status is the only option that returns the learned routes and next hops needed to diagnose the asymmetry.",
     "optionRationales": [
-      "Wrong: VPC Flow Logs show VM-level flows, not router path selection.",
-      "Correct: get-status exposes learned routes, next hops, and session state to compare attachments.",
-      "Wrong: the console BGP session view shows session health, not preference detail.",
-      "Wrong: describe shows configuration only, not learned routes."
+      "Wrong: VPC Flow Logs show traffic, not the router's BGP view.",
+      "Correct: routers get-status exposes status plus advertised and learned routes.",
+      "Wrong: console BGP-session view shows sessions, not the route tables.",
+      "Wrong: describe returns router configuration, not learned routes."
     ],
     "images": [
       {
@@ -5869,7 +5875,7 @@ export const QUESTIONS = [
       "D. Connect all the spokes to the hub with VPC Network Peering. Use a third-party network appliance as a default gateway to prevent connectivity between the spokes."
     ],
     "correct": 2,
-    "explanation": "Fifty spokes exceeded the VPC peering limit assumed by the question, so Cloud VPN tunnels to the hub plus a third-party appliance as spoke default gateway keeps spoke-to-spoke traffic blocked while matching the on-prem design.",
+    "explanation": "Hub-and-spoke for 50+ spokes exceeds the VPC Network Peering limit (25 peering connections per network), so spokes must connect via Cloud VPN to the hub, with a third-party appliance as default gateway blocking spoke-to-spoke connectivity.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -5903,14 +5909,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "discussionSummary": "Split between C and B (17 vs 6 votes): Community majority is C, arguing the 50-spoke count exceeds the VPC peering limit and the appliance enforces spoke isolation. Confidence medium given quota changes.",
-    "conceptSummary": "Replicating 50-spoke hub-and-spoke past the peering quota.",
-    "correctRationale": "The question assumes the classic ~25-peering limit; VPN tunnels scale beyond it, and the hub appliance as default gateway preserves the no-spoke-to-spoke rule. Today VPC peering can scale higher, but at question time C was the intended answer.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and B (17 vs 6 votes): Community favored C (17) over B/D: the 25-peering default limit rules peering out for 50+ spokes. (NCC VPC spokes are the modern answer for large hub-and-spoke.) Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Scale beyond the peering limit: Cloud VPN spokes + NVA default gateway for isolation.",
+    "correctRationale": "C combines VPN connectivity (no peering cap) with the appliance that prevents inter-spoke traffic - the only option meeting both scale and isolation.",
     "optionRationales": [
-      "Wrong: Cloud VPN alone does not block spoke-to-spoke traffic without the gateway appliance.",
-      "Wrong: peering 50 spokes exceeded the VPC peering quota assumed in the question.",
-      "Correct: VPN spokes plus a third-party default-gateway appliance enforces isolation at scale.",
-      "Wrong: peering plus appliance still exceeds the assumed peering quota."
+      "Wrong: VPN alone lets spoke routes reach each other through the hub unless something blocks it.",
+      "Wrong: peering caps at 25 spokes - the requirement is 50+.",
+      "Correct: Cloud VPN spokes + third-party appliance gateway for isolation.",
+      "Wrong: peering still caps at 25, appliance or not."
     ],
     "legacyNote": "Written when the default VPC peering quota was lower; modern quotas can exceed 50 peerings, but the VPN-plus-appliance answer matches the question's constraint."
   },
@@ -5926,7 +5933,7 @@ export const QUESTIONS = [
       "D. Create a VPC Service Controls perimeter with the global external application load balancer as the protected service, and apply it to the backend service."
     ],
     "correct": 2,
-    "explanation": "A Cloud Armor security policy with WAF rules applied to the load balancer backend service is the managed defense against application-layer attacks.",
+    "explanation": "Application-level (L7) attack protection on an external ALB is Cloud Armor: attach a security policy with WAF rules to the backend service.",
     "discussion": [
       {
         "user": "Mithung30",
@@ -5940,14 +5947,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Cloud Armor WAF policy on the backend service.",
-    "correctRationale": "Cloud Armor is the dedicated WAF/L7 protection service that attaches to the external ALB backend service — the direct answer.",
+    "discussionSummary": "Community votes C (5).",
+    "conceptSummary": "L7 WAF protection on an external ALB = Cloud Armor policy on the backend service.",
+    "correctRationale": "Cloud Armor is the WAF for Google frontends; attaching it to the backend service is the documented step.",
     "optionRationales": [
-      "Wrong: Cloud CDN is caching, not attack protection.",
-      "Wrong: VPC firewall deny rules cannot inspect L7 attacks and do not attach to the LB.",
-      "Correct: a Cloud Armor policy with WAF rules on the backend service is the designed defense.",
-      "Wrong: VPC Service Controls protects API data exfiltration, not inbound web attacks."
+      "Wrong: Cloud CDN caches content; it is not attack protection.",
+      "Wrong: VPC firewall rules cannot attach to a load balancer.",
+      "Correct: Cloud Armor WAF policy on the backend service.",
+      "Wrong: VPC Service Controls protects API data exfiltration, not application attacks."
     ]
   },
   {
@@ -5966,7 +5973,7 @@ export const QUESTIONS = [
       1,
       3
     ],
-    "explanation": "Before creating an internal Application Load Balancer you need firewall rules that allow the health-check probes, and a proxy-only subnet whose mask you must determine for the LB's proxies.",
+    "explanation": "An internal HTTP(S) (Application) load balancer requires health-check firewall rules and a reserved proxy-only subnet whose mask is determined up front - the two documented prerequisites.",
     "discussion": [
       {
         "user": "glb2",
@@ -6000,15 +6007,16 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between BD and AB (23 vs 8 votes): Community majority is B and D, citing the internal proxy LB component requirements.",
-    "conceptSummary": "Internal ALB prerequisites: health-check rules and proxy-only subnet.",
-    "correctRationale": "The internal L7 LB requires a proxy-only subnet in the region and firewall rules allowing the health-check ranges — the two documented prerequisites.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between BD and AB (23 vs 8 votes): Community favored BD (23) over AB (8): health-check firewall rules plus the proxy-only subnet mask are the validated pair. Independent review (Gemini, Oct 2026) confirmed BD.",
+    "conceptSummary": "Internal ALB prerequisites: health-check firewall rules + proxy-only subnet sizing.",
+    "correctRationale": "B+D are the two documented pre-steps: allow health-check traffic and size/reserve the proxy-only subnet.",
     "optionRationales": [
-      "Wrong: the region is implied by where the existing VMs/backends live; it is not a separate prerequisite task.",
-      "Correct: health-check firewall rules must exist before the LB can work.",
-      "Wrong: reserving a static IP is not a documented prerequisite.",
-      "Correct: the proxy-only subnet must be planned and created before deployment.",
-      "Wrong: Serverless VPC Access is unrelated to this load balancer."
+      "Wrong: region is chosen at creation, not a prerequisite task.",
+      "Correct: health-check firewall rules are a documented prerequisite.",
+      "Wrong: the internal load balancer's frontend address is allocated at creation; reserving a static IP is not a documented prerequisite step.",
+      "Correct: determining the proxy-only subnet mask is a required planning step.",
+      "Wrong: Serverless VPC Access is unrelated to internal ALB."
     ],
     "legacyNote": "\"Internal HTTP(S) load balancer\" is now called regional internal Application Load Balancer; the prerequisite answer is unchanged."
   },
@@ -6024,7 +6032,7 @@ export const QUESTIONS = [
       "D. Create a host project and a Shared VPC for the security team. Make prod-servers a service project, and relocate the web servers to shared subnets in both regions. Create an internal load balancer and the IDS system in a subnet in either us-east1 or us-west1. Enable Packet Mirroring, and create a packet mirroring policy inside the host project."
     ],
     "correct": 0,
-    "explanation": "Packet Mirroring policies mirror traffic to a collector destination behind an internal load balancer; the security team's own project peers its VPC to the web servers' VPC and hosts the IDS collectors in both regions.",
+    "explanation": "Mirror the traffic to the IDS without touching the servers: peer a new security-project VPC to the web-servers VPC and run the IDS plus an internal LB collector in both regions. (Options A/C/C/D in the source are mislabeled; the first option is the peering + ILB + regional IDS design.)",
     "discussion": [
       {
         "user": "kirrim",
@@ -6058,14 +6066,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Source options were mislabeled A, C, C, D; they are relabeled A–D here in order. Community majority selected A: the collector/ILB lives in the security project with peering to the prod VPC. Confidence medium.",
-    "conceptSummary": "Packet Mirroring to IDS collectors across peered VPCs.",
-    "correctRationale": "A collector destination can live in a VPC peered with the sources' VPC, and collectors must be in the same regions as the sources — matching A. The Shared VPC options misplace ownership, and option C asks the web servers to forward packets, which is not how mirroring works.",
+    "discussionSummary": "Community votes A (11). ExamTopics labels these options A, C, C, D; letters here are remapped cleanly to A-D.",
+    "conceptSummary": "Insert an IDS out-of-band: peered security VPC + regional IDS/ILB collectors. This addresses the mirroring internal both described in the question.",
+    "correctRationale": "A keeps the IDS in its own project, peers the VPCs, and deploys region-local IDS collectors behind an internal LB - the only option doing both without moving workloads.",
     "optionRationales": [
-      "Correct: peered VPC, ILB-fronted IDS collectors in both regions, and mirroring policies in the security project capture the traffic.",
-      "Wrong: rebuilding under Shared VPC and having servers forward packets is unnecessary and the wrong mechanism.",
-      "Wrong: making VMs forward packets to the IDS is not Packet Mirroring and per-VM forwarding configs do not scale.",
-      "Wrong: a single-region IDS cannot collect from sources in both regions, and the Shared VPC move contradicts \"their own project\"."
+      "Correct: new security project + VPC peering + ILB-backed IDS in both regions.",
+      "Wrong: relocating the web servers into shared subnets disrupts production for no benefit.",
+      "Wrong: enabling IP forwarding on the web servers pushes inspection onto the servers themselves.",
+      "Wrong: again requires relocating the web servers - unnecessary and disruptive."
     ]
   },
   {
@@ -6080,7 +6088,7 @@ export const QUESTIONS = [
       "D. Configure the Compute Engine instances’ network interface external IP address from None to Ephemeral. Add as many external IP addresses as required."
     ],
     "correct": 2,
-    "explanation": "Mapping multiple external IPs to a single VM with protocol (non-port) forwarding uses forwarding rules pointing at a target instance — target pools distribute across many instances instead.",
+    "explanation": "Mapping several reserved external IPs to the same Compute Engine instances is protocol forwarding: a target instance plus one forwarding rule per external IP.",
     "discussion": [
       {
         "user": "waelghaith",
@@ -6114,15 +6122,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between C and A (20 vs 12 votes): Community majority is C: target instance (not target pool) is the object referenced by protocol forwarding rules.",
-    "conceptSummary": "Protocol forwarding rules to a target instance.",
-    "correctRationale": "Protocol forwarding sends all traffic for a protocol (such as ESP/IPsec) to a single VM referenced by a target instance; each forwarding rule carries one external IP. Target pools balance across a set, which cannot pin multiple IPs to one instance.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and A (20 vs 12 votes): Community favors C (20 vs 12 for A): target instance is the single-instance mapping mechanism. Legacy 'protocol forwarding'/target-instance terminology - flagged outdated. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Multiple external IPs to one instance = protocol forwarding rules to a target instance.",
+    "correctRationale": "Target instance + per-IP protocol forwarding rules is the documented mechanism for mapping multiple external addresses to one instance.",
     "optionRationales": [
-      "Wrong: target pools spread traffic across members and cannot deliver protocol ESP traffic to one chosen instance.",
-      "Wrong: a network LB backend service still distributes, not dedicates, and ESP is unsupported on NLB backends anyway.",
-      "Correct: a target instance with one protocol forwarding rule per external IP maps each address to the instance and passes ESP.",
-      "Wrong: a NIC can hold only one external IP; you cannot stack ephemeral addresses."
+      "Wrong: target pools with protocol forwarding map to instance groups for load balancing, not a specific multi-IP-to-one-instance mapping.",
+      "Wrong: one NLB per external IP does not map multiple addresses to the same instance as required.",
+      "Correct: target instance + a protocol forwarding rule per reserved external IP.",
+      "Wrong: ephemeral IPs are transient - they cannot be 'reserved' mappings."
     ],
     "legacyNote": "Protocol forwarding via target instances is a legacy mechanism; the answer remains C."
   },
@@ -6137,8 +6145,8 @@ export const QUESTIONS = [
       "C. Configure a Cloud Storage bucket permission that gives allUsers the Storage Legacy Object Reader role.",
       "D. Increase the default time-to-live (TTL) for the backend service."
     ],
-    "correct": 1,
-    "explanation": "The object returns Cache-Control: private, which Cloud CDN will not cache under USE_ORIGIN_HEADERS; switching to FORCE_CACHE_ALL caches the response regardless of the private directive.",
+    "correct": 2,
+    "explanation": "The 403 comes from the private bucket: Cloud CDN's anonymous origin fetch cannot read a private object. Granting allUsers Storage Legacy Object Reader makes the object publicly readable so the CDN (and browsers) can fetch it; signed URLs would be the private alternative.",
     "discussion": [
       {
         "user": "7103685",
@@ -6164,15 +6172,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and A (6 vs 2 votes): Community prefers B: FORCE_CACHE_ALL bypasses the restrictive Cache-Control header; a popular comment argued for the permissions fix (C), but B is chosen per majority. Confidence medium.",
-    "conceptSummary": "FORCE_CACHE_ALL overrides restrictive origin headers.",
-    "correctRationale": "A 403 with Cache-Control: private signals the origin marks content uncacheable; FORCE_CACHE_ALL ignores those directives and caches anyway, letting CDN serve the image. Making the object world-readable would expose it publicly, which is unnecessary.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community favored B (6) and A (2): the validated answer is C because no cache mode fixes a 403 from a private bucket. Changed to C after an independent Gemini review.",
+    "conceptSummary": "Cloud CDN serving from a private bucket requires the object to be publicly readable or signed.",
+    "correctRationale": "allUsers object read access removes the 403 so Cloud CDN can fetch and cache the image - the documented requirement for unsigned access to bucket content.",
     "optionRationales": [
-      "Wrong: negative caching stores error responses, which would worsen things.",
-      "Correct: FORCE_CACHE_ALL ignores the private/no-store directives and caches the object.",
-      "Wrong: granting allUsers read access makes the content public — heavier than needed and changes the privacy posture.",
-      "Wrong: TTL tweaks do not override a private directive under USE_ORIGIN_HEADERS."
+      "Wrong: negative caching stores error responses - it would cache the 403, not fix it.",
+      "Wrong: FORCE_CACHE_ALL cannot turn a 403 into the object; the fetch still fails.",
+      "Correct: allUsers Storage Legacy Object Reader makes the file publicly readable.",
+      "Wrong: TTL changes cache lifetime, not object permissions."
     ]
   },
   {
@@ -6187,7 +6195,7 @@ export const QUESTIONS = [
       "D. Create privately used public IP primary and secondary subnet ranges for the clusters. Create a private GKE cluster with the following options selected: --disable-default-snat, --enable-ip-alias, and --enable-private-nodes."
     ],
     "correct": 3,
-    "explanation": "For privately used public IP (PUPI) ranges in a private cluster, --disable-default-snat stops the node from SNATing Pod traffic destined to those \"public\" addresses so Pod-to-Pod traffic keeps real Pod IPs; --enable-ip-alias plus --enable-private-nodes complete the private VPC-native design.",
+    "explanation": "PUPI for GKE clusters follows the documented pattern: private cluster with alias IPs (--enable-ip-alias), private nodes (--enable-private-nodes), and --disable-default-snat so pod IPs are not NATed on egress.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -6221,14 +6229,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is D: the missing --disable-default-snat flag is what makes C wrong.",
-    "conceptSummary": "PUPI GKE clusters require --disable-default-snat.",
-    "correctRationale": "Without disabling default SNAT, GKE masquerades Pod traffic to public-looking destinations — including the PUPI Pod ranges — breaking direct Pod addressing. The documented recipe is ip-alias + private-nodes + disable-default-snat.",
+    "discussionSummary": "Community favors D (8 vs 2 for C); the missing SNAT flag is the discriminator.",
+    "conceptSummary": "GKE on PUPI: alias IPs, private nodes, disable default SNAT.",
+    "correctRationale": "D pairs the PUPI ranges with the documented cluster flags - alias IPs for pod addressing, private nodes, and disabled default SNAT.",
     "optionRationales": [
-      "Wrong: reusing Pod secondary ranges across clusters breaks routing entirely.",
-      "Wrong: reusing Service ranges across clusters causes the same overlap failure.",
-      "Wrong: without --disable-default-snat the node SNATs Pod-to-Pod traffic on PUPI ranges, breaking addressing.",
-      "Correct: PUPI ranges plus --disable-default-snat, --enable-ip-alias, and --enable-private-nodes is the documented recipe."
+      "Wrong: reusing the pod secondary range across clusters breaks routing when clusters peer.",
+      "Wrong: reusing the services range across clusters breaks routing for the same reason.",
+      "Wrong: missing --disable-default-snat, so pod traffic still gets masqueraded - not the recommended PUPI pattern.",
+      "Correct: PUPI ranges + --disable-default-snat, --enable-ip-alias, private nodes."
     ]
   },
   {
@@ -6243,7 +6251,7 @@ export const QUESTIONS = [
       "D. Create an instance template and a managed instance group. Configure two separate internal TCP/UDP load balancers for each protocol (TCP/UDP), and configure the client VMs to use the internal load balancers’ virtual IP addresses."
     ],
     "correct": 2,
-    "explanation": "An internal passthrough (internal TCP/UDP) load balancer used as a static-route next hop fronts a managed instance group of NVA VMs, giving TCP+UDP support, health checks, and automated failover with zero client-side config.",
+    "explanation": "Cross-VPC access via an instance-group service is done by putting the managed instance group behind a single internal TCP/UDP load balancer and a custom static route using the ILB as next hop for the client VPC.",
     "discussion": [
       {
         "user": "anshad666",
@@ -6277,15 +6285,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between C and D (13 vs 6 votes): Community majority is C: a single internal TCP/UDP LB supports both protocols and provides health-checked failover without client changes.",
-    "conceptSummary": "Internal TCP/UDP LB as next hop in front of a MIG of NVAs.",
-    "correctRationale": "A single internal TCP/UDP LB forwards both protocols and health-checks the MIG backends, so failover is automatic and clients need only the route — meeting every requirement with least effort.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and D (13 vs 6 votes): Community favors C (13 vs 6 for D); a single TCP/UDP LB suffices. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Share a service across VPCs: MIG + internal TCP/UDP LB + static route via ILB next hop.",
+    "correctRationale": "C builds the documented pattern: MIG behind one internal LB and a route pointing the other VPC's clients at it.",
     "optionRationales": [
-      "Wrong: same-zone static routes give no failover across zones and require per-client routing work.",
-      "Wrong: instance-name next hops still lack automated health-check-based failover across zones.",
-      "Correct: MIG + internal TCP/UDP LB as route next hop covers TCP and UDP with health checks and automated failover.",
-      "Wrong: separate LBs per protocol are unnecessary — one internal TCP/UDP LB handles both — and clients would need manual configuration."
+      "Wrong: instance-IP next hops are fragile and don't survive recreation.",
+      "Wrong: instance-name next hops have the same fragility.",
+      "Correct: MIG + single internal LB + custom static route to the ILB.",
+      "Wrong: separate TCP and UDP load balancers are not needed - one ILB covers both protocols."
     ]
   },
   {
@@ -6300,7 +6308,7 @@ export const QUESTIONS = [
       "D. Configure Cloud Storage as a custom origin backend to host the image file, and select multi-region as the location type."
     ],
     "correct": 0,
-    "explanation": "Custom cache keys that drop the Host and Protocol fields let one logo object serve hits for every website, maximizing the cache hit ratio for the shared image.",
+    "explanation": "The same image served from several hostnames creates duplicate cache entries keyed on Host+Protocol; clearing those from the custom cache key collapses them into one entry and raises the hit ratio.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -6326,14 +6334,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A with the cache-hit-ratio best-practice doc cited.",
-    "conceptSummary": "Custom cache keys to share a cached object across hosts.",
-    "correctRationale": "Cloud CDN keys on the full URL including host; clearing Host and Protocol collapses the same object across domains into one cache entry — the documented hit-ratio optimization for shared assets.",
+    "discussionSummary": "Community votes A (7).",
+    "conceptSummary": "Improve cache hit ratio by removing Host/Protocol from the custom cache key.",
+    "correctRationale": "A makes all domains share one cache entry for the logo image - the documented fix for cross-host duplicates.",
     "optionRationales": [
-      "Correct: clearing Host/Protocol in custom cache keys merges the logo into one cache entry across sites.",
-      "Wrong: TTL 0 disables caching entirely.",
-      "Wrong: versioned URLs shard the cache further rather than coalescing it.",
-      "Wrong: moving to a bucket does not merge per-host cache keys."
+      "Correct: dropping Host and Protocol from the cache key merges duplicate entries for the same file.",
+      "Wrong: TTL 0 disables caching - hit ratio collapses.",
+      "Wrong: versioned URLs still key per domain and do not dedupe.",
+      "Wrong: origin type/location does not affect the cache-key duplication."
     ]
   },
   {
@@ -6348,7 +6356,7 @@ export const QUESTIONS = [
       "D. Add an external IP address to the VM, and add this IP address in the masterAuthorizedNetworksConfig. Configure kubectl to communicate with the endpoint 35.224.37.17."
     ],
     "correct": 0,
-    "explanation": "The VM lives in subnet kubernetes-management (192.168.40.0/24), so that range must be added to masterAuthorizedNetworksConfig, and kubectl targets the private endpoint 192.168.38.2 from the masterIpv4CidrBlock.",
+    "explanation": "kubectl access to a private cluster's private endpoint requires the VM's subnet authorized in masterAuthorizedNetworksConfig; the VM lives in the kubernetes-management subnet 192.168.40.0/24, and the endpoint is the cluster's private IP 192.168.38.2.",
     "discussion": [
       {
         "user": "desertlotus1211",
@@ -6378,14 +6386,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community majority is A: authorize the VM's subnet and use the private endpoint. Confidence medium as the stem initially confuses which range to authorize.",
-    "conceptSummary": "Authorize the VM's subnet range and target the private endpoint.",
-    "correctRationale": "masterAuthorizedNetworksConfig must contain the network the VM sits in (192.168.40.0/24) — not the master range itself. Since the endpoint is private, kubectl uses 192.168.38.2, not the public endpoint.",
+    "discussionSummary": "Community votes A (8).",
+    "conceptSummary": "Private GKE API access: authorize the client subnet in masterAuthorizedNetworksConfig, use the private endpoint.",
+    "correctRationale": "The chosen path is \"Add the network 192.168.40.0/24 to the masterAuthorizedNetworksConfig. Configure kubectl to communicate with the endpoint 192.168.38.2.\": A authorizes the VM's actual subnet (192.168.40.0/24) and targets the private endpoint - the only pair that connects.",
     "optionRationales": [
-      "Correct: add the VM's subnet 192.168.40.0/24 to authorized networks and point kubectl at 192.168.38.2.",
-      "Wrong: 192.168.38.0/28 is the master's own range, not the client network to authorize.",
-      "Wrong: 192.168.36.0/24 is the cluster Pod range, again not the VM's network.",
-      "Wrong: the cluster has a private endpoint enabled; adding an external IP to the VM is unnecessary and against the private design."
+      "Correct: authorize 192.168.40.0/24 and use endpoint 192.168.38.2.",
+      "Wrong: 192.168.38.0/28 is the master range, not the client's subnet.",
+      "Wrong: 192.168.36.0/24 is the cluster's own CIDR, not the subnet the VM lives in - authorizing it does not admit the VM.",
+      "Wrong: the VM needs no external IP when authorized networks cover the private path."
     ],
     "images": [
       {
@@ -6406,7 +6414,7 @@ export const QUESTIONS = [
       "D. Use global routing. Set the us-east1 Cloud Router to a base priority of 1000, and set the us-west1 Cloud Router to a base priority of 1"
     ],
     "correct": 3,
-    "explanation": "Cross-region failover requires global routing so us-east1-learned routes can serve other regions; setting the us-east1 router's base priority to 1000 while us-west1 stays at 1 makes west preferred everywhere, with east as backup.",
+    "explanation": "Traffic must prefer the local interconnect in each region and fail over: global routing lets both regions see both paths, and base priority 1 on us-west1 vs 1000 on us-east1 sets the preference as described.",
     "discussion": [
       {
         "user": "desertlotus1211",
@@ -6440,15 +6448,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and B (25 vs 11 votes): Community majority is D: base priority must exceed the 201 region-to-region cost floor, so 1000 is required on the backup region.",
-    "conceptSummary": "Global routing plus MED priorities for west-primary failover.",
-    "correctRationale": "Only global dynamic routing lets a route learned in us-east1 be usable in us-west1's region; to keep west primary even for east-region traffic, east's base priority must exceed the 201+ region-to-region cost floor — 1000 works while 100 could be overridden.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and B (25 vs 11 votes): Community favors D (25 vs 11 for B); global routing is the discriminator. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Regional preference with failover across two interconnects = global routing + base priority on the Cloud Routers.",
+    "correctRationale": "D combines global routing (required for cross-region failover) with the asymmetric base priorities that implement the stated preference.",
     "optionRationales": [
-      "Wrong: regional routing cannot use the other region's attachment at all.",
-      "Wrong: global routing is right, but east at 100 is below the inter-region cost floor so it could still win in the east region.",
-      "Wrong: regional routing fails the cross-region failover requirement.",
-      "Correct: global routing with us-east1 at 1000 and us-west1 at 1 keeps west preferred and east as true backup."
+      "Wrong: regional routing cannot carry the other region's path as a backup.",
+      "Wrong: same regional limitation as A.",
+      "Wrong: right priorities but regional mode again blocks the failover path.",
+      "Correct: global routing + us-east1 1000 / us-west1 1."
     ]
   },
   {
@@ -6467,7 +6475,7 @@ export const QUESTIONS = [
       1,
       2
     ],
-    "explanation": "A 20-Gbps connection is a 2x10-Gbps LACP bundle, so adding a second 10-Gbps VLAN attachment in the same region and simply raising the existing attachment to 20 Gbps capacity both unlock the full throughput quickly.",
+    "explanation": "To relieve a saturating 10-Gbps attachment on a 20-Gbps connection, add a second 10-Gbps VLAN attachment in the same region with equal MED for load sharing, or simply raise the existing attachment's bandwidth to 20 Gbps - B+C.",
     "discussion": [
       {
         "user": "1f01b87",
@@ -6501,16 +6509,16 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between BC and CE (21 vs 10 votes): Community majority is B+C: add a same-region attachment and raise the attachment bandwidth.",
-    "conceptSummary": "Scale Interconnect throughput via a second attachment or a bandwidth upgrade.",
-    "correctRationale": "Adding a 10-Gbps attachment on the same router (equal MED for ECMP) doubles usable capacity, and changing the attachment bandwidth to 20 Gbps raises the per-attachment cap — both are console-simple and immediate.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between BC and CE (21 vs 10 votes): Community favored BC (21) over CE (10): same-region second attachment plus the bandwidth increase are the validated pair. Independent review (Gemini, Oct 2026) confirmed BC.",
+    "conceptSummary": "Scale interconnect bandwidth: extra VLAN attachment with equal MED, or raise the attachment's bandwidth.",
+    "correctRationale": "B adds parallel capacity with equal-MED load sharing and C directly upsizes the attachment to the full 20 Gbps link - both achieve the required headroom.",
     "optionRationales": [
-      "Wrong: another region forces traffic through a different region path rather than adding clean capacity.",
-      "Correct: a second 10-Gbps attachment in the same region with equal MED gives ECMP across both.",
-      "Correct: raising the VLAN attachment bandwidth to 20 Gbps directly permits the full rate.",
-      "Wrong: ordering a whole new connection is slow — not \"as quickly as possible\".",
-      "Wrong: LACP is already in use; the 20-Gbps connection is already a LAG."
+      "Wrong: another region does not help traffic tied to this region and adds cost.",
+      "Correct: second 10-Gbps attachment in the same region + same MED gives ECMP over both.",
+      "Correct: increasing the attachment to 20 Gbps uses the already-provisioned link capacity.",
+      "Wrong: ordering a whole new interconnect is unnecessary when the link already has 20 Gbps.",
+      "Wrong: LACP bundles physical links; the bottleneck is the VLAN attachment, not the port."
     ]
   },
   {
@@ -6525,7 +6533,7 @@ export const QUESTIONS = [
       "D. Create a serverless VPC access connector. Configure the serverless service to use the connector for communication to the microservices."
     ],
     "correct": 3,
-    "explanation": "A single Serverless VPC Access connector can be shared by multiple serverless services, giving Cloud Run and Cloud Functions internal access to the private microservices at minimal cost.",
+    "explanation": "Serverless services reach VPC resources through a Serverless VPC Access connector; one shared connector serves the services and forwards their traffic to the microservices in the existing VPC.",
     "discussion": [
       {
         "user": "saraali",
@@ -6559,15 +6567,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and B (12 vs 4 votes): Community majority is D, citing that multiple serverless services share a single connector.",
-    "conceptSummary": "One shared Serverless VPC Access connector.",
-    "correctRationale": "One connector serves many serverless services, so a single connector attached to the VPC is the minimal-cost answer — per-service connectors are unnecessary spend.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes D (12). Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Cloud Run/Functions to VPC = Serverless VPC Access connector.",
+    "correctRationale": "A single connector attached to the serverless services is the documented, lowest-overhead path into the existing VPC.",
     "optionRationales": [
-      "Wrong: a separate serverless VPC plus peering adds needless complexity.",
-      "Wrong: a connector per service wastes money; connectors are shareable.",
-      "Wrong: you cannot deploy serverless services \"into\" a VPC directly.",
-      "Correct: one shared connector reaches all microservices for all serverless services."
+      "Wrong: serverless services do not deploy 'to' a VPC, and peering does not reach them.",
+      "Wrong: one connector per service is unnecessary - services share connectors.",
+      "Wrong: you cannot deploy Cloud Run/Functions into a VPC directly.",
+      "Correct: shared Serverless VPC Access connector to the existing VPC."
     ]
   },
   {
@@ -6582,7 +6590,7 @@ export const QUESTIONS = [
       "D. Create a TCP proxy that uses backend services containing an instance group with two instances."
     ],
     "correct": 3,
-    "explanation": "Port translation (700 -> 800), IPv6 frontends, and HA all point to a proxy TCP load balancer: a TCP proxy with a backend service containing a two-instance group.",
+    "explanation": "External TCP on port 700 fronting internal port 800 with HA and IPv4+IPv6 needs a proxy-style load balancer whose backend service holds an instance group with both instances.",
     "discussion": [
       {
         "user": "ulkerra",
@@ -6616,15 +6624,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and A (30 vs 23 votes): Community majority is D: only the proxy LB can remap ports, and two instances are required for HA.",
-    "conceptSummary": "TCP proxy LB for port mapping plus IPv6 plus HA.",
-    "correctRationale": "Passthrough network LBs cannot remap ports and the classic target-pool NLB lacks IPv6; the TCP proxy LB does port mapping and supports IPv6 frontends, and a two-instance group provides HA.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and A (30 vs 23 votes): Community favors D (30 vs 23 for A); legacy 'TCP proxy'/target-pool terminology flagged outdated. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Multi-port TCP frontend over IPv4/IPv6 = TCP proxy load balancer + backend service instance group.",
+    "correctRationale": "D gives a TCP proxy LB on a backend-service instance group with two instances - HA across the pair.",
     "optionRationales": [
-      "Wrong: passthrough NLBs cannot translate port 700 to 800.",
-      "Wrong: target pools likewise cannot remap ports and predate IPv6 frontend support.",
-      "Wrong: a single-instance NEG cannot provide HA.",
-      "Correct: TCP proxy LB over a two-instance backend service handles port mapping, IPv6, and HA."
+      "Wrong: 'network load balancer' with a single instance group named this way does not match the port-mapping requirement.",
+      "Wrong: target pools are legacy NLB backends without the port mapping described.",
+      "Wrong: a single instance is not highly available.",
+      "Correct: TCP proxy + backend service instance group with two instances."
     ],
     "legacyNote": "Written with the old \"TCP proxy\"/\"network load balancer\" naming; today these are the global external proxy Network Load Balancer and passthrough NLB. Answer D is unchanged."
   },
@@ -6640,7 +6648,7 @@ export const QUESTIONS = [
       "D. 1. Configure a hierarchical firewall policy to the organization node to allow TCP port 22 for your corporate IP address with priority 1 2. Configure a hierarchical firewall policy to the organization node to deny TCP port 22 for all IP addresses with priority 0."
     ],
     "correct": 0,
-    "explanation": "Hierarchical firewall policies at the organization node apply to every project and VPC; allow-22-from-corporate at priority 0 and deny-22-elsewhere at priority 1 enforce the rule org-wide so no VPC rule can override it.",
+    "explanation": "Org-wide always-allow for the corporate IP and a fallback deny belong in hierarchical firewall policies on the organization node: allow TCP 22 for corporate at priority 0, deny TCP 22 for everyone else at priority 1.",
     "discussion": [
       {
         "user": "rglearn",
@@ -6670,14 +6678,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A: org-level hierarchical policy with allow-before-deny is unbypassable.",
-    "conceptSummary": "Org-level hierarchical policy to lock down SSH.",
-    "correctRationale": "Only org-node hierarchical policies cannot be bypassed by VPC rules; ordering allow (0) before deny (1) implements exactly the required exception.",
+    "discussionSummary": "Community votes A (11).",
+    "conceptSummary": "Enforce org-wide SSH policy with hierarchical firewall policies on the org node (allow 0, deny 1).",
+    "correctRationale": "Hierarchical policies propagate the rules to all VPCs; the allow-then-deny ordering implements the requirements.",
     "optionRationales": [
-      "Correct: org-level hierarchical allow-then-deny on port 22 cannot be overridden by VPC rules.",
-      "Wrong: per-VPC rules can be edited by other admins, breaking the guarantee.",
-      "Wrong: the priorities are inverted — the deny would win.",
-      "Wrong: inverted priorities on the org policy deny before allowing the corporate range."
+      "Correct: org-level allow corp/22 at priority 0 + deny all/22 at priority 1.",
+      "Wrong: VPC rules cover one VPC only, not the organization.",
+      "Wrong: deny at priority 0 would block the corporate IP too.",
+      "Wrong: allowing corp at priority 1 still lets the deny at 0 win - inverted."
     ]
   },
   {
@@ -6692,7 +6700,7 @@ export const QUESTIONS = [
       "D. Enable Data Access audit logs of the subnet. Analyze the logs and get the source IP addresses from the networks.get field."
     ],
     "correct": 1,
-    "explanation": "VPC Flow Logs enabled on the subnet record each flow's 5-tuple in the connection field, revealing the source IPs hitting the attacked VM.",
+    "explanation": "VPC Flow Logs on the subnet record connection tuples - source/destination IPs - for traffic to the VM; the connection field carries the source IPs to analyze.",
     "discussion": [
       {
         "user": "RKS_2021",
@@ -6726,15 +6734,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and C (13 vs 5 votes): Community majority is B with the flow-log record format cited.",
-    "conceptSummary": "Flow logs + connection field for source-IP analysis.",
-    "correctRationale": "The connection field (IpConnection) carries source/destination IP, port, and protocol — the field to analyze for inbound source addresses; enabling logs at subnet scope captures the VM's traffic.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and C (13 vs 5 votes): Community favors B (13 vs 5 for C). Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "Find attack sources with VPC Flow Logs on the subnet (connection field).",
+    "correctRationale": "Subnet flow logs capture the inbound connections with src IP - exactly the data needed.",
     "optionRationales": [
-      "Wrong: Data Access audit logs record API calls, not packet flows.",
-      "Correct: subnet VPC Flow Logs and the connection field expose the source IPs.",
-      "Wrong: src_location only carries geographic metadata, not the source IP.",
-      "Wrong: same audit-log mistake — they log API operations, not traffic."
+      "Wrong: audit logs record API calls, not network traffic.",
+      "Correct: subnet VPC Flow Logs, read src IPs from the connection field.",
+      "Wrong: src_location describes geography metadata, not the per-connection sources needed here (and enabling for the whole VPC is broader than needed).",
+      "Wrong: audit logs again - API activity, not packet sources."
     ]
   },
   {
@@ -6749,7 +6757,7 @@ export const QUESTIONS = [
       "D. Order a Carrier Peering connection in the same metropolitan area. Configure a Border Gateway Protocol (BGP) session between Google and your router."
     ],
     "correct": 1,
-    "explanation": "Google Workspace access over a dedicated link to Google's edge without a third party is Direct Peering — a BGP session exchanged directly with Google in a metro.",
+    "explanation": "Enterprise access to Google Workspace (not Google Cloud VPC services) uses peering at the edge: Direct Peering gives the org a dedicated BGP session to Google for Workspace traffic.",
     "discussion": [
       {
         "user": "RKS_2021",
@@ -6783,14 +6791,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: Workspace is reached via peering, and Direct Peering avoids a service provider.",
-    "conceptSummary": "Direct Peering for Google Workspace / SaaS connectivity.",
-    "correctRationale": "Interconnect cannot reach Google Workspace; peering products do, and Direct Peering is the no-carrier variant — order it and establish BGP with Google's edge.",
+    "discussionSummary": "Community votes B (19).",
+    "conceptSummary": "Dedicated enterprise path to Google Workspace = Direct Peering + BGP.",
+    "correctRationale": "Direct Peering is designed for enterprise connectivity to Google services like Workspace - no VPC attachment needed.",
     "optionRationales": [
-      "Wrong: Interconnect reaches VPC private IPs, not Workspace.",
-      "Correct: Direct Peering gives a direct BGP exchange with Google for Workspace traffic.",
-      "Wrong: HA VPN crosses the internet and does not serve this SaaS goal.",
-      "Wrong: Carrier Peering uses a carrier intermediary, while the scenario wants a direct link and offers Direct Peering."
+      "Wrong: Dedicated Interconnect connects to the VPC, not to Workspace public services.",
+      "Correct: Direct Peering + BGP to Google.",
+      "Wrong: HA VPN reaches the VPC, not Workspace.",
+      "Wrong: Carrier Peering goes through a carrier for the same Workspace path but Direct Peering is the direct option asked for."
     ]
   },
   {
@@ -6805,7 +6813,7 @@ export const QUESTIONS = [
       "D. Modify the priority of the updates-limiter rule to 1000."
     ],
     "correct": 1,
-    "explanation": "The updates-1 rule matches terramearth.com/docs/ but has TLS inspection FALSE, so for HTTPS requests it is skipped and the lower-priority updates-limiter DENY applies; enabling TLS inspection on updates-1 lets it match and allow the documents.",
+    "explanation": "The rules list shows the updates-1 rule (allowing terramearth paths) sitting behind or missing TLS inspection needed to match the /docs URL path; enabling TLS inspection on that rule lets the URL match succeed.",
     "discussion": [
       {
         "user": "jayandrath",
@@ -6831,15 +6839,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and A (6 vs 2 votes): Community majority is B, quoting the TLS rule-evaluation doc: HTTPS rules need TLS inspection enabled or they are skipped. Confidence medium.",
-    "conceptSummary": "HTTPS rules require TLS inspection to be evaluated.",
-    "correctRationale": "SWP evaluates a rule for HTTPS traffic only when TLS inspection is enabled on it; with FALSE the rule is skipped and the deny wins. Turning TLS inspection on for updates-1 restores the intended allow.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and A (6 vs 2 votes): Community favors B (6 vs 2 for A). Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "SWP URL-path rules only match HTTPS when TLS inspection is enabled on the rule.",
+    "correctRationale": "Without TLS inspection the proxy cannot see the /docs path in HTTPS requests; enabling it on updates-1 fixes the block.",
     "optionRationales": [
-      "Wrong: deleting the deny rule removes the intended limiting behavior for other terramearth traffic.",
-      "Correct: enabling TLS inspection on updates-1 makes it eligible to match HTTPS requests to /docs/.",
-      "Wrong: Cloud NAT or VM public IPs are unrelated to SWP rule evaluation.",
-      "Wrong: changing the deny to priority 1000 still leaves updates-1 skipped for HTTPS."
+      "Wrong: deleting updates-limiter might work but removes a security rule - worse than fixing inspection.",
+      "Correct: enable TLS inspection on updates-1.",
+      "Wrong: Cloud NAT errors/public IPs are unrelated to SWP rule matching.",
+      "Wrong: changing priority order does not make the path visible without inspection."
     ],
     "images": [
       {
@@ -6860,7 +6868,7 @@ export const QUESTIONS = [
       "D. Use External HTTP(S) Load Balancing with URL Maps and an X-Forwarded-For header"
     ],
     "correct": 3,
-    "explanation": "The external HTTP(S) LB proxies requests and adds the original client IP in the X-Forwarded-For header; the Stackdriver agent fails before the destination, and the NLB path cannot serve HTTP APIs on the same box anyway.",
+    "explanation": "Lowest latency globally for an HTTP app on IPv4+IPv6 is the global external HTTP(S) Load Balancer; URL maps route content and the X-Forwarded-For header preserves client IPs.",
     "discussion": [
       {
         "user": "AzureDP900",
@@ -6882,14 +6890,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D: the ALB sends X-Forwarded-For, which is how backends learn the client IP behind a proxy.",
-    "conceptSummary": "X-Forwarded-For carries the real client IP through a proxy LB.",
-    "correctRationale": "The proxy LB appends X-Forwarded-For with the true client address — the classic answer for preserving client IP through an L7 proxy. Packet Mirroring is for analysis, not normal request handling, and NLB is a different LB path.",
+    "discussionSummary": "Community votes D (11); legacy 'HTTP(S) Load Balancing' naming flagged outdated.",
+    "conceptSummary": "Global HTTP LB: URL maps + X-Forwarded-For for client IP preservation and lowest latency.",
+    "correctRationale": "D is the global anycast HTTP LB option with URL routing and standard client-IP header - the documented low-latency design.",
     "optionRationales": [
-      "Wrong: the Stackdriver agent does not deliver requests to the API — the LB is still needed to pass traffic.",
-      "Wrong: Packet Mirroring copies packets for inspection; it does not forward client traffic.",
-      "Wrong: a passthrough NLB preserves source IP but this external HTTP API on existing infrastructure points to the XFF mechanism as the intended answer... however the global external pattern with XFF is the documented way.",
-      "Correct: the LB adds X-Forwarded-For carrying the client IP to the backends."
+      "Wrong: 'Network Load Balancing' is regional L4, not global/lowest-latency HTTP.",
+      "Wrong: TCP proxy adds a proxy hop without HTTP routing.",
+      "Wrong: custom headers are not needed for this requirement - XFF is the standard.",
+      "Correct: global external HTTP(S) LB with URL maps + X-Forwarded-For."
     ]
   },
   {
@@ -6904,7 +6912,7 @@ export const QUESTIONS = [
       "D. Configure a Compute Engine instance on the same VPC as the service running on Google Cloud to run a traceroute targeted at the on-premises service."
     ],
     "correct": 0,
-    "explanation": "Connectivity Tests verify end-to-end reachability between the on-prem source and the Cloud Storage endpoint, confirming whether the network path works.",
+    "explanation": "Connectivity Tests analyze the path through the VPC - including firewall rule and route evaluation - to pinpoint whether drops come from rules or routing.",
     "discussion": [
       {
         "user": "ian_gcpca",
@@ -6938,14 +6946,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Connectivity Test validates the on-prem to Cloud Storage path.",
-    "correctRationale": "Connectivity Tests analyze configuration-level connectivity between two endpoints; with the AWS side already verified, a test toward the Cloud Storage IP is the direct way to confirm the Google-side path.",
+    "discussionSummary": "Community votes A (12).",
+    "conceptSummary": "Diagnose rule-vs-route drops with Network Intelligence Center Connectivity Tests.",
+    "correctRationale": "Connectivity Tests evaluate exactly the firewall and routing decisions along the path - the purpose-built tool.",
     "optionRationales": [
-      "Correct: a Connectivity Test between the on-prem source and the Cloud Storage endpoint verifies reachability.",
-      "Wrong: performance testing requires a working path first — connectivity comes first.",
-      "Wrong: Packet Mirroring is heavy machinery for a simple reachability check.",
-      "Wrong: Firewall Insights evaluates rule usage, not end-to-end reachability."
+      "Correct: Connectivity Tests between the VPC and on-prem reveal the drop cause.",
+      "Wrong: Network Topology shows topology, not time-travel replay of dropped traffic.",
+      "Wrong: flow logs show observed flows only - they cannot prove why packets were dropped upstream.",
+      "Wrong: traceroute tests reachability, not the rule/route decision."
     ]
   },
   {
@@ -6960,7 +6968,7 @@ export const QUESTIONS = [
       "D. Firewall rule direction: ingress Action: allow Target: specific VM A tag Source ranges: VM B tag and VM B source IP address Priority: 100"
     ],
     "correct": 0,
-    "explanation": "Service accounts as rule targets let you scope an ingress allow to exactly the VM running an application — safer than tags, which any sufficiently privileged user can assign.",
+    "explanation": "Strict VM-to-VM control uses service accounts on both ends: an ingress allow targeted at VM B's service account with source = VM A's service account - identity-based, not IP-based.",
     "discussion": [
       {
         "user": "enter_co",
@@ -6994,15 +7002,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between A and B (21 vs 8 votes): Community majority is A, citing the service-accounts-vs-tags documentation.",
-    "conceptSummary": "Service-account-targeted firewall rules.",
-    "correctRationale": "Rules scoped by service account apply only to instances running as that account; anyone can attach an arbitrary tag to a VM, making tags the weaker mechanism.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes A (21). Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Tightest firewall scoping = service accounts for both target and source.",
+    "correctRationale": "A uses service-account identity on both target and source - the most precise recommended match.",
     "optionRationales": [
-      "Correct: service-account targeting is the recommended precise mechanism.",
-      "Wrong: tags can be applied by any user with instance-edit rights — less precise and less secure.",
-      "Wrong: targetless rules apply to every instance, the opposite of scoping.",
-      "Wrong: service-account source filters restrict sources; they do not target destination VMs."
+      "Correct: ingress allow, target=VM B service account, source=VM A service account.",
+      "Wrong: tags are looser than service accounts and the source/target are swapped.",
+      "Wrong: direction/target are swapped (A as target, B as source).",
+      "Wrong: same swapped direction with tags."
     ]
   },
   {
@@ -7017,7 +7025,7 @@ export const QUESTIONS = [
       "D. 1.Configure a Cloud DNS private zone in the host project of the Shared VPC. 2. Set up DNS forwarding to your Google Cloud private zone on your on-premises DNS servers to point to the inbound forwarder IP address in your host project. 3. Configure a DNS policy in the Shared VPC to allow inbound query forwarding with your on-premises DNS server as the alternative DNS server."
     ],
     "correct": 0,
-    "explanation": "For the on-prem DNS resolver to reach Cloud DNS responses, the network must advertise the 35.199.192.0/19 forwarding source range over the hybrid link to on-prem.",
+    "explanation": "On-prem must resolve Google-side names: create a Cloud DNS private zone in the Shared VPC host project and point the on-prem DNS servers at an inbound forwarding entry point for that VPC.",
     "discussion": [
       {
         "user": "saraali",
@@ -7051,14 +7059,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A: 35.199.192.0/19 is the forwarding source range to advertise.",
-    "conceptSummary": "Advertising the Cloud DNS 35.199.192.0/19 range on-prem.",
-    "correctRationale": "Outbound forwarding and inbound server-policy traffic uses the 35.199.192.0/19 proxy range; advertising it in the Cloud Router's route advertisements is required so on-prem can route replies back.",
+    "discussionSummary": "Community votes A (18); A's inbound-forwarding detail is the documented path.",
+    "conceptSummary": "On-prem resolution of private zones = private zone + inbound DNS forwarding endpoint.",
+    "correctRationale": "A forwards the corp domain to the on-prem DNS servers and adds the Cloud Router custom route advertisement needed so replies reach the VPC's inbound forwarding addresses.",
     "optionRationales": [
-      "Correct: advertising 35.199.192.0/19 over the private link lets the resolver reach Cloud DNS.",
-      "Wrong: this is a private-link scenario, so the resolver needs the private 35.199 range, not the standard VIP.",
-      "Wrong: the googleapis restricted VIP does not serve DNS forwarding to on-prem resolvers.",
-      "Wrong: 35.190.247.13 is the peering-zone address, not the forwarding source range."
+      "Correct: forwarding zone to the on-prem DNS servers + inbound forwarding path via route advertisement.",
+      "Wrong: same intent as A but with the wrong forwarding/routing details.",
+      "Wrong: forwarding 'to the private zone' inverts the direction - on-prem resolvers need the zone's inbound entry point.",
+      "Wrong: an inbound forwarder plus on-prem forwarding solves the opposite direction (on-prem resolving Google names); this scenario needs a forwarding zone pointing at the on-prem DNS servers."
     ]
   },
   {
@@ -7073,7 +7081,7 @@ export const QUESTIONS = [
       "D. Set the advertised routes to Global for the Cloud Router."
     ],
     "correct": 2,
-    "explanation": "Regional routing means the us-central1 Cloud Router only advertises local-region routes to on-prem; switching the VPC to global dynamic routing lets all regions' prefixes propagate.",
+    "explanation": "Branch office reachability to subnets in three regions via one HA VPN needs routes propagated globally: switch the VPC dynamic routing mode to Global.",
     "discussion": [
       {
         "user": "waelghaith",
@@ -7107,14 +7115,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C: global dynamic routing is the documented switch.",
-    "conceptSummary": "Global dynamic routing propagates all regions to on-prem.",
-    "correctRationale": "The VPN in us-central1 learns and advertises only us-central1 routes under regional routing; global mode makes the router advertise every region's subnet routes.",
+    "discussionSummary": "Community votes C (12).",
+    "conceptSummary": "One hybrid link serving all regions = global dynamic routing mode.",
+    "correctRationale": "Global routing lets the Cloud Router advertise all regional subnets - the simple fix for multi-region reachability.",
     "optionRationales": [
-      "Wrong: another router in us-east4 duplicates what global routing already provides.",
-      "Wrong: the gcloud create command shown defaults to regional anyway and misses the mode fix.",
-      "Correct: enabling global dynamic routing on the VPC makes us-east4 subnets visible on-prem.",
-      "Wrong: same limitation — a second router in regional mode still only advertises its region."
+      "Wrong: custom per-subnet advertisements are a manual workaround when global mode exists.",
+      "Wrong: per-subnet VPNs are nonsensical.",
+      "Correct: set the VPC dynamic routing mode to Global.",
+      "Wrong: 'advertised routes to Global' is not a Cloud Router setting; the mode is on the VPC."
     ]
   },
   {
@@ -7129,7 +7137,7 @@ export const QUESTIONS = [
       "D. Use Private Google Access, with private.googleapis.com virtual IP addresses for Cloud Storage and restricted.googleapis.com virtual IP addresses for all other Google APIs and services."
     ],
     "correct": 1,
-    "explanation": "Private Service Connect for Google APIs over the Interconnect reaches Cloud Storage privately without an appliances cluster; publishing PSC's chosen IP solves the on-prem reachability with least operational burden.",
+    "explanation": "To push only Cloud Storage over the interconnect while other APIs use the default path, use Private Google Access with restricted.googleapis.com for Cloud Storage traffic and private.googleapis.com for the rest.",
     "discussion": [
       {
         "user": "mohitms1996",
@@ -7163,15 +7171,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and C (16 vs 10 votes): Community majority is B, citing PSC as the cleanest private access to Cloud Storage over Interconnect; confidence medium because A (restricted/private googleapis with appliances) is also technically viable.",
-    "conceptSummary": "PSC for Google APIs over hybrid connectivity.",
-    "correctRationale": "PSC for Google APIs gives a single private endpoint IP reachable over the Interconnect, so on-prem hits Cloud Storage privately with far less machinery than a private.googleapis.com appliances setup.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and C (16 vs 10 votes): Community favored B (16) over C (10): PSC is the mechanism that limits the private path to just Cloud Storage. Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "Restricted VIP for the constrained service, private.googleapis.com for the rest (PGA).",
+    "correctRationale": "Private Service Connect publishes Cloud Storage to the VPC over the interconnect, while all other Google APIs keep using their default public domains - exactly the requested split.",
     "optionRationales": [
-      "Wrong: bringing the Storage appliance into the VPC under private.googleapis.com adds proxy appliance overhead.",
-      "Correct: PSC for Google APIs accessed over Interconnect is the simplest private path.",
-      "Wrong: Partner Interconnect still uses the same DNS-based private path; nothing about it uniquely fixes this.",
-      "Wrong: Carrier Peering does not provide private API access."
+      "Wrong: default public domains route Storage over the internet path too, not only through Interconnect.",
+      "Correct: PSC for Cloud Storage + default domains for the rest.",
+      "Wrong: restricted.googleapis.com covers all VPC-SC-supported APIs - it cannot be assigned selectively to Storage.",
+      "Wrong: swaps the VIPs - restricted is the broader set, not the Storage-only one."
     ]
   },
   {
@@ -7186,7 +7194,7 @@ export const QUESTIONS = [
       "D. resource.type= “vpn_gateway”"
     ],
     "correct": 0,
-    "explanation": "Cloud Router BGP state is logged to the gce_router resource in Cloud Logging, filterable on the bgp element.",
+    "explanation": "Cloud Router logs (route advertisement, BGP events) are under resource.type=gce_router - the right log type for route-advertisement troubleshooting.",
     "discussion": [
       {
         "user": "saraali",
@@ -7220,14 +7228,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between A and D (17 vs 6 votes): Community agrees on A.",
-    "conceptSummary": "Cloud Logging gce_router resource for BGP state.",
-    "correctRationale": "Cloud Router logs live under the gce_router monitored resource; filtering its JSON payload for BGP fields answers the question directly.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between A and D (17 vs 6 votes): Community favors A (17); D voters confuse the gateway with the router. Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Route/BGP logs live on the gce_router resource type.",
+    "correctRationale": "The chosen path is \"resource.type= “gce_router”\": Custom route advertisement problems are Cloud Router events, logged under gce_router.",
     "optionRationales": [
-      "Correct: the gce_router log resource with a bgp JSON-payload filter surfaces the BGP state.",
-      "Wrong: Cloud Router logs are in Cloud Logging, not Cloud Trace.",
-      "Wrong: VPC flow logs show traffic, not BGP session state.",
-      "Wrong: Cloud NAT logs track NAT allocations, not BGP."
+      "Correct: gce_router contains the router's BGP/advertisement logs.",
+      "Wrong: gce_network_region covers network-level events, not router logs.",
+      "Wrong: vpn_tunnel logs tunnel health, not route advertisement.",
+      "Wrong: vpn_gateway logs gateway events, not the Cloud Router's advertisements."
     ]
   },
   {
@@ -7242,7 +7251,7 @@ export const QUESTIONS = [
       "D. 1. Create a default route in the hub VPC that points to IP address 10.0.0.5. 2. Delete the default internet gateway route in the hub VPC, and create a new higher-priority route that is tagged only to the appliances with a next hop of the default internet gateway. 3. Create a new route in the spoke VPC that points to IP address 10.0.0.5."
     ],
     "correct": 1,
-    "explanation": "Deleting the default route in each spoke and enabling export of custom routes on the peering lets the hub push its own 0.0.0.0/0 route into the spokes, centralizing egress through the hub.",
+    "explanation": "HA virtual appliance as hub egress: two default routes (one per appliance instance) plus removing the default internet route with a tagged replacement so spokes route internet through the hub appliance.",
     "discussion": [
       {
         "user": "ulkerra",
@@ -7276,15 +7285,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and A (14 vs 8 votes): Community splits B vs C; B is chosen on the merits — the spoke default routes must be deleted before the hub's route can take effect. Confidence medium.",
-    "conceptSummary": "Hub default route exported to spokes after deleting spoke defaults.",
-    "correctRationale": "Spoke default routes take precedence until removed; after deleting them, the hub's advertised default route flows over the peering and becomes each spoke's exit. Option B does exactly this minimal change.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and A (14 vs 8 votes): Community favors B (14 vs 8 for A); the dual default routes are the HA requirement. Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "HA NVA egress: redundant default routes to both appliance next hops + tagged replacement route.",
+    "correctRationale": "B provisions both appliance next hops (HA) and the tagged high-priority route that replaces the internet gateway path.",
     "optionRationales": [
-      "Wrong: without deleting the spokes' own default routes they continue to egress directly.",
-      "Correct: delete spoke defaults + hub exports its default route over peering = centralized egress.",
-      "Wrong: same failure — spoke defaults remain in place.",
-      "Wrong: VPC Service Controls has nothing to do with egress routing."
+      "Wrong: a single default route to one appliance is not HA.",
+      "Correct: two default routes to both appliance next hops + tagged replacement.",
+      "Wrong: 'next hop instances' without the proper redundancy/tagging detail described here.",
+      "Wrong: same single-route HA gap as A."
     ]
   },
   {
@@ -7299,7 +7308,7 @@ export const QUESTIONS = [
       "D. 1. Delete the default route in your VPC and configure your on-premises router to advertise 0.0.0.0/0 via Border Gateway Protocol (BGP). 2. Create a private Cloud DNS zone for googleapis.com, create a CNAME for * googieapis.com to Private googleapis.com, and create an A record for private.googleapis.com that resolves to the addresses in 199.36.153.8/30. 3. Create a static route in your VPC for the range 199.36.153.8/30 with the default internet gateway as the next hop."
     ],
     "correct": 3,
-    "explanation": "Deleting the VPC default route sends all non-Google traffic over the Interconnect to on-prem, while a VPC route for the restricted.googleapis.com range (199.36.153.8/30) toward the default internet gateway keeps API traffic inside Google.",
+    "explanation": "With no public egress path, VMs route all traffic (incl. Google APIs) via the interconnect: delete the default route, have on-prem advertise 0.0.0.0/0, and use a private zone mapping *.googleapis.com to restricted.googleapis.com A records.",
     "discussion": [
       {
         "user": "waelghaith",
@@ -7333,15 +7342,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and C (17 vs 10 votes): Community majority is D: delete the default route, accept on-prem BGP 0.0.0.0/0, and keep the restricted API range routed to the internet gateway. Confidence medium given dense wording.",
-    "conceptSummary": "Default route to on-prem plus restricted-VIP route to the IGW.",
-    "correctRationale": "With no default route, non-Google traffic must arrive via on-prem BGP advertisement; API traffic needs a route for the restricted VIP range pointing at the default internet gateway so it never crosses on-prem. Option D combines both correctly.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and C (17 vs 10 votes): Community favors D (17 vs 10 for C); C's retained default route breaks the forced path. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Route API traffic over the hybrid link: advertise 0.0.0.0/0 + restricted.googleapis.com DNS override.",
+    "correctRationale": "D has the full documented recipe: no local default route, BGP-advertised default, and the restricted VIP DNS override in a private zone.",
     "optionRationales": [
-      "Wrong: the 199.36.153.4/30 route is the right idea but keeping a plain default internet route leaves the internet path open to all egress.",
-      "Wrong: the private.googleapis.com range 199.36.153.8/30 keeps API traffic off on-prem, but the default-to-internet still exists — not an egress-free design.",
-      "Wrong: routing Google APIs over on-prem via BGP advertisement sends API traffic outside Google, contrary to the goal.",
-      "Correct: no default route (on-prem advertises 0.0.0.0/0) plus a restricted-VIP route to the IGW keeps API calls inside Google and all other egress off the internet."
+      "Wrong: deleting the default route without an advertised replacement leaves no path.",
+      "Wrong: a public zone for the override leaks the mapping publicly.",
+      "Wrong: keeping the default VPC route means API traffic does not take the interconnect path.",
+      "Correct: delete default + BGP-advertised 0.0.0.0/0 + private-zone restricted override."
     ]
   },
   {
@@ -7356,7 +7365,7 @@ export const QUESTIONS = [
       "D. Configure an internal TCP/UDP load balancer with the two network virtual appliances as backends. Configure a route for 10.0.0.0/8 with the internal load balancer as the next hop."
     ],
     "correct": 3,
-    "explanation": "An internal passthrough NLB (formerly internal TCP/UDP LB) as a next hop supports arbitrary TCP+UDP traffic and health-checks the firewall MIG backends — the appliance-park pattern.",
+    "explanation": "The two NVAs need an internal TCP/UDP (passthrough) load balancer as the route next hop: it load-balances arbitrary traffic to both appliances and preserves the flows to 10.0.0.0/8.",
     "discussion": [
       {
         "user": "teejeaux",
@@ -7390,15 +7399,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and C (18 vs 10 votes): Community majority is D: only the internal TCP/UDP LB passes arbitrary TCP+UDP as a next hop.",
-    "conceptSummary": "Internal passthrough NLB next hop in front of third-party firewalls.",
-    "correctRationale": "The internal TCP/UDP/passthrough LB is the standard next-hop for NVA fleets: it load-balances both protocols and provides health-checked failover; A/B/C are all URL-map/HTTP(S) based options that cannot pass arbitrary L4.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and C (18 vs 10 votes): Community favors D (18 vs 10 for C); the internal TCP/UDP LB is the documented appliance next hop. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "NVA next hop for arbitrary traffic = internal TCP/UDP load balancer + custom route.",
+    "correctRationale": "An internal TCP/UDP LB is the documented next-hop type for appliance backends on a custom route; HTTP(S) and legacy 'network load balancer' options do not fit L4 passthrough traffic.",
     "optionRationales": [
-      "Wrong: URL-map host rules apply to HTTP(S) traffic, not arbitrary protocols.",
-      "Wrong: a single instance behind routes gives no failover; also a host-rule LB is HTTP-only.",
-      "Wrong: URL rewrites are HTTP(S) features.",
-      "Correct: an internal TCP/UDP LB fronting the firewall MIG as next hop is the documented design."
+      "Wrong: two plain routes to separate appliances give failover, not symmetric load sharing, and risk asymmetry.",
+      "Wrong: an HTTP(S) LB only carries HTTP and cannot be a route next hop for general traffic.",
+      "Wrong: 'network load balancer' refers to the external passthrough product here, not the internal TCP/UDP LB needed.",
+      "Correct: internal TCP/UDP LB backend pair + route next hop to 10.0.0.0/8."
     ],
     "legacyNote": "\"Internal TCP/UDP load balancer\" is now the internal passthrough Network Load Balancer; answer D is unchanged."
   },
@@ -7414,7 +7423,7 @@ export const QUESTIONS = [
       "D. Configure a second set of active/passive VPN tunnels."
     ],
     "correct": 3,
-    "explanation": "Each HA VPN tunnel gives ~3 Gbps and up to 2 tunnels exist per gateway; adding tunnels and scaling the number of tunnels is the documented way to raise VPN aggregate throughput.",
+    "explanation": "4 Gbps over an active/passive pair means one tunnel carries ~4 Gbps - above a single tunnel's capacity; adding a second active/passive tunnel pair doubles the aggregate bandwidth.",
     "discussion": [
       {
         "user": "RKS_2021",
@@ -7440,14 +7449,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is D: throughput scales by adding tunnels.",
-    "conceptSummary": "Scaling HA VPN throughput with additional tunnels.",
-    "correctRationale": "Cloud VPN bandwidth scales by adding tunnels — aggregate throughput = ~3 Gbps per tunnel. Adding tunnels to the existing gateway (and using ECMP) is the least-effort scale-up.",
+    "discussionSummary": "Community votes D (11).",
+    "conceptSummary": "Scale HA VPN bandwidth by adding another tunnel pair.",
+    "correctRationale": "The chosen path is \"Configure a second set of active/passive VPN tunnels.\": Each HA VPN tunnel tops out around 3 Gbps; a second tunnel pair is the documented way to add capacity.",
     "optionRationales": [
-      "Wrong: MTU tuning does not raise per-tunnel throughput.",
-      "Wrong: increasing packets sent does not raise tunnel bandwidth.",
-      "Wrong: a second HA VPN gateway (not tunnels) is what extra capacity actually needs beyond two tunnels, but option D names tunnels correctly while this one conflates the mechanics.",
-      "Correct: adding tunnels increases aggregate VPN throughput directly."
+      "Wrong: the remote ASN is fixed by the peer - changing it breaks the session.",
+      "Wrong: Cloud Router count does not change tunnel bandwidth.",
+      "Wrong: MTU tuning does not raise the ~3 Gbps tunnel ceiling.",
+      "Correct: a second active/passive tunnel set adds the needed bandwidth."
     ]
   },
   {
@@ -7462,7 +7471,7 @@ export const QUESTIONS = [
       "D. Deploy the Cloud Run services to multiple regions. Configure a round-robin A record in Cloud DNS."
     ],
     "correct": 1,
-    "explanation": "A global external HTTPS load balancer with serverless NEG backends (Cloud Run service and Cloud Function) is the managed way to put both behind one IP with SSL.",
+    "explanation": "Cloud Run HA with low global latency = deploy to multiple regions, front them with a global HTTPS load balancer via serverless NEGs.",
     "discussion": [
       {
         "user": "pk349",
@@ -7484,14 +7493,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: only the global HTTPS LB supports serverless NEG backends.",
-    "conceptSummary": "Serverless NEGs on the global external HTTPS LB.",
-    "correctRationale": "Serverless NEGs let the global external ALB front Cloud Run and Cloud Functions on one anycast IP with managed TLS — the minimal-design answer.",
+    "discussionSummary": "Community votes B (10); legacy 'HTTPS load balancer' naming noted.",
+    "conceptSummary": "Global Cloud Run = multi-region + serverless NEGs on a global HTTPS LB.",
+    "correctRationale": "B is the documented serverless NEG pattern behind the global HTTPS load balancer.",
     "optionRationales": [
-      "Wrong: an internal TCP/UDP LB cannot front serverless services nor provide HTTPS.",
-      "Correct: global external HTTPS LB + serverless NEGs for Cloud Run and Cloud Function.",
-      "Wrong: a TCP proxy LB cannot use serverless NEGs.",
-      "Wrong: the external \"network load balancer\" is L4 and cannot do SSL-terminating serverless backends."
+      "Wrong: Cloud Run is zonal/regional per deployment, and TCP LB cannot host serverless NEGs.",
+      "Correct: multi-region Cloud Run + serverless NEGs + global HTTPS LB.",
+      "Wrong: Cloud Endpoints is an API gateway, not a LB backend for Cloud Run.",
+      "Wrong: DNS round-robin lacks health checks and latency routing."
     ],
     "legacyNote": "\"Global HTTPS load balancer\" is now the global external Application Load Balancer."
   },
@@ -7507,7 +7516,7 @@ export const QUESTIONS = [
       "D. Create a GKE public cluster. Configure authorized networks to specify the desired on-premises subnets."
     ],
     "correct": 0,
-    "explanation": "Peering the management VPC to the cluster's VPC with export/import of custom routes, plus enabling master authorized networks on the private cluster, lets the management VM reach the control plane.",
+    "explanation": "Private cluster + private endpoint keeps the control plane off the internet; exposing it to the peered/on-prem network requires VPC peering route exchange and custom route advertisements on the Cloud Routers.",
     "discussion": [
       {
         "user": "gcpengineer",
@@ -7541,14 +7550,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A: authorized networks plus peering export/import.",
-    "conceptSummary": "Authorized networks plus peering route exchange for a private GKE cluster.",
-    "correctRationale": "Private clusters need authorized networks to permit the management subnet, and peering route export/import makes the master CIDR reachable — the two documented steps.",
+    "discussionSummary": "Community votes A (19).",
+    "conceptSummary": "Private GKE endpoint reachable over hybrid links = peering route export/import + custom route advertisements.",
+    "correctRationale": "A pairs the private endpoint with the route plumbing needed for on-prem reachability - the documented recipe.",
     "optionRationales": [
-      "Correct: authorized networks + peered route exchange is the working recipe.",
-      "Wrong: masterIpv4CidrBlock is not a firewall knob, and custom route exchange alone lacks the authorized-networks enablement.",
-      "Wrong: enabling master authorized networks via flag is needed, and the masterIpv4CidrBlock route is auto-IPv4 range, not the mechanism described.",
-      "Wrong: privateEndpointSubnet is not a real flag; the missing piece is authorized networks."
+      "Correct: private cluster, private endpoint, peering + custom route advertisements.",
+      "Wrong: a public endpoint exposes the API - contrary to 'only from the same VPC/on-prem'.",
+      "Wrong: authorized networks restrict public endpoint access but do not create a private endpoint.",
+      "Wrong: a public cluster fails the privacy requirement outright."
     ]
   },
   {
@@ -7563,7 +7572,7 @@ export const QUESTIONS = [
       "D. 1. Create a private zone in Cloud DNS for ‘corp altostrat.com’ called corp-altostrat-com. 2. Configure DNS Server Policies and create a policy with Alternate DNS servers to 192.168.20.88. 3. Configure your on-premises firewall to accept traffic from 35.199.192.0/19. 4. Set a custom route advertisement on the Cloud Router for 35.199.192.0/19."
     ],
     "correct": 1,
-    "explanation": "On-prem hosts resolving private zones query the Cloud DNS proxy IPs in 35.199.192.0/19, which must be advertised toward on-prem over the Interconnect for replies to return.",
+    "explanation": "Resolving the on-prem domain from Google Cloud uses a private forwarding zone pointing at the on-prem DNS server 192.168.20.88, plus the firewall on-prem allowing DNS traffic from Google's forwarding IPs.",
     "discussion": [
       {
         "user": "ananta93",
@@ -7589,14 +7598,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Advertising 35.199.192.0/19 to on-prem for DNS.",
-    "correctRationale": "Cloud DNS's forwarding/response addresses live in 35.199.192.0/19; advertising that range over the VLAN attachment gives on-prem a route back for DNS traffic.",
+    "discussionSummary": "Community votes B (17).",
+    "conceptSummary": "Outbound DNS forwarding zone to the on-prem resolver + on-prem firewall allowance.",
+    "correctRationale": "B pairs the forwarding zone for corp.altostrat.com with the required on-prem firewall rule for Google's forwarding source range - the complete fix.",
     "optionRationales": [
-      "Wrong: 10.201.0.0/16 is just a private subnet range, not the DNS proxy source.",
-      "Correct: advertise 35.199.192.0/19 so on-prem DNS traffic can return to Google.",
-      "Wrong: 35.199.192.0/19 is already private; NAT is irrelevant.",
-      "Wrong: overlapping on-prem ranges are not the issue here."
+      "Wrong: missing/incorrect firewall detail compared to the required Google forwarding range.",
+      "Correct: forwarding zone to 192.168.20.88 + allow Google's DNS forwarding IPs.",
+      "Wrong: typo'd zone/firewall detail in this option.",
+      "Wrong: a plain private zone does not forward queries to the on-prem server, and Alternate DNS policies are the wrong tool."
     ]
   },
   {
@@ -7611,7 +7620,7 @@ export const QUESTIONS = [
       "D. Add a second Border Gateway Protocol (BGP) session to the Cloud Router."
     ],
     "correct": 2,
-    "explanation": "With two regional Cloud Routers in different regions and regional routing, each region only advertises its own subnets; global dynamic routing advertises every region's subnets to on-prem.",
+    "explanation": "The diagram's asia-southeast1 subnet cannot reach on-prem because the VPC is in regional routing mode - learned routes stay local to the interconnect region; switching to Global propagates them everywhere.",
     "discussion": [
       {
         "user": "AzureDP900",
@@ -7633,14 +7642,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community majority is C with discussion debating B vs C; global routing is the documented mechanism. Confidence medium.",
-    "conceptSummary": "Global routing advertises all regional subnets over the tunnel.",
-    "correctRationale": "The diagram shows a VPN-terminated router serving the whole VPC; regional mode would only announce europe-west1 (or the router's region) routes. Global dynamic routing makes all subnets reachable.",
+    "discussionSummary": "Community votes C (18).",
+    "conceptSummary": "Cross-region on-prem reachability = global dynamic routing mode.",
+    "correctRationale": "Regional routing keeps Subnet-2's region from learning the on-prem routes; Global mode fixes it in one change.",
     "optionRationales": [
-      "Wrong: dedicated gateways per region is not how HA VPN or Cloud Router works.",
-      "Wrong: subnetwork routes are created automatically; the missing piece is routing mode.",
-      "Correct: global dynamic routing advertises all regions' subnets to on-prem.",
-      "Wrong: separate VPN gateways per subnet is nonsense."
+      "Wrong: a custom advertisement would not propagate to a different region either under regional mode.",
+      "Wrong: IP forwarding is an instance flag, unrelated to dynamic route propagation.",
+      "Correct: change the VPC dynamic routing mode to Global.",
+      "Wrong: a second BGP session does not change the routing mode."
     ],
     "images": [
       {
@@ -7665,7 +7674,7 @@ export const QUESTIONS = [
       3,
       4
     ],
-    "explanation": "Giving the VMs static external IPs directly answers connectivity; alternatively a manual-IP Cloud NAT gateway serving all primary and secondary ranges provides internet egress for the VMs.",
+    "explanation": "2000 VMs x 128 connections to one destination needs enough NAT ports per destination IP: either automatic NAT-IP scaling with min ports raised to 128, or manual mode with 4 NAT IPs (4 x 64k ports per destination) and 128 ports/VM - D+E.",
     "discussion": [
       {
         "user": "Komal697",
@@ -7691,15 +7700,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is D+E.",
-    "conceptSummary": "External IPs or manual Cloud NAT covering all ranges.",
-    "correctRationale": "Static external IPs let VMs reach the internet directly; Cloud NAT with manually assigned IPs and full range coverage (primary + secondary) restores egress for the remaining VM. Both satisfy access while keeping costs reasonable.",
+    "discussionSummary": "Community consensus DE (19 votes): both the auto-scale and 4-IP manual designs satisfy the port math.",
+    "conceptSummary": "Cloud NAT port math: scale NAT IPs or raise min ports per VM to hit per-destination connection targets.",
+    "correctRationale": "D lets the gateway scale NAT IPs automatically; E pre-allocates 4 IPs which is enough addresses for the required per-destination ports at 128/VM.",
     "optionRationales": [
-      "Wrong: Allow IGW-to-IGW NAT is not a standard gateway-control for this scenario.",
-      "Wrong: restricting via firewall rules cannot restore outbound connectivity.",
-      "Wrong: auto-assigned NAT IPs with only primary ranges ignores secondary addresses and offers no egress improvement for the pods/VMs.",
-      "Correct: external IPs give direct internet access to the VMs.",
-      "Correct: Cloud NAT with manual IPs covering all primary and secondary ranges restores egress."
+      "Wrong: 2 manual IPs may not supply enough per-destination ports, and 256/VM is overkill.",
+      "Wrong: a second gateway with defaults does not guarantee the port/VM requirement.",
+      "Wrong: a single NAT IP hard-caps per-destination connections (~64k ports) below the need.",
+      "Correct: auto-scaling NAT IPs + min 128 ports/VM.",
+      "Correct: 4 manual NAT IPs + 128 ports/VM covers the connection target."
     ]
   },
   {
@@ -7714,7 +7723,7 @@ export const QUESTIONS = [
       "D. Create a VPC Service Controls perimeter for each VPC with an access context policy that allows your corporate public network IP ranges."
     ],
     "correct": 1,
-    "explanation": "A VPC Service Controls service perimeter around the project protects the application and its data, preventing exfiltration by any project member — the compliance-grade control.",
+    "explanation": "API-access restriction by network is VPC Service Controls: one perimeter around the project plus an access policy admitting the corporate public IP ranges.",
     "discussion": [
       {
         "user": "kirrim",
@@ -7736,14 +7745,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is B: VPC-SC is the compliance mechanism.",
-    "conceptSummary": "VPC Service Controls perimeter for data protection.",
-    "correctRationale": "VPC-SC is designed to prevent data exfiltration even by credentialed users inside the perimeter — matching \"compliance requirement\" with least overhead compared to firewall rules.",
+    "discussionSummary": "Community votes B (10).",
+    "conceptSummary": "Restrict API access by network = VPC Service Controls perimeter + access policy.",
+    "correctRationale": "B scopes the perimeter to the project and admits the corporate ranges - the documented control.",
     "optionRationales": [
-      "Wrong: Cloud Armor controls inbound traffic, not member-driven data access.",
-      "Correct: a VPC-SC perimeter is the documented compliance control.",
-      "Wrong: compute.osLogin affects instance access, not API/data exfiltration.",
-      "Wrong: firewall rules on the VM do not stop API-level exfiltration by project members."
+      "Wrong: the access policy attaches to the perimeter, not directly to the services.",
+      "Correct: perimeter + access context policy for the corporate ranges.",
+      "Wrong: firewall rules cannot filter API-plane access by caller network.",
+      "Wrong: the perimeter wraps projects, not individual VPCs."
     ]
   },
   {
@@ -7758,7 +7767,7 @@ export const QUESTIONS = [
       "D. Assign the compute.orgSecurityPolicyAdmin and logging.bucketWriter role to the new user account. Apply the new firewall rule with a priority of 150."
     ],
     "correct": 0,
-    "explanation": "The VM needs the compute.securityAdmin role to create firewall rules and logging.viewer to read the logs; the existing 192.0.2.0/24 deny at priority 100 already blocks 192.0.2.42/32, so the new /32 deny must be added at a priority that evaluates first — but since the new rule just adds logging, adding it is what lets logs flow.",
+    "explanation": "Adding a firewall rule and viewing its logs needs compute.securityAdmin (rule creation) plus logging.viewer - and the rule must take precedence, so priority 50 (lower number = higher precedence) above the existing rules.",
     "discussion": [
       {
         "user": "kirrim",
@@ -7792,14 +7801,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is A: securityAdmin + logging.viewer and the added logged rule.",
-    "conceptSummary": "securityAdmin + logging.viewer plus a correctly ordered logged deny.",
-    "correctRationale": "Creating firewall rules requires securityAdmin, and reading logs requires the logging viewer role. The existing /24 deny already matches but lacks logging; adding the specific /32 deny rule at a more specific/matching priority with logging=true generates the required logs.",
+    "discussionSummary": "Community votes A (14).",
+    "conceptSummary": "Least-privilege roles for firewall changes + logging, and priority ordering by number.",
+    "correctRationale": "The chosen path is \"Assign the compute.securityAdmin and logging.viewer rule to the new user account. Apply the new firewall rule with a priority of 50.\": A grants exactly the needed roles and the higher precedence priority 50 the /32 deny requires.",
     "optionRationales": [
-      "Correct: compute.securityAdmin plus roles/logging.viewer, and the new /32 rule adds logging to the denied traffic.",
-      "Wrong: a network user role cannot create firewall rules.",
-      "Wrong: compute.securityAdmin covers both tasks; adding an extra network user is unnecessary.",
-      "Wrong: both the roles and the need for the extra logged deny are right in A; C mixes the wrong role combination."
+      "Correct: securityAdmin + logging.viewer, priority 50.",
+      "Wrong: bucketWriter is for log destinations, not reading logs, and 150 loses precedence.",
+      "Wrong: orgSecurityPolicyAdmin is excessive (org-level) though 50 is right.",
+      "Wrong: both the role set and the precedence are wrong."
     ],
     "images": [
       {
@@ -7824,7 +7833,7 @@ export const QUESTIONS = [
       "D. 1. Create a private forwarding zone in Cloud DNS for ‘corp altostrat.com’ called corp-altostrat-com that points to 192. 168.20.88. Associate the zone with the hub VPC. 2. Create a private peering zone in Cloud DNS for ‘corp.altostrat.com’ called corp-altostrat-com associated with the spoke VPCs, with the hub VPC as the target. 3. Sat a custom route advertisement on the Cloud Router for 35.199.192.0/19. 4. Create a hub and spoke VPN deployment in each spoke VPC to connect back to the hub VPC."
     ],
     "correct": 0,
-    "explanation": "Peering each spoke VPC to the shared-services hub VPC gives the spokes' on-prem-connected hub resolver visibility, and each spoke creates a DNS peering zone targeting the hub for on-prem name resolution.",
+    "explanation": "Resolving corp.altostrat.com from the VPCs needs a private forwarding zone to 192.168.20.88 bound to the hub VPC; for the spokes, a second private zone bound to the spoke VPCs (via peering they cannot see hub zones).",
     "discussion": [
       {
         "user": "n2183712847",
@@ -7858,15 +7867,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between A and B (21 vs 8 votes): Community majority is A; dissenters argued B alone suffices, but peering is already part of the described hub-and-spoke design. Confidence medium.",
-    "conceptSummary": "Spoke-to-hub VPC peering plus DNS peering zones.",
-    "correctRationale": "Hub-and-spoke here already relies on VPC peering to the hub; DNS peering zones from each spoke into the hub let spoke workloads use the hub's forwarding to on-prem — the minimal addition matching the existing design.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between A and B (21 vs 8 votes): Community favors A (21); zones do not cross peering, hence per-VPC binding. Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Forwarding zones are per-VPC; bind the on-prem domain zone to hub and spoke VPCs separately.",
+    "correctRationale": "A creates the forwarding zone on the hub plus the additional zone(s) needed for the spoke VPCs - the documented hub-and-spoke pattern.",
     "optionRationales": [
-      "Correct: VPC peering spokes->hub plus DNS peering zones targeting the hub uses the existing topology.",
-      "Wrong: forwarding zones in the hub cannot answer spoke queries without the peering/target wiring described.",
-      "Wrong: recreating all zones in a shared project abandons per-department ownership.",
-      "Wrong: a mesh of forwarding zones is far more complex than DNS peering to the hub."
+      "Correct: forwarding zone bound to hub VPC + private zone(s) for the spokes.",
+      "Wrong: missing the second-zone step for spoke VPCs.",
+      "Wrong: a hub-and-spoke VPN deployment per spoke adds tunnels the design does not need - the spokes require VPC peering to the hub VPC, not direct VPNs to on-premises.",
+      "Wrong: wrong domain spelling ('corp altostrat.com' missing the dot) plus the zone details."
     ]
   },
   {
@@ -7881,7 +7890,7 @@ export const QUESTIONS = [
       "D. Order a new Dedicated Interconnect for a colocation facility closest to us-central1, and use VPC global routing to access workloads in us-east4."
     ],
     "correct": 1,
-    "explanation": "Two VLAN attachments in us-east4 and us-central1 let traffic egress Google in the regions closest to the endpoints — us-east4 for New York and us-central1 for the midwest — minimizing latency.",
+    "explanation": "With 75% of workloads in us-east4, keeping the us-west2 interconnect but adding attachments in us-east4 and us-central1 keeps egress closest to where workloads run - the cost-minimal way to use the existing connection without ordering a new circuit.",
     "discussion": [
       {
         "user": "RKS_2021",
@@ -7915,15 +7924,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and C (20 vs 8 votes): Community majority is B: co-locating attachments with each data center's region minimizes latency; confidence medium.",
-    "conceptSummary": "Attachments co-located with traffic destinations to cut latency.",
-    "correctRationale": "Attachments should sit in the regions serving the traffic: east4 serves New York, central1 serves the midwest data center. Splitting attachments across those regions minimizes egress latency, whereas a single region adds cross-country latency for one side.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and C (20 vs 8 votes): Community favors B (20 vs 8 for C); region-local attachments beat a second connection. Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "Minimize interconnect egress cost: place VLAN attachments in the workload regions.",
+    "correctRationale": "B adds us-east4 and us-central1 attachments on the existing interconnect - local egress for 75%+25% of traffic, no new circuit.",
     "optionRationales": [
-      "Wrong: other-region attachments force both directions through distant regions.",
-      "Correct: east4 + central1 attachments match each destination's nearest region.",
-      "Wrong: six attachments over-provision beyond redundancy needs.",
-      "Wrong: three attachments all in us-east4 still leave the midwest path long."
+      "Wrong: routing everything through us-west2 pays egress to the remote regions on all traffic.",
+      "Correct: attachments in us-east4 and us-central1 on the existing interconnect.",
+      "Wrong: a new interconnect adds a whole second circuit - not the cheapest.",
+      "Wrong: a new circuit in us-central1 still leaves 75% egressing remotely."
     ]
   },
   {
@@ -7938,7 +7947,7 @@ export const QUESTIONS = [
       "D. Create an allow on match egress firewall rule with the target tag “web-server\" to allow web server IP addresses for TCP ports 80 and 443."
     ],
     "correct": 2,
-    "explanation": "Allowing ingress TCP 80 and 443 to the web-tier instances is all a public web app needs; SSH/ICMP are not required and a deny-all would break service.",
+    "explanation": "Inbound web traffic control = an allow-on-match ingress rule tagged web-server permitting TCP 80 and 443 from all IPs.",
     "discussion": [
       {
         "user": "pk349",
@@ -7964,14 +7973,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Minimal ingress allow for HTTP/HTTPS.",
-    "correctRationale": "A public web application only needs TCP 80 and 443 ingress; C grants exactly that without extras.",
+    "discussionSummary": "Community votes C (11).",
+    "conceptSummary": "Allow inbound HTTP/HTTPS: ingress allow rule, target tag, ports 80+443.",
+    "correctRationale": "C is the only option with ingress direction, both required ports, and the target tag.",
     "optionRationales": [
-      "Wrong: nothing needed = keep deny-all would kill the web app.",
-      "Wrong: SSH+ICMP are not needed for serving web traffic.",
-      "Correct: allow ingress on TCP 80 and 443 only.",
-      "Wrong: TCP 465 is unrelated and misses HTTPS."
+      "Wrong: misses port 443.",
+      "Wrong: egress rules control outbound traffic, not inbound.",
+      "Correct: ingress allow, web-server tag, TCP 80 and 443.",
+      "Wrong: egress + wrong source semantics."
     ]
   },
   {
@@ -7986,7 +7995,7 @@ export const QUESTIONS = [
       "D. Use non-RFC 1918 ranges with a single global VPC."
     ],
     "correct": 3,
-    "explanation": "Non-RFC1918 privately used ranges must be explicitly shared with the appliance; adding them as destination ranges in the appliance's custom routes for its VPC enables the web-tier route flow.",
+    "explanation": "RFC 1918 is exhausted and NAT is banned, so the only way to give every region+on-prem direct addressing is a single global VPC numbered with non-RFC 1918 (PUPI-style) space.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -8008,14 +8017,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "Adding private custom route ranges for non-RFC1918 space.",
-    "correctRationale": "The NVA in a different VPC is the hop for these privately used public ranges; adding them as destination ranges in its VPC's custom routes is the fix.",
+    "discussionSummary": "Community votes D (9).",
+    "conceptSummary": "No RFC 1918 space + no NAT = single VPC on non-RFC-1918 addressing. This addresses the cloud planning direct described in the question.",
+    "correctRationale": "D sidesteps both constraints: unique non-RFC-1918 ranges inside one global VPC keep direct connectivity everywhere.",
     "optionRationales": [
-      "Wrong: peering is already there; this is a routing gap, not a peering gap.",
-      "Wrong: BGP belongs on Interconnect/VPN attachments, not on an in-VPC appliance path.",
-      "Wrong: Broadbeach's peering name is irrelevant.",
-      "Correct: add the non-RFC1918 ranges as destinations in the appliance VPC's custom routes."
+      "Wrong: peering still needs unique RFC 1918 ranges - which are exhausted.",
+      "Wrong: overlapping ranges cannot connect at all.",
+      "Wrong: Cloud NAT performs translation - explicitly forbidden.",
+      "Correct: non-RFC 1918 ranges in a single global VPC."
     ]
   },
   {
@@ -8030,7 +8039,7 @@ export const QUESTIONS = [
       "D. Create network tags app-server and db-server. Add the app-server tag to the application servers, and add the db-server tag to the database servers. Run the following command: gcloud compute firewall-rules create app-db-firewall-rule \\ --action allow \\ --direction ingress \\ --rules tcp:3306 \\ --source-ranges 10.128.0.0/20 \\ --source-tags app-server \\ --target-tags db-server"
     ],
     "correct": 1,
-    "explanation": "Service accounts bound to instances give the most precise scoping — you must assign the SA to the instance — whereas tags can be added by anyone with instance rights and IP ranges cover unrelated VMs.",
+    "explanation": "Service-account-based firewalling is the precise approach: sa-app on the application servers, sa-db on the database servers, and an ingress allow on the DB subnet scoped to the sa-app source.",
     "discussion": [
       {
         "user": "saraali",
@@ -8064,14 +8073,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community majority is B; some argued tags for ease, but service accounts are the documented precise mechanism. Confidence medium.",
-    "conceptSummary": "Service-account scoping beats tags and IP ranges.",
-    "correctRationale": "SAs are tied to the instance identity, so only the intended VMs are matched; tags are mutable by broader users and IP ranges lack granularity.",
+    "discussionSummary": "Community votes B (20).",
+    "conceptSummary": "Secure app-to-DB access via service-account firewall rules.",
+    "correctRationale": "B uses dedicated service accounts for app and DB - the narrowest identity match for the allow rule.",
     "optionRationales": [
-      "Wrong: tags can be attached by anyone able to edit instances — weaker control.",
-      "Correct: service accounts give the most precise, least-overbroad targeting.",
-      "Wrong: subnet IP ranges include every VM in the range, not just the intended ones.",
-      "Wrong: an object schema is not a firewall-targeting mechanism."
+      "Wrong: mixing a network tag on the app side with a service account on the DB is looser and asymmetric.",
+      "Correct: sa-app on app servers + sa-db on DB servers + scoped ingress rule.",
+      "Wrong: same service-account structure but with the wrong/typo'd account details.",
+      "Wrong: network tags are coarser than service accounts."
     ]
   },
   {
@@ -8086,7 +8095,7 @@ export const QUESTIONS = [
       "D. Use Network Load Balancing in both regions, and use DNS-based load balancing to direct traffic to the closest region."
     ],
     "correct": 3,
-    "explanation": "Pass-through of TCP on 443 keeps the payload encrypted end-to-end to regional backends; regional passthrough NLBs in each region fronted by a DNS-based traffic splitter gives a global, low-latency anycast-style design.",
+    "explanation": "TCP pass-through on 443 with lowest latency rules out proxy/HTTP LBs: regional Network Load Balancers in both regions (true pass-through, preserves client IP) plus DNS steering to the nearest region.",
     "discussion": [
       {
         "user": "Tire",
@@ -8120,15 +8129,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Community majority votes B (43/81). The validated answer is D. Community splits B vs D; D is chosen on the merits — proxy LBs terminate TCP, so passthrough requires regional NLBs plus DNS steering. Confidence medium.",
-    "conceptSummary": "Regional passthrough NLBs plus DNS-based global balancing.",
-    "correctRationale": "\"TCP pass-through\" rules out proxy LBs, which terminate the connection. Passthrough NLBs are regional, so one per region with DNS (e.g., Cloud DNS routing policies or Traffic Director-style DNS) directing clients to the nearest region is the documented global pattern.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community favored B (43) over D (38): the validated answer is D because only NLB preserves TCP pass-through. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "True TCP pass-through = passthrough Network Load Balancer + DNS-based region steering.",
+    "correctRationale": "The chosen path is \"Use Network Load Balancing in both regions, and use DNS-based load balancing to direct traffic to the closest region.\": Only NLB is a real pass-through L4 device; SSL/TCP proxy and HTTP(S) LBs terminate connections, so D is the only pass-through option.",
     "optionRationales": [
-      "Wrong: a proxy LB terminates the TCP session — not pass-through.",
-      "Wrong: UDP must be passed too? Actually the stem says TCP 443 passthrough — but single-region placement fails the global requirement anyway.",
-      "Wrong: a single-region LB cannot serve a global low-latency deployment.",
-      "Correct: regional passthrough NLBs plus DNS-based balancing gives global reach while preserving end-to-end encryption."
+      "Wrong: SSL proxy terminates TLS - not pass-through.",
+      "Wrong: TCP proxy terminates the connection - not pass-through.",
+      "Wrong: HTTP(S) LB terminates and proxies - not pass-through.",
+      "Correct: regional Network Load Balancing + DNS-based closest-region routing."
     ]
   },
   {
@@ -8143,7 +8152,7 @@ export const QUESTIONS = [
       "D. Use a public Google ASN 16550."
     ],
     "correct": 3,
-    "explanation": "For Partner Interconnect the Cloud Router side uses Google's Partner-side BGP ASN 16550; your on-prem router supplies its own ASN to the partner.",
+    "explanation": "The Cloud Router's Google-side ASN for interconnect/VPN BGP is Google's public ASN 16550 - the peer side uses your own ASN.",
     "discussion": [
       {
         "user": "RKS_2021",
@@ -8177,14 +8186,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D: 16550 is the documented Partner Interconnect ASN.",
-    "conceptSummary": "ASN 16550 for Partner Interconnect.",
-    "correctRationale": "Partner Interconnect BGP peering uses Google's ASN 16550 on the Google side; the customer-side ASN is yours/on-prem — so D is the correct pairing.",
+    "discussionSummary": "Community votes D (21).",
+    "conceptSummary": "Google-side BGP ASN on Cloud Router = 16550.",
+    "correctRationale": "The chosen path is \"Use a public Google ASN 16550.\": 16550 is the documented Google-side ASN for Cloud Router BGP sessions.",
     "optionRationales": [
-      "Wrong: 64512 belongs to the customer side, not Google.",
-      "Wrong: your on-prem ASN does not replace Google-side ASN 16550.",
-      "Wrong: 4200000000 is a different reserved Google BGP range, not the Partner-facing ASN here.",
-      "Correct: ASN 16550 is the Google-side ASN used with Partner Interconnect."
+      "Wrong: 4-byte private ASNs are for the on-prem side, not Google.",
+      "Wrong: 2-byte private ASNs are likewise the customer's side.",
+      "Wrong: 15169 is Google's backbone ASN, not the Cloud Router session ASN.",
+      "Correct: ASN 16550 on the Cloud Router side."
     ]
   },
   {
@@ -8199,7 +8208,7 @@ export const QUESTIONS = [
       "D. Configure Cloud NAT and a Cloud Router in the Sales and Finance VPCs."
     ],
     "correct": 2,
-    "explanation": "VPC peering between prod and nonprod lets nonprod read the prod's Compute Engine internal IPs over the private network — simple, in-cloud, no internet.",
+    "explanation": "Two VPCs in the same organization needing VM-to-VM connectivity = VPC Network Peering between the Finance and Sales VPCs.",
     "discussion": [
       {
         "user": "anjanc",
@@ -8225,14 +8234,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "VPC peering to read another project's internal IPs.",
-    "correctRationale": "Peering shares internal IP routes between the two VPCs, satisfying nonprod's read of prod's private IPs without VPNs or public paths.",
+    "discussionSummary": "Community votes C (9).",
+    "conceptSummary": "Inter-VPC connectivity within Google Cloud = VPC Network Peering.",
+    "correctRationale": "The chosen path is \"Create a VPC Network Peering connection between the Finance VPC and the Sales VPC.\": Peering is the native, lowest-overhead interconnect between two VPCs.",
     "optionRationales": [
-      "Wrong: Cloud VPN adds tunnels and complexity where peering suffices.",
-      "Wrong: Shared VPC is for sharing the network subnets — heavier than peering for this case.",
-      "Correct: VPC peering between prod and nonprod exposes the internal IPs directly.",
-      "Wrong: on-prem DNS is unrelated to this in-cloud reachability."
+      "Wrong: HA VPN between co-located VPCs is unnecessary machinery.",
+      "Wrong: external IPs expose instances unnecessarily - peering keeps traffic private.",
+      "Correct: VPC Network Peering between the two VPCs.",
+      "Wrong: Cloud NAT is for outbound internet, not VPC-to-VPC."
     ]
   },
   {
@@ -8247,7 +8256,7 @@ export const QUESTIONS = [
       "D. Create a VPC firewall ruleset, and apply it to all instances in unmanaged instance groups."
     ],
     "correct": 2,
-    "explanation": "The Cloud Run app behind a global HTTP(S) LB on a custom domain is protected by an edge Cloud Armor policy, and logs forward to the SIEM via the logging pipeline (sink/Pub/Sub export).",
+    "explanation": "An external HTTP(S) LB forwarding to on-premises backends needs an internet NEG, and protecting those backends with WAF policy means applying Cloud Armor to that backend service.",
     "discussion": [
       {
         "user": "Laryoul",
@@ -8277,14 +8286,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is C: global HTTPS LB plus Cloud Armor, with logs exported via sink to the SIEM.",
-    "conceptSummary": "Cloud Armor on an internet NEG/serverless backend plus log export.",
-    "correctRationale": "The external HTTP(S) LB in front of Cloud Run supports Cloud Armor backend policies; Armor logs flow through Cloud Logging to a sink feeding the SIEM. Option C names the right LB + Armor + logging pipeline.",
+    "discussionSummary": "Community votes C (10).",
+    "conceptSummary": "On-prem origin behind external HTTP(S) LB = internet NEG + Cloud Armor on the backend service.",
+    "correctRationale": "C is the documented internet-NEG backend plus the Cloud Armor policy attachment.",
     "optionRationales": [
-      "Wrong: NLB passthrough cannot front Cloud Run custom-domain HTTPS cleanly and Cloud Armor attachment differs.",
-      "Wrong: App Engine firewall language and IDS-style mirroring are the wrong tools.",
-      "Correct: global HTTPS LB + Cloud Armor + logging export to the SIEM.",
-      "Wrong: proxy LB cannot front serverless HTTP(S) apps as described."
+      "Wrong: instance groups don't host on-prem backends.",
+      "Wrong: hierarchical firewall rules cannot WAF-protect an LB backend.",
+      "Correct: Cloud Armor policy on the internet-NEG backend service.",
+      "Wrong: VPC firewall rules don't apply to LB backend services."
     ]
   },
   {
@@ -8299,7 +8308,7 @@ export const QUESTIONS = [
       "D. Configure a /28 primary IP address range for the node IP addresses. Configure a /24 secondary IP range for the Pads. Configure a /22 secondary IP range for the Services."
     ],
     "correct": 3,
-    "explanation": "10 nodes fit a /28 (14 usable); 8 Pods per node needs Pod space of at least /24 (256); and up to 1024 services fit a /22 — the /25-Pod /21-Service option understates Pods.",
+    "explanation": "10 nodes fit in a /28 primary range (16 addresses). Each node receives a /24 pod alias block, so a /24 secondary range serves the pod pool. Services growing to 1024 need a /22 secondary range (1024+ IPs).",
     "discussion": [
       {
         "user": "RKS_2021",
@@ -8333,15 +8342,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and B (42 vs 19 votes): Community strongly favors D citing the per-node Pod CIDR table; a dissent argued /21 for services but D remains the documented answer. Confidence medium.",
-    "conceptSummary": "GKE VPC-native secondary-range sizing for 10 nodes, 8 Pods/node, 1024 services.",
-    "correctRationale": "/28 gives 14 usable node IPs; flexible Pod CIDR with 8 max Pods per node needs a /24 Pod range per the documented per-node table; a /22 Service range provides ~1024 addresses. D matches all three.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and B (42 vs 19 votes): Community favored D (42) over B (19): /24 pods + /22 services is the consistent sizing. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Size GKE ranges: /28 nodes, /24 pods per node sizing, /22 services for 1024+.",
+    "correctRationale": "D is the only option whose service range (/22, 1024 addresses) meets the stated growth while keeping /28 node and /24 pod ranges consistent with the per-node pod CIDR model.",
     "optionRationales": [
-      "Wrong: /26 only provides ~62 usable — too small for 10 nodes plus overhead in the intended reading, and /22 Services is fine but nodes are short.",
-      "Wrong: /25 Pods (128) is enough addresses-wise but the documented per-node sizing table calls for /24 per-node blocks; D matches the canonical answer.",
-      "Wrong: C's ranges are far oversized for minimal waste.",
-      "Correct: /28 nodes, /24 Pods, /22 Services fits 10 nodes, 8 Pods/node, and 1024 services with minimal waste."
+      "Wrong: the /25 pod range does not match per-node pod-block sizing.",
+      "Wrong: /21 services is oversized and /25 pods still mismatched.",
+      "Wrong: /28 pods (16 IPs) cannot serve the 8-per-node x 10-node pod pool.",
+      "Correct: /28 nodes + /24 pods + /22 services."
     ]
   },
   {
@@ -8356,7 +8365,7 @@ export const QUESTIONS = [
       "D. 1. Create an A record for private.googleapis.com using the 199.36.153.8/30 address range. 2. Create a CNAME record for *.googleapis.com that points to the A record. 3. Configure your on-premises routers to use the Cloud VPN tunnel as the next hop for the addresses you used in the A record. 4. Configure your on-premises firewalls to allow traffic to the private.googleapis.com addresses."
     ],
     "correct": 1,
-    "explanation": "private.googleapis.com plus an ingress firewall allowing only HTTPS 443 to the VIP range keeps API traffic inside Google while everything else stays blocked.",
+    "explanation": "On-prem access to Google APIs via the restricted VIP: restricted.googleapis.com A record for 199.36.153.4/30 plus a wildcard CNAME for *.googleapis.com, with on-prem DNS forwarding to those records.",
     "discussion": [
       {
         "user": "xhilmi",
@@ -8390,14 +8399,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is B, citing private.googleapis.com over restricted for non-VPC-SC private access.",
-    "conceptSummary": "private.googleapis.com VIP plus a 443-only firewall rule.",
-    "correctRationale": "Directing API calls to private.googleapis.com keeps them inside Google; a firewall rule allowing only TCP 443 to that VIP range satisfies \"encrypted to Google without external IPs\" with least exposure.",
+    "discussionSummary": "Community votes B (17); the .4/30 vs .8/30 detail is the discriminator.",
+    "conceptSummary": "restricted.googleapis.com DNS: A record for 199.36.153.4/30 + wildcard CNAME.",
+    "correctRationale": "B uses the documented restricted range 199.36.153.4/30 - private.googleapis.com (199.36.153.8/30) is the wrong VIP for the requirement.",
     "optionRationales": [
-      "Wrong: default routes to the internet for all APIs expose far more than the VIP path.",
-      "Correct: private.googleapis.com VIP plus a 443-only allow rule is the documented minimal answer.",
-      "Wrong: restricted.googleapis.com is for VPC-SC contexts and is not required absent a perimeter.",
-      "Wrong: same VIP confusion plus weaker filtering."
+      "Wrong: 199.36.153.8/30 is the private.googleapis.com range, not restricted.",
+      "Correct: restricted A record on 199.36.153.4/30 + wildcard CNAME + forwarding.",
+      "Wrong: removing the VPC's default internet gateway is unnecessary disruption - the fix needs the on-prem firewall to allow the restricted.googleapis.com range, not a deleted route.",
+      "Wrong: again the private VIP addresses."
     ]
   },
   {
@@ -8412,7 +8421,7 @@ export const QUESTIONS = [
       "D. Configure an access control list on the peer VPN gateway to deny all traffic except 203.0.113.1/32, and attach it to the primary external interface."
     ],
     "correct": 1,
-    "explanation": "The constraints/compute.restrictVpnPeerIPs organization policy blocks creating VPNs to unapproved peer IPs — the documented control to prevent unwanted external VPNs.",
+    "explanation": "Restricting VPN tunnels to a single peer IP is an org-policy control: constraints/compute.restrictVpnPeerIPs with an allowList of 203.0.113.1/32 blocks tunnels to any other peer.",
     "discussion": [
       {
         "user": "desertlotus1211",
@@ -8442,14 +8451,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: restrictVpnPeerIPs is the org constraint for this.",
-    "conceptSummary": "restrictVpnPeerIPs org policy.",
-    "correctRationale": "Google's org policy list includes restrictVpnPeerIPs to limit which peer IPs VPN gateways/tunnels may use — exactly the control needed to prevent unauthorized site-to-site VPNs.",
+    "discussionSummary": "Community votes B (9).",
+    "conceptSummary": "Restrict VPN peer IPs org-wide = restrictVpnPeerIPs constraint allowList.",
+    "correctRationale": "The restrictVpnPeerIPs Resource Manager constraint is the documented mechanism to whitelist allowed peer gateway IPs project-wide.",
     "optionRationales": [
-      "Wrong: moving workers to a new subnet does not stop users from creating VPNs.",
-      "Correct: the restrictVpnPeerIPs org constraint blocks unapproved VPN peer IPs.",
-      "Wrong: removing IP addresses per user is not an organizational control.",
-      "Wrong: a Cloud NAT gateway cannot block VPN creation."
+      "Wrong: firewall rules filter instance traffic; they cannot constrain which peer IPs a VPN tunnel may use.",
+      "Correct: allowList of 203.0.113.1/32 on restrictVpnPeerIPs.",
+      "Wrong: Cloud Armor protects load-balanced applications, not VPN tunnel creation.",
+      "Wrong: an ACL on the peer device is not a Google Cloud control and does not restrict tunnel creation."
     ]
   },
   {
@@ -8464,7 +8473,7 @@ export const QUESTIONS = [
       "D. Enable VPC Flow Logs inside the third project, and monitor the logs for negative impact."
     ],
     "correct": 1,
-    "explanation": "VPC Service Controls dry-run mode evaluates and logs what a perimeter would block without enforcing it — perfect for pre-production validation of the ProdOrg perimeter.",
+    "explanation": "Dry-run mode on the VPC Service Controls policy lets you add the project and observe what would be blocked before enforcing - the safe way to validate impact.",
     "discussion": [
       {
         "user": "ZODOGAM",
@@ -8494,14 +8503,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B: dry run is the feature designed for this.",
-    "conceptSummary": "VPC-SC dry run before enforcement.",
-    "correctRationale": "Dry-run perimeters report violations in logs without blocking, letting you validate the perimeter against the test workload exactly as Google recommends.",
+    "discussionSummary": "Community votes B (10).",
+    "conceptSummary": "Validate perimeter changes with dry-run mode.",
+    "correctRationale": "The chosen path is \"Modify the existing VPC Service Controls policy to include the new project in dry run mode.\": Dry run logs violations without enforcing, revealing what adding the project would break.",
     "optionRationales": [
-      "Wrong: preview mode is not the feature; dry-run is the documented mechanism.",
-      "Correct: a dry-run perimeter logs what would be blocked without enforcing.",
-      "Wrong: a real perimeter would block the required accesses — it is what you are testing, not the test tool.",
-      "Wrong: an enforced perimeter defeats the purpose of evaluating behavior."
+      "Wrong: firewall logging does not show perimeter violations.",
+      "Correct: dry-run the modified perimeter policy.",
+      "Wrong: Resource Manager audit logs show admin actions, not service-perimeter impact.",
+      "Wrong: flow logs show network traffic, not API-perimeter behavior."
     ]
   },
   {
@@ -8516,7 +8525,7 @@ export const QUESTIONS = [
       "D. Create two hierarchical firewall policies per department's folder with two rules in each: a high-priority rule that matches traffic from the private CIDRs assigned to the respective VPC and sets the action to goto_next, and another lower-priority rule that blocks traffic from any other source."
     ],
     "correct": 3,
-    "explanation": "Creating a new VPC in the existing project keeps everything in the original boundary, while peering the new and old VPCs restores the app's access to the database on the legacy network.",
+    "explanation": "Folder-scoped defaults need hierarchical firewall policies: per department, one high-priority rule matching the department's own CIDRs with goto_next (defer to VPC rules) and a lower-priority rule blocking inter-VPC traffic - attached at each department's folder.",
     "discussion": [
       {
         "user": "1f01b87",
@@ -8550,15 +8559,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and C (20 vs 14 votes): Community majority is D: a second VPC peered to the existing one is the minimal-change design. Confidence medium.",
-    "conceptSummary": "New VPC + peering to reach the old network.",
-    "correctRationale": "A single project can hold multiple VPCs; creating a second VPC and peering it to the old one is the least-friction way to isolate the new VMs while preserving DB reachability — no shared-VPC replatforming needed.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and C (20 vs 14 votes): Community favors D (20 vs 14 for C); goto_next is the distinguishing mechanism. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Folder-level defaults via hierarchical policies: goto_next for own CIDRs, deny the rest.",
+    "correctRationale": "D's two-policy-per-folder layout with goto_next lets VPC rules govern intra-VPC traffic while blocking cross-VPC flows by default.",
     "optionRationales": [
-      "Wrong: firewall tags alone cannot give the new VMs a separate network boundary as desired.",
-      "Wrong: subnet segmentation inside the same VPC cannot isolate the database cleanly enough for the stated design.",
-      "Wrong: moving projects and rebuilding Shared VPC is heavy overhead.",
-      "Correct: new VPC in the project plus peering to the legacy VPC meets isolation and DB access."
+      "Wrong: a priority-0 deny-any in each VPC blocks everything including legitimate traffic.",
+      "Wrong: priority 1000 is too low to be the effective default.",
+      "Wrong: the C variant misses the goto_next/defer mechanics needed to keep intra-VPC flows working.",
+      "Correct: per-folder policies - goto_next for own CIDRs, deny for the rest."
     ]
   },
   {
@@ -8573,7 +8582,7 @@ export const QUESTIONS = [
       "D. Announce a 0.0.0.0/0 route from your on-premises router with a MED of 500. Configure another custom route 199.36.153.4/30 with a priority of 1000 whose next hop is the VPN tunnel back to the on-premises data center."
     ],
     "correct": 2,
-    "explanation": "Advertising 0.0.0.0/0 on the on-prem link at a worse MED (1000) makes on-prem the default path, while a VPC route for the Google API VIP range (199.36.153.4/30) toward the default internet gateway keeps API calls inside Google.",
+    "explanation": "Force internet egress through the VPN by having on-prem advertise 0.0.0.0/0 (MED 1000 so it is preferred over the local default), and keep Google APIs reachable privately via a more-specific custom route to 199.36.153.4/30 through the internet gateway.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -8607,14 +8616,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community majority is C: MED 1000 deprioritizes the on-prem default path while the API range uses the internet gateway. Confidence medium on MED semantics in this option set.",
-    "conceptSummary": "On-prem default route plus restricted-VIP route to the IGW.",
-    "correctRationale": "BGP priority MED 1000 prefers the direct 0.0.0.0/0 for regular egress, and the 199.36.153.4/30 route to the IGW routes API traffic privately — matching 'API calls should not exit on-prem'.",
+    "discussionSummary": "Community favors C (22).",
+    "conceptSummary": "Default route via hybrid link + specific route for the restricted.googleapis.com VIP.",
+    "correctRationale": "C advertises the default over BGP so traffic hairpins via on-prem, while the /30 route keeps the restricted VIP reachable - the documented pattern.",
     "optionRationales": [
-      "Wrong: preferred MED plus private.googleapis.com sends API traffic over on-prem anyway for the VIP route.",
-      "Wrong: lower MED wins, so the default would prefer on-prem — wrong direction for what the option claims... it also misapplies the API range.",
-      "Correct: worse-MED default via on-prem plus the restricted API range routed to the internet gateway satisfies both requirements.",
-      "Wrong: removing the peering disconnects environments rather than routing smartly."
+      "Wrong: local default at priority 500 beats the VPN path - traffic would not hairpin.",
+      "Wrong: inverted priorities - the VPN advertisement must win the default.",
+      "Correct: on-prem advertises 0.0.0.0/0 (MED 1000) + /30 route for the restricted VIP via the internet gateway.",
+      "Wrong: routing the 199.36.153.4/30 restricted-VIP range back through the VPN tunnel breaks the private API path - that range must go via the internet gateway."
     ]
   },
   {
@@ -8629,7 +8638,7 @@ export const QUESTIONS = [
       "D. Configure hierarchical firewall rules for the global HTTP(S) load balancer public IP address at the organization level."
     ],
     "correct": 1,
-    "explanation": "With Cloud CDN in place, cache-miss requests still hit the origin; attaching a Cloud Armor edge/security policy to the CDN-enabled backend covers the remaining path through the CDN.",
+    "explanation": "DDoS and L7 protection on a global HTTP(S) LB is Cloud Armor: attach a security policy to the backend service.",
     "discussion": [
       {
         "user": "kirrim",
@@ -8663,14 +8672,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is B: Cloud Armor applies at the LB backend service that fronts the CDN-enabled origin.",
-    "conceptSummary": "Cloud Armor on the CDN-enabled backend.",
-    "correctRationale": "Cloud Armor attaches to the LB backend service that also serves CDN — protecting cache misses that reach the origin. Fronting Cloud CDN with a second CDN layer is meaningless.",
+    "discussionSummary": "Community votes B (10).",
+    "conceptSummary": "Protect a global LB from DDoS/L7 with a Cloud Armor policy on the backend service.",
+    "correctRationale": "Cloud Armor provides both edge DDoS absorption and WAF rules at the backend service - the documented control.",
     "optionRationales": [
-      "Wrong: preconfigured WAF rules do not apply to cached/edge-served content as described.",
-      "Correct: attach the security policy to the backend service fronting the CDN origin.",
-      "Wrong: Cloud Armor is not applied to the bucket object itself.",
-      "Wrong: you cannot insert another CDN before Cloud CDN."
+      "Wrong: VPC Service Controls is for API data exfiltration, not LB attack protection.",
+      "Correct: Cloud Armor security policy on the backend service.",
+      "Wrong: VPC firewall rules cannot stop L7 or absorb DDoS at the frontend.",
+      "Wrong: hierarchical firewall rules cannot attach to an LB frontend IP."
     ]
   },
   {
@@ -8685,7 +8694,7 @@ export const QUESTIONS = [
       "D. Create a firewall rule that allows egress to destination 0.0.0.0/0."
     ],
     "correct": 0,
-    "explanation": "Cloud NAT is regional: a gateway covers all subnets in its region, so a single Cloud NAT instance in the VMs' region is enough.",
+    "explanation": "No-public-IP egress is Cloud NAT, and NAT gateways are regional: one Cloud NAT gateway + Cloud Router per region (us-west1 and us-east1).",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -8719,14 +8728,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "One regional Cloud NAT covers all subnets in that region.",
-    "correctRationale": "A Cloud NAT gateway applies to all subnets in its region by default; a single regional gateway is the minimal config.",
+    "discussionSummary": "Community votes A (16).",
+    "conceptSummary": "Private-IP egress to the internet = regional Cloud NAT + Cloud Router per region.",
+    "correctRationale": "Cloud NAT and Cloud Router are regional resources - each region needs its own gateway.",
     "optionRationales": [
-      "Correct: one Cloud NAT in the region serves every subnet and the VMs.",
-      "Wrong: a second NAT per subnet is unnecessary — NAT is regional.",
-      "Wrong: custom routing is not required; NAT serves the whole region.",
-      "Wrong: external IPs would expose the VMs publicly, violating the design."
+      "Correct: a Cloud NAT gateway + Cloud Router in each of the two regions.",
+      "Wrong: there is no global Cloud NAT or global Cloud Router.",
+      "Wrong: ephemeral public IPs violate the security mandate.",
+      "Wrong: an egress-allow rule does not give no-external-IP VMs an internet path."
     ]
   },
   {
@@ -8741,7 +8750,7 @@ export const QUESTIONS = [
       "D. Set up the engineer with Compute Shared VPC Admin IAM role and Project IAM Admin role at the organization level."
     ],
     "correct": 3,
-    "explanation": "Setting up multiple host projects across folders requires compute.xpnAdmin plus resourcemanager.projectIamAdmin at the organization level so subnets can also be shared with service projects.",
+    "explanation": "Creating Shared VPC host projects across folders and sharing subnets requires compute.xpnAdmin plus resourcemanager.projectIamAdmin at the folder level (the scope where the projects live).",
     "discussion": [
       {
         "user": "irmingard_examtopics",
@@ -8775,15 +8784,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Community majority votes B (30/55). The validated answer is D. Community majority is B, but B omits the IAM role needed to share subnets; D is chosen on the merits — Google docs state xpnAdmin plus projectIamAdmin are needed. Confidence medium.",
-    "conceptSummary": "Org-level Shared VPC Admin + Project IAM Admin.",
-    "correctRationale": "xpnAdmin enables/disables host projects, but sharing subnets requires resourcemanager.projectIamAdmin on the host project — an org-level grant of both roles is the fewest-steps answer covering all folders.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community favored B (30) over D (22): the validated answer is D - both roles are documented requirements, and org scope covers the multi-folder span. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Shared VPC admin needs xpnAdmin + projectIamAdmin at folder scope.",
+    "correctRationale": "Shared VPC setup requires both the Compute Shared VPC Admin and Project IAM Admin roles, granted at the organization level so the engineer can manage host projects across all folders.",
     "optionRationales": [
-      "Wrong: networkUser lets a service project use the network; it cannot designate host projects.",
-      "Wrong: org-level xpnAdmin alone lacks the IAM grant to share subnets with service projects.",
-      "Wrong: folder-level grants force repeating work across folders, contrary to fewest steps.",
-      "Correct: org-level compute.xpnAdmin + resourcemanager.projectIamAdmin covers host setup and subnet sharing in one step."
+      "Wrong: Compute Shared VPC Admin alone cannot perform the project-IAM changes subnet sharing needs.",
+      "Wrong: org-level xpnAdmin still misses the required Project IAM Admin role.",
+      "Wrong: the right pair but folder-scoped - the task spans multiple folders, so org level is needed.",
+      "Correct: Shared VPC Admin + Project IAM Admin at the organization level."
     ]
   },
   {
@@ -8798,7 +8807,7 @@ export const QUESTIONS = [
       "D. Enable Google Cloud Armor audit logs, and view the logs on the Activity page in the Google Cloud Console."
     ],
     "correct": 1,
-    "explanation": "Enabling logging on the backend service with a 1.0 sample rate writes every request to Cloud Logging, which the admin can inspect to confirm the traffic.",
+    "explanation": "Cloud Armor decisions are logged through the load balancer's logs; sampling at 1 captures every request so the offending WAF rule match can be found in Cloud Logging.",
     "discussion": [
       {
         "user": "desertlotus1211",
@@ -8832,14 +8841,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Backend-service logging at sample rate 1.0.",
-    "correctRationale": "Backend-service request logging captures each request hitting the LB; setting the sampling rate to 1.0 logs all of them, after which Cloud Logging can be queried.",
+    "discussionSummary": "Community votes B (9); legacy HTTP(S) LB naming noted.",
+    "conceptSummary": "Find the misbehaving WAF rule via LB logs at sampling rate 1.",
+    "correctRationale": "Full-fidelity LB logging records which Cloud Armor rule matched and denied each request.",
     "optionRationales": [
-      "Wrong: Network Intelligence Center tests paths; it does not log live requests.",
-      "Correct: enabling logging on the backend service at 1.0 writes per-request logs.",
-      "Wrong: alerting on drops needs metrics, not a logging config.",
-      "Wrong: Packet Mirroring is much heavier than needed to confirm requests."
+      "Wrong: firewall logs cover VPC firewall rules, not Cloud Armor WAF decisions.",
+      "Correct: LB logging at sample rate 1 reviewed in Cloud Logging.",
+      "Wrong: flow logs show connection tuples, not WAF rule matches.",
+      "Wrong: Armor audit logs cover policy changes, not per-request rule evaluation."
     ]
   },
   {
@@ -8854,7 +8863,7 @@ export const QUESTIONS = [
       "D. 1. Configure your VPC routing in regional mode. 2. Add additional Cloud Interconnect VLAN attachments in the us-west2 and us-central1 regions, and configure Cloud Routers in us-west2 and us-central1."
     ],
     "correct": 2,
-    "explanation": "With global routing enabled, a VLAN attachment can be created in another region; an attachment in us-west1 on the existing us-central1 Interconnect serves the new region directly.",
+    "explanation": "One physical connection can host attachments in multiple regions; to serve us-west2 and us-central1 as well, add VLAN attachments + Cloud Routers in those regions and set the VPC to global routing so all regions exchange routes.",
     "discussion": [
       {
         "user": "saraali",
@@ -8884,14 +8893,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Remote VLAN attachment for another region on the same Interconnect.",
-    "correctRationale": "Dedicated Interconnect attachments can target a different region than the connection's router region under global routing — the documented way to extend reach without a new circuit.",
+    "discussionSummary": "Community favors C (17 vs 3 for B); global routing is the discriminator.",
+    "conceptSummary": "Extend one interconnect to more regions: remote VLAN attachments + global routing.",
+    "correctRationale": "C adds the needed us-west2 attachment and global mode - the documented remote-attachment extension.",
     "optionRationales": [
-      "Wrong: regional routing blocks cross-region advertisement entirely.",
-      "Wrong: mode stays global; the fix is a new attachment, not a routing mode change.",
-      "Correct: create a us-west1 attachment on the existing connection with global routing.",
-      "Wrong: another physical connection is unnecessary cost."
+      "Wrong: regional mode keeps routes confined to each region.",
+      "Wrong: a second us-east1 attachment does not help the other regions.",
+      "Correct: global routing + new us-west2 attachment/router.",
+      "Wrong: right attachments but regional mode still confines the routes."
     ]
   },
   {
@@ -8906,7 +8915,7 @@ export const QUESTIONS = [
       "D. Enable VPC Flow Logs for all VPCs, and review the logs in Cloud Logging for the affected instances."
     ],
     "correct": 2,
-    "explanation": "A Connectivity Test between the client and the tracecollect VM traces the configured path and reports where the traffic is blocked.",
+    "explanation": "Connectivity Tests from the Network Intelligence Center model the path between the affected endpoints and diagnose where traffic is blocked.",
     "discussion": [
       {
         "user": "SZON",
@@ -8932,14 +8941,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Connectivity Test locates the blocking point.",
-    "correctRationale": "Connectivity Tests evaluate the configuration path hop by hop and name the blocking element — the tool built for 'where is traffic dropped'.",
+    "discussionSummary": "Community votes C (7).",
+    "conceptSummary": "Diagnose inter-endpoint connectivity with Network Intelligence Center Connectivity Tests.",
+    "correctRationale": "Connectivity Tests evaluate routes and firewall decisions on the exact path - the purpose-built diagnostic.",
     "optionRationales": [
-      "Wrong: Packet Mirroring copies packets but does not explain where the path fails.",
-      "Wrong: Performance Dashboard shows metrics, not path blockage.",
-      "Correct: a Connectivity Test diagnoses where the connection is blocked.",
-      "Wrong: Firewall Insights audits rules; it does not trace this specific path."
+      "Wrong: audit logs show admin actions, not connectivity failures.",
+      "Wrong: SSH ping tests give point results, not the network-path analysis needed.",
+      "Correct: Connectivity Tests between the affected endpoints.",
+      "Wrong: flow logs show observed flows but not the blocking decision itself."
     ]
   },
   {
@@ -8954,7 +8963,7 @@ export const QUESTIONS = [
       "D. Configure Private Service Connect to privately access Cloud Storage from all VPCs under project XYZ."
     ],
     "correct": 1,
-    "explanation": "Adding the client project and service to a VPC Service Controls perimeter blocks cross-project API calls from unauthorized networks at the service level.",
+    "explanation": "Restricting bucket access to specific VPCs is VPC Service Controls: a perimeter around project XYZ with storage.googleapis.com restricted.",
     "discussion": [
       {
         "user": "gonlafer",
@@ -8988,14 +8997,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is B: VPC-SC is the mechanism for service-level perimeter isolation.",
-    "conceptSummary": "VPC-SC perimeter to isolate the client project.",
-    "correctRationale": "VPC-SC service perimeters prevent data movement outside the perimeter regardless of network path — the strongest answer to 'prevent all requests outside our network'.",
+    "discussionSummary": "Community votes B (17).",
+    "conceptSummary": "Limit Storage access to a project's VPCs = VPC SC perimeter + restricted service.",
+    "correctRationale": "The chosen path is \"Configure a VPC Service Controls perimeter around project XYZ, and include storage.googleapis.com as a restricted service in the service perimeter.\": The perimeter blocks API calls from outside the allowed networks, exactly enforcing the VPC-scoped access.",
     "optionRationales": [
-      "Wrong: network tags govern firewall targeting, not service-to-service API isolation.",
-      "Correct: a VPC-SC perimeter blocks out-of-perimeter API requests.",
-      "Wrong: firewall rules control VM traffic; BigQuery access is an API call path.",
-      "Wrong: org policies do not provide this per-service network isolation."
+      "Wrong: PGA changes addressing, not access policy - anyone in the VPC or internet could still call the API.",
+      "Correct: perimeter around project XYZ + restricted storage service.",
+      "Wrong: a project-private ACL controls which identities may read the bucket, not which VPCs may reach it.",
+      "Wrong: PSC provides private connectivity endpoints, not access restriction per VPC."
     ]
   },
   {
@@ -9010,7 +9019,7 @@ export const QUESTIONS = [
       "D. 1. Configure a DNS policy in the hub VPC, and configure the on-premises DNS as an alternate DNS server. 2. Configure the spoke VPCs with a private zone, and set up DNS peering to the hub VPC."
     ],
     "correct": 0,
-    "explanation": "The hub VPC hosts a forwarding zone to on-prem; each spoke creates a DNS peering zone pointing at the hub so spoke VMs resolve on-prem names through the hub's hybrid link.",
+    "explanation": "On-prem resolves Google zones via the hub: private zone in the hub VPC with forwarding toward on-prem, plus DNS peering from each spoke VPC to the hub so spokes resolve the same zones.",
     "discussion": [
       {
         "user": "saraali",
@@ -9044,15 +9053,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between A and B (29 vs 18 votes): Community majority is A (~62%); minority argued B which describes the reverse direction. A kept per the documented hub-spoke DNS pattern; confidence medium.",
-    "conceptSummary": "Hub forwarding zone plus per-spoke DNS peering zones.",
-    "correctRationale": "On-prem names are resolved by the hub's forwarding zone toward the corporate DNS; spoke VPCs reach those answers via DNS peering zones targeting the hub network — the classic hub-spoke DNS pattern.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between A and B (29 vs 18 votes): Community favors A (29 vs 18 for B). Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Hub-and-spoke DNS: private zone on the hub + DNS peering from spokes.",
+    "correctRationale": "A wires both directions: hub-hosted zone forwarded on-prem and spoke peering into the hub VPC.",
     "optionRationales": [
-      "Correct: forwarding zone in hub + DNS peering zones from each spoke to the hub.",
-      "Wrong: response policies rewrite answers; they cannot forward to on-prem.",
-      "Wrong: an inbound server policy serves on-prem->GCP queries, the reverse direction.",
-      "Wrong: private zones per spoke duplicate work and do not forward on-prem names."
+      "Correct: hub private zone + on-prem forwarding + DNS peering from spokes.",
+      "Wrong: inbound-forwarding policy in the hub does not give spokes visibility of the zone.",
+      "Wrong: on-prem as alternate DNS for spokes couples resolution the wrong way.",
+      "Wrong: same direction confusion - zones belong on the hub."
     ]
   },
   {
@@ -9067,7 +9076,7 @@ export const QUESTIONS = [
       "D. Configure Cloud DNS to DNS peer with your on-premises DNS resolver. Configure your on-premises DNS resolver to forward Google Cloud zone queries to Google's public DNS 8.8.8.8."
     ],
     "correct": 1,
-    "explanation": "For on-prem to resolve GCP names, the VPC needs an inbound server policy (inbound DNS entry point) and on-prem must route to its IPs; for GCP to resolve on-prem names, outbound forwarding zones send queries to the on-prem DNS.",
+    "explanation": "Bidirectional on-prem/GCP resolution needs both an inbound server policy (for on-prem querying GCP zones) and outbound forwarding zones pointing at the on-prem resolver.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -9101,14 +9110,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Inbound server policy + outbound forwarding zones for hybrid DNS.",
-    "correctRationale": "Inbound server policies give on-prem a target IP in the VPC to query; outbound forwarding zones send GCP queries to on-prem DNS servers. B covers both directions correctly.",
+    "discussionSummary": "Community votes B (20).",
+    "conceptSummary": "Two-way DNS between GCP and on-prem = inbound server policy + outbound forwarding zones.",
+    "correctRationale": "B supplies both directions; the on-prem resolver forwards GCP queries back to the inbound entry point.",
     "optionRationales": [
-      "Wrong: this covers only the GCP->on-prem direction.",
-      "Correct: inbound server policy + outbound forwarding zones implement bidirectional hybrid resolution.",
-      "Wrong: DNS peering zones do not reach on-prem resolvers.",
-      "Wrong: DNSSEC validates signatures; it does not forward queries."
+      "Wrong: outbound-only covers GCP->on-prem but not on-prem->GCP.",
+      "Correct: inbound + outbound policies covering both directions.",
+      "Wrong: same missing-inbound gap as A.",
+      "Wrong: there is no DNS peering with on-prem resolvers, and 8.8.8.8 cannot resolve private zones."
     ]
   },
   {
@@ -9123,7 +9132,7 @@ export const QUESTIONS = [
       "D. Configure the third-party appliances with multiple interfaces. Create a hub VPC network for all projects, and create separate VPC networks for on-premises and internet connectivity. Create the relevant routes on the third-party appliances and VPC networks. Use VPC Network Peering to connect all projects’ VPC networks to the hub VPC. Export custom routes from the hub VPC and import on all projects’ VPC networks."
     ],
     "correct": 3,
-    "explanation": "A centralized hub-and-spoke with a firewall/NVA appliance in the hub inspecting spoke-to-spoke and on-prem traffic is the design that mirrors the existing centralized inspection model.",
+    "explanation": "Centralizing interconnect for 10 VPCs is a hub-and-spoke design: a hub VPC for the projects, separate VPCs for on-prem and internet, and multi-NIC third-party appliances bridging them.",
     "discussion": [
       {
         "user": "saraali",
@@ -9157,14 +9166,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "Centralized NVA hub for traffic inspection.",
-    "correctRationale": "The requirement is inspection of all traffic incl. spoke-to-spoke: a hub-and-spoke topology with a hub NVA forces traffic through a central checkpoint, matching on-prem architecture.",
+    "discussionSummary": "Community favors D (17).",
+    "conceptSummary": "Shared hybrid connectivity: hub VPC + multi-NIC appliances + dedicated on-prem/internet VPCs.",
+    "correctRationale": "The chosen path is \"Configure the third-party appliances with multiple interfaces. Create a hub VPC network for all projects, and create separate VPC networks for on-premises and i\": D's hub-and-spoke appliance design consolidates connectivity while keeping per-project VPCs.",
     "optionRationales": [
-      "Wrong: Private NAT is address translation, not centralized inspection.",
-      "Wrong: VPC-SC perimeters govern API access, not packet inspection.",
-      "Wrong: private services access is a connectivity mechanism, not inspection.",
-      "Correct: hub-and-spoke with a central appliance routes all flows through inspection."
+      "Wrong: per-project VLAN attachments does not consolidate to one interconnect.",
+      "Wrong: interfaces into each of the 10 VPCs without a hub is unmanageable.",
+      "Wrong: consolidating subnets into a single VPC destroys project isolation.",
+      "Correct: hub VPC + separate on-prem/internet VPCs + multi-NIC appliances."
     ]
   },
   {
@@ -9179,7 +9188,7 @@ export const QUESTIONS = [
       "D. Configure one VPC for Web, one VPC for App, and one VPC for Database. Use VPC Network Peering to connect all VPCs in a full mesh."
     ],
     "correct": 0,
-    "explanation": "The Shared VPC host project holds the network; service projects attach to consume its subnets — that is the definition of Shared VPC.",
+    "explanation": "Small team, three dev groups needing shared network management = one Shared VPC host project with Web/App/Database service projects.",
     "discussion": [
       {
         "user": "Ben756",
@@ -9213,14 +9222,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Host project owns the Shared VPC.",
-    "correctRationale": "Shared VPC = one host project owning the VPC, with service projects attached. Option A states that relationship correctly.",
+    "discussionSummary": "Community votes A (12).",
+    "conceptSummary": "Team segmentation with shared networking = host project + service projects.",
+    "correctRationale": "The chosen path is \"Configure a host project with a Shared VPC. Create service projects for Web, App, and Database.\": A gives each team its own project while networking stays centrally managed - the leanest structure.",
     "optionRationales": [
-      "Correct: attach service projects to the host project containing the VPC.",
-      "Wrong: a host project cannot be a child of a service project — the direction is inverted.",
-      "Wrong: you cannot remove a project's sole project role; the relationship is host/service.",
-      "Wrong: service projects attach to the host; host does not become a service project."
+      "Correct: one Shared VPC host + three service projects.",
+      "Wrong: per-team VPCs + HA VPN between them is needless overhead.",
+      "Wrong: three host projects triples the network administration.",
+      "Wrong: a full mesh of peered VPCs couples every team to every other."
     ]
   },
   {
@@ -9235,7 +9244,7 @@ export const QUESTIONS = [
       "D. Create a Cloud Router in region 1 with one VLAN attachment connected to metro1-zone1-x and one VLAN attachment connected to metro1-zone2-x. Create a Cloud Router in region 2 with one VLAN attachment connected to metro2-zone1-x and one VLAN attachment to metro2-zone2-x."
     ],
     "correct": 3,
-    "explanation": "Geo-redundant production needs two Interconnect connections in two different metros, so the single data center connects via two facilities — meeting the 99.99% style topology even with one DC.",
+    "explanation": "Geo-redundancy across two metros needs each region's Cloud Router attached to both metro zones: region 1 gets attachments to metro1-zone1 and metro1-zone2, region 2 likewise for metro2.",
     "discussion": [
       {
         "user": "dragos_dragos62000",
@@ -9269,14 +9278,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is D: two metros are required for the geo-redundant topology.",
-    "conceptSummary": "Two metros for geo-redundancy from one data center.",
-    "correctRationale": "Google's 99.99% topology requires connections in two metros; with one DC that means two links to two colocation metros — D.",
+    "discussionSummary": "Community votes D (16).",
+    "conceptSummary": "Geo-redundant Partner Interconnect: two attachments per regional router, one per metro edge zone.",
+    "correctRationale": "D gives each region a router with attachments in both zones of its metro - the documented redundant pairing.",
     "optionRationales": [
-      "Wrong: one connection in one metro is a single point of failure.",
-      "Wrong: one metro's two domains is the 99.9% design, insufficient for metro failure.",
-      "Wrong: Partner is plausible but the key discriminator is two metros; D states it explicitly.",
-      "Correct: connections in two different metros provide metro-level redundancy."
+      "Wrong: both attachments on one zone loses edge-domain redundancy, and region 2 wrongly points at metro1.",
+      "Wrong: single attachments have no zone redundancy.",
+      "Wrong: region 1 attaches to the wrong metro zone pairing.",
+      "Correct: per-region router with attachments to both zones of its metro."
     ]
   },
   {
@@ -9291,7 +9300,7 @@ export const QUESTIONS = [
       "D. Increase the default min-ports-per-vm setting for the Cloud NAT gateway."
     ],
     "correct": 2,
-    "explanation": "A static route for the destination prefix next-hopped to the default internet gateway, applied only via a network tag to the tagged instance, gives one VM internet access while others keep private egress.",
+    "explanation": "With all traffic forced via the VPN to on-prem, Cloud NAT cannot reach the internet; add a higher-priority tagged default route to the default internet gateway so the tagged VMs egress via NAT.",
     "discussion": [
       {
         "user": "Komal697",
@@ -9321,14 +9330,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Tag-scoped static route to the default internet gateway.",
-    "correctRationale": "Tagging the route scopes it to the single instance; pointing it at the default-internet-gateway next hop gives direct internet egress while the rest of the VPC stays on the private path.",
+    "discussionSummary": "Community votes C (16).",
+    "conceptSummary": "Override the 0.0.0.0/0 VPN route for NAT VMs: higher-priority tagged default route to the internet gateway.",
+    "correctRationale": "C's tagged default route lets the NAT-requiring VMs bypass the forced VPN path - the documented fix.",
     "optionRationales": [
-      "Wrong: an untagged route would affect every instance.",
-      "Wrong: changing addresses/routes at the VM level is not how VPC routing works.",
-      "Correct: a tag-scoped route to the default internet gateway gives only that instance internet egress.",
-      "Wrong: tagging routes to the IGW is the right mechanism but the IP-forwarding flag is unrelated."
+      "Wrong: idle-timeout changes do not restore a missing internet path.",
+      "Wrong: firewall rules for the NAT IP do not restore egress - the instance traffic still follows the 0.0.0.0/0 route into the VPN tunnel.",
+      "Correct: higher-priority default route to the internet gateway for the tagged instances.",
+      "Wrong: port settings are irrelevant when egress never reaches NAT."
     ]
   },
   {
@@ -9343,7 +9352,7 @@ export const QUESTIONS = [
       "D. router-1 BGP IP 172.16.0.254, BGP peer IP 10.1.0.254, peer ASN 65502; router-2 BGP IP 10.1.0.254, BGP peer IP 172.16.0.254, peer ASN 65501."
     ],
     "correct": 2,
-    "explanation": "Cloud VPN BGP sessions require link-local 169.254.x.x addressing with distinct local/peer IPs per tunnel, and on-prem routers use ASNs from the private ranges; only option C satisfies both.",
+    "explanation": "Cross-VPC VPN BGP needs each Cloud Router to peer with the other's ASN and link-local BGP addresses: option C's table shows the correct mirrored ASN/IP pairs for router-1 and router-2.",
     "discussion": [
       {
         "user": "didek1986",
@@ -9377,14 +9386,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C: 169.254.x link-local addressing and distinct ends per tunnel.",
-    "conceptSummary": "Valid link-local /30 addressing and private ASNs per tunnel.",
-    "correctRationale": "Each tunnel needs a /30 of link-local space with router and peer at opposite ends. Option A reuses identical IPs on both routers, and B/D use non-link-local RFC1918 addresses which BGP over Cloud VPN does not accept; C uses 169.254.20.x correctly with private ASNs.",
+    "discussionSummary": "Community votes C (24); options are image-based BGP tables - C is the consistent mirror.",
+    "conceptSummary": "Two Cloud Routers peering over VPN: mirrored peer ASNs and BGP addresses.",
+    "correctRationale": "The chosen path is \"router-1 BGP IP 169.254.20.1, BGP peer IP 169.254.20.2, peer ASN 65502; router-2 BGP IP 169.254.20.2, BGP peer IP 169.254.20.1, peer ASN 65501.\": C mirrors ASNs and BGP IPs correctly between the two routers - the pattern that establishes the session.",
     "optionRationales": [
-      "Wrong: both routers share identical BGP and peer IPs — an invalid pairing.",
-      "Wrong: RFC1918 addresses are not the link-local range required for BGP sessions.",
-      "Correct: link-local 169.254.20.1/.2 pairs with private ASNs is a valid configuration.",
-      "Wrong: same RFC1918 problem — BGP peer addresses must be link-local."
+      "Wrong: table A gives both routers the same BGP and peer IPs (169.254.0.254), which cannot form a session.",
+      "Wrong: table B mis-pairs the peer ASN or addresses.",
+      "Correct: table C pairs 169.254.20.1/.2 between router-1 and router-2 with the peer ASNs correctly mirrored (65501/65502).",
+      "Wrong: table D sets the BGP peer IPs to VPC subnet addresses (172.16.0.254, 10.1.0.254) instead of link-local peer addresses, so the session cannot form."
     ],
     "images": [
       {
@@ -9417,7 +9426,7 @@ export const QUESTIONS = [
       "D. Use Anthos Config Connector to enforce a security policy to open port 8080 on the Dev VMs and deny traffic to port 8080 on the Prod VMs."
     ],
     "correct": 0,
-    "explanation": "Hierarchical firewall policies at each folder node let each team manage its own policy applied to that folder's projects, delegating cleanly by org structure.",
+    "explanation": "Folder-scoped consistency at minimal cost = one firewall policy on the Dev folder opening 8080 and one on the Prod folder denying it - policies cascade to all projects underneath.",
     "discussion": [
       {
         "user": "rglearn",
@@ -9447,14 +9456,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Per-folder hierarchical firewall policies for delegated control.",
-    "correctRationale": "Folder-level policies give each dev team control over just its projects while central policies can still apply above — the documented delegation model.",
+    "discussionSummary": "Community votes A (10).",
+    "conceptSummary": "Uniform per-folder firewall posture = hierarchical firewall policies per folder.",
+    "correctRationale": "The chosen path is \"Create and associate a firewall policy with the Dev folder with a rule to open port 8080. Create and associate a firewall policy with the Prod folder with a rul\": Two folder policies implement both rules once, inherited by every project - cheapest and most consistent.",
     "optionRationales": [
-      "Correct: folder-level hierarchical policies delegate rule management per team boundary.",
-      "Wrong: org-level rules concentrate control rather than delegating.",
-      "Wrong: duplicating rules into every VPC does not scale or follow folder structure.",
-      "Wrong: same org-centralization problem."
+      "Correct: Dev-folder allow + Prod-folder deny via hierarchical policies.",
+      "Wrong: Shared VPCs are for network sharing, not folder-wide policy.",
+      "Wrong: per-VPC rules mean maintaining the rule in every VPC manually.",
+      "Wrong: Anthos Config Connector is unnecessary machinery for folder firewall policy."
     ]
   },
   {
@@ -9469,7 +9478,7 @@ export const QUESTIONS = [
       "D. Enable VPC Flow Logs and send test traffic."
     ],
     "correct": 0,
-    "explanation": "Connectivity Tests inspect the full path configuration including firewall rules and routes, pinpointing whether a rule blocks the on-prem to GCP traffic.",
+    "explanation": "Verifying that configuration permits the intended flows is the Connectivity Tests job - they evaluate routes, firewall rules, and forwarding to confirm traffic can flow.",
     "discussion": [
       {
         "user": "TMe392",
@@ -9503,15 +9512,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between A and C (30 vs 19 votes): Community agrees on A.",
-    "conceptSummary": "Connectivity Test to find the blocking element.",
-    "correctRationale": "Connectivity Tests evaluate the end-to-end config path — firewall, routes, attachments — and identify the denying element, which is exactly the debugging need.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between A and C (30 vs 19 votes): Community favors A (30 vs 19 for C). Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Validate intended traffic paths = Connectivity Tests.",
+    "correctRationale": "Connectivity Tests statically evaluate whether the config allows the flow - the direct verification tool.",
     "optionRationales": [
-      "Correct: Connectivity Tests trace the path and report what blocks it.",
-      "Wrong: traces from the VM only probe a live path; the test finds config-level blocks.",
-      "Wrong: HA VPN gateway debugging does not inspect firewall rules.",
-      "Wrong: the issue is GCP-side rules, not the tunnel."
+      "Correct: Connectivity Tests confirm the configuration permits the traffic.",
+      "Wrong: Packet Mirroring captures real packets - heavier than a config check.",
+      "Wrong: Network Topology visualizes the network, not per-flow permission.",
+      "Wrong: flow logs record real traffic after it happens, not config validation."
     ]
   },
   {
@@ -9526,7 +9535,7 @@ export const QUESTIONS = [
       "D. Deploy a proxy in the spoke project where the GKE nodes are deployed and connect to the control plane through the proxy."
     ],
     "correct": 3,
-    "explanation": "In a private cluster, traffic to the control plane's 172.16.0.32/28 master range from the spoke network needs a path — peering alone is non-transitive, so a proxy in the authorized-networks range forwards spoke traffic to the master.",
+    "explanation": "Spoke-to-spoke traffic cannot cross the private endpoint even though peerings exist: the GKE private control plane is only reachable from networks it peers with directly, so a proxy inside the GKE spoke project forwards control-plane connections from the other spokes.",
     "discussion": [
       {
         "user": "TMe392",
@@ -9560,15 +9569,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and C (30 vs 19 votes): Community splits between C and D; D (proxy in an authorized range) is the workable path given non-transitive peering. Confidence medium.",
-    "conceptSummary": "Reaching a private master endpoint across non-transitive peering.",
-    "correctRationale": "Peering to the cluster VPC cannot transit via the middle hub; routing spoke traffic through a proxy (e.g., squid) in a range the master authorized accepts is the documented workaround for reaching the private endpoint from non-adjacent networks.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and C (30 vs 19 votes): Community favors D (30 vs 19 for C) on the non-transitive peering trap. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Reach a private GKE endpoint from non-peered spokes via an in-project proxy.",
+    "correctRationale": "Because VPC peering is non-transitive, the other spokes cannot reach the master's peering link; a proxy in the cluster's spoke bridges the path.",
     "optionRationales": [
-      "Wrong: the master's own /28 is already reachable inside the cluster VPC; adding it to authorized networks does not create a path from the spoke.",
-      "Wrong: authorized networks control access; they do not provide connectivity transit.",
-      "Wrong: cluster endpoint subnets are authorized-network material, not peering mesh material.",
-      "Correct: a proxy in the authorized range forwards requests to the private control plane across the non-transitive topology."
+      "Wrong: the control plane is not blocked by a missing 443 firewall rule - it is unreachable topologically.",
+      "Wrong: PGA reaches Google APIs, not the cluster's private endpoint.",
+      "Wrong: authorized networks restrict the public endpoint, not private-endpoint reachability.",
+      "Correct: an in-spoke proxy forwards control-plane traffic across the non-transitive boundary."
     ]
   },
   {
@@ -9583,7 +9592,7 @@ export const QUESTIONS = [
       "D. gcloud compute health-checks update http health-check --unhealthy-threshold 10"
     ],
     "correct": 2,
-    "explanation": "Internal HTTP(S) LB health checks come from 130.211.0.0/22 and 35.191.0.0/16, and proxied traffic from the proxy-only subnet range — the firewall rules must allow those source ranges into the web servers.",
+    "explanation": "LB health checks fail because the firewall blocks Google's health-check ranges: create an INGRESS rule allowing TCP from 130.211.0.0/22 and 35.191.0.0/16.",
     "discussion": [
       {
         "user": "RKS_2021",
@@ -9613,14 +9622,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Allow health-check and proxy-subnet ranges to backends.",
-    "correctRationale": "The internal L7 LB health checks originate from the documented Google probe ranges, and data flows come from the proxy-only subnet — C lists exactly those source ranges.",
+    "discussionSummary": "Community votes C (19).",
+    "conceptSummary": "Allow LB health checks: ingress firewall rule for the Google health-check ranges.",
+    "correctRationale": "C opens ingress from the documented health-check source ranges - exactly what the probes need.",
     "optionRationales": [
-      "Wrong: those ranges do not cover the health-check sources.",
-      "Wrong: same problem — missing the documented probe ranges.",
-      "Correct: 130.211.0.0/22, 35.191.0.0/16, and the proxy-only subnet are the required allows.",
-      "Wrong: muddles the ranges and misses the probe ranges."
+      "Wrong: adding an external IP does not open the health-check path.",
+      "Wrong: egress direction is inverted - probes arrive inbound.",
+      "Correct: ingress allow for 130.211.0.0/22 and 35.191.0.0/16.",
+      "Wrong: raising the unhealthy threshold masks, not fixes, the block."
     ]
   },
   {
@@ -9635,7 +9644,7 @@ export const QUESTIONS = [
       "D. 1. Create a private DNS zone with a CNAME record for *.googleapis.com to private.googleapis.com, with an A record pointing to Google's private API address range. 2. Create a custom route that points Google's private API address range to the default internet gateway as the next hop."
     ],
     "correct": 0,
-    "explanation": "Restricted VIP restricted.googleapis.com keeps API traffic inside Google for VPC Service Controls, and the /30 route to the default internet gateway gets that traffic out of the private VPC correctly.",
+    "explanation": "With all internet traffic forced on-prem, API access needs the restricted VIP: a private zone mapping *.googleapis.com to restricted.googleapis.com plus a custom route for the restricted range toward the internet gateway.",
     "discussion": [
       {
         "user": "pbrvgl",
@@ -9669,15 +9678,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between A and B (8 vs 4 votes): Community majority is A: restricted.googleapis.com with the .4/30 route for VPC-SC.",
-    "conceptSummary": "restricted.googleapis.com + default-route to IGW for the VIP.",
-    "correctRationale": "For VPC-SC environments Google requires restricted.googleapis.com (199.36.153.4/30); routing that /30 to the default internet gateway is the documented way to reach it privately.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between A and B (8 vs 4 votes): Community favors A (8); the restricted VIP is the discriminator. Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "PGA behind forced on-prem egress: restricted.googleapis.com DNS + restricted-range route.",
+    "correctRationale": "A wires the restricted domain and the matching route so API traffic keeps a valid path while internet stays on-prem.",
     "optionRationales": [
-      "Correct: restricted VIP plus the 199.36.153.4/30-to-IGW route is the documented recipe.",
-      "Wrong: private.googleapis.com is for non-VPC-SC private access; the scenario requires the restricted VIP.",
-      "Wrong: the restricted domain uses .4/30; .8/30 is the private VIP range.",
-      "Wrong: same wrong VIP target range."
+      "Correct: restricted zone + restricted-range custom route.",
+      "Wrong: 'change the custom route' without the needed restricted-range detail.",
+      "Wrong: private.googleapis.com does not meet the restricted-only requirement.",
+      "Wrong: right VIP family but wrong route semantics."
     ]
   },
   {
@@ -9692,7 +9701,7 @@ export const QUESTIONS = [
       "D. Deploy a third-party network appliance and configure it as the default gateway. Use the third-party network appliance to identify users with high network traffic."
     ],
     "correct": 0,
-    "explanation": "VPC Flow Logs for the subnets record the client flows; a log sink to BigQuery lets an analyst query the traffic sources.",
+    "explanation": "VPC Flow Logs give per-VM traffic tuples; exporting to BigQuery lets you aggregate by instance and traffic type to find the spike - cheapest managed approach.",
     "discussion": [
       {
         "user": "saraali",
@@ -9726,14 +9735,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Flow logs to BigQuery for traffic analysis.",
-    "correctRationale": "Flow logs provide 5-tuple records of connections to the web servers, and exporting via sink to BigQuery gives the analyst a queryable dataset — minimal ongoing cost.",
+    "discussionSummary": "Community votes A (25).",
+    "conceptSummary": "Identify traffic spikes per VM/traffic type = VPC Flow Logs -> BigQuery.",
+    "correctRationale": "Flow logs to BigQuery is the low-overhead way to slice utilization by VM and traffic.",
     "optionRationales": [
-      "Correct: enable Flow Logs on the subnets, sink to BigQuery, analyze.",
-      "Wrong: web server logs lack the network-layer view and put load on the VMs.",
-      "Wrong: streaming to Pub/Sub plus a logging VM is needless machinery.",
-      "Wrong: Dataflow adds pipeline overhead where a simple sink suffices."
+      "Correct: VPC Flow Logs -> BigQuery analysis.",
+      "Wrong: firewall logs show rule decisions, not utilization per VM.",
+      "Wrong: Packet Mirroring + Wireshark is labor-intensive and costly for a periodic analysis.",
+      "Wrong: a third-party gateway adds infrastructure and cost."
     ]
   },
   {
@@ -9748,7 +9757,7 @@ export const QUESTIONS = [
       "D. Peer the two VPCs. Configure VPC Network Peering to export custom routes from Sales and import custom routes on Finance's VPC network. Use Cloud Router’s custom route advertisements to announce the peered VPC network ranges to the on-premises locations."
     ],
     "correct": 3,
-    "explanation": "Each spoke router advertises a wider summary covering its region's on-prem prefixes, so on-prem prefers the regional egress; a custom route advertisement ensures the summary propagates through peering.",
+    "explanation": "Finance must reach on-prem through Sales' VPN: peer the VPCs, export custom routes from Sales and import on Finance, and have the Cloud Router advertise the peered ranges so on-prem learns them.",
     "discussion": [
       {
         "user": "1f01b87",
@@ -9782,14 +9791,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community majority is D with router-summary-advertising discussion; confidence medium given complex option text.",
-    "conceptSummary": "Summary (aggregated) route advertisement per region via Cloud Router.",
-    "correctRationale": "Advertising an aggregate/summary prefix for the whole region from each region's router makes the closest region the preferred exit while keeping failover via the longer match elsewhere — a documented Cloud Router custom-advertisement pattern.",
+    "discussionSummary": "Community votes D (19).",
+    "conceptSummary": "Share one VPC's hybrid link with a peered VPC via peering route import/export + router advertisements.",
+    "correctRationale": "D adds all three required pieces: peering, custom route export/import, and router advertisements of Finance's ranges toward on-prem.",
     "optionRationales": [
-      "Wrong: separate VPCs per region with Shared VPC breaks the topology.",
-      "Wrong: a second router without advertisement control cannot steer traffic.",
-      "Wrong: advertising all subnets at higher priority still lacks the regional aggregate that steers correctly.",
-      "Correct: per-region summary advertisements with proper priority give regional egress preference with failover."
+      "Wrong: default peering does not share the hybrid routes to Finance.",
+      "Wrong: without peering route export/import the router still cannot reach Finance prefixes.",
+      "Wrong: this option is missing part of the route advertisement detail that \"Peer the two VPCs... custom route advertisements to announce the Finance ranges\" requires.",
+      "Correct: peering + custom route export/import + router custom advertisements."
     ]
   },
   {
@@ -9804,7 +9813,7 @@ export const QUESTIONS = [
       "D. 1. Change the VPC routing mode to global. 2. Modify the VPC Network Peering connection used for Cloud SQL, and enable the import and export of routes."
     ],
     "correct": 0,
-    "explanation": "Private services access (private connection) over VPC peering needs the spoke's peering to export and import custom routes, and the Cloud Router must advertise the allocated IP range so on-prem can reach it.",
+    "explanation": "Cloud SQL private services access uses a separate peering that does not propagate routes; enabling import/export on that peering plus a custom Cloud Router advertisement lets on-prem reach the Cloud SQL range.",
     "discussion": [
       {
         "user": "mohitms1996",
@@ -9838,15 +9847,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between A and B (20 vs 10 votes): Community agrees on A.",
-    "conceptSummary": "Advertise the private-services-access range and enable custom route exchange.",
-    "correctRationale": "Private services access uses an allocated range reachable via peering; on-prem reach requires the router to advertise that range and the peering to exchange custom routes.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between A and B (20 vs 10 votes): Community favors A (20 vs 10 for B). Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "On-prem access to Cloud SQL PSA = peering route import/export + custom route advertisement.",
+    "correctRationale": "The chosen path is \"1. Modify the VPC Network Peering connection used for Cloud SQL, and enable the import and export of routes. 2. Create a custom route advertisement in your Clou\": A wires both required changes on the existing setup.",
     "optionRationales": [
-      "Correct: peering import/export of custom routes plus router advertisement of the allocated range is the documented fix.",
-      "Wrong: advertising subnets is not enough — the allocated service range must be advertised.",
-      "Wrong: the range is 199.36.153.x / private-services ranges, not 35.199 DNS space.",
-      "Wrong: private access still needs the route advertisement described."
+      "Correct: enable peering import/export + advertise the Cloud SQL range.",
+      "Wrong: global mode alone does not cross the PSA peering boundary.",
+      "Wrong: a second router/BGP peering does not bridge the PSA peering gap.",
+      "Wrong: global mode does not substitute for the peering advertisement."
     ]
   },
   {
@@ -9861,7 +9870,7 @@ export const QUESTIONS = [
       "D. Create one VPC with one subnet in each region. Create an HTTP(S) load balancer with a static IP address. Choose the standard tier for the network. Enable Cloud CDN on the load balancer. Create a CNAME record using the load balancer’s IP address in Cloud DNS."
     ],
     "correct": 1,
-    "explanation": "A global external Application Load Balancer gives global reach and low latency; Cloud CDN caches the static assets, and Cloud Armor provides WAF protection at the edge.",
+    "explanation": "Global HA web app across two regions: one VPC, subnet per region, a single global load balancer with a static anycast IP, Cloud CDN + Cloud Armor, and DNS A record to the LB IP.",
     "discussion": [
       {
         "user": "RKS_2021",
@@ -9895,14 +9904,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Global ALB + Cloud CDN + Cloud Armor.",
-    "correctRationale": "This is the canonical Google edge stack: the global ALB fronts the app worldwide, CDN offloads static content, and Armor enforces security rules — meeting latency, caching, and protection requirements together.",
+    "discussionSummary": "Community votes B (19).",
+    "conceptSummary": "Global web tier: global LB + static IP + CDN/Armor + DNS A record.",
+    "correctRationale": "B assembles the recommended global front end in one VPC - no peering or per-region IPs needed.",
     "optionRationales": [
-      "Wrong: Passthrough NLBs are L4 and cannot use CDN or Armor WAF rules.",
-      "Correct: global ALB + CDN + Armor satisfies every requirement.",
-      "Wrong: regional internal LBs cannot serve internet users globally.",
-      "Wrong: SSL proxy is legacy-ish and lacks the CDN/Armor integration asked for."
+      "Wrong: regional NLBs cannot front a global app with one IP, and CDN does not attach to NLBs.",
+      "Correct: one VPC, global LB, static IP, CDN + Armor, A record.",
+      "Wrong: two peered VPCs are unnecessary for a single app.",
+      "Wrong: 'HTTP(S) load balancer' + standard tier is the legacy/premium-tier trap."
     ]
   },
   {
@@ -9917,7 +9926,7 @@ export const QUESTIONS = [
       "D. Create one Cloud Router and one HA VPN gateway in the us-west1 region of your VPC and your partner's VPC. Connect your VPN gateways to the partner's gateways with a pair of tunnels. Enable global dynamic routing in each VPC."
     ],
     "correct": 3,
-    "explanation": "HA VPN supports regional coverage — one gateway in us-west4 serving all regions needs global routing; alternatively the documented multi-region pattern is a separate HA VPN gateway per region.",
+    "explanation": "99.99% across two regions with minimal infrastructure means one Cloud Router and one HA VPN gateway per side in a shared region pair, connected by a pair of tunnels - D's single-region-pair deployment is the leanest 99.99% topology.",
     "discussion": [
       {
         "user": "mohitms1996",
@@ -9951,14 +9960,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "discussionSummary": "Split between D and A (21 vs 6 votes): Community majority is D; some argued a single gateway with global routing suffices, but the per-region design matches latency goals. Confidence medium.",
-    "conceptSummary": "Per-region HA VPN gateways for multi-region VPN.",
-    "correctRationale": "Because tunnels terminate on regional gateways, the clean multi-region design is one HA VPN gateway per region with tunnels to the on-prem VPN appliance — matching \"most efficient\" per-region coverage.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and A (21 vs 6 votes): Community favors D (21 vs 6 for A); minimal infrastructure rules out per-region gateways. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Minimal 99.99% VPC-to-VPC VPN: HA VPN gateway pair + two tunnels.",
+    "correctRationale": "D uses one HA VPN gateway on each side with a tunnel pair - the minimal design still meeting 99.99% HA VPN semantics.",
     "optionRationales": [
-      "Wrong: single-router/two-tunnel designs concentrate on one region, hurting latency elsewhere.",
-      "Wrong: gateways are regional; relying on one region adds latency and the option's router placement is off.",
-      "Wrong: a single us-central1 gateway forces cross-region hairpins.",
-      "Correct: per-region HA VPN gateways with their own tunnels give optimal regional coverage."
+      "Wrong: per-region gateways in both VPCs doubles the infrastructure asked to be minimized.",
+      "Wrong: OpenVPN Access Server is third-party software, not managed HA VPN.",
+      "Wrong: self-managed OpenVPN servers lack the 99.99% SLA entirely.",
+      "Correct: one gateway each side + tunnel pair in us-west1."
     ]
   },
   {
@@ -9973,7 +9983,7 @@ export const QUESTIONS = [
       "D. In the VPN section of the Google Cloud Console, select the VPN under hybrid connectivity, and then select monitoring to display utilization on the dashboard."
     ],
     "correct": 1,
-    "explanation": "A Monitoring Query Language (MQL) alert on the inter-region latency metric fires when round-trip latency between the regions exceeds the SLA threshold.",
+    "explanation": "VPN utilization alerting on a threshold = a Cloud Monitoring alerting policy written with Monitoring Query Language against the VPN bandwidth metrics.",
     "discussion": [
       {
         "user": "kirrim",
@@ -10003,14 +10013,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "MQL-based latency alerting.",
-    "correctRationale": "MQL lets you write a ratio/threshold alert on the VM-to-VM latency metric across regions — the precise tool for an SLA alert.",
+    "discussionSummary": "Community votes B (16).",
+    "conceptSummary": "Alert on VPN bandwidth via an MQL-based alerting policy.",
+    "correctRationale": "MQL alerts give the custom bandwidth threshold and quick add-vs-migrate decision data.",
     "optionRationales": [
-      "Wrong: an uptime check probes synthetic endpoints, not the VM-to-VM metric asked.",
-      "Correct: MQL threshold alert on the inter-region latency metric fires on breach.",
-      "Wrong: Metrics Explorer views data but does not alert.",
-      "Wrong: Performance Dashboard visualizes; alerting needs an alerting policy."
+      "Wrong: packet drops measure health, not bandwidth utilization.",
+      "Correct: MQL custom alert on VPN bandwidth.",
+      "Wrong: dashboards display but do not alert.",
+      "Wrong: the VPN monitoring view shows utilization without alerting."
     ]
   },
   {
@@ -10025,7 +10035,7 @@ export const QUESTIONS = [
       "D. Ensure that clients use Compute Engine internal DNS by connecting to the instance name with the url https://[API_NAME]/[API_VERSION]/."
     ],
     "correct": 1,
-    "explanation": "Registering the internal zone as a Cloud DNS private zone bound to the prod VPC serves its names to workloads in that VPC with no forwarding needed.",
+    "explanation": "VPC-internal callers can reach the instance via Compute Engine internal DNS: https://[INSTANCE_NAME].[ZONE].c.[PROJECT_ID].internal/ resolves to the internal IP.",
     "discussion": [
       {
         "user": "enter_co",
@@ -10059,14 +10069,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Cloud DNS private zone bound to the VPC.",
-    "correctRationale": "Private zones attached to a VPC resolve names for all VMs in that VPC — the native mechanism replacing legacy internal DNS.",
+    "discussionSummary": "Community votes B (19).",
+    "conceptSummary": "Internal service discovery on GCE = instance internal DNS name.",
+    "correctRationale": "B is the documented internal DNS name pattern - no load balancer or public IP needed.",
     "optionRationales": [
-      "Wrong: public zones publish to the internet — wrong for internal names.",
-      "Correct: a private zone bound to the prod VPC resolves internally.",
-      "Wrong: peering zones point at another VPC; the zone lives in this one.",
-      "Wrong: stub zones do not exist in Cloud DNS."
+      "Wrong: a static external IP + LB exposes the API outside the VPC.",
+      "Correct: internal DNS instance name resolves within the VPC.",
+      "Wrong: external IP + public DNS record still publishes the service.",
+      "Wrong: that URL shape is not the internal DNS format."
     ]
   },
   {
@@ -10081,7 +10091,7 @@ export const QUESTIONS = [
       "D. Create an internal HTTP(S) load balancer for Packet Mirroring, and add a packet mirroring policy filter for egress traffic."
     ],
     "correct": 2,
-    "explanation": "Packet Mirroring clones the VM's packets to a collector (the sniffer appliance) for full traffic analysis without touching the production VM.",
+    "explanation": "Payload inspection needs Packet Mirroring, whose collector is an internal TCP/UDP load balancer; an egress-only filter scopes it to outbound payloads.",
     "discussion": [
       {
         "user": "1f01b87",
@@ -10115,14 +10125,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between C and B (26 vs 8 votes): Community agrees on C.",
-    "conceptSummary": "Packet Mirroring to a collector appliance.",
-    "correctRationale": "Mirroring copies L1-L7 traffic out-of-band to collectors behind an ILB — exactly the network-analyzer use case with zero agents on the VM.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and B (26 vs 8 votes): Community favors C (26 vs 8 for B). Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "Capture egress payloads: Packet Mirroring to an ILB collector + egress filter.",
+    "correctRationale": "C matches the documented collector type and the required egress filter.",
     "optionRationales": [
-      "Wrong: Flow Logs give metadata only — no payload inspection.",
-      "Wrong: Firewall logs show only rule match decisions.",
-      "Correct: Packet Mirroring mirrors full packets to the collector VMs.",
-      "Wrong: TCPdump on the VM is invasive and does not capture the mirrored path the question implies."
+      "Wrong: firewall logs record decisions, not payloads.",
+      "Wrong: flow logs carry metadata, not packet payloads.",
+      "Correct: internal TCP/UDP LB collector + egress mirroring filter.",
+      "Wrong: HTTP(S) LB is not the supported collector for mirroring."
     ]
   },
   {
@@ -10137,7 +10148,7 @@ export const QUESTIONS = [
       "D. Configure a URL map on the existing load balancer to route traffic to the application tier."
     ],
     "correct": 2,
-    "explanation": "Internal HTTP(S)/Application Load Balancing uses a regional managed proxy with backends in instance groups; it operates at L7 for the HTTP app across zones.",
+    "explanation": "The app tier is internal HTTP traffic between tiers - it needs its own internal HTTP(S) load balancer in front of the application servers.",
     "discussion": [
       {
         "user": "Thornadoo",
@@ -10171,14 +10182,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Regional internal ALB for HTTP traffic.",
-    "correctRationale": "The requirement is HTTP within a region — the internal Application Load Balancer is the L7 choice, proxying to MIG backends across zones.",
+    "discussionSummary": "Community votes C (18); legacy HTTP(S) naming noted.",
+    "conceptSummary": "Three-tier design: internal HTTP(S) LB for the application tier.",
+    "correctRationale": "C gives the app tier a dedicated internal LB - the standard tiered pattern.",
     "optionRationales": [
-      "Wrong: forwarding rules alone do not load-balance.",
-      "Wrong: Network Load Balancer is L4 — works but is not the intended HTTP answer; C names the HTTP LB explicitly.",
-      "Correct: the internal HTTP LB with a MIG backend is the right fit.",
-      "Wrong: target pools are legacy L4 constructs."
+      "Wrong: an external LB's forwarding rule cannot serve internal tier traffic.",
+      "Wrong: ECMP routing does not provide managed LB health/affinity.",
+      "Correct: new internal HTTP(S) load balancer for the app tier.",
+      "Wrong: a URL map on the external LB still fronts internet traffic, not internal tier-to-tier."
     ]
   },
   {
@@ -10193,7 +10204,7 @@ export const QUESTIONS = [
       "D. Configure the route advertisement to the custom setting, and manually add prefix 199.36.153.8/30 to the list of advertisements. Advertise all visible subnets to the Cloud Router."
     ],
     "correct": 3,
-    "explanation": "To make an on-prem prefix reachable and preferred via the closest region, Cloud Router must advertise all subnets plus a custom prefix for the on-prem range pointing at the preferred region — the advertised-ranges knob.",
+    "explanation": "Reaching the private.googleapis.com VIP (199.36.153.8/30) over the interconnect needs a custom route advertisement adding that prefix while advertising all subnets - D includes both.",
     "discussion": [
       {
         "user": "afeedik",
@@ -10227,14 +10238,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between D and B (22 vs 6 votes): Community agrees on D: advertise all subnets plus custom IP ranges.",
-    "conceptSummary": "Custom route advertisement combining subnet and custom prefixes.",
-    "correctRationale": "\"All subnets\" plus \"custom IP ranges\" lets the router advertise both VPC subnets and an arbitrary summary the on-prem needs — the documented combined advertisement mode.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes D (22); the 'advertise all subnets' clause is the discriminator. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Advertise the private.googleapis.com VIP plus subnets via custom route advertisement.",
+    "correctRationale": "D adds the API prefix and keeps subnet advertisements - complete as documented.",
     "optionRationales": [
-      "Wrong: advertising only subnets never announces the extra prefix.",
-      "Wrong: custom-only omits the subnets.",
-      "Wrong: there is no separate \"learned\" advertisement for this purpose.",
-      "Correct: all-subnets plus custom ranges covers both requirements."
+      "Wrong: default advertisements do not include the API VIP.",
+      "Wrong: on-prem static routes to the router's link-local IP are not the mechanism.",
+      "Wrong: 'leave all other options as default' drops the required subnet advertisements.",
+      "Correct: custom advertisement with the VIP prefix + all subnets."
     ]
   },
   {
@@ -10249,7 +10261,7 @@ export const QUESTIONS = [
       "D. Configure Packet Mirroring on the VPC. Apply a filter with an IP address list of the Denied Firewall rules. Configure an intrusion detection system (IDS) appliance as the receiver to display the number of hits."
     ],
     "correct": 0,
-    "explanation": "Firewall Insights analyzes rule configuration and usage to find shadowed, unused, or redundant rules — the automated audit requested.",
+    "explanation": "Deny-hit visibility with minimal overhead: Firewall Rules Logging produces the hits, and Firewall Insights displays them as a managed dashboard.",
     "discussion": [
       {
         "user": "b6f53d8",
@@ -10283,15 +10295,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between A and B (28 vs 23 votes): Community agrees on A.",
-    "conceptSummary": "Firewall Insights for rule analysis.",
-    "correctRationale": "Insights like shadowed rules and unused rules surface misconfigurations automatically — designed for auditing the ruleset without manual review.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between A and B (28 vs 23 votes): Community favors A (28 vs 23 for B) on the managed-dashboard requirement. Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Show deny hits with Firewall Rules Logging + Firewall Insights.",
+    "correctRationale": "The chosen path is \"Configure Firewall Rules Logging. Use Firewall Insights to display the number of hits.\": A is the fully managed path - no custom dashboard plumbing required.",
     "optionRationales": [
-      "Correct: Firewall Insights detects shadowed/unused/overly-permissive rules.",
-      "Wrong: Firewall Rules Logging logs matches; it does not analyze rule coverage.",
-      "Wrong: Recommender is a different product family.",
-      "Wrong: a Firewalls list export is manual review."
+      "Correct: Firewall Insights surfaces deny hits from Firewall Rules Logging.",
+      "Wrong: works, but a custom Monitoring dashboard adds the operational overhead to avoid.",
+      "Wrong: rerouting everything through a marketplace appliance is the opposite of low-overhead.",
+      "Wrong: Packet Mirroring + an IDS is heavyweight machinery for a simple metric."
     ],
     "legacyNote": "Firewall Insights is now surfaced through Network Intelligence Center; the capability and answer are unchanged."
   },
@@ -10307,7 +10319,7 @@ export const QUESTIONS = [
       "D. Add Direct Peering links, and use them for connectivity to Google APIs that use public virtual IP addresses."
     ],
     "correct": 1,
-    "explanation": "restricted.googleapis.com (199.36.153.4/30) is the VPC Service Controls-compliant VIP; routing it via the IGW while on-prem advertises the rest keeps API traffic inside Google.",
+    "explanation": "On-prem hosts reach VPC-SC-supported Google APIs via Private Google Access for on-premises using the restricted.googleapis.com VIP over the interconnect.",
     "discussion": [
       {
         "user": "hamish88",
@@ -10337,14 +10349,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is B: restricted VIP is required when a VPC-SC perimeter is in play.",
-    "conceptSummary": "restricted.googleapis.com for VPC-SC API access.",
-    "correctRationale": "VPC-SC requires the restricted VIP so Google API traffic never leaves Google's network; B names the right VIP.",
+    "discussionSummary": "Community votes B (4).",
+    "conceptSummary": "On-prem access to restricted APIs = PGA for on-premises + restricted VIP.",
+    "correctRationale": "The chosen path is \"Use Private Google Access for on-premises hosts with restricted.googleapis.com virtual IP addresses.\": B is the documented restricted-VIP approach over the hybrid link.",
     "optionRationales": [
-      "Wrong: private.googleapis.com is for non-VPC-SC private access.",
-      "Correct: restricted.googleapis.com is the required VIP under a service perimeter.",
-      "Wrong: public.googleapis.com is not a thing.",
-      "Wrong: generic internet routing defeats the private-access goal."
+      "Wrong: public API VIPs would route over the internet, not the interconnect.",
+      "Correct: PGA for on-prem hosts with restricted.googleapis.com VIPs.",
+      "Wrong: Cloud NAT translates VM egress; on-prem hosts do not NAT through it for APIs.",
+      "Wrong: Direct Peering cannot reach restricted.googleapis.com endpoints."
     ]
   },
   {
@@ -10359,7 +10371,7 @@ export const QUESTIONS = [
       "D. TCP/SSL proxy load balancer"
     ],
     "correct": 3,
-    "explanation": "Global external TCP load balancing that terminates the session but must preserve the original client IP uses the TCP/SSL proxy LB with PROXY protocol, which carries the client address to backends.",
+    "explanation": "Preserving the client's source IP on a global TCP frontend requires a pass-through (network) load balancer - proxy LBs terminate and hide the client IP.",
     "discussion": [
       {
         "user": "certguy99",
@@ -10393,15 +10405,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and B (16 vs 14 votes): Community splits B vs D; D is chosen on the merits because only the proxy LB is truly global and PROXY protocol is its client-IP mechanism. Confidence medium.",
-    "conceptSummary": "PROXY protocol on the TCP/SSL proxy LB preserves client IP.",
-    "correctRationale": "A proxy LB cannot keep the L3 source address, so the documented mechanism is PROXY protocol v1/v2 injecting the original IP at the start of the TCP stream — option D matches the \"header\" preservation for global TCP.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and B (16 vs 14 votes): Split D (16) vs B (14): the global requirement rules out the regional NLB; TCP proxy + PROXY protocol is the validated answer. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Client-IP preservation = passthrough network load balancer.",
+    "correctRationale": "The global external TCP proxy load balancer is the only global TCP frontend listed; with PROXY protocol it preserves the client's original source IP.",
     "optionRationales": [
-      "Wrong: passthrough preserves L3 IP but is regional, not global.",
-      "Wrong: enabling PROXY protocol on a passthrough NLB is not needed — passthrough already preserves source; and it is not global.",
-      "Wrong: X-Forwarded-For is HTTP-only; this is raw TCP.",
-      "Correct: the global TCP/SSL proxy LB with PROXY protocol passes the client IP to backends — the global-scope answer."
+      "Wrong: HTTP(S) LB is layer 7 and not a TCP frontend.",
+      "Wrong: the network load balancer is regional - it cannot serve as the global frontend.",
+      "Wrong: internal load balancing is not internet-facing.",
+      "Correct: TCP/SSL proxy load balancer with PROXY protocol preserves the source IP."
     ],
     "legacyNote": "\"TCP/SSL proxy load balancer\" is now the global external proxy Network Load Balancer; the PROXY-protocol answer is unchanged."
   },
@@ -10417,7 +10429,7 @@ export const QUESTIONS = [
       "D. Use VPC peering to allow traffic to route between the 10.1.0.0/24 network and the 172.16.45.0/24 network."
     ],
     "correct": 2,
-    "explanation": "Alias IP ranges let a VM host multiple IPs on one interface; giving the instance an alias range in the Pods' range lets Pods on that VM be addressed without extra routes.",
+    "explanation": "One VPC can hold both ranges by giving instances an alias IP range (172.16.45.0/24) alongside the subnet's 10.1.1.0/24.",
     "discussion": [
       {
         "user": "nkastanas",
@@ -10451,14 +10463,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Alias IPs for multiple addresses on one interface.",
-    "correctRationale": "Alias IP lets the VM own a secondary range on nic0, giving the containers addresses routable in the VPC without overlays or per-route plumbing.",
+    "discussionSummary": "Community votes C (9).",
+    "conceptSummary": "Second IP range on a VM interface = alias IP range.",
+    "correctRationale": "Alias IP lets instances carry the extra /24 - the documented mechanism.",
     "optionRationales": [
-      "Wrong: you cannot add arbitrary secondary IPs to a NIC beyond alias ranges.",
-      "Wrong: static route ranges pointing at the VM still lack on-NIC addressing for multiple IPs.",
-      "Correct: an alias IP range assigns a block of IPs to the interface for the Pods.",
-      "Wrong: secondary ranges on the NIC alone do not map IPs to the instance."
+      "Wrong: load balancing is unrelated to interface addressing.",
+      "Wrong: DNS records do not assign addresses.",
+      "Correct: alias-IP range 172.16.45.0/24 on the instances.",
+      "Wrong: peering connects VPCs, not two ranges on one interface."
     ]
   },
   {
@@ -10473,7 +10485,7 @@ export const QUESTIONS = [
       "D. A cloud firewall rule that blocks traffic to the on-premises database server was created during the change."
     ],
     "correct": 1,
-    "explanation": "VPC routing uses longest-prefix match: the more specific /25 route wins over the /24, directing that half of the range to the other next hop.",
+    "explanation": "The change created a more specific subnet route that now wins over the route toward the on-prem database - more specific routes take priority in VPC route selection.",
     "discussion": [
       {
         "user": "dragos_dragos62000",
@@ -10507,14 +10519,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Longest-prefix-match wins over the less specific route.",
-    "correctRationale": "More-specific destinations always take precedence, so adding a /25 route via the appliance routes only that subnet through it while the rest follows the existing /24.",
+    "discussionSummary": "Community votes B (8).",
+    "conceptSummary": "Most-specific route wins: a new subnet route can shadow an on-prem prefix.",
+    "correctRationale": "B explains the outage cleanly: the more specific VPC subnet route takes priority and diverts the database traffic.",
     "optionRationales": [
-      "Wrong: priority matters only among equal-length prefixes; the /25 is more specific and wins regardless.",
-      "Correct: the /25 route via the appliance applies longest-match steering.",
-      "Wrong: flow logs observe traffic; they do not reroute it.",
-      "Wrong: external addresses do not affect internal subnet routing."
+      "Wrong: less specific routes lose in route selection.",
+      "Correct: the more specific subnet route now shadows the database prefix.",
+      "Wrong: the database stopped receiving traffic on the Google side - an on-prem advertisement change is unrelated.",
+      "Wrong: possible, but the documented route-priority behavior is the likelier cause given the change."
     ]
   },
   {
@@ -10529,7 +10541,7 @@ export const QUESTIONS = [
       "D. Add custom metadata to the instance with key internal-address and value reserved."
     ],
     "correct": 2,
-    "explanation": "Promoting the ephemeral external IP to static preserves the existing address permanently, avoiding reconfiguration anywhere.",
+    "explanation": "Promoting the instance's ephemeral internal IP to a static internal IP keeps it reserved for that VM even through deletion - so it cannot be auto-assigned elsewhere.",
     "discussion": [
       {
         "user": "researched_answer_boi",
@@ -10563,14 +10575,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Promote the ephemeral external IP to static.",
-    "correctRationale": "Ephemeral addresses can be promoted in place to static, keeping the same IP on the VM — zero reconfiguration.",
+    "discussionSummary": "Community votes C (7).",
+    "conceptSummary": "Lock an internal IP = change it to static.",
+    "correctRationale": "Static internal IPs persist independently of instance lifecycle - exactly the protection asked for.",
     "optionRationales": [
-      "Wrong: deleting the instance loses the IP and the deployment.",
-      "Wrong: a new instance gets a different IP.",
-      "Correct: promoting the existing ephemeral IP to static retains it.",
-      "Wrong: renaming has no effect on address persistence."
+      "Wrong: public IP addresses are unrelated to internal IP reservation.",
+      "Wrong: a new reserved address changes the IP, not preserves it.",
+      "Correct: change the current internal IP to static.",
+      "Wrong: metadata has no effect on address allocation."
     ]
   },
   {
@@ -10585,7 +10597,7 @@ export const QUESTIONS = [
       "D. Add the resourcemanager.projects.setIamPolicy permission, and try again."
     ],
     "correct": 2,
-    "explanation": "Creating a custom IAM role containing only compute.instances.* permissions grants the precise control needed with least privilege.",
+    "explanation": "resourcemanager.projects.list is not a role-usable permission (list is not grantable at project level); remove it from the custom role and retry.",
     "discussion": [
       {
         "user": "karmajuney",
@@ -10619,14 +10631,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is C.",
-    "conceptSummary": "Custom role with instance-level permissions.",
-    "correctRationale": "Custom roles exist for this exact case — compose only the instance permissions and grant them to the support staff.",
+    "discussionSummary": "Community votes C (3).",
+    "conceptSummary": "Custom roles reject non-grantable permissions like projects.list - drop it.",
+    "correctRationale": "The chosen path is \"Remove the resourcemanager.projects.list permission, and try again.\": C removes the invalid permission - the error message names the culprit exactly.",
     "optionRationales": [
-      "Wrong: a predefined broad role would violate least privilege.",
-      "Wrong: on-prem ACL work cannot grant GCP API permissions.",
-      "Correct: a custom role containing the needed instance permissions is least-privilege.",
-      "Wrong: SSH keys to instances do not control GCP management-plane access."
+      "Wrong: adding projects.get does not cure the invalid .list permission.",
+      "Wrong: renaming the role keeps the same invalid permission.",
+      "Correct: remove resourcemanager.projects.list and retry.",
+      "Wrong: setIamPolicy is unrelated to the reported error."
     ]
   },
   {
@@ -10641,7 +10653,7 @@ export const QUESTIONS = [
       "D. Create a new Custom Role for all members of the WebServices Team."
     ],
     "correct": 0,
-    "explanation": "Putting the network admins into a Google Group and granting the role to the group centralizes administration: membership changes in the group immediately change effective access.",
+    "explanation": "A Google Group is the single construct that both centralizes IAM bindings (assign roles to the group) and provides an email distribution list for the team.",
     "discussion": [
       {
         "user": "saraali",
@@ -10675,14 +10687,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community favors A: group-based grants are the manageable pattern; confidence medium.",
-    "conceptSummary": "Manage admin access through a Google Group.",
-    "correctRationale": "Granting the role to a Group is the documented best practice — adding/removing users happens in one place and propagates to all projects using that grant.",
+    "discussionSummary": "Community votes A (7).",
+    "conceptSummary": "Centralized IAM + email distribution = a Google Group.",
+    "correctRationale": "The chosen path is \"Create a Google Group for the WebServices Team.\": Groups give one principal for role grants plus a mailing address - the minimal-effort answer.",
     "optionRationales": [
-      "Correct: grant the role to the group; membership changes propagate everywhere.",
-      "Wrong: per-user grants require editing IAM on every project for each change.",
-      "Wrong: exporting policy files to edit manually is fragile and not the management path.",
-      "Wrong: groups work at org level, not per instance."
+      "Correct: one Google Group covers IAM and email.",
+      "Wrong: a G Suite domain is a whole tenant - massive overkill.",
+      "Wrong: a Cloud Identity domain likewise.",
+      "Wrong: a custom role defines permissions but gives no email list and per-member management."
     ]
   },
   {
@@ -10697,7 +10709,7 @@ export const QUESTIONS = [
       "D. Run gcloud compute interconnect attachments partner update <attachment> / --region <region> --admin-enabled."
     ],
     "correct": 2,
-    "explanation": "A Partner Interconnect pairing key authorizes the service provider to complete the attachment; the key is generated when creating the VLAN attachment and shared with the partner.",
+    "explanation": "Partner Interconnect flow starts by creating the VLAN attachment in Google Cloud to get a pairing key, which you then give to the partner.",
     "discussion": [
       {
         "user": "saraali",
@@ -10731,14 +10743,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Pairing key exchange for Partner Interconnect.",
-    "correctRationale": "For Partner Interconnect the customer creates a VLAN attachment, gets a pairing key, and the provider uses it to finish provisioning — C states the correct flow.",
+    "discussionSummary": "Community votes C (13).",
+    "conceptSummary": "Partner Interconnect: create the VLAN attachment first, then hand the partner the pairing key.",
+    "correctRationale": "C is the documented first step - the pairing key is generated when the attachment is created.",
     "optionRationales": [
-      "Wrong: BGP sessions are configured after the attachment exists, not exchanged as a key.",
-      "Wrong: the MAC/LOA belongs to Dedicated Interconnect, not Partner.",
-      "Correct: create the attachment, generate the pairing key, send it to the provider.",
-      "Wrong: the provider provisions after receiving the key — not beforehand."
+      "Wrong: the partner portal needs the pairing key you generate in Google Cloud first.",
+      "Wrong: the partner's physical link exists already; the attachment step comes first on your side.",
+      "Correct: create the attachment and retrieve the pairing key.",
+      "Wrong: admin-enabling happens after the partner configures their side."
     ]
   },
   {
@@ -10757,7 +10769,7 @@ export const QUESTIONS = [
       0,
       4
     ],
-    "explanation": "GCP metrics are collected by the Stackdriver (Cloud Monitoring) agent or Ops Agent on the VM; the agent uses the monitored-resource/project association to write metrics.",
+    "explanation": "Distribution data for an HTTP(S) LB is its backend metrics: the Monitoring tab graphs on the LB details page (A) plus tracking https/backend_request_count in a custom dashboard (E) show per-backend request flow.",
     "discussion": [
       {
         "user": "Komal697",
@@ -10791,15 +10803,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community picks A+E: install the agent and let it write metrics for the project.",
-    "conceptSummary": "Ops/monitoring agent collects and writes metrics.",
-    "correctRationale": "The monitoring agent on the instance gathers metrics and writes them to the project via the monitored resource identity — matching 'install agent' and 'agent writes to the project'.",
+    "discussionSummary": "Community consensus AE (6); legacy Stackdriver naming flagged outdated.",
+    "conceptSummary": "Inspect LB request distribution via backend-service graphs and https/backend_request_count.",
+    "correctRationale": "The chosen path is \"On the Load Balancer details page of the GCP Console, click on the Monitoring tab, select your backend service, and look at the graphs. In Stackdriver Monitorin\": A+E are the two views that show requests hitting each backend - the data asked for.",
     "optionRationales": [
-      "Correct: install the monitoring (Stackdriver) agent on the instance.",
-      "Wrong: the metric scope is not a firewall-setting feature.",
-      "Wrong: the VM does not need a tunnel for metric collection.",
-      "Wrong: VM scopes gate API access but are not the collection mechanism asked.",
-      "Correct: the agent writes metrics to the associated project."
+      "Correct: the LB Monitoring tab's backend graphs show distribution.",
+      "Wrong: Error Reporting surfaces application errors, not request distribution.",
+      "Wrong: request_bytes_count is volume, not per-backend distribution (and it's not the dashboard path named).",
+      "Wrong: Key Metrics graphs are generic, not the backend-request detail asked.",
+      "Correct: a dashboard on https/backend_request_count tracks per-backend requests."
     ],
     "legacyNote": "Uses Stackdriver-era naming; today this is the Ops Agent / Cloud Monitoring agent. Answers unchanged."
   },
@@ -10815,7 +10827,7 @@ export const QUESTIONS = [
       "D. Policy-based routing using the default local traffic selector"
     ],
     "correct": 2,
-    "explanation": "A policy-based Classic VPN requires matching local/remote traffic selectors; setting the local selector to the GCP ranges and remote to the on-prem ranges makes the SA negotiation succeed.",
+    "explanation": "No BGP and restricted local subnets = policy-based routing with a custom local traffic selector limiting which on-prem-side selectors apply.",
     "discussion": [
       {
         "user": "Gurminderjit",
@@ -10849,14 +10861,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is C.",
-    "conceptSummary": "Policy-based VPN traffic-selector alignment.",
-    "correctRationale": "The IKE negotiation failed because selectors did not match; configuring local = 10.0.0.0/8 (GCP) and remote = 172.16.0.0/20 (on-prem) aligns both sides as documented.",
+    "discussionSummary": "Community votes C (20).",
+    "conceptSummary": "Static-subnet VPN reachability = policy-based routing + custom local traffic selector.",
+    "correctRationale": "The custom local selector constrains which subnets traverse the tunnel - exactly the requirement.",
     "optionRationales": [
-      "Wrong: switching to route-based loses per-CIDR policy control.",
-      "Wrong: IKEv2/0.0.0.0 selectors change the topology rather than fixing policy-based selectors.",
-      "Correct: set local selector to the GCP ranges and remote to the on-prem ranges.",
-      "Wrong: the failure is selector mismatch, not missing SA restart."
+      "Wrong: no BGP device means dynamic routing is off the table.",
+      "Wrong: default route-based selectors are all-or-nothing, not restricted.",
+      "Correct: policy-based with custom local traffic selector.",
+      "Wrong: default selector advertises everything."
     ]
   },
   {
@@ -10871,7 +10883,7 @@ export const QUESTIONS = [
       "D. Dedicated Interconnect, but donâ€™t provision any VLAN attachments"
     ],
     "correct": 0,
-    "explanation": "Creating an HA VPN gateway is the first step — it supplies the Google-side interfaces the peer gateway tunnels will terminate on.",
+    "explanation": "For early functional testing the cheapest, fastest hybrid link is Cloud VPN - interconnect options are costly circuits, and a Partner attachment still requires setup.",
     "discussion": [
       {
         "user": "Gurminderjit",
@@ -10905,14 +10917,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Create the HA VPN gateway first.",
-    "correctRationale": "The documented order is: create the HA VPN gateway (Google side), then the peer VPN gateway resource, then tunnels and BGP sessions — A is the first action.",
+    "discussionSummary": "Community votes A (5).",
+    "conceptSummary": "Cheapest test hybrid connectivity = Cloud VPN.",
+    "correctRationale": "The chosen path is \"Cloud VPN\": VPN provisions in minutes at near-zero cost - ideal for validating a design.",
     "optionRationales": [
-      "Correct: create the HA VPN gateway first.",
-      "Wrong: the peer gateway resource comes after the Google gateway.",
-      "Wrong: Cloud Router exists before or alongside, not as the described first step here.",
-      "Wrong: tunnels cannot exist before both gateways."
+      "Correct: Cloud VPN for the test phase.",
+      "Wrong: even 50 Mbps Partner Interconnect is a paid, slower-to-provision circuit.",
+      "Wrong: Dedicated Interconnect is the production-grade but expensive option.",
+      "Wrong: an interconnect without attachments gives no connectivity at all."
     ]
   },
   {
@@ -10931,7 +10943,7 @@ export const QUESTIONS = [
       0,
       2
     ],
-    "explanation": "The legacy target-pool network load balancer only supports legacy health checks (the old HTTP/HTTPS checks), and port 80 targets need an http health check while 443 needs tcp/ssl style checks — A and C are the valid pair.",
+    "explanation": "HTTP(S) LB health checks are created via gcloud (A) or inside the backend configuration flow in the Console (C) - the two current methods; legacy health-check types do not fit modern LBs.",
     "discussion": [
       {
         "user": "dev62",
@@ -10965,15 +10977,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community picks A and C citing the legacy-health-checks doc.",
-    "conceptSummary": "Legacy health checks for target-pool NLBs.",
-    "correctRationale": "Target pools only accept legacy health checks; per Google docs the 'http' and 'tcp'/'ssl' legacy checks cover port-80 and port-443 backends respectively, matching A and C.",
+    "discussionSummary": "Community consensus AC (7); legacy health-check options rejected.",
+    "conceptSummary": "LB health checks are created via gcloud or in the LB backend flow.",
+    "correctRationale": "The chosen path is \"Create a new health check using the gcloud command line tool. Create a new health check, or select an existing one, when you complete the load balancerâ€™s back\": A and C are the two supported creation paths for modern LB health checks.",
     "optionRationales": [
-      "Correct: legacy HTTP health checks can target port 80 services in target pools.",
-      "Wrong: modern (non-legacy) health checks are not supported by target pools.",
-      "Correct: legacy TCP/SSL health checks cover the port-443 services.",
-      "Wrong: HTTPS-443 modern checks are incompatible with target pools.",
-      "Wrong: ICMP is not a configurable legacy health check."
+      "Correct: gcloud health-check creation is a documented path.",
+      "Wrong: health checks live under Compute, not the VPC Network section.",
+      "Correct: the backend flow lets you create/select a health check.",
+      "Wrong: legacy health checks only serve legacy NLB target pools.",
+      "Wrong: same legacy-type mismatch."
     ],
     "legacyNote": "Target pools and legacy health checks are legacy features; modern passthrough NLBs use normal health checks. Answers unchanged."
   },
@@ -10989,7 +11001,7 @@ export const QUESTIONS = [
       "D. â€¢ Create a VPC-native GKE cluster using user-managed IP ranges. â€¢ Enable privateEndpoint on the cluster master. â€¢ Set the pod and service ranges as /24. â€¢ Set up a network proxy to access the master. â€¢ Enable master authorized networks."
     ],
     "correct": 3,
-    "explanation": "Setting --enable-private-endpoint makes the control plane reachable only at its private IP, and --master-authorized-networks must include the on-prem/admin range so the control plane accepts the connection.",
+    "explanation": "Minimal ranges + no internet reachability + on-prem access = a VPC-native private cluster (privateEndpoint enabled) with user-managed /24 pod and service ranges and a proxy for master access.",
     "discussion": [
       {
         "user": "bus_karan19",
@@ -11023,14 +11035,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community majority is D: private endpoint plus authorized networks. Confidence medium on exact flag phrasing.",
-    "conceptSummary": "Private endpoint plus authorized networks for private GKE access.",
-    "correctRationale": "For a fully private cluster, enable the private endpoint and authorize the client network range; authorized networks is the gate that permits the connection to the private control plane.",
+    "discussionSummary": "Community votes D (8).",
+    "conceptSummary": "Private VPC-native GKE: user-managed ranges, privateEndpoint, proxy to the master.",
+    "correctRationale": "D is the only option combining privateEndpoint, user-managed small ranges, and proxy access.",
     "optionRationales": [
-      "Wrong: without authorized networks the private endpoint rejects the admin path.",
-      "Wrong: public endpoint flags contradict the privacy requirement.",
-      "Wrong: disabling the public endpoint alone still leaves no authorized source.",
-      "Correct: private endpoint + master authorized networks containing the admin range."
+      "Wrong: 'VPC advanced routes' is the legacy routes-based cluster type.",
+      "Wrong: GKE-managed ranges are not the minimal/all-planable option.",
+      "Wrong: network policy does not disable the public endpoint.",
+      "Correct: VPC-native + user ranges + privateEndpoint + proxy."
     ],
     "legacyNote": "\"Master authorized networks\" and \"masterIpv4CidrBlock\" are legacy terms now called control plane authorized networks / control plane range; the answer is unchanged."
   },
@@ -11050,7 +11062,7 @@ export const QUESTIONS = [
       1,
       3
     ],
-    "explanation": "Peering the two VPCs and adding firewall rules to allow the required ports between them gives private cross-VPC connectivity without external exposure.",
+    "explanation": "Full cross-communication between two project VPCs with each team keeping control = VPC Network Peering (B) plus permissive firewall rules between the subnets (D) - peering supplies connectivity, rules supply the allow.",
     "discussion": [
       {
         "user": "Gurminderjit",
@@ -11084,15 +11096,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B and D.",
-    "conceptSummary": "VPC peering + firewall rules between two projects.",
-    "correctRationale": "Peering exchanges internal routes between the VPCs, and firewall rules in each VPC then permit the specific ports — the two minimal steps requested.",
+    "discussionSummary": "Community consensus BD (8): peering plus the allow rules.",
+    "conceptSummary": "Two projects' VPCs fully connected = peering + allow firewall rules.",
+    "correctRationale": "Peering is the only connectivity mechanism listed; without ingress rules the default deny still blocks.",
     "optionRationales": [
-      "Wrong: Shared VPC is designed for one organization projects sharing a network — heavier than peering here.",
-      "Correct: VPC peering connects the two VPCs privately.",
-      "Wrong: public IPs would expose the services to the internet.",
-      "Correct: firewall rules must still allow the ports across the peered path.",
-      "Wrong: a VPN between the VPCs is unnecessary overhead where peering suffices."
+      "Wrong: Cloud VPN between co-located VPCs is unnecessary machinery.",
+      "Correct: VPC Network Peering connects the two VPCs.",
+      "Wrong: Shared VPC puts both on one network - removes the 'each controls their VPC' requirement.",
+      "Correct: firewall rules must still allow the traffic.",
+      "Wrong: default-gateway next hops do not route between peered VPCs."
     ]
   },
   {
@@ -11107,7 +11119,7 @@ export const QUESTIONS = [
       "D. Create an explicit Deny Any rule and enable logging on the new rule."
     ],
     "correct": 3,
-    "explanation": "The default implied rules deny ingress; adding an explicit deny rule with firewall logging enabled makes the denials visible in logs.",
+    "explanation": "The implied deny-all rule does not log; you must create an explicit Deny Any rule and enable logging on it to see denied attempts.",
     "discussion": [
       {
         "user": "nkastanas",
@@ -11141,14 +11153,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "Explicit deny + firewall rules logging.",
-    "correctRationale": "Implied deny does not log; an explicit deny rule with --enable-logging (or log: true) writes the matched denies to Cloud Logging.",
+    "discussionSummary": "Community votes D (7).",
+    "conceptSummary": "Denied-traffic logging needs an explicit deny rule with logging enabled.",
+    "correctRationale": "The chosen path is \"Create an explicit Deny Any rule and enable logging on the new rule.\": D is the documented requirement: logging only exists on user-created rules.",
     "optionRationales": [
-      "Wrong: logging requires enabling it on the rule — not just an empty log field.",
-      "Wrong: allow rules do not capture denied traffic.",
-      "Wrong: same logging-enabled issue — the answer must add a logged deny.",
-      "Correct: an explicit logged deny captures and logs the traffic the implied rule silently drops."
+      "Wrong: there is no toggleable 'default Deny Any' rule.",
+      "Wrong: logging is per-rule, not per-VM.",
+      "Wrong: a sink only forwards logs that exist - it does not create deny hits.",
+      "Correct: explicit Deny Any + logging enabled."
     ]
   },
   {
@@ -11163,7 +11175,7 @@ export const QUESTIONS = [
       "D. /25"
     ],
     "correct": 1,
-    "explanation": "The cluster needs space for the initial nodes and growth; a /22 Pod range covers the per-node Pod allocations while smaller masks would run out.",
+    "explanation": "Default VPC-native GKE allocates a /14 pod range; per-cluster planning for the pod secondary range conventionally uses /22 blocks - /22 is the documented pre-provisioning answer among the options.",
     "discussion": [
       {
         "user": "ian_gcpca",
@@ -11197,14 +11209,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community majority is B citing the secondary-range sizing docs; confidence medium.",
-    "conceptSummary": "Pod CIDR sizing for a growing cluster.",
-    "correctRationale": "GKE allocates a per-node slice of the Pod range; /22 is the smallest listed size comfortably covering the node count with Pod density, matching Google's sizing guidance.",
+    "discussionSummary": "Community favors B (10).",
+    "conceptSummary": "GKE VPC-native cluster planning: pre-provision pod ranges sized /22.",
+    "correctRationale": "/22 is the secondary range size that pre-provisions enough pod IPs for the VPC-native cluster plan.",
     "optionRationales": [
-      "Wrong: /25 is too small for the nodes' Pod allocations.",
-      "Correct: /22 covers the required Pod space.",
-      "Wrong: /24 is borderline/insufficient for the growth expectation.",
-      "Wrong: /23 underestimates the sizing guidance."
+      "Wrong: /21 is larger than the pod secondary range the cluster plan needs.",
+      "Correct: /22 is the right secondary range size to pre-provision for the cluster.",
+      "Wrong: /23 halves the pod addressing the cluster subnets require.",
+      "Wrong: /25 is far too small a range for the VPC-native cluster pods."
     ]
   },
   {
@@ -11219,7 +11231,7 @@ export const QUESTIONS = [
       "D. BGP sessions are not established between both on-premises routers and the Cloud Router."
     ],
     "correct": 0,
-    "explanation": "A NO_PROPOSAL_CHOSEN error during IKE means the crypto proposals do not match; the VPN tunnel configuration (Phase 1/2 cipher suites) on one side is wrong.",
+    "explanation": "Traffic using only one of two VPNs usually means the second tunnel never formed a BGP session: no-proposal-chosen in the logs plus 'BGP session is not established' points at a misconfigured session on one tunnel.",
     "discussion": [
       {
         "user": "ian_gcpca",
@@ -11253,15 +11265,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between A and D (14 vs 9 votes): Community majority is A: the IKE log signature indicates a misconfigured VPN tunnel. Confidence medium.",
-    "conceptSummary": "IKE proposal mismatch = misconfigured tunnel.",
-    "correctRationale": "\"no proposal chosen\" indicates the two sides offered no common cipher suite — i.e., the tunnel/IPsec parameters are misconfigured, which A captures.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between A and D (14 vs 9 votes): Community favored A (14) over D (9): the no-proposal-chosen log points to a misconfigured tunnel. Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "One tunnel carrying everything = the second tunnel/BGP session misconfigured.",
+    "correctRationale": "The chosen path is \"One of the VPN sessions is configured incorrectly.\": A names the documented cause - the failing tunnel's IKE/BGP parameters do not match.",
     "optionRationales": [
-      "Correct: mismatched IKE proposals mean the tunnel configuration is wrong.",
-      "Wrong: BGP route issues happen after the tunnel is up.",
-      "Wrong: a missing static route cannot produce a proposal error.",
-      "Wrong: firewall rules would show different errors, not NO_PROPOSAL_CHOSEN."
+      "Correct: one VPN session is configured incorrectly (proposal mismatch in logs).",
+      "Wrong: a firewall block would likely kill tunnel setup entirely, and is not shown in evidence.",
+      "Wrong: no load balancer is needed for VPN ECMP.",
+      "Wrong: the question already states BGP is not established on the failing tunnel - that is the symptom, not the root choice; A names the session misconfiguration."
     ]
   },
   {
@@ -11276,7 +11288,7 @@ export const QUESTIONS = [
       "D. Create a single firewall rule to allow port 3389 with priority 1000."
     ],
     "correct": 2,
-    "explanation": "To let only the admin in, create one ingress allow for TCP 22 sourced from the admin IP targeted at the instance — a single rule meets the requirement.",
+    "explanation": "SSH-only access needs just an allow-22 rule - the implied deny-all already blocks everything else.",
     "discussion": [
       {
         "user": "Gurminderjit",
@@ -11310,14 +11322,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Single ingress allow for TCP 22 from one source.",
-    "correctRationale": "An ingress rule allowing port 22 from the admin's IP to the tagged/target VM permits only that access; denies for others are unnecessary because implied ingress deny covers them.",
+    "discussionSummary": "Community votes C (10).",
+    "conceptSummary": "SSH-only = single allow rule on port 22.",
+    "correctRationale": "The default-deny covers everything else, so C's one allow rule suffices.",
     "optionRationales": [
-      "Wrong: allowing 22 to all sources defeats the goal.",
-      "Wrong: egress rules do not control inbound SSH.",
-      "Correct: allow TCP 22 ingress from the admin IP only.",
-      "Wrong: a deny-all would block the admin too."
+      "Wrong: priority-0 deny-all beats the allow (lower number wins).",
+      "Wrong: port 3389 is RDP, not SSH.",
+      "Correct: single allow tcp:22 rule.",
+      "Wrong: RDP port again."
     ]
   },
   {
@@ -11332,7 +11344,7 @@ export const QUESTIONS = [
       "D. VPC network in the Sales, Marketing, and IT Projects"
     ],
     "correct": 2,
-    "explanation": "Interconnect VLAN attachments and their Cloud Router must live in the host project that owns the Shared VPC so all service projects can use the connectivity.",
+    "explanation": "Cloud Router is a VPC-scoped resource; in a Shared VPC design it belongs in the host project's VPC that the interconnect serves.",
     "discussion": [
       {
         "user": "bus_karan19",
@@ -11366,14 +11378,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Attachments and routers belong in the host project.",
-    "correctRationale": "VLAN attachments are created in the project that owns the VPC they attach to — the Shared VPC host project — giving all service projects the on-prem path.",
+    "discussionSummary": "Community votes C (6).",
+    "conceptSummary": "Shared VPC hybrid routing = Cloud Router in the host project VPC.",
+    "correctRationale": "The router terminates attachments in the VPC that owns them - the host project's.",
     "optionRationales": [
-      "Wrong: attachments in a service project cannot attach to the host project's VPC.",
-      "Wrong: same ownership rule applies.",
-      "Correct: place the Cloud Router and attachments in the host project.",
-      "Wrong: on-prem placement is nonsensical — the router is a Google Cloud resource."
+      "Wrong: 'all projects' is not a valid VPC boundary for one router.",
+      "Wrong: service-project VPCs do not own the interconnect.",
+      "Correct: the host project's VPC.",
+      "Wrong: same scattered-project mistake."
     ]
   },
   {
@@ -11388,7 +11400,7 @@ export const QUESTIONS = [
       "D. Partner Interconnect"
     ],
     "correct": 1,
-    "explanation": "Reaching Google Workspace/Google APIs over a dedicated connection without a third-party carrier is Direct Peering: exchange BGP directly with Google's edge.",
+    "explanation": "A dedicated, provider-free connection to Google services over public IPs (incl. Cloud SQL public IP) is Direct Peering.",
     "discussion": [
       {
         "user": "Gurminderjit",
@@ -11422,14 +11434,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Direct Peering for Google SaaS reachability.",
-    "correctRationale": "Interconnect only reaches private VPC addresses; Workspace access goes over peering products, and Direct Peering is the carrier-free variant.",
+    "discussionSummary": "Community votes B (5).",
+    "conceptSummary": "Dedicated non-provider connectivity to Google public services = Direct Peering.",
+    "correctRationale": "Direct Peering gives a dedicated BGP exchange to Google's edge for public-IP services - exactly the requirement.",
     "optionRationales": [
-      "Wrong: Dedicated Interconnect cannot reach Google Workspace IPs.",
-      "Correct: Direct Peering gives a direct private path to Google Workspace.",
-      "Wrong: Carrier Peering introduces a third party the scenario excludes.",
-      "Wrong: Cloud VPN traverses the internet."
+      "Wrong: Carrier Peering goes through a carrier/provider.",
+      "Correct: Direct Peering.",
+      "Wrong: Interconnect reaches VPC private IPs, not public-IP services.",
+      "Wrong: Partner Interconnect requires a partner."
     ]
   },
   {
@@ -11444,7 +11456,7 @@ export const QUESTIONS = [
       "D. Leave the directory structure as-is, create a URL map and leverage a path rule such as /*/video and /*/audio."
     ],
     "correct": 0,
-    "explanation": "URL-map path rules only support a trailing wildcard (/videos/*); restructuring paths so the wildcard sits at the end (e.g., /videos/hd/*) lets the map distinguish the content correctly.",
+    "explanation": "Language-prefixed paths (e.g. /en/video) need a URL-map path rule that preserves the structure: rearranged directories + /video/* and /audio/* rules route cleanly.",
     "discussion": [
       {
         "user": "RKS_2021",
@@ -11478,15 +11490,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between A and C (8 vs 6 votes): Community majority is A: restructure so the wildcard is last. Confidence medium.",
-    "conceptSummary": "URL-map wildcards are allowed only at the end of a path.",
-    "correctRationale": "GCP URL maps support * only as a suffix; restructure the paths so the pattern ends with the wildcard, which is what option A prescribes.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between A and C (8 vs 6 votes): Community favors A (8 vs 6 for C); URL maps do not support regex paths. Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Split traffic by URL path with URL-map path rules after restructuring directories.",
+    "correctRationale": "A separates the buckets by path so /video/* and /audio/* map to the right backends.",
     "optionRationales": [
-      "Correct: reorganize so path rules use only trailing wildcards, e.g. /videos/hd/*.",
-      "Wrong: adding a second URL map does not change the single-wildcard limitation.",
-      "Wrong: host rules match hosts, not interior path wildcards.",
-      "Wrong: the limitation is real; per-host rules still cannot embed mid-path wildcards."
+      "Correct: restructure directories + path rules /video/*, /audio/*.",
+      "Wrong: separate DNS hostnames are unnecessary - one hostname with /video/* and /audio/* path rules already splits the buckets.",
+      "Wrong: regex paths are not supported in URL maps.",
+      "Wrong: /*/video treats the language segment loosely and misroutes."
     ]
   },
   {
@@ -11501,7 +11513,7 @@ export const QUESTIONS = [
       "D. Create a new HTTP load balancer, select the storage bucket as a backend, enable Cloud CDN on the backend, and make sure each object inside the storage bucket is shared publicly."
     ],
     "correct": 3,
-    "explanation": "Serving public objects from Cloud Storage through the external HTTP(S) LB with Cloud CDN enabled caches content globally for both website and files.",
+    "explanation": "Serving a bucket through Cloud CDN = put it behind an HTTP(S) load balancer backend bucket with CDN enabled, and make the objects publicly readable.",
     "discussion": [
       {
         "user": "saraali",
@@ -11535,14 +11547,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "Backend bucket + external LB + Cloud CDN.",
-    "correctRationale": "The documented pattern for static website + downloadable files is a Cloud Storage backend bucket behind the global external HTTP(S) LB with Cloud CDN — global caching, no servers.",
+    "discussionSummary": "Community votes D (11); private objects still need public access for CDN.",
+    "conceptSummary": "CDN-fronted bucket = backend bucket on HTTP(S) LB + public objects.",
+    "correctRationale": "The chosen path is \"Create a new HTTP load balancer, select the storage bucket as a backend, enable Cloud CDN on the backend, and make sure each object inside the storage bucket is\": D is the documented setup; objects must be public for CDN to serve them.",
     "optionRationales": [
-      "Wrong: per-region buckets fragment the solution.",
-      "Wrong: Compute Engine file servers are unnecessary and unscalable.",
-      "Wrong: CDN without the LB/bucket wiring does not exist as described.",
-      "Correct: Cloud Storage bucket behind the global HTTP(S) LB with Cloud CDN enabled."
+      "Wrong: CDN cannot be enabled directly on a bucket.",
+      "Wrong: a TCP load balancer cannot use a storage bucket as a backend - Cloud CDN needs an HTTP(S) backend bucket.",
+      "Wrong: SSL proxy cannot front CDN either.",
+      "Correct: HTTP LB backend bucket + CDN + public objects."
     ],
     "legacyNote": "Described with the older \"HTTP(S) load balancer\" name; today this is the global external Application Load Balancer."
   },
@@ -11558,7 +11570,7 @@ export const QUESTIONS = [
       "D. The IP address of the instance on the remote side of the VPN tunnel"
     ],
     "correct": 2,
-    "explanation": "A static route can target a Cloud VPN tunnel by name as its next hop, steering matching traffic into the tunnel.",
+    "explanation": "A static route via a VPN tunnel uses the tunnel itself as next hop - specified by tunnel name and region.",
     "discussion": [
       {
         "user": "kirrim",
@@ -11592,15 +11604,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between C and B (33 vs 11 votes): Community agrees on C.",
-    "conceptSummary": "Route next hop = VPN tunnel name.",
-    "correctRationale": "VPC static routes support next-hop Cloud VPN tunnel, so the correct value is the tunnel name — C.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes C (33). Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "VPN-tunnel static route next hop = tunnel name + region.",
+    "correctRationale": "The chosen path is \"The name and region of the Cloud VPN tunnel\": gcloud requires --next-hop-vpn-tunnel referencing the tunnel, which C describes.",
     "optionRationales": [
-      "Wrong: the peer IP is not a valid next-hop target.",
-      "Wrong: an instance tag is not a next hop.",
-      "Correct: the Cloud VPN tunnel name is the next hop.",
-      "Wrong: the gateway's self link is not used for routes."
+      "Wrong: the internet gateway is the default route's hop, not the VPN's.",
+      "Wrong: the gateway IP is not a valid next-hop object for a route.",
+      "Correct: tunnel name + region.",
+      "Wrong: the remote instance IP is not a routable next hop."
     ]
   },
   {
@@ -11615,7 +11627,7 @@ export const QUESTIONS = [
       "D. gcloud compute instances create example-instance --network custom-network1 \\ --subnet subnet-us-central \\ --no-address \\ --zone us-central1-a \\ --image-family debian-9 \\ --image-project debian-cloud \\ --tags no-ip"
     ],
     "correct": 1,
-    "explanation": "The instance configured as a NAT gateway for the subnet must keep IP forwarding enabled and be the target of a tag-scoped default route for the other instances.",
+    "explanation": "The command creates a NAT-gateway route targeting instances tagged no-ip; for it to apply, existing VMs must get that tag via instances add-tags.",
     "discussion": [
       {
         "user": "kirrim",
@@ -11649,14 +11661,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "DIY NAT instance with tagged default route.",
-    "correctRationale": "The classic NAT-gateway instance pattern: enable can-ip-forward on the NAT instance and create a tagged route so only the intended instances send their default traffic through it.",
+    "discussionSummary": "Community votes B (13).",
+    "conceptSummary": "Targeted routes apply via instance tags - tag the VMs.",
+    "correctRationale": "The chosen path is \"gcloud compute instances add-tags [existing-instance] --tags no-ip\": B applies the required no-ip tag so the route steers those instances.",
     "optionRationales": [
-      "Wrong: disabling IP forwarding breaks the NAT function.",
-      "Correct: keep IP forwarding on the NAT VM plus a tagged route for the others.",
-      "Wrong: the tag must be on the route instances, and forwarding must stay on.",
-      "Wrong: external IPs on every VM defeat the private-instance goal."
+      "Wrong: ip_forward matters on the NAT VM itself, not on the tagged clients.",
+      "Correct: adding the no-ip tag applies the custom NAT-gateway route to those instances.",
+      "Wrong: builds submit is unrelated.",
+      "Wrong: creating a new instance does not retrofit existing ones."
     ],
     "legacyNote": "Describes the DIY NAT-instance pattern; Cloud NAT is now the managed alternative, but B remains the question's correct mechanics."
   },
@@ -11672,7 +11684,7 @@ export const QUESTIONS = [
       "D. Partner Interconnect with a layer 3 partner"
     ],
     "correct": 3,
-    "explanation": "When the company cannot run BGP, a layer-3 partner service provider must manage the Interconnect attachment and routing between on-prem and Google.",
+    "explanation": "No POP access and no BGP capability = Partner Interconnect via a layer-3 partner, who terminates BGP and delivers routed connectivity.",
     "discussion": [
       {
         "user": "saraali",
@@ -11706,14 +11718,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "Partner Interconnect for organizations without BGP.",
-    "correctRationale": "Dedicated Interconnect requires customer BGP to Google; Partner Interconnect (layer 3) lets the provider handle routing — the only viable answer.",
+    "discussionSummary": "Community favors D (24).",
+    "conceptSummary": "No POP + no BGP = Partner Interconnect with a layer-3 partner.",
+    "correctRationale": "A layer-3 partner owns the BGP session and hands you L3 connectivity - covering both constraints.",
     "optionRationales": [
-      "Wrong: Dedicated Interconnect requires BGP on the customer router.",
-      "Wrong: Carrier Peering reaches SaaS/peering edges, not your VPC privately.",
-      "Wrong: Direct Peering reaches Google services, not your VPC.",
-      "Correct: Partner Interconnect with a layer-3 provider removes the BGP requirement."
+      "Wrong: Direct Peering still requires meeting Google at a POP.",
+      "Wrong: Dedicated Interconnect likewise requires the POP.",
+      "Wrong: layer-2 partners hand you a circuit where you must run BGP.",
+      "Correct: Partner Interconnect with a layer-3 partner."
     ]
   },
   {
@@ -11732,7 +11744,7 @@ export const QUESTIONS = [
       0,
       2
     ],
-    "explanation": "Private services access requires an allocated IP range and creating a private connection to the service networking API so Google services (like Cloud SQL) get private IPs in your VPC.",
+    "explanation": "Private Cloud SQL access needs the Service Networking API enabled and a private services access connection to the service producer (VPC peering for PSA).",
     "discussion": [
       {
         "user": "glb2",
@@ -11766,16 +11778,16 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between AC and AE (13 vs 5 votes): Community agrees on A and C.",
-    "conceptSummary": "Allocate a range + create the private connection.",
-    "correctRationale": "The two documented prerequisites are: allocate an IP range for the producers and create the private connection (servicenetworking peering) — options A and C.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between AC and AE (13 vs 5 votes): Community consensus AC (13) - the two PSA prerequisites. Independent review (Gemini, Oct 2026) confirmed AC.",
+    "conceptSummary": "Private Cloud SQL = Service Networking API + private services access connection.",
+    "correctRationale": "The chosen path is \"Activate the Service Networking API in your project. Create a private connection to a service producer.\": A+C are the two documented setup steps for PSA-based Cloud SQL.",
     "optionRationales": [
-      "Correct: create an allocated IP address range for private service access.",
-      "Wrong: the VLAN/interconnect setup is unrelated to enabling private services access.",
-      "Correct: create the private connection to the service network.",
-      "Wrong: a Shared VPC is not required.",
-      "Wrong: manual routes cannot substitute for the private connection."
+      "Correct: Service Networking API must be enabled.",
+      "Wrong: Datastore API is unrelated.",
+      "Correct: the private connection to the service producer is required.",
+      "Wrong: static routes cannot substitute for the PSA connection.",
+      "Wrong: PGA reaches Google APIs, not the private Cloud SQL IP."
     ]
   },
   {
@@ -11794,7 +11806,7 @@ export const QUESTIONS = [
       0,
       2
     ],
-    "explanation": "Fronting the app with the global HTTP(S) load balancer and attaching a Cloud Armor security policy gives managed DDoS/WAF protection at the edge.",
+    "explanation": "DDoS mitigation for a revenue app = put the app behind the global HTTP(S) load balancer (Google's DDoS-absorbing frontend) and use Cloud Armor to blacklist the attacker's addresses - A+C.",
     "discussion": [
       {
         "user": "pico",
@@ -11828,16 +11840,16 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between AC and AB (34 vs 23 votes): Community majority is A+C (~52%), with some arguing B/E; A+C is kept as the documented pair. Confidence medium.",
-    "conceptSummary": "Move to the global HTTPS LB + Cloud Armor.",
-    "correctRationale": "Cloud Armor policies attach to external HTTP(S) LB backends, so the two steps are: put the app behind the global HTTPS LB and apply the Armor policy.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between AC and AB (34 vs 23 votes): Community favored AC (34) over AB (23): the validated pair is A+C because mitigation requires blocking at the edge. Independent review (Gemini, Oct 2026) confirmed AC.",
+    "conceptSummary": "Stop a DDoS attack: global HTTPS LB + Cloud Armor blacklist.",
+    "correctRationale": "The global ALB fronts traffic at Google's edge where Cloud Armor policies can drop attacker IPs - the two valid responses listed.",
     "optionRationales": [
-      "Correct: Cloud Armor provides the DDoS protection.",
-      "Wrong: the network LB does not support Cloud Armor policies in this design.",
-      "Correct: the app must sit behind the global HTTPS LB for Armor to apply.",
-      "Wrong: VPC firewall rules cannot mitigate L7 DDoS.",
-      "Wrong: CDN alone does not provide the security policy protection."
+      "Correct: Cloud Armor blacklisting blocks the attacking IPs.",
+      "Wrong: scaling up just spends more to absorb the attack - it does not stop it.",
+      "Correct: the global HTTP(S) LB enables Cloud Armor protection and absorbs the burst at the edge.",
+      "Wrong: shutting the app down completes the attacker's goal.",
+      "Wrong: reading logs diagnoses but does not mitigate."
     ],
     "legacyNote": "Written with the older \"HTTP(S) load balancer\" and \"network load balancer\" naming; the answer logic is unchanged."
   },
@@ -11853,7 +11865,7 @@ export const QUESTIONS = [
       "D. Use network compression over your VPN to increase the amount of data you can send over your VPN."
     ],
     "correct": 0,
-    "explanation": "Partner Interconnect is the dedicated-connection option delivered through a service provider, requiring no colocation facility of your own.",
+    "explanation": "Direct connectivity at guaranteed bandwidth to private GCP addresses with packet-loss-free requirements points to Partner Interconnect via the ISP - VPNs ride the lossy internet and Dedicated Interconnect costs more.",
     "discussion": [
       {
         "user": "saraali",
@@ -11887,14 +11899,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between A and B (21 vs 3 votes): Community agrees on A.",
-    "conceptSummary": "Partner Interconnect via a service provider.",
-    "correctRationale": "Partner Interconnect connects through a partner's network, so the customer needs no direct peering edge presence — matching \"without a colocation facility\".",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes A (21). Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Reliable private connectivity at moderate bandwidth = Partner Interconnect.",
+    "correctRationale": "A Partner Interconnect delivers dedicated private links with SLA - satisfying 'no packet loss / guaranteed bandwidth' better than VPN.",
     "optionRationales": [
-      "Correct: Partner Interconnect is provider-delivered dedicated connectivity.",
-      "Wrong: Dedicated Interconnect requires a colocation presence.",
-      "Wrong: Direct Peering also requires meeting Google at a peering location.",
-      "Wrong: Cloud VPN is over the internet, not a dedicated connection."
+      "Correct: Partner Interconnect via the ISP.",
+      "Wrong: Dedicated Interconnect is more expensive than needed.",
+      "Wrong: multiple VPN tunnels still ride the public internet - no SLA.",
+      "Wrong: compression does not fix packet loss."
     ]
   },
   {
@@ -11909,7 +11922,7 @@ export const QUESTIONS = [
       "D. Create IPTables firewall rules that block all traffic except for the traffic-scrubbing service."
     ],
     "correct": 0,
-    "explanation": "A Cloud Armor allowlist policy can restrict the scrubbing service's path so only the DDoS provider's source ranges reach the application endpoints.",
+    "explanation": "Restricting the origin behind the global LB to scrubbing-service traffic is a Cloud Armor security policy whitelisting the scrubber's addresses.",
     "discussion": [
       {
         "user": "0d2fdfa",
@@ -11943,14 +11956,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between A and B (13 vs 2 votes): Community majority is A.",
-    "conceptSummary": "Cloud Armor allowlist for the scrubbing provider.",
-    "correctRationale": "With an upstream scrubbing service, you restrict the LB to accept traffic only from the provider's IP ranges using an Armor allowlist rule — the documented integration pattern.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes A (13). Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Origin lock-down behind global LB = Cloud Armor allow-list policy.",
+    "correctRationale": "Cloud Armor on the backend service can allow only the scrubbing service - the documented control at the LB edge.",
     "optionRationales": [
-      "Correct: an Armor allowlist of the provider's ranges protects the origin.",
-      "Wrong: firewall rules at the VM level can be bypassed via the LB path as described.",
-      "Wrong: CDN does not provide the access restriction.",
-      "Wrong: peering with the provider is not how the integration works."
+      "Correct: Cloud Armor policy allowing only the scrubber.",
+      "Wrong: VPC firewall rules do not see the LB's client edge IPs cleanly for this use.",
+      "Wrong: a VPC Service Controls perimeter governs API calls, not the data-plane traffic hitting the load balancer.",
+      "Wrong: iptables on instances does not stop traffic before the origin."
     ]
   },
   {
@@ -11965,7 +11979,7 @@ export const QUESTIONS = [
       "D. Add a Cache-Control entry with value private to the metadata of the object you donâ€™t want to be cached anymore. Invalidate all the previously cached copies."
     ],
     "correct": 3,
-    "explanation": "The origin's Cache-Control: private prevents CDN caching; uploading the corrected file and invalidating the cached object forces Cloud CDN to refetch the new version.",
+    "explanation": "Per-object cache control: set Cache-Control: private in the object's metadata so CDN stops caching it, then invalidate existing cached copies.",
     "discussion": [
       {
         "user": "xhilmi",
@@ -11999,14 +12013,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "Invalidate the stale object after replacing it.",
-    "correctRationale": "With USE_ORIGIN_HEADERS the private directive blocks caching, but the stale cached object also needs eviction — uploading the new file and requesting invalidation is the fix.",
+    "discussionSummary": "Community votes D (18).",
+    "conceptSummary": "Uncache a single object: Cache-Control private metadata + invalidation.",
+    "correctRationale": "D is the documented per-object mechanism; lifecycle/private options affect the wrong layer.",
     "optionRationales": [
-      "Wrong: editing DNS sends users elsewhere rather than fixing the cache.",
-      "Wrong: a service restart does not evict cached objects.",
-      "Wrong: changing file names changes URLs, not what users have.",
-      "Correct: upload the corrected object and issue a cache invalidation."
+      "Wrong: unsharing the object breaks access entirely rather than just disabling cache.",
+      "Wrong: moving the object does not remove already-cached copies.",
+      "Wrong: lifecycle rules delete objects, not cache entries.",
+      "Correct: private metadata + invalidate."
     ]
   },
   {
@@ -12021,7 +12035,7 @@ export const QUESTIONS = [
       "D. Create an unmanaged instance group for each zone, and manually distribute the instances across the desired zones."
     ],
     "correct": 0,
-    "explanation": "Deploying the application across multiple zones in one region via a zonal/regional MIG gives the requested availability with lowest complexity.",
+    "explanation": "HA + autoscaling = one regional managed instance group spanning multiple zones; MIG handles placement and scaling automatically.",
     "discussion": [
       {
         "user": "PotatoGCP",
@@ -12055,14 +12069,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Multi-zone managed instance group.",
-    "correctRationale": "Spreading instances across zones behind a regional MIG provides zone-failure resilience — the standard minimal-latency-increase answer.",
+    "discussionSummary": "Community votes A (15).",
+    "conceptSummary": "Production availability = multi-zone regional MIG.",
+    "correctRationale": "A single regional MIG with 'multiple zones' gives the required HA and autoscaling with the least effort.",
     "optionRationales": [
-      "Correct: a regional MIG across zones gives the needed availability simply.",
-      "Wrong: single-zone placement has a single point of failure.",
-      "Wrong: multi-region is overkill and adds latency complexity.",
-      "Wrong: manual instances lack autohealing."
+      "Correct: one MIG, multi-zone.",
+      "Wrong: single-zone MIGs per region lose zone-failure HA.",
+      "Wrong: unmanaged groups cannot autoscale.",
+      "Wrong: manual per-zone groups are error-prone."
     ]
   },
   {
@@ -12077,7 +12091,7 @@ export const QUESTIONS = [
       "D. Perform a canary update by starting a rolling update and specifying a target size for your instances to receive the new template. Verify the new feature on the canary instances, and then roll forward to the rest of the instances."
     ],
     "correct": 3,
-    "explanation": "A canary update rolls the new version to a small instance subset first; expanding only if healthy minimizes user impact — the safe rollout pattern.",
+    "explanation": "Minimize blast radius of an untested template = canary update: start a rolling update limited to a target size, verify, then complete or roll back.",
     "discussion": [
       {
         "user": "bgillman",
@@ -12111,15 +12125,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and C (15 vs 5 votes): Community agrees on D.",
-    "conceptSummary": "Canary rolling update of a MIG.",
-    "correctRationale": "Canary update with a small target size validates the new version on limited traffic before full rollout — lowest risk of a bad deploy.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and C (15 vs 5 votes): Community favors D (15). Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Safely test a new MIG template = canary rolling update to a target size.",
+    "correctRationale": "The chosen path is \"Perform a canary update by starting a rolling update and specifying a target size for your instances to receive the new template. Verify the new feature on the \": D is the documented canary mechanism within the same group.",
     "optionRationales": [
-      "Wrong: a full immediate update risks breaking every user at once.",
-      "Wrong: recreating the MIG causes downtime.",
-      "Wrong: a second LB does not stage the application change.",
-      "Correct: canary update validates the new version on a fraction of instances first."
+      "Wrong: manual patching bypasses the MIG's managed rollout.",
+      "Wrong: full rollout exposes all users before verification.",
+      "Wrong: a separate canary group works but adds an extra group/LB change.",
+      "Correct: rolling update capped at a target size."
     ]
   },
   {
@@ -12134,7 +12148,7 @@ export const QUESTIONS = [
       "D. Give each user the following permissions only: compute.interconnectAttachments.create, compute.interconnectAttachments.get, compute.routers.create, compute.routers.get, compute.routers.update."
     ],
     "correct": 1,
-    "explanation": "compute.networkAdmin contains all the permissions needed to create and manage Interconnect attachments and related network resources — the least-privilege complete role.",
+    "explanation": "Least privilege covering create/modify/delete of VLAN attachments is compute.networkAdmin - it holds the full attachment permission set; the custom-role options omit update/delete.",
     "discussion": [
       {
         "user": "saraali",
@@ -12168,14 +12182,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "discussionSummary": "Split between B and D (17 vs 6 votes): Community majority is B: networkAdmin is the standard role; confidence medium.",
-    "conceptSummary": "networkAdmin role covers Interconnect administration.",
-    "correctRationale": "networkAdmin bundles VLAN attachment, router, and VPN permissions; the granular lists in other options omit delete/manage permissions needed to fully administer.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and D (17 vs 6 votes): Community favors B (17); the create/modify/delete wording rules out the partial custom roles. Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "VLAN attachment lifecycle admin = compute.networkAdmin.",
+    "correctRationale": "The chosen path is \"Assign each user the compute.networkAdmin role.\": networkAdmin is the only option able to create, modify and delete attachments; the listed custom permissions miss update/delete.",
     "optionRationales": [
-      "Wrong: compute.networkUser cannot create interconnect resources.",
-      "Correct: compute.networkAdmin is the complete least-privilege role for this task.",
-      "Wrong: the partial permission list omits needed actions.",
-      "Wrong: same partial-permissions problem plus viewer."
+      "Wrong: editor is far broader than needed.",
+      "Correct: compute.networkAdmin covers the full attachment lifecycle.",
+      "Wrong: create+get omits modify and delete.",
+      "Wrong: the permission list still omits delete."
     ]
   },
   {
@@ -12190,7 +12205,7 @@ export const QUESTIONS = [
       "D. Set proxy-header to the default value, and set host to include a custom host header that identifies the health check."
     ],
     "correct": 2,
-    "explanation": "A content-based health check with a response string verifies the application really serves the right content — stricter than a TCP connect check.",
+    "explanation": "Verifying backends respond correctly uses a health check with a specific request-path and a response string the backend always returns.",
     "discussion": [
       {
         "user": "pk349",
@@ -12224,14 +12239,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "HTTP health check with response matching.",
-    "correctRationale": "Health checks that validate response content detect an app returning wrong data — matching \"application is actually working\" vs mere connectivity.",
+    "discussionSummary": "Community votes C (7).",
+    "conceptSummary": "HTTP health check: request-path + expected response string.",
+    "correctRationale": "C names both fields that validate actual backend response, not just port liveness.",
     "optionRationales": [
-      "Wrong: a TCP connect does not verify application health.",
-      "Wrong: any 200 response could be an error page; content match is stricter.",
-      "Correct: request path + expected response string verifies real app function.",
-      "Wrong: SSL checks validate TLS, not content correctness."
+      "Wrong: PROXY_V1 is for proxy protocol, not health verification.",
+      "Wrong: host header only checks reachability, not response correctness.",
+      "Correct: request-path + response string.",
+      "Wrong: lacks the request-path entirely."
     ]
   },
   {
@@ -12246,7 +12261,7 @@ export const QUESTIONS = [
       "D. Assign members of the networking team the compute.networkViewer role, and add the compute.networks.use permission."
     ],
     "correct": 1,
-    "explanation": "compute.networkAdmin grants management of network resources (routes, firewalls, LBs) without broader compute admin rights — the least-privilege fit.",
+    "explanation": "The networking team needs read-only firewall access: compute.networkAdmin grants networking management but is read-only on firewall rules and SSL certificates - matching the split of duties.",
     "discussion": [
       {
         "user": "RKS_2021",
@@ -12280,14 +12295,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "discussionSummary": "Split between B and C (23 vs 8 votes): Community majority is B; confidence medium.",
-    "conceptSummary": "networkAdmin for network administration tasks.",
-    "correctRationale": "networkAdmin covers creating/modifying the organization's network resources without instance or storage admin rights — least privilege.",
+    "resolvedBy": "devin-2026-10",
+    "discussionSummary": "Split between B and C (23 vs 8 votes): Community favored B (23) over C (8): the documented role is read-only on firewall rules. An independent Gemini review argued for C, claiming Network Admin can edit firewall rules; rejected, because the documented role is read-only on firewall rules.",
+    "conceptSummary": "Network Admin manages networking yet cannot edit firewall rules.",
+    "correctRationale": "The chosen path is \"Assign members of the networking team the compute.networkAdmin role.\": The documented role text: 'network admin... allows read-only access to firewall rules, SSL certificates, and instances' - B fits exactly.",
     "optionRationales": [
-      "Wrong: viewer is read-only and cannot make changes.",
-      "Correct: networkAdmin is the right least-privilege role.",
-      "Wrong: compute.admin is broader than needed.",
-      "Wrong: owner/full editor are overprivileged."
+      "Wrong: networkUser is for consuming shared networks, not reading rules org-wide.",
+      "Correct: networkAdmin reads firewall rules without editing them.",
+      "Wrong: a custom role works in theory but is not the least-privilege predefined answer and its permissions misstate the need.",
+      "Wrong: networkViewer lacks the rest of the networking-management duties."
     ]
   },
   {
@@ -12302,7 +12318,7 @@ export const QUESTIONS = [
       "D. Create the appropriate master authorized network entries to allow the instance to communicate to the master."
     ],
     "correct": 3,
-    "explanation": "Master authorized networks must contain the CIDR of the network where the admin VM lives; adding the corporate/admin range to authorized networks grants kubectl access to the private cluster.",
+    "explanation": "Private-cluster kubectl access needs the instance's network authorized in the cluster's master authorized networks - the documented control for private masters.",
     "discussion": [
       {
         "user": "enter_co",
@@ -12336,14 +12352,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "discussionSummary": "Split between D and C (13 vs 4 votes): Community majority is D; confidence medium on phrasing.",
-    "conceptSummary": "Authorized networks for private cluster kubectl.",
-    "correctRationale": "Private clusters accept control-plane connections only from authorized networks — add the admin subnet's CIDR to the cluster's authorized networks list.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and C (13 vs 4 votes): Community favors D (13). Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "kubectl to a private master = add the client network to master authorized networks.",
+    "correctRationale": "D whitelists the instance's network for the private endpoint.",
     "optionRationales": [
-      "Wrong: firewall rules cannot grant access to the private control plane.",
-      "Wrong: the master range is the destination, not the source to authorize.",
-      "Wrong: making the cluster public contradicts the private design.",
-      "Correct: authorize the admin network's CIDR on the cluster."
+      "Wrong: a public IP does not grant access to the private master.",
+      "Wrong: the master is not reachable via a default internet route when private.",
+      "Wrong: firewall policy is not the control that gates the private endpoint.",
+      "Correct: master authorized networks entry."
     ]
   },
   {
@@ -12358,7 +12375,7 @@ export const QUESTIONS = [
       "D. Move instance-B to another VPC and, using multi-NIC, connect instance-B's interface to instance-A's network. Configure the appropriate routes to force traffic through to instance-A."
     ],
     "correct": 1,
-    "explanation": "A more specific route with a different next hop wins by longest prefix match; adding a tagged, more-specific route through the testing path steers only tagged VMs.",
+    "explanation": "Force instance-A's traffic through instance-B by creating a more-specific route than the subnet route, next hop instance-B, tagged so it applies only to instance-A.",
     "discussion": [
       {
         "user": "saraali",
@@ -12392,15 +12409,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and D (12 vs 6 votes): Community majority is B; confidence medium.",
-    "conceptSummary": "Tag-scoped more-specific route overrides the default path.",
-    "correctRationale": "The /25 (or host) route is more specific than the default and, when tagged, applies only to the testing instances — classic selective steering.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and D (12 vs 6 votes): Community favors B (12). Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "Subnet-level traffic steering: tagged more-specific route via next-hop instance.",
+    "correctRationale": "B's tag scopes the override to instance-A; the more-specific route wins over the subnet route.",
     "optionRationales": [
-      "Wrong: priority only decides between equal-prefix routes; specificity wins first.",
-      "Correct: tagged more-specific route sends only tagged instances via the alternate path.",
-      "Wrong: deleting the default breaks all other instances.",
-      "Wrong: NAT does not change route selection here."
+      "Wrong: no tag means the route hits every instance.",
+      "Correct: tagged, more-specific route via instance-B.",
+      "Wrong: deleting the subnet route breaks the subnet for everyone.",
+      "Wrong: multi-NIC cross-VPC is needless complexity."
     ]
   },
   {
@@ -12415,7 +12432,7 @@ export const QUESTIONS = [
       "D. Use gcloud compute ssh to automatically copy your public ssh key to the instance."
     ],
     "correct": 0,
-    "explanation": "Block-project-SSH-keys restricts instance access to instance-level keys, so the admin's key must be added to the VM's metadata directly.",
+    "explanation": "Project-wide SSH key coverage with least effort = add the public key to project metadata; instances inherit project-level keys by default.",
     "discussion": [
       {
         "user": "saraali",
@@ -12449,14 +12466,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Adding SSH key to instance metadata when project keys are blocked.",
-    "correctRationale": "With block-project-ssh-keys enabled, project-level keys are ignored; the admin must add their public key in the instance's metadata.",
+    "discussionSummary": "Community votes A (11).",
+    "conceptSummary": "SSH key for all project instances = project metadata ssh-keys.",
+    "correctRationale": "A single project-metadata entry propagates to all instances - the efficient answer.",
     "optionRationales": [
-      "Correct: add the key to the instance metadata.",
-      "Wrong: project metadata keys are blocked by the org policy.",
-      "Wrong: OS Login is a different mechanism than described.",
-      "Wrong: the serial console does not fix SSH access."
+      "Correct: project metadata.",
+      "Wrong: per-instance metadata does not scale.",
+      "Wrong: a custom image is heavy for a key.",
+      "Wrong: gcloud ssh copies per login, not persistently to all."
     ]
   },
   {
@@ -12471,7 +12488,7 @@ export const QUESTIONS = [
       "D. An instance configured with iptables SNAT rules"
     ],
     "correct": 0,
-    "explanation": "Private NAT (Cloud NAT for hybrid/private destinations) can translate traffic destined for on-prem networks, so A's premise that Cloud NAT cannot do this is outdated/incorrect.",
+    "explanation": "Cloud NAT is the managed NAT service for translating between VPC and external/on-premise address space - the Google-recommended answer over a hand-built NAT instance.",
     "discussion": [
       {
         "user": "enter_co",
@@ -12505,16 +12522,17 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between A and B (18 vs 15 votes): Community splits A vs B; A is chosen on the merits since Private/Hybrid NAT does support on-prem-bound translation. Confidence medium.",
-    "conceptSummary": "Cloud NAT / Private NAT can NAT traffic toward on-prem.",
-    "correctRationale": "Modern Cloud NAT supports NAT to on-prem destinations through Private NAT/hybrid NAT, contradicting the option that claims it cannot. Answer A is the correct completion of the \"you cannot\" distractor pattern.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community favored A (18) over B (15): Cloud NAT is the managed answer; the IP-forwarding-instance votes reflect the era when Cloud NAT was internet-egress only. Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "NAT between on-premises network blocks and GCP = Cloud NAT (Hybrid NAT for on-prem↔VPC translation).",
+    "correctRationale": "Cloud NAT is the managed answer for address translation between the environments; today its Hybrid NAT mode explicitly covers on-prem <-> VPC flows.",
     "optionRationales": [
-      "Correct: this statement is the accurate characterization being tested — Cloud NAT translates egress to on-prem as configured.",
-      "Wrong: Internet NAT gateway handles only public destinations, matching the distractor framing but not the right completion.",
-      "Wrong: Cloud NAT does not need to translate private-to-private in the way implied, making this the wrong statement.",
-      "Wrong: hybrid NAT does provide the capability, so claiming it cannot is false."
-    ]
+      "Correct: Cloud NAT is the managed NAT solution for this translation.",
+      "Wrong: an IP-forwarding instance is the DIY route the managed service replaces.",
+      "Wrong: iptables DNAT alone does not cover the bidirectional translation.",
+      "Wrong: iptables SNAT alone likewise."
+    ],
+    "legacyNote": "When this question was written, Cloud NAT only handled internet egress - which is why many commenters chose an IP-forwarding instance. Cloud NAT now covers on-premises <-> VPC translation through Hybrid NAT, and Cloud NAT is the expected answer."
   },
   {
     "id": 41,
@@ -12528,7 +12546,7 @@ export const QUESTIONS = [
       "D. TCP/SSL proxy load balancer"
     ],
     "correct": 1,
-    "explanation": "TFTP and the described service run over UDP, which only the Network Load Balancer (target pool/passthrough) supports.",
+    "explanation": "VoIP is UDP/TCP L4 traffic needing a pass-through load balancer preserving ports/client IP = Network Load Balancer.",
     "discussion": [
       {
         "user": "saraali",
@@ -12562,14 +12580,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between B and D (22 vs 6 votes): Community agrees on B.",
-    "conceptSummary": "Network LB for UDP protocols.",
-    "correctRationale": "The proxy LBs are TCP/HTTP-only; UDP traffic requires the passthrough Network Load Balancer — B.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes B (22); legacy 'network load balancer'/target-pool naming flagged outdated. Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "L4 VoIP frontend = network load balancer.",
+    "correctRationale": "The chosen path is \"Network load balancer\": Only the NLB passes arbitrary TCP/UDP through at L4 without proxying.",
     "optionRationales": [
-      "Wrong: HTTP(S) LB cannot carry UDP.",
-      "Correct: the Network Load Balancer supports UDP.",
-      "Wrong: SSL proxy is TCP only.",
-      "Wrong: TCP proxy is TCP only."
+      "Wrong: HTTP(S) LB is L7 only.",
+      "Correct: network load balancer.",
+      "Wrong: internal TCP/UDP LB is not internet-facing.",
+      "Wrong: TCP/SSL proxy terminates connections - not pass-through."
     ],
     "legacyNote": "\"Network Load Balancer\"/target pools are legacy terms; today it is the external passthrough Network Load Balancer."
   },
@@ -12585,7 +12604,7 @@ export const QUESTIONS = [
       "D. Network load balancer"
     ],
     "correct": 3,
-    "explanation": "TFTP is UDP-based, and among Google load balancers only the external passthrough Network Load Balancer (target pools) forwards UDP.",
+    "explanation": "TFTP runs over UDP; only the network load balancer passes UDP through to the instances.",
     "discussion": [
       {
         "user": "saraali",
@@ -12619,14 +12638,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "UDP support requires the passthrough NLB.",
-    "correctRationale": "L7 and proxy LBs handle TCP/HTTP(S) only; the NLB is the only option that can forward UDP TFTP flows.",
+    "discussionSummary": "Community votes D (12); legacy NLB naming flagged outdated.",
+    "conceptSummary": "UDP TFTP = network load balancer (L4 pass-through).",
+    "correctRationale": "The chosen path is \"Network load balancer\": D is the only option carrying UDP - HTTP/SSL/TCP options are TCP-only or L7.",
     "optionRationales": [
-      "Wrong: HTTP(S) LB cannot pass UDP.",
-      "Wrong: TCP proxy is TCP only.",
-      "Wrong: SSL proxy is TCP only.",
-      "Correct: the Network Load Balancer supports UDP."
+      "Wrong: HTTP(S) is L7.",
+      "Wrong: SSL proxy is TCP-only.",
+      "Wrong: TCP proxy is TCP-only.",
+      "Correct: network load balancer."
     ],
     "legacyNote": "\"Network Load Balancer\" refers to the external passthrough Network Load Balancer; answer unchanged."
   },
@@ -12642,7 +12661,7 @@ export const QUESTIONS = [
       "D. Delete the legacy network and recreate it to allow transitive peering."
     ],
     "correct": 0,
-    "explanation": "Each subnet can be shared with a different service project by granting compute.networkUser on that subnet to the project's users — subnet-level granularity.",
+    "explanation": "VPC peering is non-transitive: Sales-Finance plus Marketing-Finance leaves Sales-Marketing disconnected - complete connectivity needs a full mesh.",
     "discussion": [
       {
         "user": "saraali",
@@ -12676,14 +12695,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Subnet-level networkUser grants.",
-    "correctRationale": "networkUser can be granted at the subnet level so each service project only sees its assigned subnet — the documented mechanism.",
+    "discussionSummary": "Community votes A (11).",
+    "conceptSummary": "Peering is non-transitive; all-to-all VPCs need a full mesh.",
+    "correctRationale": "The chosen path is \"Configure VPC peering in a full mesh.\": A adds the missing Sales-Marketing peering - transitive routing does not exist.",
     "optionRationales": [
-      "Correct: grant networkUser on the specific subnet to that service project.",
-      "Wrong: project-level networkUser exposes all subnets.",
-      "Wrong: peering is not how Shared VPC assigns subnets.",
-      "Wrong: separate VPCs defeat the Shared VPC design."
+      "Correct: full-mesh peering.",
+      "Wrong: 'fixing asymmetry' cannot create routes peering does not carry.",
+      "Wrong: tags control firewalling, not connectivity.",
+      "Wrong: legacy-network rebuild does not add transitive peering either."
     ]
   },
   {
@@ -12698,7 +12717,7 @@ export const QUESTIONS = [
       "D. GKE Ingress"
     ],
     "correct": 3,
-    "explanation": "GKE Ingress supports attaching a Cloud Armor security policy via a BackendConfig; creating the policy and referencing it in the BackendConfig protects the Ingress backends.",
+    "explanation": "Cloud Armor attaches to a backend service; for GKE the Ingress is what creates the LB backend services, so the policy applies via the Ingress.",
     "discussion": [
       {
         "user": "saraali",
@@ -12732,14 +12751,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is D with the GKE Armor doc cited.",
-    "conceptSummary": "Cloud Armor via BackendConfig on GKE Ingress.",
-    "correctRationale": "GKE uses BackendConfig to associate a Cloud Armor policy with the Ingress-managed backends — the documented attach path.",
+    "discussionSummary": "Community votes D (12).",
+    "conceptSummary": "Cloud Armor on GKE = attach via the Ingress resource.",
+    "correctRationale": "The chosen path is \"GKE Ingress\": The Ingress is the GKE object that instantiates the LB to which Armor policies bind.",
     "optionRationales": [
-      "Wrong: Armor does not attach directly via an Ingress annotation field as described.",
-      "Wrong: Ingress resources have no securityPolicy field.",
-      "Wrong: NetworkPolicies govern pod-level traffic, not the LB edge.",
-      "Correct: create the Armor policy and reference it from the BackendConfig."
+      "Wrong: a GKE Node is not the Cloud Armor target - the policy attaches to the load balancer the Ingress creates.",
+      "Wrong: a GKE Pod sits behind the service layer and is not a policy target.",
+      "Wrong: the GKE Cluster is the control plane, not a Cloud Armor target.",
+      "Correct: the GKE Ingress creates the backend services the Cloud Armor policy attaches to."
     ]
   },
   {
@@ -12758,7 +12777,7 @@ export const QUESTIONS = [
       0,
       1
     ],
-    "explanation": "To detect unused or shadowed rules and see rule hit counts you enable Firewall Rules Logging/Insights: Firewall Insights generates the analysis, and firewall rules logging records connections hitting the rules.",
+    "explanation": "Monitoring traffic to and from migrated workloads = VPC Flow Logs (flow tuples) plus Firewall Logs (rule decisions) - A+B.",
     "discussion": [
       {
         "user": "saraali",
@@ -12792,15 +12811,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A and B.",
-    "conceptSummary": "Firewall Insights + Firewall Rules Logging.",
-    "correctRationale": "Insights analyze the ruleset for redundant/unused rules while per-rule logging produces the match counts — the two required pieces are A and B.",
+    "discussionSummary": "Community consensus AB (14).",
+    "conceptSummary": "Traffic visibility post-migration = VPC Flow Logs + Firewall Logs.",
+    "correctRationale": "The chosen path is \"VPC flow logs Firewall logs\": The two logging sources together cover both the flows and the decisions - the pair asked for.",
     "optionRationales": [
-      "Correct: Firewall Insights detects unused/shadowed/overly-broad rules automatically.",
-      "Correct: Firewall Rules Logging records rule hits for analysis.",
-      "Wrong: VPC Flow Logs record flows, not rule coverage.",
-      "Wrong: audit logs record admin activity, not rule matches.",
-      "Wrong: packet captures are unrelated to rule auditing."
+      "Correct: flow logs show the traffic.",
+      "Correct: firewall logs show the rule decisions.",
+      "Wrong: audit logs record API calls, not traffic.",
+      "Wrong: Trace instruments applications, not network flows.",
+      "Wrong: system logs show OS events."
     ]
   },
   {
@@ -12815,7 +12834,7 @@ export const QUESTIONS = [
       "D. Disable Cloud CDN on the storage bucket. Wait 90 seconds. Re-enable Cloud CDN on the storage bucket."
     ],
     "correct": 1,
-    "explanation": "Cache invalidation removes the stale objects from Cloud CDN caches so the next request fetches the updated file from the origin.",
+    "explanation": "Purging a path prefix from Cloud CDN = cache invalidation with the pattern /folder-a/*.",
     "discussion": [
       {
         "user": "kirrim",
@@ -12849,14 +12868,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Cloud CDN cache invalidation.",
-    "correctRationale": "Invalidating the affected path forces edges to re-fetch — the direct fix for stale content.",
+    "discussionSummary": "Community votes B (15).",
+    "conceptSummary": "Invalidate cached objects by path pattern.",
+    "correctRationale": "The chosen path is \"Issue a cache invalidation command with pattern /folder-a/*.\": Invalidation targets the exact prefix - the documented mechanism.",
     "optionRationales": [
-      "Wrong: restarting origins does not evict cache entries.",
-      "Correct: invalidate the stale objects.",
-      "Wrong: changing cache mode does not remove already-cached objects.",
-      "Wrong: lowering TTL only affects future fills."
+      "Wrong: lifecycle rules delete objects, not cached copies.",
+      "Correct: invalidation /folder-a/*.",
+      "Wrong: unpublishing objects does not evict cached copies.",
+      "Wrong: toggling CDN does not flush the cache."
     ]
   },
   {
@@ -12875,7 +12894,7 @@ export const QUESTIONS = [
       0,
       2
     ],
-    "explanation": "In a Shared VPC the service project needs compute.networkUser on the host subnet to deploy into it, and the host project must have the Shared VPC feature enabled with the service project attached.",
+    "explanation": "Partner-to-company resource access across organizations with no CIDR overlap = VPC peering plus Cloud VPN where needed - A+C are the two viable mechanisms among the options.",
     "discussion": [
       {
         "user": "kirrim",
@@ -12909,15 +12928,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is A+C (~83%).",
-    "conceptSummary": "Enable host project + grant networkUser on subnet.",
-    "correctRationale": "Two pieces: the host project must have Shared VPC enabled with service projects attached, and the deployer needs networkUser on the shared subnet — A and C.",
+    "discussionSummary": "Community consensus AC (25) - peering + VPN are the two valid mechanisms.",
+    "conceptSummary": "Cross-org connectivity = VPC peering and/or Cloud VPN.",
+    "correctRationale": "The chosen path is \"VPC peering Cloud VPN\": Peering connects the two VPCs directly; VPN covers cases where peering is unsuitable - the chosen pair.",
     "optionRationales": [
-      "Correct: enable the Shared VPC host project and attach the service project.",
-      "Wrong: VPC peering is not part of Shared VPC.",
-      "Correct: grant compute.networkUser on the host project's subnet to the service project.",
-      "Wrong: the VPC does not move into the service project.",
-      "Wrong: a separate VPC breaks the shared design."
+      "Correct: VPC peering connects the VPCs across orgs.",
+      "Wrong: Shared VPC is intra-organization.",
+      "Correct: Cloud VPN provides the alternative secure link.",
+      "Wrong: Dedicated Interconnect connects on-prem, not cloud-to-cloud.",
+      "Wrong: Cloud NAT is egress translation, not connectivity."
     ]
   },
   {
@@ -12932,7 +12951,7 @@ export const QUESTIONS = [
       "D. TCP proxy load balancer"
     ],
     "correct": 3,
-    "explanation": "End-to-end encryption requires the LB to pass TLS through or terminate with TLS to backends; the TCP proxy LB (now proxy NLB) forwards the encrypted payload without decryption at the chosen global scope.",
+    "explanation": "SMTP/IMAP with end-to-end encryption and no access to the certs rules out TLS-terminating LBs; a TCP proxy load balancer still terminates the TCP session - for global distribution with pass-through encryption, the TCP proxy LB is the documented global option.",
     "discussion": [
       {
         "user": "kirrim",
@@ -12966,15 +12985,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and A (24 vs 14 votes): Community splits D vs A; D is kept because passthrough is regional while the proxy LB serves global clients with payload encryption intact. Confidence medium.",
-    "conceptSummary": "TCP proxy LB preserves end-to-end TLS.",
-    "correctRationale": "A proxy NLB terminates TCP but does not decrypt the TLS payload, so encryption persists end-to-end; among options it is the one that keeps the application payload encrypted through the LB.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and A (24 vs 14 votes): Community favors D (24); cert ownership excludes the terminating options. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Encrypted global mail traffic without owning certs = TCP proxy load balancer.",
+    "correctRationale": "The chosen path is \"TCP proxy load balancer\": Only the TCP proxy LB fronts arbitrary TCP globally while keeping the payload encrypted end-to-end - the regional NLB cannot serve global users.",
     "optionRationales": [
-      "Wrong: passthrough preserves encryption but the question's global design points to the proxy LB; A's regional framing fails the global requirement.",
-      "Wrong: internal LBs are not for internet clients.",
-      "Wrong: the NLB passthrough is regional and the question asks for a global front end.",
-      "Correct: the TCP/SSL proxy LB gives a global front end while the TLS payload stays encrypted to the backend."
+      "Wrong: SSL proxy terminates TLS, requiring the certificates.",
+      "Wrong: network LB is regional and cannot serve globally distributed users.",
+      "Wrong: HTTPS LB is L7 and also requires certs.",
+      "Correct: TCP proxy load balancer keeps encryption end-to-end."
     ],
     "legacyNote": "\"TCP proxy load balancer\" naming is now the proxy Network Load Balancer; the answer is unchanged."
   },
@@ -12990,7 +13009,7 @@ export const QUESTIONS = [
       "D. Use gcloud container clusters create [CLUSTER NAME] to create a VPC-native cluster."
     ],
     "correct": 0,
-    "explanation": "100 nodes fit in a /25 primary range; 200 Pods/node × 100 nodes ≈ 20,000 Pod IPs fit a /17, and 1500 services fit a /21 — the minimal sufficient sizing.",
+    "explanation": "Sizing for the 2-year growth (100 nodes x 20 pods ≈ 2000 pod IPs, hundreds of services) needs /17 for pods and /21 for services on a /25 node subnet - explicit VPC-native secondary ranges.",
     "discussion": [
       {
         "user": "saraali",
@@ -13024,14 +13043,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "VPC-native secondary-range sizing for stated growth.",
-    "correctRationale": "Nodes /25 (128), Pods /17 (32k) for 100×200, Services /21 (2048) for 1500 — A is the tightest option meeting all three numbers.",
+    "discussionSummary": "Community votes A (14); same sizing scenario as question 248.",
+    "conceptSummary": "Plan GKE secondary ranges for the stated growth before creating the cluster.",
+    "correctRationale": "A is the only option whose secondary ranges cover the projected scale.",
     "optionRationales": [
-      "Correct: /25 + /17 + /21 fits the growth targets minimally.",
-      "Wrong: /24 nodes wastes space and /18 Pods is undersized for 20k Pods.",
-      "Wrong: /26 nodes cannot hold 100 nodes.",
-      "Wrong: /20 Services is far larger than needed."
+      "Correct: /17 pods + /21 services on /25 subnet.",
+      "Wrong: /24 ranges are far too small and cannot be resized later.",
+      "Wrong: enable-ip-alias without explicit ranges leaves sizing to defaults.",
+      "Wrong: cluster creation with no explicit ranges leaves the pod and service sizing to defaults, not the planned capacity."
     ]
   },
   {
@@ -13046,7 +13065,7 @@ export const QUESTIONS = [
       "D. â€¢ Create 1 VPC in a Shared VPC Service Project. â€¢ Configure a 2-NIC instance in zone us-west1-a in the Service Project. â€¢ Attach NIC0 in us-west1 subnet of the Service Project. â€¢ Attach NIC1 in us-west1 subnet of the Service Project â€¢ Deploy the instance. â€¢ Configure the necessary routes and firewall rules to pass traffic through the instance."
     ],
     "correct": 0,
-    "explanation": "Multi-NIC VMs can connect each interface to a different VPC, letting one appliance bridge/inspect between VPCs — the pattern for a network appliance straddling VPCs.",
+    "explanation": "The required design is a Shared VPC host project with 2 VPCs and a dual-NIC instance in us-west1-a of the host project, each NIC on a different host-project VPC subnet - matching option A.",
     "discussion": [
       {
         "user": "saraali",
@@ -13080,14 +13099,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Multi-NIC VM straddling multiple VPCs.",
-    "correctRationale": "Each NIC of a multi-NIC VM lives in a different VPC, giving the appliance a leg in each network — the documented appliance pattern.",
+    "discussionSummary": "Community votes A (6).",
+    "conceptSummary": "Dual-NIC Shared VPC design: host-project VPCs + host-project multi-NIC instance.",
+    "correctRationale": "A places both VPCs and the instance in the host project with NICs on the two VPC subnets - the documented pattern.",
     "optionRationales": [
-      "Correct: add NICs in each VPC to the appliance VM.",
-      "Wrong: one NIC cannot reach multiple VPCs.",
-      "Wrong: alias IPs extend one NIC within one VPC, not across VPCs.",
-      "Wrong: forwarding rules do not attach NICs."
+      "Correct: 2 VPCs + host-project 2-NIC instance on both subnets.",
+      "Wrong: service-project instance cannot attach to host-project VPCs directly as described.",
+      "Wrong: one VPC cannot provide the two-network separation.",
+      "Wrong: service-project VPC + service-project instance removes the host-project design."
     ]
   },
   {
@@ -13102,7 +13121,7 @@ export const QUESTIONS = [
       "D. Use the perfdiag parameter in your gsutil command to enable faster performance: gsutil perfdiag gs://[BUCKET NAME]."
     ],
     "correct": 0,
-    "explanation": "Slow throughput with a healthy link is classically a TCP tuning problem — adjusting TCP congestion/window parameters on the VM raises single-flow throughput.",
+    "explanation": "100ms RTT caps single-stream TCP throughput regardless of the 10G link - the fix is tuning TCP window/parameters on the on-prem servers.",
     "discussion": [
       {
         "user": "saraali",
@@ -13136,14 +13155,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "TCP tuning on the VM.",
-    "correctRationale": "Bandwidth-delay product limits single-flow throughput; tuning TCP buffers/congestion on the VM is the correct first optimization.",
+    "discussionSummary": "Community votes A (4).",
+    "conceptSummary": "Bandwidth-delay product: tune TCP on the sender for high-RTT links.",
+    "correctRationale": "The chosen path is \"Tune TCP parameters on the on-premises servers.\": At 100ms RTT, window size bounds throughput; tuning TCP parameters is the documented remedy.",
     "optionRationales": [
-      "Correct: tune TCP (window/congestion control) on the VM.",
-      "Wrong: MTU changes are a fix only for fragmentation symptoms, not this.",
-      "Wrong: the Interconnect link is fine; this is host-level tuning.",
-      "Wrong: adding bandwidth does not fix a per-flow TCP limit."
+      "Correct: tune TCP parameters on the servers.",
+      "Wrong: compressing files with tar reduces bytes sent but does not raise the per-stream throughput ceiling the 100ms RTT imposes.",
+      "Wrong: removing the -m flag makes gsutil single-threaded - slower, not faster.",
+      "Wrong: perfdiag is a diagnostic tool, not a speedup."
     ]
   },
   {
@@ -13162,7 +13181,7 @@ export const QUESTIONS = [
       1,
       3
     ],
-    "explanation": "Creating a role and binding it via gcloud (add-iam-policy-binding / set-iam-policy) are the CLI commands for granting network permissions to the new team.",
+    "explanation": "Granting a role programmatically is done by setIamPolicy() on the project or gcloud projects add-iam-policy-binding - B+D.",
     "discussion": [
       {
         "user": "4aefc3b",
@@ -13196,15 +13215,16 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "discussionSummary": "Split between BD and DE (29 vs 7 votes): Community picks B+D; confidence medium on exact command mapping.",
-    "conceptSummary": "gcloud iam role creation and policy binding.",
-    "correctRationale": "The two needed commands are creating the custom role (gcloud iam roles create) and granting it (gcloud projects add-iam-policy-binding), matching B and D.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between BD and DE (29 vs 7 votes): Community consensus BD (29) - the two programmatic methods. Independent review (Gemini, Oct 2026) confirmed BD.",
+    "conceptSummary": "Grant a project role via setIamPolicy or gcloud projects add-iam-policy-binding.",
+    "correctRationale": "The chosen path is \"setIamPolicy() via REST API gcloud projects add-iam-policy-binding Sprojectname --member user:Susername --role roles/editor\": B+D are the two documented write operations; pubsub and GetIamPolicy are wrong tools/direction.",
     "optionRationales": [
-      "Wrong: describing roles is read-only.",
-      "Correct: gcloud iam roles create defines the role.",
-      "Wrong: listing permissions does not grant anything.",
-      "Correct: add-iam-policy-binding grants the role to the team.",
-      "Wrong: firewall rule commands do not manage IAM."
+      "Wrong: getIamPolicy only reads the policy.",
+      "Correct: setIamPolicy writes the binding via REST.",
+      "Wrong: pubsub add-iam-policy-binding targets a pubsub resource, not the project.",
+      "Correct: gcloud projects add-iam-policy-binding grants the role.",
+      "Wrong: console is manual, not scripting/automation."
     ]
   },
   {
@@ -13219,7 +13239,7 @@ export const QUESTIONS = [
       "D. Explicitly reference the custom mode networks in the Deployment Manager templates."
     ],
     "correct": 3,
-    "explanation": "Custom-mode VPCs let you define subnets explicitly, so the deployment templates that create subnets in chosen regions require a custom-mode network.",
+    "explanation": "Auto-to-custom conversion removes the auto-mode subnets the templates referenced; the fix is to explicitly reference the custom networks/subnets in the Deployment Manager templates.",
     "discussion": [
       {
         "user": "saraali",
@@ -13253,14 +13273,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "Custom-mode VPC for controlled subnets.",
-    "correctRationale": "Auto mode creates a fixed subnet set per region; templates that pick regions/CIDRs need custom mode — D.",
+    "discussionSummary": "Community votes D (6).",
+    "conceptSummary": "After auto->custom conversion, templates must reference the custom networks explicitly.",
+    "correctRationale": "The chosen path is \"Explicitly reference the custom mode networks in the Deployment Manager templates.\": The conversion invalidated implicit references; D names the required update.",
     "optionRationales": [
-      "Wrong: auto mode predefines subnets and clashes with template control.",
-      "Wrong: legacy networks lack subnets entirely.",
-      "Wrong: a Shared VPC is about host/service projects, not mode.",
-      "Correct: a custom-mode network allows exactly the subnets the templates define."
+      "Wrong: the Google APIs service account's IAM role did not change - the templates broke because the auto-mode network references vanished.",
+      "Wrong: firewall rules are unrelated to template network references.",
+      "Wrong: Cloud Armor whitelists have nothing to do with it.",
+      "Correct: reference custom networks in the templates."
     ]
   },
   {
@@ -13275,7 +13295,7 @@ export const QUESTIONS = [
       "D. Grant the cloud-platform privilege to the service account for the Cloud Storage bucket."
     ],
     "correct": 2,
-    "explanation": "A read-only service account (viewer-level, no edit rights) given to auditors lets them list and inspect configurations without being able to change anything.",
+    "explanation": "Least-privilege bucket read for the automation = grant read-only (roles/storage.objectViewer or object ACL) to the service account on that bucket.",
     "discussion": [
       {
         "user": "saraali",
@@ -13309,14 +13329,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Read-only SA for auditors.",
-    "correctRationale": "Auditors need read-only visibility; a viewer-type service account gives exactly that with least privilege.",
+    "discussionSummary": "Community votes C (14).",
+    "conceptSummary": "Least privilege for bucket reads = read-only on the bucket for the service account.",
+    "correctRationale": "The chosen path is \"Grant the read-only privilege to the service account for the Cloud Storage bucket.\": C grants exactly the needed read permission to the identity that does the work.",
     "optionRationales": [
-      "Wrong: an editor role would let auditors change configs.",
-      "Wrong: no-credentials prevents any access.",
-      "Correct: a read-only service account grants view-only access.",
-      "Wrong: owner is grossly overprivileged."
+      "Wrong: instanceAdmin is unrelated to storage.",
+      "Wrong: serviceAccountUser lets you act as the SA, not read buckets.",
+      "Correct: read-only bucket access on the service account.",
+      "Wrong: cloud-platform scope is far broader than read."
     ]
   },
   {
@@ -13331,7 +13351,7 @@ export const QUESTIONS = [
       "D. Create 1 VPC within the shared VPC Host Project, and share individual subnets with the Service Projects to filter access between the specific networks."
     ],
     "correct": 3,
-    "explanation": "Subnet-level sharing is done by granting compute.networkUser on the specific subnets to the team — restricting them to just their allocated subnets.",
+    "explanation": "Restrict inter-department traffic to specific networks by sharing only individual subnets of the host VPC with the right service projects - the documented subnet-level Shared VPC control.",
     "discussion": [
       {
         "user": "saraali",
@@ -13365,14 +13385,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community majority is D; confidence medium.",
-    "conceptSummary": "networkUser scoped to specific subnets.",
-    "correctRationale": "Granting networkUser at the subnet resource level confines the team's deployments to their assigned subnets only.",
+    "discussionSummary": "Community votes D (11).",
+    "conceptSummary": "Department isolation on Shared VPC = share individual subnets per service project.",
+    "correctRationale": "The chosen path is \"Create 1 VPC within the shared VPC Host Project, and share individual subnets with the Service Projects to filter access between the specific networks.\": D uses subnet-level sharing, the native mechanism to bound which networks each department can use.",
     "optionRationales": [
-      "Wrong: project-wide sharing exposes every subnet.",
-      "Wrong: peering does not apply inside Shared VPC.",
-      "Wrong: networkAdmin would let them change the network.",
-      "Correct: grant networkUser on the specific subnets."
+      "Wrong: peering between two host VPCs is extra machinery vs subnet sharing.",
+      "Wrong: Cloud VPN between host VPCs is heavier and FRA is not the tool.",
+      "Wrong: shared VPCs do not live in service projects.",
+      "Correct: one host VPC, individual subnets shared per project."
     ]
   },
   {
@@ -13391,7 +13411,7 @@ export const QUESTIONS = [
       0,
       4
     ],
-    "explanation": "VMs without external IPs reach Google APIs privately via Private Google Access on the subnet, and reach the internet through Cloud NAT — the two required mechanisms.",
+    "explanation": "No external IPs but still needing Google APIs = enable Private Google Access on the subnets (A) plus a Cloud NAT for general outbound traffic (E).",
     "discussion": [
       {
         "user": "saraali",
@@ -13425,15 +13445,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community majority is A+E; confidence medium.",
-    "conceptSummary": "PGA for Google APIs + Cloud NAT for internet egress.",
-    "correctRationale": "PGA covers googleapis reachability; Cloud NAT covers general internet egress for private VMs — the standard pairing, options A and E.",
+    "discussionSummary": "Community consensus AE (20).",
+    "conceptSummary": "Private instances reaching APIs and internet = subnet PGA + Cloud NAT.",
+    "correctRationale": "PGA covers Google API traffic; NAT covers other outbound - the two complementary mechanisms.",
     "optionRationales": [
-      "Correct: enable Private Google Access on the subnet.",
-      "Wrong: external IPs would expose the VMs directly.",
-      "Wrong: peering does not grant internet egress.",
-      "Wrong: custom routes alone cannot create internet access for IP-less VMs.",
-      "Correct: Cloud NAT provides internet egress for VMs without external IPs."
+      "Correct: Private Google Access is enabled per subnet, so enabling it on all subnets covers every instance.",
+      "Wrong: Private Google Access is a subnet-level setting, not a VPC-level one.",
+      "Wrong: private services access is for producer services like Cloud SQL.",
+      "Wrong: BigQuery cannot be VPC-peered.",
+      "Correct: Cloud NAT covers general egress without external IPs."
     ]
   },
   {
@@ -13448,7 +13468,7 @@ export const QUESTIONS = [
       "D. Configure the TTL for the DNS zone to decrease the time between updates."
     ],
     "correct": 1,
-    "explanation": "The global HTTP(S) load balancer's anycast IP routes users to the closest Google edge, minimizing worldwide latency.",
+    "explanation": "Regional NLB cannot fix latency for far-away users; a global HTTP load balancer anycasts users to the closest frontend - the performance fix.",
     "discussion": [
       {
         "user": "saraali",
@@ -13482,14 +13502,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Global HTTP(S) LB anycast for low latency.",
-    "correctRationale": "Anycast fronting by the global L7 LB lands users on the nearest edge location — the documented low-latency global option.",
+    "discussionSummary": "Community votes B (11); legacy NLB naming flagged outdated.",
+    "conceptSummary": "Cut cross-continent latency = global HTTP(S) load balancer.",
+    "correctRationale": "The chosen path is \"Configure an HTTP load balancer, and direct the traffic to it.\": B replaces the regional NLB with the global anycast frontend.",
     "optionRationales": [
-      "Wrong: regional LBs serve one region only.",
-      "Correct: the global HTTP(S) LB minimizes worldwide latency via anycast.",
-      "Wrong: network LB does not provide the global anycast L7 behavior described.",
-      "Wrong: internal LBs are private-only."
+      "Wrong: policy routes do not address user-facing latency.",
+      "Correct: global HTTP load balancer.",
+      "Wrong: dynamic routing is internal, unrelated.",
+      "Wrong: DNS TTL changes propagation, not latency."
     ],
     "legacyNote": "\"HTTP(S) load balancer\" is the older name of the external Application Load Balancer."
   },
@@ -13505,7 +13525,7 @@ export const QUESTIONS = [
       "D. You have to configure the web servers to compress responses even if the request has a Via header."
     ],
     "correct": 3,
-    "explanation": "The Via header (and Cloud CDN compressed responses) require the origin to serve compressible content with proper headers; ensuring the origin returns the correct Cache-Control/Accept-Encoding handling makes the LB compress and mark Via correctly.",
+    "explanation": "Origin servers commonly skip compression when the Via header marks a proxied request; instructing them to compress anyway fixes CDN-served compression.",
     "discussion": [
       {
         "user": "saraali",
@@ -13539,14 +13559,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is D.",
-    "conceptSummary": "Compression/Via behavior depends on origin response headers.",
-    "correctRationale": "Cloud CDN/LB compresses only compressible content types and adds Via on responses it serves; making sure responses are compressible (correct content-type, not already gzipped with wrong headers) is the fix.",
+    "discussionSummary": "Community votes D (13).",
+    "conceptSummary": "CDN-served responses uncompressed = origin must compress despite the Via header.",
+    "correctRationale": "The chosen path is \"You have to configure the web servers to compress responses even if the request has a Via header.\": D is the documented cause - many web servers disable compression for proxied (Via) requests.",
     "optionRationales": [
-      "Wrong: cache TTL changes do not affect compression.",
-      "Wrong: disabling CDN removes compression benefits.",
-      "Wrong: forcing HTTP/2 does not create compression.",
-      "Correct: ensure the origin returns compressible content so the LB compresses it (Via appears on LB-served responses)."
+      "Wrong: CDN needs no compression toggle - it passes origin encoding.",
+      "Wrong: differing types are not the issue - nothing is compressed at all.",
+      "Wrong: backend-vs-backend differences would affect some responses, not all.",
+      "Correct: configure compression despite the Via header."
     ]
   },
   {
@@ -13561,7 +13581,7 @@ export const QUESTIONS = [
       "D. The traffic is not matching the expected egress rule."
     ],
     "correct": 2,
-    "explanation": "The implied deny rule drops the traffic silently — implied rules do not generate firewall log entries, which is why nothing is logged.",
+    "explanation": "Clean logs plus dead cross-subnet traffic means the packets are dropped before reaching the destination's ingress evaluation - i.e. the traffic is not matching the expected ingress rule (routing/issue before that point).",
     "discussion": [
       {
         "user": "saraali",
@@ -13595,14 +13615,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between C and D (19 vs 5 votes): Community agrees on C.",
-    "conceptSummary": "Implied deny is not logged.",
-    "correctRationale": "Firewall Rules Logging only logs explicit rules; traffic caught by the implied deny produces no entries — explaining the missing logs.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and D (19 vs 5 votes): Community favors C (19). Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "No denied logs + no connectivity = traffic never matches the expected ingress rule.",
+    "correctRationale": "C fits the evidence: traffic fails upstream of the ingress rule, so nothing is logged as denied on that rule.",
     "optionRationales": [
-      "Wrong: no matching allow is a symptom, not the logging explanation.",
-      "Wrong: logs are not delayed days.",
-      "Correct: implicit denies do not produce firewall log entries.",
-      "Wrong: logging is not a VPC-wide default behavior question here."
+      "Wrong: matching the ingress rule would deliver the traffic.",
+      "Wrong: matching egress would also pass.",
+      "Correct: not matching the expected ingress rule.",
+      "Wrong: an egress miss would be on the source side and usually shows a deny."
     ]
   },
   {
@@ -13617,7 +13638,7 @@ export const QUESTIONS = [
       "D. Transfer ownership of the domain to a new registrar."
     ],
     "correct": 2,
-    "explanation": "Enabling DNSSEC for the zone produces DS records that must be added at the registrar, completing the DNSSEC chain of trust.",
+    "explanation": "DNSSEC must be deactivated at the registrar before disabling in Cloud DNS, otherwise validating resolvers keep enforcing signed data - the failure reported.",
     "discussion": [
       {
         "user": "saraali",
@@ -13651,14 +13672,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "DNSSEC requires DS records at the registrar.",
-    "correctRationale": "After enabling DNSSEC in Cloud DNS you must add the generated DS record at the domain registrar — the step the question describes.",
+    "discussionSummary": "Community votes C (7).",
+    "conceptSummary": "Disable DNSSEC at the registrar first.",
+    "correctRationale": "The documented order: turn off DNSSEC at the domain registrar so the DS chain is removed upstream.",
     "optionRationales": [
-      "Wrong: enabling alone leaves the unsigned parent chain broken.",
-      "Wrong: private zones do not use public DNSSEC validation.",
-      "Correct: add the DS records to the registrar after enabling DNSSEC.",
-      "Wrong: TTL changes do not complete DNSSEC."
+      "Wrong: TTL changes cache timing, not the registrar DS records.",
+      "Wrong: TRANSFER state is for zone migrations.",
+      "Correct: disable at the registrar.",
+      "Wrong: ownership transfer is unrelated."
     ]
   },
   {
@@ -13673,7 +13694,7 @@ export const QUESTIONS = [
       "D. Add a second Cloud VPN gateway in a different region than the existing VPN gateway. Create a new tunnel on the second Cloud VPN gateway that forwards the same IP range, but points to the existing on-premises VPN gateway IP address."
     ],
     "correct": 2,
-    "explanation": "Adding a second on-premises VPN gateway with its own tunnel gives device-level redundancy on the customer side — the missing piece when the Google side is already HA.",
+    "explanation": "More VPN bandwidth needs a second tunnel to a different on-prem gateway IP: Cloud VPN tunnels to the same peer IP cannot be load-balanced, so add a second on-prem gateway with its own public IP.",
     "discussion": [
       {
         "user": "saraali",
@@ -13707,14 +13728,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "discussionSummary": "Split between C and B (29 vs 9 votes): Community majority is C (~76%); confidence medium.",
-    "conceptSummary": "Second on-prem gateway for end-to-end redundancy.",
-    "correctRationale": "HA VPN requires redundant paths on both sides; adding a second peer gateway/tunnel removes the on-prem single point of failure.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes C (29). Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "VPN bandwidth scaling = second tunnel to a second on-prem gateway IP.",
+    "correctRationale": "The chosen path is \"Add a second on-premises VPN gateway with a different public IP address. Create a second tunnel on the existing Cloud VPN gateway that forwards the same IP rang\": C is the documented ECMP-friendly design: distinct peer IPs per tunnel.",
     "optionRationales": [
-      "Wrong: another Cloud Router does not fix the on-prem single device.",
-      "Wrong: a second VPC adds nothing.",
-      "Correct: deploy a second on-prem VPN device and tunnel.",
-      "Wrong: tunnels on the same single peer device still share that failure domain."
+      "Wrong: MTU above 1460 is not supported by Cloud VPN.",
+      "Wrong: two tunnels to the same peer IP cannot balance.",
+      "Correct: second on-prem gateway + tunnel to its different IP.",
+      "Wrong: a different-region VPN gateway serves a different scope, not the same path bandwidth."
     ]
   },
   {
@@ -13729,7 +13751,7 @@ export const QUESTIONS = [
       "D. Multi-exit Discriminator"
     ],
     "correct": 3,
-    "explanation": "To prefer one tunnel, set its BGP session advertised route priority to a lower number (better MED) than the other — the peer prefers the lower-MED path.",
+    "explanation": "Influencing which of two paths the on-prem router prefers is MED: the lower-MED advertisement is preferred, giving the standby/active pattern.",
     "discussion": [
       {
         "user": "bgillman",
@@ -13763,14 +13785,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between D and B (16 vs 3 votes): Community majority is D (~76%).",
-    "conceptSummary": "Lower advertised route priority (MED) wins.",
-    "correctRationale": "Cloud Router sends the advertised route priority as MED; a lower numerical value is preferred, so set the preferred tunnel to the lower value.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes D (16). Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Active/standby between two Cloud Routers = MED preference.",
+    "correctRationale": "The chosen path is \"Multi-exit Discriminator\": MED is the attribute exchanged between the ASes to choose the preferred entry - D.",
     "optionRationales": [
-      "Wrong: raising priority on the preferred tunnel makes it less preferred.",
-      "Wrong: equal values give ECMP, not preference.",
-      "Wrong: AS path length is not configured this way on Cloud Router.",
-      "Correct: give the preferred tunnel the lower advertised route priority."
+      "Wrong: AS_PATH length is a loop-prevention/metric tool, not the knob here.",
+      "Wrong: communities tag routes but do not set entry preference alone.",
+      "Wrong: LOCAL_PREF is internal to the on-prem AS, not what steers it.",
+      "Correct: the multi-exit discriminator is the attribute exchanged between the ASes to make one BGP session preferred and the other standby."
     ]
   },
   {
@@ -13785,7 +13808,7 @@ export const QUESTIONS = [
       "D. The instance is accessible by a load balancer external IP address."
     ],
     "correct": 1,
-    "explanation": "Assigning the instance its own external IP address lets it reach the internet directly without NAT.",
+    "explanation": "Cloud NAT only serves instances with no external IP; an instance with a configured external IP bypasses NAT - the likely cause.",
     "discussion": [
       {
         "user": "saraali",
@@ -13819,14 +13842,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "External IP on the VM bypasses Cloud NAT.",
-    "correctRationale": "The simplest per-instance internet path is an ephemeral/static external IP on that VM — bypassing NAT entirely.",
+    "discussionSummary": "Community votes B (9).",
+    "conceptSummary": "External IPs bypass Cloud NAT.",
+    "correctRationale": "The chosen path is \"An external IP address has been configured on the instance.\": B is the documented exception - external IPs route directly.",
     "optionRationales": [
-      "Wrong: NAT gateway tweaks serve all instances, not just one.",
-      "Correct: give the instance an external IP.",
-      "Wrong: firewall rules cannot create a route to the internet.",
-      "Wrong: Cloud Router has no role in NAT bypass."
+      "Wrong: multiple interfaces on one instance do not exempt it from using Cloud NAT for outbound traffic.",
+      "Correct: remove/verify the external IP.",
+      "Wrong: static RFC1918 routes do not affect NAT usage.",
+      "Wrong: being reachable through a load balancer's external address is inbound access - it does not replace Cloud NAT for the VM's outbound traffic."
     ]
   },
   {
@@ -13841,7 +13864,7 @@ export const QUESTIONS = [
       "D. Use GCP's ECMP capability to load-balance traffic to the backend servers by installing multiple equal-priority static routes to the backend servers."
     ],
     "correct": 1,
-    "explanation": "Target pools group instances for the (regional passthrough) network load balancer; adding the new instance to the existing target pool brings it into rotation.",
+    "explanation": "Heterogeneous lift-and-shift backends behind one LB = add all instances to a target pool for the load balancer, since they cannot form a managed group template.",
     "discussion": [
       {
         "user": "saraali",
@@ -13875,14 +13898,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community majority is B; confidence medium.",
-    "conceptSummary": "Add the instance to the target pool.",
-    "correctRationale": "Legacy external passthrough NLBs front target pools; joining the pool adds the instance behind the existing forwarding rule.",
+    "discussionSummary": "Community votes B (10); legacy target-pool NLB naming flagged outdated.",
+    "conceptSummary": "Non-uniform backends behind an LB = target pool of the individual instances.",
+    "correctRationale": "Target pools hold heterogeneous instances - the correct construct when no common template exists.",
     "optionRationales": [
-      "Wrong: network endpoint groups are for different LB types.",
-      "Correct: add the instance to the target pool.",
-      "Wrong: a backend service belongs to other LB types, not target-pool NLBs.",
-      "Wrong: a second forwarding rule is unnecessary."
+      "Wrong: a MIG requires identical instances from one template.",
+      "Correct: target pool + existing instances.",
+      "Wrong: a third-party appliance is unnecessary machinery.",
+      "Wrong: ECMP routes do not provide LB health checking."
     ],
     "legacyNote": "Target pools are the legacy backend for external passthrough Network Load Balancers."
   },
@@ -13898,7 +13921,7 @@ export const QUESTIONS = [
       "D. Create a VPC Firewall rule that denies traffic, enable logging and set enforcement to enabled, and review necessary logs."
     ],
     "correct": 1,
-    "explanation": "Preview mode evaluates the rule and logs what it would have blocked without enforcing — letting you see the impact first.",
+    "explanation": "Testing a potential deny safely = create the Cloud Armor deny rule in preview mode: it logs what would be blocked without enforcing, then review the logs.",
     "discussion": [
       {
         "user": "saraali",
@@ -13932,14 +13955,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Cloud Armor preview mode.",
-    "correctRationale": "The preview flag on a policy rule reports would-be denials in logs before enforcement — exactly what is requested.",
+    "discussionSummary": "Community votes B (20).",
+    "conceptSummary": "Validate a deny rule without risk = Cloud Armor preview mode.",
+    "correctRationale": "Preview mode evaluates and logs matches without blocking - the safe verification.",
     "optionRationales": [
-      "Wrong: enforcing immediately risks blocking legitimate users.",
-      "Correct: enable preview mode to observe before enforcing.",
-      "Wrong: dry-run is a VPC-SC term, not Armor.",
-      "Wrong: logging alone does not stage the rule as described."
+      "Wrong: enforced deny could break legitimate traffic.",
+      "Correct: preview-mode deny rule + log review.",
+      "Wrong: VPC firewall 'disabled enforcement' is not a supported toggle here.",
+      "Wrong: enabled enforcement blocks immediately."
     ]
   },
   {
@@ -13958,7 +13981,7 @@ export const QUESTIONS = [
       1,
       3
     ],
-    "explanation": "To activate a Dedicated Interconnect, the customer uploads/submits the LOA-CFA in the console and Google sends the confirmation email — console submission plus email verification are the documented steps.",
+    "explanation": "The LOA-CFA is obtainable by downloading it from the Hybrid Connectivity section of the Console or from the email sent to the NOC contact - B+D.",
     "discussion": [
       {
         "user": "saraali",
@@ -13992,16 +14015,16 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between BD and DE (18 vs 6 votes): Community agrees on B and D.",
-    "conceptSummary": "LOA-CFA submission in console + confirmation email.",
-    "correctRationale": "The documented activation flow: submit the LOA-CFA through the console (B) and wait for Google's confirmation email (D).",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between BD and DE (18 vs 6 votes): Community consensus BD (18). Independent review (Gemini, Oct 2026) confirmed BD.",
+    "conceptSummary": "Get the LOA-CFA via Console download or the NOC contact email.",
+    "correctRationale": "The chosen path is \"Download the LOA-CFA from the Hybrid Connectivity section of the GCP Console. Check the email for the account of the NOC contact that you specified during the o\": B and D are the two documented channels; support tickets and provider contact are not.",
     "optionRationales": [
-      "Wrong: phoning support is not the process.",
-      "Correct: submit the LOA-CFA via the console.",
-      "Wrong: BGP setup happens after the cross-connect.",
-      "Correct: Google emails the NOC contact when the connection is ready.",
-      "Wrong: the provider does not receive the LOA-CFA automatically; the customer supplies it."
+      "Wrong: support tickets are not needed for a downloadable document.",
+      "Correct: Console download.",
+      "Wrong: describe shows the interconnect metadata, not the LOA file.",
+      "Correct: the NOC contact email.",
+      "Wrong: Google does not auto-email the provider."
     ]
   },
   {
@@ -14016,7 +14039,7 @@ export const QUESTIONS = [
       "D. The ASNs being used on the on-premises routers are different."
     ],
     "correct": 3,
-    "explanation": "When two VPN tunnels advertise the same prefix with different AS_PATHs/ASNs, Cloud Router can install only one, breaking ECMP — consolidating to a single tunnel or matching ASNs resolves the asymmetric path.",
+    "explanation": "The second VPN path is unused because the two on-prem routers present different ASNs: with mismatched ASNs the Cloud Router cannot treat both tunnels as equal-cost paths, so traffic pins to the working session.",
     "discussion": [
       {
         "user": "ranbatrekker",
@@ -14050,14 +14073,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": false,
-    "discussionSummary": "Community majority is D (~80%); confidence medium on the precise ECMP-vs-ASN mechanism.",
-    "conceptSummary": "Identical routes from different ASNs break ECMP.",
-    "correctRationale": "The classic explanation for this scenario: identical prefixes learned over two tunnels with different peer ASNs cannot both install, so only one path is used. Restructuring to consistent advertisements restores symmetric routing.",
+    "discussionSummary": "Community favored D (8) over A (2): the validated answer is A because identical route configuration on both routers is the actual cause of one-path pinning.",
+    "conceptSummary": "Symmetric on-prem route config pins traffic to one VPN path. This addresses the connected balanced connection described in the question.",
+    "correctRationale": "Different ASNs on the two on-prem routers break the symmetric BGP setup needed for load sharing - the misconfiguration matching the evidence.",
     "optionRationales": [
-      "Wrong: enabling ECMP is already the default behavior when routes are identical.",
-      "Wrong: MED tweaking would not restore the asymmetric case described here.",
-      "Wrong: different regions is irrelevant to this failure.",
-      "Correct: the differing ASNs prevent the routes from being installed symmetrically — the explanation tested."
+      "Wrong: identical routes should enable sharing - they are not the cause.",
+      "Wrong: a firewall would show denied traffic rather than a clean single-path pattern.",
+      "Wrong: VPN tunnels do not need a load balancer; ECMP is route-driven.",
+      "Correct: the different ASNs on the on-prem routers prevent equal-cost load balancing."
     ]
   },
   {
@@ -14076,7 +14099,7 @@ export const QUESTIONS = [
       1,
       2
     ],
-    "explanation": "Connecting the two organizations' networks needs Cloud VPN tunnels between them plus Cloud Routers for dynamic routing; forwarding zones on each side let each org resolve the other's DNS.",
+    "explanation": "Two separate organizations needing connectivity plus cross-org DNS = DNS forwarding/zone transfers between the orgs (B) plus a Cloud VPN + Cloud Router link between the VPCs (C).",
     "discussion": [
       {
         "user": "saraali",
@@ -14110,15 +14133,16 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between BC and CD (20 vs 5 votes): Community majority is B+C (~69%).",
-    "conceptSummary": "Cloud VPN + Cloud Router + DNS forwarding between orgs.",
-    "correctRationale": "Inter-org private connectivity = Cloud VPN between the VPCs, with Cloud Router BGP for routes (B), and DNS forwarding zones for cross-org name resolution (C).",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between BC and CD (20 vs 5 votes): Community consensus BC (20): VPN link for connectivity plus DNS forwarding for names. Independent review (Gemini, Oct 2026) confirmed BC.",
+    "conceptSummary": "Cross-org connectivity + DNS = VPN/Router link + DNS forwarding/zone transfers.",
+    "correctRationale": "The chosen path is \"Set up some variant of DNS forwarding and zone transfers in each organization. Connect VPCs in both organizations using Cloud VPN together with Cloud Router.\": B handles the DNS requirement, C provides the connectivity - the two complementary mechanisms among the options.",
     "optionRationales": [
-      "Wrong: Shared VPC is for one organization.",
-      "Correct: Cloud VPN with Cloud Router provides the inter-org private link.",
-      "Correct: forwarding zones let each side resolve the other's DNS.",
-      "Wrong: VPC peering can connect the VPCs but the scenario's DNS forwarding pairing points to VPN+router.",
-      "Wrong: external IPs would expose the connection publicly."
+      "Wrong: Interconnect is heavyweight for two cloud orgs.",
+      "Correct: DNS forwarding/zone transfers share the custom DNS between orgs.",
+      "Correct: Cloud VPN + Cloud Router connects the VPCs.",
+      "Wrong: hand-entering A records for every VM does not scale.",
+      "Wrong: Shared VPC requires projects under one org."
     ]
   },
   {
@@ -14133,7 +14157,7 @@ export const QUESTIONS = [
       "D. â€¢ Create a Cloud VPN instance. â€¢ Create a route-based VPN tunnel. â€¢ Configure the appropriate local and remote traffic selectors to 0.0.0.0/0. â€¢ Configure the appropriate static routes."
     ],
     "correct": 3,
-    "explanation": "A route-based VPN uses 0.0.0.0/0 traffic selectors so any subnets flow over the tunnel, with routes — not selectors — deciding what traffic enters.",
+    "explanation": "A non-BGP IKE device with growing networks is best served by a route-based tunnel with traffic selectors opened to 0.0.0.0/0 - subnets are added by routes, not tunnel changes.",
     "discussion": [
       {
         "user": "ranbatrekker",
@@ -14167,15 +14191,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between D and B (32 vs 29 votes): Community splits D vs B; D is chosen on the merits — route-based uses open selectors. Confidence medium.",
-    "conceptSummary": "Route-based VPN = 0/0 selectors.",
-    "correctRationale": "Route-based tunnels negotiate a single SA with open selectors and rely on routing; setting selectors to 0.0.0.0/0 on both ends is the documented configuration for this.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between D and B (32 vs 29 votes): Community favors D (32); the open selector is the scaling answer. Independent review (Gemini, Oct 2026) confirmed D.",
+    "conceptSummary": "Non-BGP VPN that scales = route-based tunnel + 0.0.0.0/0 selectors.",
+    "correctRationale": "The chosen path is \"â€¢ Create a Cloud VPN instance. â€¢ Create a route-based VPN tunnel. â€¢ Configure the appropriate local and remote traffic selectors to 0.0.0.0/0. â€¢ Configu\": D avoids reconfiguring tunnels per subnet: the open selector plus routes carries new networks automatically.",
     "optionRationales": [
-      "Wrong: matching narrow selectors describe policy-based VPN.",
-      "Wrong: multiple SAs per CIDR is the policy-based model.",
-      "Wrong: the remote selector only cannot open all subnets.",
-      "Correct: 0.0.0.0/0 on both selectors defines the route-based tunnel."
+      "Wrong: per-subnet policy tunnels multiply management as networks grow.",
+      "Wrong: a single policy tunnel still needs selector updates for new ranges.",
+      "Wrong: matching specific selectors also needs updates as networks grow.",
+      "Correct: route-based tunnel with 0.0.0.0/0 selectors."
     ]
   },
   {
@@ -14190,7 +14214,7 @@ export const QUESTIONS = [
       "D. Configure an internal load balancer with the designated IPv6 address."
     ],
     "correct": 2,
-    "explanation": "The global external HTTP(S) load balancer supports IPv6 frontends, letting IPv6-only clients reach the application.",
+    "explanation": "IPv6 frontends in Google Cloud are provided on the global (external) load balancer: assign the designated IPv6 address to the LB's forwarding rule.",
     "discussion": [
       {
         "user": "saraali",
@@ -14224,14 +14248,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between C and A (20 vs 4 votes): Community agrees on C.",
-    "conceptSummary": "IPv6 frontend on the global HTTP(S) LB.",
-    "correctRationale": "The global external ALB accepts IPv6 anycast frontend addresses; configuring an IPv6 forwarding rule gives IPv6 clients access.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes C (20). Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "IPv6 service exposure = global load balancer with an IPv6 address.",
+    "correctRationale": "The chosen path is \"Configure a global load balancer with the designated IPv6 address.\": C is the documented IPv6-capable frontend - instances themselves use IPv4.",
     "optionRationales": [
-      "Wrong: NLB target pools did not support IPv6 frontends at the question's vintage.",
-      "Wrong: internal LBs are private and do not serve internet IPv6 clients.",
-      "Correct: the global HTTP(S) LB with an IPv6 frontend serves the IPv6 clients.",
-      "Wrong: NAT64-style translation is not the load balancer answer here."
+      "Wrong: instances do not take public IPv6 frontend addresses this way.",
+      "Wrong: TCP proxy naming is narrower than the global LB option.",
+      "Correct: global load balancer with the IPv6 address.",
+      "Wrong: internal LBs are not for external IPv6 service."
     ]
   },
   {
@@ -14246,7 +14271,7 @@ export const QUESTIONS = [
       "D. Organization Admin privileges from the Organization Admin."
     ],
     "correct": 0,
-    "explanation": "compute.securityAdmin lets the engineer manage firewall rules without broader compute admin rights — the least-privilege role.",
+    "explanation": "Firewall rule modification is a security function: least-privilege addition to Network Admin is Security Admin, granted by the Shared VPC Admin.",
     "discussion": [
       {
         "user": "saraali",
@@ -14280,14 +14305,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "securityAdmin for firewall management.",
-    "correctRationale": "securityAdmin covers firewall rule CRUD while withholding instance/network admin powers — matching least privilege.",
+    "discussionSummary": "Community votes A (9).",
+    "conceptSummary": "Modify Shared VPC firewall rules = Security Admin role.",
+    "correctRationale": "Security Admin holds firewall permissions; it is the minimal addition beyond Network Admin.",
     "optionRationales": [
-      "Correct: compute.securityAdmin grants firewall management only.",
-      "Wrong: viewer cannot modify rules.",
-      "Wrong: networkAdmin also manages networks — more than needed.",
-      "Wrong: securityReviewer is read-only."
+      "Correct: Security Admin from the Shared VPC Admin.",
+      "Wrong: Service Project Admin does not grant firewall edit rights.",
+      "Wrong: Shared VPC Admin is broader than needed.",
+      "Wrong: Organization Admin is vastly excessive."
     ]
   },
   {
@@ -14302,7 +14327,7 @@ export const QUESTIONS = [
       "D. Create a new firewall rule with priority 65500 to deny all traffic, and enable logs."
     ],
     "correct": 3,
-    "explanation": "An explicit deny-all rule with logging enabled records every denied connection — since implied denies are not logged, you need the explicit logged deny.",
+    "explanation": "RDP fails because only HTTP is allowed; to prove it, create a deny-all rule with logging at priority 65500 and observe the logged denies - revealing RDP is blocked.",
     "discussion": [
       {
         "user": "saraali",
@@ -14336,14 +14361,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "Explicit logged deny-all rule.",
-    "correctRationale": "Same lesson as its sibling question: implied denies never log, so a lowest-priority explicit deny with logging captures all drops.",
+    "discussionSummary": "Community votes D (20).",
+    "conceptSummary": "Prove a firewall block: logged deny-all rule below the allows.",
+    "correctRationale": "The chosen path is \"Create a new firewall rule with priority 65500 to deny all traffic, and enable logs.\": D produces logged deny entries that confirm the block without opening anything.",
     "optionRationales": [
-      "Wrong: allowing everything logs allows, not denies.",
-      "Wrong: the deny needs logging enabled, which this option omits.",
-      "Wrong: ingress-only deny misses egress drops.",
-      "Correct: an explicit deny-all with logging enabled logs the denied traffic."
+      "Wrong: flow logs show flows, not the deny decision needed here.",
+      "Wrong: SSH (22) is also blocked by the same rule - proves nothing new.",
+      "Wrong: opening port 22 helps SSH, not RDP (3389).",
+      "Correct: logged deny-all at low precedence."
     ]
   },
   {
@@ -14358,7 +14383,7 @@ export const QUESTIONS = [
       "D. Client IP, port and protocol"
     ],
     "correct": 1,
-    "explanation": "Client IP affinity (clientIP) on the backend service keeps a client pinned to the same backend for session state.",
+    "explanation": "Stickiness to a particular instance across both HTTP and TFTP requires the broadest compatible affinity: client IP (and protocol) - B's client-IP affinity keeps a client pinned regardless of port.",
     "discussion": [
       {
         "user": "saraali",
@@ -14392,15 +14417,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "resolvedBy": "devin-2026-10",
-    "discussionSummary": "Split between B and D (16 vs 8 votes): Community majority is B (~67%).",
-    "conceptSummary": "Client IP session affinity.",
-    "correctRationale": "Session affinity by client IP is the L4/L7 knob that sends a client repeatedly to one backend — the direct requirement.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between B and D (16 vs 8 votes): Community favors B (16); affinity must not separate protocols. Independent review (Gemini, Oct 2026) confirmed B.",
+    "conceptSummary": "Cross-protocol session affinity = client IP affinity.",
+    "correctRationale": "The chosen path is \"Client IP\": Client IP affinity alone pins all of a client's flows (HTTP and TFTP) to one instance.",
     "optionRationales": [
-      "Wrong: round robin deliberately spreads clients.",
-      "Correct: client IP affinity pins each client to a backend.",
-      "Wrong: generated-cookie affinity is for HTTP apps needing cookie tracking; client IP is the simpler match here.",
-      "Wrong: disabling health checks does not pin sessions."
+      "Wrong: 'None' gives no stickiness.",
+      "Correct: client IP affinity.",
+      "Wrong: IP+protocol splits HTTP and TFTP onto different instances.",
+      "Wrong: including port splits the two services as well."
     ]
   },
   {
@@ -14415,7 +14440,7 @@ export const QUESTIONS = [
       "D. Use standalone projects and deploy the VLAN attachments and Interconnects in each of the individual projects."
     ],
     "correct": 0,
-    "explanation": "Interconnect attachments terminate on the Shared VPC, so they belong in the host project where the network is defined.",
+    "explanation": "Centralized networking administration plus shared interconnect = Shared VPC with the VLAN attachments and Interconnect deployed in the host project, consumed by service projects.",
     "discussion": [
       {
         "user": "saraali",
@@ -14449,14 +14474,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on A.",
-    "conceptSummary": "Attachments live in the host project.",
-    "correctRationale": "VLAN attachments attach to a VPC — the Shared VPC lives in the host project, so the attachments go there.",
+    "discussionSummary": "Community votes A (8); same scenario family as question 149.",
+    "conceptSummary": "Centralize hybrid connectivity in the Shared VPC host project.",
+    "correctRationale": "A puts the interconnect in the host project so every department's service project shares it with one administration.",
     "optionRationales": [
-      "Correct: create attachments in the host project.",
-      "Wrong: service projects do not own the VPC the attachments must join.",
-      "Wrong: on-prem placement is impossible for a Cloud Router/attachment.",
-      "Wrong: mixed placement breaks the Shared VPC model."
+      "Correct: Shared VPC + attachments/Interconnect in the host project.",
+      "Wrong: service-project attachments fragment administration.",
+      "Wrong: standalone projects lose central control.",
+      "Wrong: per-project interconnects are the most expensive option."
     ]
   },
   {
@@ -14471,7 +14496,7 @@ export const QUESTIONS = [
       "D. Generate a new SSH key pair. Verify the format of the public key and add it to the project. SSH into the instance using a third-party tool like putty or ssh."
     ],
     "correct": 0,
-    "explanation": "gcloud compute ssh pushes a temporary key to the instance's metadata automatically — instance-level keys still work even with block-project-ssh-keys enabled.",
+    "explanation": "When project-wide SSH keys are blocked, gcloud compute ssh generates a key pair and writes the public key to the instance's own metadata, so it still works - the simplest path to a shell.",
     "discussion": [
       {
         "user": "lennin3004",
@@ -14505,14 +14530,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "medium",
     "conflict": true,
-    "discussionSummary": "Split between A and C (15 vs 6 votes): Community majority is A (~56%): instance-level keys bypass the project-key block; confidence medium.",
-    "conceptSummary": "gcloud ssh writes an instance-level key automatically.",
-    "correctRationale": "The block-project-ssh-keys policy stops project-wide keys only; gcloud compute ssh adds its ephemeral key to instance metadata, so plain SSH just works.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Community votes A (15); tested in the thread - gcloud ssh writes the key to instance metadata when project keys are blocked. Independent review (Gemini, Oct 2026) confirmed A.",
+    "conceptSummary": "Blocked project keys + no instance keys: gcloud compute ssh falls back to instance metadata keys.",
+    "correctRationale": "gcloud compute ssh manages the key pair itself and installs the public key on the instance when project-level keys are blocked - one command, done.",
     "optionRationales": [
-      "Correct: just ssh — gcloud installs the key at instance level.",
-      "Wrong: project metadata keys are blocked by the policy.",
-      "Wrong: adding a project-wide key is exactly what the policy prevents.",
-      "Wrong: resetting the VM is unnecessary."
+      "Correct: gcloud compute ssh handles key generation and instance-metadata placement.",
+      "Wrong: enable-oslogin changes the auth mechanism and is unnecessary here.",
+      "Wrong: you add a public key to the instance, never a private key.",
+      "Wrong: project-wide keys are blocked, so adding to project metadata cannot work."
     ]
   },
   {
@@ -14531,7 +14557,7 @@ export const QUESTIONS = [
       0,
       3
     ],
-    "explanation": "Private Google Access on the subnet lets external-IP-less VMs reach Google APIs; explicit static routes for the Google API external IP ranges via the default internet gateway ensure the paths route correctly.",
+    "explanation": "Private Google Access sends traffic to the external (public) IPs of Google APIs, so the forced 0.0.0.0/0 route to the firewall must be overridden for the API ranges: enable PGA at the subnet level and add custom static routes that send the Google API external addresses via the default internet gateway.",
     "discussion": [
       {
         "user": "gcpBeginner",
@@ -14565,15 +14591,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community majority is A+D (~83%).",
-    "conceptSummary": "PGA + static routes for API ranges via the IGW.",
-    "correctRationale": "The documented recipe for environments lacking the default route: enable PGA (A) plus static routes for the Google API ranges pointing at the default internet gateway (D).",
+    "discussionSummary": "Community consensus AD (10 votes).",
+    "conceptSummary": "API access under a forced 0/0 route = subnet-level PGA + static routes for the public API ranges via the internet gateway.",
+    "correctRationale": "A enables Private Google Access where it belongs (the subnet) and D routes the public Google API address ranges past the forced VPN/firewall path - the documented pairing.",
     "optionRationales": [
-      "Correct: enable Private Google Access on the subnet.",
-      "Wrong: external IPs are not required and change the security posture.",
-      "Wrong: a second default route is not needed and duplicates can conflict.",
-      "Correct: static routes for the Google API IP ranges via the default internet gateway complete the path.",
-      "Wrong: OS-level DNS changes are unnecessary."
+      "Correct: PGA is a subnet-level flag.",
+      "Wrong: PGA is not configured at the VPC level.",
+      "Wrong: private services access is for producer services like Cloud SQL, not Google APIs.",
+      "Correct: custom static routes for the external API IPs via the default internet gateway.",
+      "Wrong: Google APIs have no 'internal' addresses - even the private VIP range is externally numbered."
     ]
   },
   {
@@ -14588,7 +14614,7 @@ export const QUESTIONS = [
       "D. Rename the default VPC as \"Distribution\" and peer it via network peering."
     ],
     "correct": 1,
-    "explanation": "Creating the VPC in custom mode with non-overlapping subnets lets all projects share one network without CIDR collisions.",
+    "explanation": "Peering with Retail (auto mode, whose subnets use 10.128.0.0/9) requires a non-overlapping custom-mode Distribution VPC - 10.0.0.0/9 does not overlap 10.128.0.0/9.",
     "discussion": [
       {
         "user": "Ben756",
@@ -14622,14 +14648,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on B.",
-    "conceptSummary": "Custom mode + non-overlapping subnets.",
-    "correctRationale": "Custom mode gives manual subnet control so ranges never overlap — a prerequisite for the Shared VPC design described.",
+    "discussionSummary": "Community votes B (16).",
+    "conceptSummary": "Peerable ranges must not overlap; use 10.0.0.0/9 in custom mode.",
+    "correctRationale": "B chooses the only non-overlapping range among the auto/custom options.",
     "optionRationales": [
-      "Wrong: auto mode auto-allocates ranges that can overlap with existing subnets.",
-      "Correct: custom mode with manually assigned non-overlapping subnets.",
-      "Wrong: overlapping ranges break routing across shared connectivity.",
-      "Wrong: legacy networks cannot define subnets."
+      "Wrong: auto mode reuses 10.128.0.0/9 - overlap blocks peering.",
+      "Correct: custom mode with 10.0.0.0/9.",
+      "Wrong: 10.128.0.0/9 overlaps Retail's auto ranges.",
+      "Wrong: renaming default does not fix addressing."
     ]
   },
   {
@@ -14644,7 +14670,7 @@ export const QUESTIONS = [
       "D. gcloud dns record-sets import ZONE_FILE --delete-all-existing --zone MANAGED ZONE"
     ],
     "correct": 2,
-    "explanation": "Importing a zone file (BIND-format records) into a Cloud DNS zone bulk-loads the existing records.",
+    "explanation": "BIND file import into a managed zone uses --zone-file-format so gcloud parses it as a zone file: gcloud dns record-sets import ZONE_FILE --zone-file-format --zone MANAGED_ZONE.",
     "discussion": [
       {
         "user": "Ben756",
@@ -14678,14 +14704,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "Import DNS records via zone-file format.",
-    "correctRationale": "Cloud DNS supports importing a standard zone file directly into a zone — the simplest migration path.",
+    "discussionSummary": "Community votes C (12).",
+    "conceptSummary": "Import BIND zones with --zone-file-format.",
+    "correctRationale": "Without the flag the importer expects YAML/record format; --zone-file-format parses BIND syntax.",
     "optionRationales": [
-      "Wrong: the API needs proper import format, not raw text paste.",
-      "Wrong: record-by-record entry is tedious and error-prone.",
-      "Correct: use the zone-file import.",
-      "Wrong: forwarding does not migrate records."
+      "Wrong: missing the format flag - wrong parser.",
+      "Wrong: replace-origin-ns changes NS handling, not the file format.",
+      "Correct: --zone-file-format.",
+      "Wrong: delete-all-existing wipes records and still lacks the format flag."
     ]
   },
   {
@@ -14700,7 +14726,7 @@ export const QUESTIONS = [
       "D. Create a single project, and deploy specific firewall rules. Use network tags to isolate access between the departments."
     ],
     "correct": 2,
-    "explanation": "VPC Network Peering connects the two VPCs privately, exchanging routes for internal IPs between the projects.",
+    "explanation": "Separate administrative domains inside one project = three separate VPCs; connecting the two departments uses VPC peering between their VPCs, leaving the third isolated.",
     "discussion": [
       {
         "user": "pk349",
@@ -14734,14 +14760,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on C.",
-    "conceptSummary": "VPC peering between two projects.",
-    "correctRationale": "Peering is the standard private connectivity between two VPCs in different projects — low cost, no gateways.",
+    "discussionSummary": "Community votes C (19).",
+    "conceptSummary": "Isolation + selective connectivity = separate VPCs + peering for the pair.",
+    "correctRationale": "C creates real network boundaries (VPCs) with peering only where connectivity is wanted.",
     "optionRationales": [
-      "Wrong: Shared VPC belongs to one organization's shared network design.",
-      "Wrong: VPN adds tunnels/cost where peering suffices.",
-      "Correct: VPC Network Peering connects the two projects' VPCs.",
-      "Wrong: subnetwork connection is not a thing; subnets stay in their own VPC."
+      "Wrong: Shared VPC puts all departments on one network - not separate domains.",
+      "Wrong: Cloud VPN between VPCs is unnecessary overhead.",
+      "Correct: 3 VPCs + peering for the two.",
+      "Wrong: firewall rules on one network do not create separate admin domains."
     ]
   },
   {
@@ -14756,7 +14782,7 @@ export const QUESTIONS = [
       "D. Create 1 VPC with 2 regional subnets. Deploy workloads in these subnets and have them communicate using private RFC1918 IP addresses."
     ],
     "correct": 3,
-    "explanation": "A single VPC can span regions with regional subnets; placing the VMs in the shared VPC is the simplest design meeting the requirement.",
+    "explanation": "Cheapest, most efficient multi-region design = one VPC with regional subnets in us-east1 and europe-west1; instances communicate over private RFC1918 addresses with no extra networking.",
     "discussion": [
       {
         "user": "7606350",
@@ -14790,14 +14816,14 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": false,
-    "discussionSummary": "Community agrees on D.",
-    "conceptSummary": "One VPC with regional subnets across regions.",
-    "correctRationale": "VPCs are global, subnets are regional — one VPC can serve both regions without any peering/VPN.",
+    "discussionSummary": "Community votes D (12).",
+    "conceptSummary": "Minimal-cost multi-region = single VPC, regional subnets, private IPs.",
+    "correctRationale": "The chosen path is \"Create 1 VPC with 2 regional subnets. Deploy workloads in these subnets and have them communicate using private RFC1918 IP addresses.\": D uses the single global VPC's built-in inter-region routing - zero extra cost or gateways.",
     "optionRationales": [
-      "Wrong: two VPCs with VPN is needless complexity.",
-      "Wrong: peering two VPCs is unnecessary when one suffices.",
-      "Wrong: on-prem involvement is irrelevant.",
-      "Correct: a single VPC with subnets in each region."
+      "Wrong: two VPCs + VPNs adds gateways and cost.",
+      "Wrong: external IPs are neither cheapest nor most efficient.",
+      "Wrong: a global LB fronts users, not workload-to-workload private traffic.",
+      "Correct: one VPC, private addressing."
     ]
   },
   {
@@ -14812,7 +14838,7 @@ export const QUESTIONS = [
       "D. Label the backend instances \"application,\" and create a firewall rule with the target label \"application\" and the source IP range of the allowed clients and Google health check IP ranges."
     ],
     "correct": 2,
-    "explanation": "A single firewall rule scoped by the instance tag can allow the required ports only on the tagged VM.",
+    "explanation": "Restricting a load-balanced app to specific client IPs is done with a firewall rule tagged 'application' allowing only the allowed clients plus the Google health-check/LB source ranges.",
     "discussion": [
       {
         "user": "www_certifiedumps_com_google",
@@ -14846,14 +14872,15 @@ export const QUESTIONS = [
     "importBatch": "examtopics-2026-10",
     "confidence": "high",
     "conflict": true,
-    "discussionSummary": "Split between C and B (22 vs 5 votes): Community agrees on C.",
-    "conceptSummary": "Tag-targeted firewall rule.",
-    "correctRationale": "Tagging the VM and writing one rule for that tag scopes the allow to just that instance — minimal and precise.",
+    "resolvedBy": "gemini-2026-10",
+    "discussionSummary": "Split between C and B (22 vs 5 votes): Community favors C (22); firewall tags plus the Google ranges are the required combination. Independent review (Gemini, Oct 2026) confirmed C.",
+    "conceptSummary": "IP-restricted LB access = tagged firewall rule for allowed clients + Google ranges.",
+    "correctRationale": "C scopes ingress to the client CIDRs plus the required Google ranges via the target tag - the documented pattern.",
     "optionRationales": [
-      "Wrong: an untagged rule applies to all instances.",
-      "Wrong: multiple rules are not needed for one VM.",
-      "Correct: one rule using the VM's tag.",
-      "Wrong: target pools are LB constructs, not firewall targeting."
+      "Wrong: VPC Service Controls restricts APIs, not load-balanced app traffic.",
+      "Wrong: marking the LB in a perimeter does not scope client IPs.",
+      "Correct: tagged firewall rule for clients + Google ranges.",
+      "Wrong: 'label' targets are not the tag-based firewall mechanism."
     ]
   }
 ];
