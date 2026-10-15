@@ -303,3 +303,75 @@ number.
 - Or wait until someone comments on it: the thread then appears in the discussions forum.
   Discussion pages only load with the full slug:
   `https://www.examtopics.com/discussions/google/view/<id>-exam-professional-cloud-developer-topic-1-question-<n>-discussion/`.
+
+## Professional Cloud Database Engineer (`gcp-pcde`)
+
+Source: [ExamTopics](https://www.examtopics.com/exams/google/professional-cloud-database-engineer/view/),
+197 questions (last updated there on Oct 1, 2026). Bank dumped on 2026-10-14: **187 of 197
+loaded**: 180 confirmed (1–181 except 180, every number confirmed by its discussion thread) plus 7
+unconfirmed (182–188).
+
+### Not in the bank (10)
+
+180, 189, 190, 191, 192, 193, 194, 195, 196, 197
+
+No text for them was found on ExamTopics or any other public source:
+
+- They have no discussion thread. Per-number searches
+  (`Examtopics Professional Cloud Database Engineer question <n> Discussions` and variations) only
+  return their neighbours.
+- Probing thread ids with the full slug (about 2,570 requests, Oct 14–15, 2026) found nothing:
+  for 180, 366170–366220 and 366425–366453; for 182–197, 366185–366197, 366425–366433, and
+  every 4th id in 430301–430429 and 430454–430885.
+- The ExamTopics list pages that hold them in order (`view/18/` to `view/20/`) are login-gated.
+- A harvest of 17 mirror sites (342 items) left only 7 texts that match none of 1–181; they are
+  loaded as 182–188 (below). So the 10 numbers above have no text anywhere public, and one of
+  182–188 may really be 180.
+
+### Loaded, but the number is unconfirmed (7)
+
+These carry `sourceNumberConfirmed: false` and show an `Unconfirmed #N` badge in the app.
+
+| Number | Text found on           | Topic                                                    |
+| ------ | ----------------------- | -------------------------------------------------------- |
+| 182    | utt                     | AlloyDB backups for RTO 4 h / RPO 6 h / 7-day retention  |
+| 183    | utt (3 options only)    | Lowest-latency connection to Memorystore for Redis       |
+| 184    | examsrev, passleadervce | "HelioBank": Cloud SQL with regional CMEK + required TLS |
+| 185    | vceeng                  | "mcnz.com": rightsizing an oversized Cloud SQL instance  |
+| 186    | vceeng                  | Global Bigtable: clusters per continent + routing        |
+| 187    | vceeng (OCR-cleaned)    | Bigtable IoT hotspotting: salting + autoscaling          |
+| 188    | vceeng                  | Firestore cost: trim unused indexes                      |
+
+The mirrors list them in their own scrambled order next to old questions (17, 35, 42, 79, 121), so
+the order gives no clue to the real number. They were slotted into the gap in the order the
+mirrors list them and are assumed to be among the newest (182–197). 184 and 185 use made-up company
+names (HelioBank, mcnz.com) typical of third-party practice banks, so they may not be ExamTopics
+questions at all.
+
+### Caveats
+
+- Thread ids (pages only load with the full slug
+  `https://www.examtopics.com/discussions/google/view/<id>-exam-professional-cloud-database-engineer-topic-1-question-<n>-discussion/`):
+  1–120 sit in 92020–92908; 121–132 in 103698–107785; 133–150 in 303577–304231;
+  151–173 in 308760–308782; 174–181 in 366193–366444 (174 = 366194, 175 = 366435,
+  176 = 366195, 177 = 366444, 178 = 366196, 179 = 366197, 181 = 366193). 174, 176 and 179 never
+  show up in the forum list; they were found by probing ids next to the rest of that batch.
+- 9 confirmed questions have no comments: 163, 169, 170, 174, 175, 176, 177, 179 and 181. The 7
+  unconfirmed ones have no discussion either.
+- ExamTopics' own "Suggested Answer" is login-gated past page 1; it was compared for 1–10 and
+  matched the bank every time. All other answers were decided against current docs, using the
+  weighted comment vote as a signal.
+- 25 conflicts with the community vote (or the mirror answer). An independent review by Gemini
+  of the 25 conflicts plus the 5 other unconfirmed questions agreed on 22 and led to changing 147
+  (C → B, `resolvedBy: gemini-2026-10`); 6, 24, 44, 53, 55, 92 and 96 were kept after the same
+  review. 18, 21, 22, 53, 133, 153, 186 and 188 go against or break a tie in the community or
+  mirror vote (`resolvedBy: devin-2026-10`).
+- 6 questions carry a `legacyNote` for a product rename or change since they were written: 45, 78,
+  83, 98, 103 and 135.
+
+### How to close the gap
+
+- A logged-in ExamTopics account that can open `view/18/` to `view/20/`: match 182–188 by text,
+  fix their numbers (then drop `sourceNumberConfirmed`/`sourceNumberNote`), and add whatever is
+  left of 180 and 182–197 with the same per-question review.
+- Or wait until someone comments on them: the threads then appear in the discussions forum.
