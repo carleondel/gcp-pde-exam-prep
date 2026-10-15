@@ -2500,7 +2500,7 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": true,
     "resolvedBy": "gemini-2026-10",
-    "discussionSummary": "Split between A and B (13 vs 8 votes): Split A (13) vs B (8) vs C (2): full packet capture via mirroring is the strongest evidence source for sporadic loss. Independent review (Gemini, Oct 2026) confirmed A.",
+    "discussionSummary": "Split between A and B (13 vs 8 votes): Split A (13) vs B (8) vs C (2): full packet capture via mirroring is the strongest evidence source for sporadic loss. A second Gemini review argued for B; rejected: VPC Flow Logs sample packets at the host even at SAMPLE_RATE 1.0, so intermittent low-volume traffic can be missed, whereas Packet Mirroring captures every packet leaving the NIC.",
     "conceptSummary": "Deep packet-loss troubleshooting = Packet Mirroring to a collector.",
     "correctRationale": "Packet Mirroring copies all VM traffic at the NIC level; for intermittent low-volume loss a full capture beats flow-log samples.",
     "optionRationales": [
@@ -3415,8 +3415,8 @@ export const QUESTIONS = [
       "C. Create an HA VPN gateway with two tunnels. Configure BGP on both tunnels with tunnel 0 configured with a base routing priority metric of 100 and tunnel 1 with a base routing priority metric of 100. Configure the on-premises router with the corresponding multi-exit discriminator (MED) value.",
       "D. Create an HA VPN gateway with four tunnels. Configure BGP on four tunnels with tunnel 0 configured with a base routing priority metric of 100, tunnel 1 with a base routing priority metric of 200, tunnel 2 with a base routing priority of 300, and tunnel 3 with a base routing priority of 400. Configure the on-premises router with the corresponding multi-exit discriminator (MED) value."
     ],
-    "correct": 2,
-    "explanation": "300,000 pps exceeds a single tunnel's throughput, so multiple tunnels are needed; one HA VPN gateway with two tunnels and equal BGP metrics lets ECMP spread traffic across both. Equal priorities give active/active load sharing.",
+    "correct": 1,
+    "explanation": "Each HA VPN tunnel caps at 3 Gbps and 250,000 PPS, so one gateway with two equal tunnels can carry the 4 Gbps/300k PPS load only while both tunnels are up - a single tunnel failure drops capacity below the requirement. Two gateways with four equal-priority tunnels keep at least three tunnels (9 Gbps) after any one failure.",
     "discussion": [
       {
         "user": "ulkerra",
@@ -3451,14 +3451,14 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": true,
     "resolvedBy": "gemini-2026-10",
-    "discussionSummary": "Split between C and B (11 vs 9 votes): Split C (11) vs B (9): equal-metrics tunnels on one gateway give the needed ECMP without a second gateway. Independent review (Gemini, Oct 2026) confirmed C.",
-    "conceptSummary": "Scale HA VPN throughput with multiple tunnels + equal BGP metrics for ECMP.",
-    "correctRationale": "C gives two tunnels on one HA VPN gateway with equal metrics - ECMP load-sharing that meets the throughput need with the simplest valid topology.",
+    "discussionSummary": "Community favored C (11) over B (9): the validated answer is B because the 250k-PPS/3-Gbps per-tunnel cap leaves no failure headroom with a single gateway pair. Changed to B after an independent Gemini review (Oct 2026).",
+    "conceptSummary": "Predictable 4 Gbps throughput: two HA VPN gateways, four ECMP tunnels, so one failure still leaves 3 x 3 Gbps.",
+    "correctRationale": "B's four equal-metric tunnels across two gateways spread traffic by ECMP and preserve predictable bandwidth even when one tunnel drops - the only option that survives a failure above 4 Gbps.",
     "optionRationales": [
-      "Wrong: priorities 100/200 make one tunnel preferred (active/passive), not shared throughput.",
-      "Wrong: two gateways with equal metrics adds a second gateway without need - one HA gateway supports multiple tunnels.",
-      "Correct: one HA VPN gateway, two tunnels, equal metrics 100/100 for ECMP.",
-      "Wrong: four tunnels with escalating metrics creates an active/passive ladder, not balanced throughput."
+      "Wrong: priorities 100/200 make it active/passive - one active tunnel caps at 3 Gbps.",
+      "Correct: two gateways, four tunnels at equal priority for ECMP plus failure headroom.",
+      "Wrong: one gateway with two equal tunnels loses half its capacity on a single tunnel failure.",
+      "Wrong: escalating priorities 100-300 are again an active/passive ladder with a 3 Gbps active tunnel."
     ]
   },
   {
@@ -5628,7 +5628,7 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": true,
     "resolvedBy": "gemini-2026-10",
-    "discussionSummary": "Split between D and B (19 vs 11 votes): Community favored D (19); validated - DNS peering does not merge the VPCs, and separate independent outbound forwarding is discouraged because DNS replies return on the querying VPC. Independent review (Gemini, Oct 2026) confirmed D.",
+    "discussionSummary": "Split between D and B (19 vs 11 votes): Community favored D (19); validated - DNS peering does not merge the VPCs, and separate independent outbound forwarding is discouraged because DNS replies return on the querying VPC. A second Gemini review argued for B; rejected: Cloud DNS best practices warn against outbound forwarding from multiple VPC networks because on-prem replies only reach the querying VPC (all query from 35.199.192.0/19); DNS peering is control-plane only and does not break isolation.",
     "conceptSummary": "Fully isolated VPCs to the same on-prem: separate links + separate private and forwarding DNS zones.",
     "correctRationale": "DNS peering from Department A to B plus an outbound forwarding zone in B lets both departments resolve on-prem names while the VPCs stay fully isolated - peering zones move control-plane DNS only, not traffic.",
     "optionRationales": [
@@ -7868,7 +7868,7 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": true,
     "resolvedBy": "gemini-2026-10",
-    "discussionSummary": "Split between A and B (21 vs 8 votes): Community favors A (21); zones do not cross peering, hence per-VPC binding. Independent review (Gemini, Oct 2026) confirmed A.",
+    "discussionSummary": "Split between A and B (21 vs 8 votes): Community favors A (21); zones do not cross peering, hence per-VPC binding. A second Gemini review argued for B; rejected: in the central transit hub design the spokes connect to the hub; the peering zone alone resolves names but without the hub VPC peering the spokes have no network path to the on-premises hosts.",
     "conceptSummary": "Forwarding zones are per-VPC; bind the on-prem domain zone to hub and spoke VPCs separately.",
     "correctRationale": "A creates the forwarding zone on the hub plus the additional zone(s) needed for the spoke VPCs - the documented hub-and-spoke pattern.",
     "optionRationales": [
@@ -8785,7 +8785,7 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": true,
     "resolvedBy": "gemini-2026-10",
-    "discussionSummary": "Community favored B (30) over D (22): the validated answer is D - both roles are documented requirements, and org scope covers the multi-folder span. Independent review (Gemini, Oct 2026) confirmed D.",
+    "discussionSummary": "Community favored B (30) over D (22): the validated answer is D - both roles are documented requirements, and org scope covers the multi-folder span. A second Gemini review argued for B; rejected: roles/compute.xpnAdmin lacks resourcemanager.projects.setIamPolicy (it stops at getIamPolicy), and the Shared VPC doc says Admins hold both Compute Shared VPC Admin and Project IAM Admin.",
     "conceptSummary": "Shared VPC admin needs xpnAdmin + projectIamAdmin at folder scope.",
     "correctRationale": "Shared VPC setup requires both the Compute Shared VPC Admin and Project IAM Admin roles, granted at the organization level so the engineer can manage host projects across all folders.",
     "optionRationales": [
@@ -9054,7 +9054,7 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": true,
     "resolvedBy": "gemini-2026-10",
-    "discussionSummary": "Split between A and B (29 vs 18 votes): Community favors A (29 vs 18 for B). Independent review (Gemini, Oct 2026) confirmed A.",
+    "discussionSummary": "Split between A and B (29 vs 18 votes): Community favors A (29 vs 18 for B). A second Gemini review argued for D; rejected: a server policy naming on-prem as the alternate DNS server sends all hub queries to on-prem, bypassing Cloud DNS private zones; no option spells out inbound forwarding.",
     "conceptSummary": "Hub-and-spoke DNS: private zone on the hub + DNS peering from spokes.",
     "correctRationale": "A wires both directions: hub-hosted zone forwarded on-prem and spoke peering into the hub VPC.",
     "optionRationales": [
@@ -12374,8 +12374,8 @@ export const QUESTIONS = [
       "C. Delete the system-generated subnet route and create a specific route to instance-B with a tag applied to instance-A.",
       "D. Move instance-B to another VPC and, using multi-NIC, connect instance-B's interface to instance-A's network. Configure the appropriate routes to force traffic through to instance-A."
     ],
-    "correct": 1,
-    "explanation": "Force instance-A's traffic through instance-B by creating a more-specific route than the subnet route, next hop instance-B, tagged so it applies only to instance-A.",
+    "correct": 3,
+    "explanation": "You cannot create a static route whose destination fits within an existing subnet route, and subnet routes cannot be deleted without deleting the subnet - so routing instance-A's subnet traffic through instance-B inside the same VPC is impossible. The working design is a multi-NIC appliance in another VPC bridging both networks.",
     "discussion": [
       {
         "user": "saraali",
@@ -12407,17 +12407,17 @@ export const QUESTIONS = [
     "sourceQuestionNumber": 44,
     "isRecent": false,
     "importBatch": "examtopics-2026-10",
-    "confidence": "medium",
+    "confidence": "high",
     "conflict": true,
     "resolvedBy": "gemini-2026-10",
-    "discussionSummary": "Split between B and D (12 vs 6 votes): Community favors B (12). Independent review (Gemini, Oct 2026) confirmed B.",
-    "conceptSummary": "Subnet-level traffic steering: tagged more-specific route via next-hop instance.",
-    "correctRationale": "B's tag scopes the override to instance-A; the more-specific route wins over the subnet route.",
+    "discussionSummary": "Community majority votes B (12/22). The validated answer is D - the routes API rejects any new static route that fits within an existing subnet route. Changed to D after an independent Gemini review (Oct 2026).",
+    "conceptSummary": "Subnet-level traffic steering can't beat a system subnet route - use a multi-NIC appliance across two VPCs.",
+    "correctRationale": "Google Cloud forbids new static routes that match or fit inside an existing subnet route's destination, and system subnet routes cannot be deleted - so the only viable design is the multi-NIC appliance spanning the two VPCs.",
     "optionRationales": [
-      "Wrong: no tag means the route hits every instance.",
-      "Correct: tagged, more-specific route via instance-B.",
-      "Wrong: deleting the subnet route breaks the subnet for everyone.",
-      "Wrong: multi-NIC cross-VPC is needless complexity."
+      "Wrong: a more specific static route whose destination falls inside the subnet route cannot be created, tagged or not.",
+      "Wrong: same impossibility - the tag does not change the route-existence rule.",
+      "Wrong: the system-generated subnet route cannot be deleted without deleting the subnet itself.",
+      "Correct: move instance-B to another VPC with multi-NIC interfaces in both networks and route through it."
     ]
   },
   {
@@ -12523,7 +12523,7 @@ export const QUESTIONS = [
     "confidence": "medium",
     "conflict": true,
     "resolvedBy": "gemini-2026-10",
-    "discussionSummary": "Community favored A (18) over B (15): Cloud NAT is the managed answer; the IP-forwarding-instance votes reflect the era when Cloud NAT was internet-egress only. Independent review (Gemini, Oct 2026) confirmed A.",
+    "discussionSummary": "Community favored A (18) over B (15): Cloud NAT is the managed answer; the IP-forwarding-instance votes reflect the era when Cloud NAT was internet-egress only. A second Gemini review argued for B; rejected: this is a legacy question - Hybrid NAT now provides managed NAT toward on-premises, which is the answer the exam pool expects.",
     "conceptSummary": "NAT between on-premises network blocks and GCP = Cloud NAT (Hybrid NAT for on-prem↔VPC translation).",
     "correctRationale": "Cloud NAT is the managed answer for address translation between the environments; today its Hybrid NAT mode explicitly covers on-prem <-> VPC flows.",
     "optionRationales": [
@@ -12532,7 +12532,7 @@ export const QUESTIONS = [
       "Wrong: iptables DNAT alone does not cover the bidirectional translation.",
       "Wrong: iptables SNAT alone likewise."
     ],
-    "legacyNote": "When this question was written, Cloud NAT only handled internet egress - which is why many commenters chose an IP-forwarding instance. Cloud NAT now covers on-premises <-> VPC translation through Hybrid NAT, and Cloud NAT is the expected answer."
+    "legacyNote": "When this question was written, Cloud NAT only handled internet egress - which is why many commenters chose an IP-forwarding instance. Cloud NAT now covers on-premises <-> VPC translation through Hybrid NAT, and Cloud NAT is the expected answer. Hybrid NAT only translates connections initiated from the VPC side."
   },
   {
     "id": 41,
@@ -13786,7 +13786,7 @@ export const QUESTIONS = [
     "confidence": "high",
     "conflict": true,
     "resolvedBy": "gemini-2026-10",
-    "discussionSummary": "Community votes D (16). Independent review (Gemini, Oct 2026) confirmed D.",
+    "discussionSummary": "Community votes D (16). A second Gemini review argued for C; rejected: the on-prem router signals standby preference with MED (or AS-path prepending); Local Preference only affects the on-prem router's own outbound choice and is not sent over eBGP.",
     "conceptSummary": "Active/standby between two Cloud Routers = MED preference.",
     "correctRationale": "The chosen path is \"Multi-exit Discriminator\": MED is the attribute exchanged between the ASes to choose the preferred entry - D.",
     "optionRationales": [
