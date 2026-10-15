@@ -14,9 +14,11 @@ const manifest = {
   // Fecha del volcado del banco de preguntas (importBatch examtopics-2026-10).
   // No es la fecha del fichero: es cuándo se dio el banco por bueno.
   // ExamTopics lista 197 preguntas (banco actualizado el 2026-10-01), pero
-  // las 180 y 182–197 no tienen página pública de discusión todavía,
-  // así que el banco queda en 180 preguntas.
-  // isRecent marca las 150 más recientes del volcado (ExamTopics 31–181),
+  // las 180 y 182–197 no tienen página pública de discusión todavía.
+  // 182–188 son textos de sitios espejo sin número confirmado
+  // (sourceNumberConfirmed: false), así que el banco queda en 187 preguntas
+  // y quedan pendientes la 180 y 189–197.
+  // isRecent marca las 150 más recientes del volcado (ExamTopics 38–188),
   // que son los bloques 1–6 del modo bloques de 25.
   questionsDumpedAt: "2026-10-14",
   passPercent: 70,
