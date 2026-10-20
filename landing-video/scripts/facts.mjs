@@ -5,7 +5,23 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const repo = resolve(import.meta.dirname, "../..");
-const CERTS = ["gcp-pde", "gcp-pca"];
+// Same order as the cert cards on the landing (index.html).
+const CERTS = [
+  "gcp-pde",
+  "gcp-pca",
+  "gcp-adp",
+  "gcp-gail",
+  "gcp-pmle",
+  "gcp-cdl",
+  "gcp-agwa",
+  "gcp-ace",
+  "gcp-pcse",
+  "gcp-pcdoe",
+  "gcp-psoe",
+  "gcp-pcd",
+  "gcp-pcde",
+  "gcp-pcne",
+];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const certs = CERTS.map((id) => {
