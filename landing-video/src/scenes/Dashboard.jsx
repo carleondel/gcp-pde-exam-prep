@@ -20,14 +20,14 @@ const BEATS = [
     note: "Accuracy for every exam domain",
   },
   {
-    at: 93,
+    at: 122,
     box: { x: 609, y: 486, w: 180, h: 129 },
     zoom: 1.7,
     label: "Timed mocks, like the real exam.",
     note: "50 questions · 2 hours · a pass line to beat",
   },
   {
-    at: 136,
+    at: 193,
     box: { x: 222, y: 745, w: 1156, h: 84 },
     zoom: 1.18,
     label: "A daily habit that sticks.",
