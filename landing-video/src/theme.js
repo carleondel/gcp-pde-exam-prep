@@ -51,10 +51,11 @@ const FIRST_DOWNBEAT = 0.104 * FPS;
 export const bar = (n) => Math.round(FIRST_DOWNBEAT + n * 4 * BEAT);
 
 // Each cut lands on a bar: the midpoint of the transition into a scene sits
-// exactly on the downbeat, and the film ends on bar 16.
+// exactly on the downbeat, and the film ends on bar 23. Scenes hold past
+// their last animation so every caption has time to be read.
 const ORDER = ["logo", "headline", "question", "dashboard", "mobile", "numbers", "cta"];
-const CUT_BARS = [1, 3, 6, 9, 11, 13];
-const END_BAR = 16;
+const CUT_BARS = [1, 4, 8, 13, 16, 19];
+const END_BAR = 23;
 
 const starts = [0, ...CUT_BARS.map((b) => bar(b) - TRANSITION / 2)];
 export const DURATION = bar(END_BAR);
