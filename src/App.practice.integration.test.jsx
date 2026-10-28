@@ -597,4 +597,71 @@ describe("custom practice, wired into the app", () => {
       expect(screen.getByText("Question number 1")).toBeTruthy();
     });
   });
+
+  // Opening the app in a second tab writes to the account, and the first tab
+  // re-mounts on the synced data when it is shown again. A re-mount is what a
+  // closed tab or a reload looks like too, so all of them are tested as one.
+  describe("an interrupted session", () => {
+    const currentQuestion = () => screen.getByText(/^Question number \d+$/).textContent;
+
+    function startAndAnswerOne() {
+      openPractice();
+      clickButton(/^10$/);
+      clickButton(/^Start practice/);
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Check/);
+      clickButton(/^(Next|See results) \(Enter\)$/);
+    }
+
+    it("comes back on the question it was left on", () => {
+      const first = render(<AppContent allQuestions={BANK} />);
+      startAndAnswerOne();
+      const question = currentQuestion();
+      expect(progressCounter()).toBe("2/10");
+      first.unmount();
+
+      render(<AppContent allQuestions={BANK} />);
+      expect(progressCounter()).toBe("2/10");
+      expect(currentQuestion()).toBe(question);
+    });
+
+    it("comes back with the answer revealed, so it cannot be scored twice", () => {
+      const first = render(<AppContent allQuestions={BANK} />);
+      startAndAnswerOne();
+      fireEvent.click(screen.getByText(CORRECT));
+      clickButton(/^Check/);
+      expect(storage().loadActivePracticeSession()).toMatchObject({ answered: 2 });
+      first.unmount();
+
+      render(<AppContent allQuestions={BANK} />);
+      expect(findButton(/^Next \(Enter\)$/)).toBeTruthy();
+      expect(findButton(/^Check/)).toBeFalsy();
+    });
+
+    it("is dropped when it is left for the menu", () => {
+      const first = render(<AppContent allQuestions={BANK} />);
+      startAndAnswerOne();
+      vi.spyOn(window, "confirm").mockReturnValue(true);
+      clickButton(/^← Menu$/);
+      expect(storage().loadActivePracticeSession()).toBeNull();
+      first.unmount();
+
+      render(<AppContent allQuestions={BANK} />);
+      expect(screen.queryByText(/^\d+\/\d+$/)).toBeNull();
+    });
+
+    it("is dropped once it is finished", () => {
+      render(<AppContent allQuestions={BANK} />);
+      openPractice();
+      clickButton(/^10$/);
+      clickButton(/^Start practice/);
+      // Wrong answers, so no streak reward stands between the questions.
+      for (let i = 0; i < 10; i += 1) {
+        fireEvent.click(screen.getByText("B. incorrecta"));
+        clickButton(/^Check/);
+        clickButton(/^(Next|See results) \(Enter\)$/);
+      }
+      expect(storage().loadActivePracticeSession()).toBeNull();
+    });
+  });
 });

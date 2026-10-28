@@ -37,6 +37,8 @@ import {
   createPracticeSession,
   hydrateBlockSession,
   hydrateMockSession,
+  hydratePracticeSession,
+  toStoredPracticeSession,
   withRecordedMockAnswer,
 } from "./engine/session-manager";
 import {
@@ -99,13 +101,16 @@ const {
   allowProgressReset,
   clearActiveBlockSession,
   clearActiveMock,
+  clearActivePracticeSession,
   loadActiveBlockSession,
   loadActiveMock,
+  loadActivePracticeSession,
   loadBlockPrefs,
   loadPracticePrefs,
   loadProgress,
   saveActiveBlockSession,
   saveActiveMock,
+  saveActivePracticeSession,
   saveBlockPrefs,
   savePracticePrefs,
   saveProgress,
@@ -638,48 +643,62 @@ export function AppContent({ allQuestions }) {
     const savedProgress = hydrateProgress();
     const storedMock = loadActiveMock();
     const storedBlock = loadActiveBlockSession();
+    const storedPractice = loadActivePracticeSession();
     const restoredMock = storedMock ? hydrateMockSession(storedMock, questionMap) : null;
     const restoredBlock = storedBlock ? hydrateBlockSession(storedBlock, questionMap) : null;
+    const restoredPractice = storedPractice
+      ? hydratePracticeSession(storedPractice, questionMap)
+      : null;
 
     previousAchievementsRef.current = savedProgress.achievements;
 
-    if (restoredMock) {
-      setSavedMockSession(restoredMock);
-      setSession(restoredMock);
-      setScreen("quiz");
-    } else if (restoredBlock?.leftForMenu) {
-      // Left for the menu before the reload: keep it resumable, stay there.
-      setSavedBlockSession(restoredBlock);
-      setBlockTrackSize(sanitizeBlockSize(restoredBlock.meta?.blockStudy?.size));
-      setSelectedBlockIndex(restoredBlock.meta?.blockStudy?.blockIndex || 0);
-      clearActiveMock();
-      setScreen("menu");
-    } else if (restoredBlock) {
-      const uiState = normalizeSessionUi(restoredBlock);
+    // Puts a practice session (a block or any other) back on screen exactly
+    // as it was left, answered question and open panels included.
+    const resumePractice = (restored) => {
+      const uiState = normalizeSessionUi(restored);
       const restoreSelection = (question) => {
         const raw = uiState.selectedAnswer;
         if (!Array.isArray(raw)) return raw;
         if (Array.isArray(question?.correct)) return new Set(raw);
         return raw.length ? raw[0] : null;
       };
-      if (restoredBlock.pausedElapsedSec != null) {
-        restoredBlock.startedAt = Date.now() - restoredBlock.pausedElapsedSec * 1000;
-        delete restoredBlock.pausedElapsedSec;
+      if (restored.pausedElapsedSec != null) {
+        restored.startedAt = Date.now() - restored.pausedElapsedSec * 1000;
+        delete restored.pausedElapsedSec;
       }
-      setSavedBlockSession(restoredBlock);
-      setBlockTrackSize(sanitizeBlockSize(restoredBlock.meta?.blockStudy?.size));
-      setSelectedBlockIndex(restoredBlock.meta?.blockStudy?.blockIndex || 0);
-      setSession(restoredBlock);
-      setSelectedAnswer(restoreSelection(restoredBlock.questions[restoredBlock.currentIndex]));
+      setSession(restored);
+      setSelectedAnswer(restoreSelection(restored.questions[restored.currentIndex]));
       setShowResult(uiState.showResult);
       setShowDiscussion(uiState.showDiscussion);
       setHiddenOptions(new Set(uiState.hiddenOptions));
       setShowHint(uiState.showHint);
       setScreen("quiz");
+    };
+
+    if (restoredMock) {
+      setSavedMockSession(restoredMock);
+      setSession(restoredMock);
+      setScreen("quiz");
+    } else if (restoredBlock && !restoredBlock.leftForMenu) {
+      setSavedBlockSession(restoredBlock);
+      setBlockTrackSize(sanitizeBlockSize(restoredBlock.meta?.blockStudy?.size));
+      setSelectedBlockIndex(restoredBlock.meta?.blockStudy?.blockIndex || 0);
+      resumePractice(restoredBlock);
     } else {
+      if (restoredBlock) {
+        // Left for the menu before the reload: keep it resumable.
+        setSavedBlockSession(restoredBlock);
+        setBlockTrackSize(sanitizeBlockSize(restoredBlock.meta?.blockStudy?.size));
+        setSelectedBlockIndex(restoredBlock.meta?.blockStudy?.blockIndex || 0);
+      } else {
+        clearActiveBlockSession();
+      }
       clearActiveMock();
-      clearActiveBlockSession();
-      setScreen("menu");
+      // A practice session is only dropped by leaving it for the menu, so one
+      // still stored was interrupted: a closed tab, a reload, or a re-mount
+      // on data synced from another tab or device.
+      if (restoredPractice) resumePractice(restoredPractice);
+      else setScreen("menu");
     }
 
     setReady(true);
@@ -728,8 +747,11 @@ export function AppContent({ allQuestions }) {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
+  // Mirrors what is on screen into the session, so a restored one comes back
+  // with the answer it showed rather than letting the question be answered
+  // (and scored) a second time.
   useEffect(() => {
-    if (!blockMode || !session) return;
+    if (!practiceMode || !session) return;
     const nextUi = serializeUiState(
       selectedAnswer,
       hiddenOptions,
@@ -738,7 +760,7 @@ export function AppContent({ allQuestions }) {
       showHint,
     );
     setSession((prev) => {
-      if (!prev || prev.mode !== "practice" || prev.meta?.source !== "blocks") return prev;
+      if (!prev || prev.mode !== "practice") return prev;
       const currentUi = prev.ui || {};
       const same =
         JSON.stringify(currentUi.selectedAnswer ?? null) ===
@@ -753,7 +775,30 @@ export function AppContent({ allQuestions }) {
         ui: nextUi,
       };
     });
-  }, [blockMode, hiddenOptions, selectedAnswer, session, showDiscussion, showHint, showResult]);
+  }, [practiceMode, hiddenOptions, selectedAnswer, session, showDiscussion, showHint, showResult]);
+
+  /**
+   * Keeps the practice session in flight in storage, the way blocks and mocks
+   * already are: closing the tab, reloading, or the app re-mounting on data
+   * synced from another tab then brings it back instead of losing it. Blocks
+   * are left to useBlockStudy, which also keeps the paused ones.
+   */
+  useEffect(() => {
+    if (!ready) return;
+    const active =
+      session?.mode === "practice" &&
+      session.meta?.source !== "blocks" &&
+      session.status !== "finished"
+        ? session
+        : null;
+    if (!active) {
+      clearActivePracticeSession();
+      return;
+    }
+    const stored = toStoredPracticeSession(active);
+    stored.pausedElapsedSec = Math.floor((Date.now() - active.startedAt) / 1000);
+    saveActivePracticeSession(stored);
+  }, [ready, session]);
 
   useEffect(() => {
     if (screen !== "quiz" || !currentQuestion) return;

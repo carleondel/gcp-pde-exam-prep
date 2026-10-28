@@ -99,8 +99,12 @@ export function hydrateMockSession(stored, questionMap) {
   });
 }
 
-export function toStoredBlockSession(session) {
-  if (!session || session.mode !== "practice" || session.meta?.source !== "blocks") return null;
+/**
+ * Any practice session in flight, flattened to question ids so it can be
+ * kept in storage and survive a reload or a re-mount of the app.
+ */
+export function toStoredPracticeSession(session) {
+  if (!session || session.mode !== "practice") return null;
   const stored = {
     id: session.id,
     questionIds: session.questionIds,
@@ -129,7 +133,12 @@ export function toStoredBlockSession(session) {
   return stored;
 }
 
-export function hydrateBlockSession(stored, questionMap) {
+export function toStoredBlockSession(session) {
+  if (session?.meta?.source !== "blocks") return null;
+  return toStoredPracticeSession(session);
+}
+
+export function hydratePracticeSession(stored, questionMap) {
   if (!stored?.questionIds?.length) return null;
   const questions = stored.questionIds.map((id) => questionMap.get(id)).filter(Boolean);
   if (!questions.length) return null;
@@ -158,3 +167,5 @@ export function hydrateBlockSession(stored, questionMap) {
   if (stored.leftForMenu) session.leftForMenu = true;
   return session;
 }
+
+export const hydrateBlockSession = hydratePracticeSession;
