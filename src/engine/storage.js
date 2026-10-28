@@ -172,6 +172,7 @@ export function createStorage(certId) {
   const PRACTICE_PREFS_KEY = `${certId}.practicePrefs.v1`;
   const BLOCK_PREFS_KEY = `${certId}.blockPrefs.v1`;
   const ACTIVE_BLOCK_SESSION_KEY = `${certId}.activeBlockSession.v1`;
+  const ACTIVE_PRACTICE_SESSION_KEY = `${certId}.activePracticeSession.v1`;
 
   return {
     loadProgress() {
@@ -263,6 +264,19 @@ export function createStorage(certId) {
 
     clearActiveBlockSession() {
       removeItem(ACTIVE_BLOCK_SESSION_KEY);
+    },
+
+    loadActivePracticeSession() {
+      if (!hasStorage()) return null;
+      return safeParse(window.localStorage.getItem(ACTIVE_PRACTICE_SESSION_KEY));
+    },
+
+    saveActivePracticeSession(session) {
+      writeItem(ACTIVE_PRACTICE_SESSION_KEY, session);
+    },
+
+    clearActivePracticeSession() {
+      removeItem(ACTIVE_PRACTICE_SESSION_KEY);
     },
   };
 }
